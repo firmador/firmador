@@ -81,16 +81,18 @@ public class Firmador
         onlineOCSPSource.setDataLoader(commonsHttpDataLoader);
         commonCertificateVerifier.setOcspSource(onlineOCSPSource);
 
-        List<CertificateToken> certificateChain = new ArrayList();
-        List<CertificateToken> cert = new ArrayList(
+        List<CertificateToken> certificateChain =
+            new ArrayList<CertificateToken>();
+        List<CertificateToken> cert = new ArrayList<CertificateToken>(
             DSSUtils.loadPotentialIssuerCertificates(
                 parameters.getSigningCertificate(),
                 commonCertificateVerifier.getDataLoader()));
         certificateChain.add(cert.get(0));
 
         do {
-            cert = new ArrayList(DSSUtils.loadPotentialIssuerCertificates
-                (cert.get(0), commonCertificateVerifier.getDataLoader()));
+            cert = new ArrayList<CertificateToken>(
+                DSSUtils.loadPotentialIssuerCertificates(cert.get(0),
+                    commonCertificateVerifier.getDataLoader()));
             if (!cert.isEmpty()) {
                 certificateChain.add(cert.get(0));
             }
