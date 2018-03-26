@@ -2,6 +2,7 @@ package cr.fran.firmador;
 
 import java.io.Console;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,7 +25,7 @@ import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 public class Firmador
 {
-    public static void main( String[] args )
+    public static void main( String[] args ) throws IOException
     {
         Console console = System.console();
         console.printf("PIN: ");
@@ -91,5 +92,8 @@ public class Firmador
             parameters, signatureValue);
 
         Arrays.fill(pin, ' ');
+
+        signedDocument.save(args[0].substring(0, args[0].lastIndexOf("."))
+            + "-firmado.pdf");
     }
 }
