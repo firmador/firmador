@@ -11,7 +11,7 @@ https://ec.europa.eu/cefdigital/DSS/webapp-demo/doc/dss-documentation.html),
 para uso personal del autor, pero aquí está el código fuente para quien quiera
 un ejemplo de uso práctico bajo una licencia de software libre.
 
-El ejemplo es mínimo, diseñado para funcionar con Java 9 en adelante y usando
+El ejemplo es mínimo, diseñado para funcionar con Java 8 y usando
 la librería PKCS#11 de Firma Digital para GNU/Linux de 64 bits, que se espera
 que esté instalada, así como los certificados de Firma Digital jerarquía SHA2
 para persona física. Para conocer una forma adecuada de cómo instalar los
