@@ -19,5 +19,12 @@ certificados existen un par de artículos de blog sobre cómo realizarlo en
 [Fedora](https://fran.cr/instalar-firma-digital-costa-rica-linux-fedora/) y
 [Ubuntu](https://fran.cr/instalar-firma-digital-costa-rica-gnu-linux-ubuntu-16-04/).
 
-Para compilar el ejemplo se requiere Maven. Para generar el JAR se sugiere
-`mvn clean package` y para ejecutarlo `java -jar target/firmador.jar`
+Para compilar el ejemplo se requiere Maven.
+
+Para generar el JAR:
+
+`mvn clean package`
+
+Para ejecutar el JAR y firmar un documento PDF:
+
+`java -jar target/firmador.jar /ruta/al/documento.pdf`
