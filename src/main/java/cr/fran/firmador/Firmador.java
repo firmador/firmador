@@ -59,6 +59,8 @@ public class Firmador
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
         parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
         parameters.setSigningCertificate(privateKey.getCertificate());
+
+        // FIXME agregar la lista de certificados desde ficheros o AIA
         parameters.setCertificateChain(privateKey.getCertificateChain());
 
         CommonCertificateVerifier commonCertificateVerifier =
