@@ -4,15 +4,10 @@
   <groupId>cr.fran.firmador</groupId>
   <artifactId>firmador</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <name>firmador</name>
-  <url>http://maven.apache.org</url>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+  <url>https://github.com/fdelapena/firmador-pdf</url>
+  <properties>
+    <encoding>UTF-8</encoding>
+  </properties>
 </project>
