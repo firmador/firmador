@@ -4,7 +4,7 @@ package cr.fran.firmador;
  * Hello world!
  *
  */
-public class App 
+public class Firmador
 {
     public static void main( String[] args )
     {
