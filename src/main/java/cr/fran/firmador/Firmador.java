@@ -3,11 +3,13 @@ package cr.fran.firmador;
 import java.io.Console;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import eu.europa.esig.dss.DigestAlgorithm;
 import eu.europa.esig.dss.DSSDocument;
+import eu.europa.esig.dss.DSSUtils;
 import eu.europa.esig.dss.FileDocument;
 import eu.europa.esig.dss.SignatureLevel;
 import eu.europa.esig.dss.SignatureValue;
@@ -23,11 +25,17 @@ import eu.europa.esig.dss.token.Pkcs11SignatureToken;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
+import eu.europa.esig.dss.x509.CertificateToken;
+
 public class Firmador
 {
     public static void main( String[] args ) throws IOException
     {
         Console console = System.console();
+        if (args.length < 1) {
+            console.printf("Sintaxis: firmador.jar fichero.pdf\n");
+            System.exit(1);
+        }
         console.printf("PIN: ");
         char[] pin = console.readPassword();
 
@@ -57,11 +65,9 @@ public class Firmador
          * reglamento dice LTV, así que ante la ambigüedad, mejor LTA que LT.
          */
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
+        parameters.setSignatureSize(9472 * 2);
         parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
         parameters.setSigningCertificate(privateKey.getCertificate());
-
-        // FIXME agregar la lista de certificados desde ficheros o AIA
-        parameters.setCertificateChain(privateKey.getCertificateChain());
 
         CommonCertificateVerifier commonCertificateVerifier =
             new CommonCertificateVerifier();
@@ -71,10 +77,26 @@ public class Firmador
         OnlineCRLSource onlineCRLSource = new OnlineCRLSource();
         onlineCRLSource.setDataLoader(commonsHttpDataLoader);
         commonCertificateVerifier.setCrlSource(onlineCRLSource);
-
         OnlineOCSPSource onlineOCSPSource = new OnlineOCSPSource();
         onlineOCSPSource.setDataLoader(commonsHttpDataLoader);
         commonCertificateVerifier.setOcspSource(onlineOCSPSource);
+
+        List<CertificateToken> certificateChain = new ArrayList();
+        List<CertificateToken> cert = new ArrayList(
+            DSSUtils.loadPotentialIssuerCertificates(
+                parameters.getSigningCertificate(),
+                commonCertificateVerifier.getDataLoader()));
+        certificateChain.add(cert.get(0));
+
+        do {
+            cert = new ArrayList(DSSUtils.loadPotentialIssuerCertificates
+                (cert.get(0), commonCertificateVerifier.getDataLoader()));
+            if (!cert.isEmpty()) {
+                certificateChain.add(cert.get(0));
+            }
+        } while (!cert.isEmpty());
+
+        parameters.setCertificateChain(certificateChain);
 
         PAdESService service = new PAdESService(commonCertificateVerifier);
 
