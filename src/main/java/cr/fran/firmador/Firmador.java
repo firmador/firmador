@@ -1,3 +1,22 @@
+/* firmador-pdf is a program to sign PDF documents using the PAdES standard.
+
+Copyright (C) 2018 Francisco de la Peña Fernández.
+
+This file is part of firmador-pdf.
+
+firmador-pdf is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+firmador-pdf is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with firmador-pdf.  If not, see <http://www.gnu.org/licenses/>.  */
+
 package cr.fran.firmador;
 
 import java.io.Console;
@@ -42,7 +61,7 @@ public class Firmador
         /*
          * ATENCIÓN: Se asume que solamente hay un token conectado.
          * Si no es el caso, podría intentar usar el PIN de otro dispositivo
-         * y si no se verifica podría bloquearla por reintentos fallidos.
+         * y si no se verifica podría bloquearse por reintentos fallidos.
          */
         SignatureTokenConnection signingToken = new Pkcs11SignatureToken(
             "/usr/lib/x64-athena/libASEP11.so", pin);
