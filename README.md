@@ -13,9 +13,8 @@ un ejemplo de uso práctico bajo una licencia de software libre.
 
 El ejemplo es mínimo, diseñado para funcionar con Java 8 y usando
 la librería PKCS#11 de Firma Digital para GNU/Linux de 64 bits, que se espera
-que esté instalada, así como los certificados de Firma Digital jerarquía SHA2
-para persona física. Para conocer una forma adecuada de cómo instalar los
-certificados existen un par de artículos de blog sobre cómo realizarlo en
+que esté instalada. Para conocer una forma adecuada de cómo instalar Firma
+Digital en GNU/Linux, existen un par de artículos sobre cómo realizarlo en
 [Fedora](https://fran.cr/instalar-firma-digital-costa-rica-linux-fedora/) y
 [Ubuntu](https://fran.cr/instalar-firma-digital-costa-rica-gnu-linux-ubuntu-16-04/).
 
