@@ -83,7 +83,7 @@ public class Firmador {
         }
         pinDialog = new Dialog(pinDialog, "Ingresar PIN", true);
         pinDialog.setLocationRelativeTo(null);
-        final TextField pinField = new TextField(14);
+        final TextField pinField = new TextField(16);
         pinField.setEchoChar('●');
         pinField.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
@@ -106,13 +106,23 @@ public class Firmador {
         pinDialog.pack();
         pinDialog.setVisible(true);
 
+        String pkcs11lib = "";
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("mac")) {
+            pkcs11lib = "/Library/Application Support/Athena/libASEP11.dylib";
+        } else if (osName.contains("linux")) {
+            pkcs11lib = "/usr/lib/x64-athena/libASEP11.so";
+        } else if (osName.contains("windows")) {
+            pkcs11lib = System.getenv("SystemRoot")
+                + "\\System32\\asepkcs.dll";
+        }
         /*
          * ATENCIÓN: Se asume que solamente hay un token conectado.
          * Si no es el caso, podría intentar usar el PIN de otro dispositivo
          * y si no se verifica podría bloquearse por reintentos fallidos.
          */
         SignatureTokenConnection signingToken = new Pkcs11SignatureToken(
-            "/usr/lib/x64-athena/libASEP11.so", pin);
+            pkcs11lib, pin);
 
         List<DSSPrivateKeyEntry> keys = signingToken.getKeys();
 
