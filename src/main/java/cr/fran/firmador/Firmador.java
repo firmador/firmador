@@ -19,8 +19,17 @@ along with firmador-pdf.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.fran.firmador;
 
-import java.io.Console;
+import java.awt.FileDialog;
+import java.awt.Dialog;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,17 +55,56 @@ import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 import eu.europa.esig.dss.x509.CertificateToken;
 
-public class Firmador
-{
-    public static void main( String[] args ) throws IOException
-    {
-        Console console = System.console();
+public class Firmador {
+    private static char[] pin;
+    private static Dialog pinDialog;
+    public static void main(String[] args) throws IOException {
+        String fileName = null;
         if (args.length < 1) {
-            console.printf("Sintaxis: firmador.jar fichero.pdf\n");
-            System.exit(1);
+            FileDialog loadDialog = null;
+            loadDialog = new FileDialog(loadDialog,
+                "Seleccionar documento a firmar");
+            loadDialog.setFilenameFilter(new FilenameFilter() {
+                public boolean accept(File dir, String name) {
+                    return name.endsWith(".pdf") || name.endsWith(".PDF");
+                }
+            });
+            loadDialog.setLocationRelativeTo(null);
+            loadDialog.setVisible(true);
+            loadDialog.dispose();
+            if (loadDialog.getFile() == null) {
+                System.out.println("Sintaxis: firmador.jar fichero.pdf");
+                System.exit(1);
+            } else {
+                fileName = loadDialog.getDirectory() + loadDialog.getFile();
+            }
+        } else {
+            fileName = args[0];
         }
-        console.printf("PIN: ");
-        char[] pin = console.readPassword();
+        pinDialog = new Dialog(pinDialog, "Ingresar PIN", true);
+        pinDialog.setLocationRelativeTo(null);
+        final TextField pinField = new TextField(14);
+        pinField.setEchoChar('●');
+        pinField.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_ENTER:
+                        pin = pinField.getText().toCharArray();
+                        pinDialog.dispose();
+                        break;
+                    case KeyEvent.VK_ESCAPE:
+                        System.exit(1);
+                }
+            }
+        });
+        pinDialog.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent windowEvent) {
+                System.exit(1);
+            }
+        });
+        pinDialog.add(pinField);
+        pinDialog.pack();
+        pinDialog.setVisible(true);
 
         /*
          * ATENCIÓN: Se asume que solamente hay un token conectado.
@@ -125,7 +173,7 @@ public class Firmador
         OnlineTSPSource onlineTSPSource = new OnlineTSPSource(tspServer);
         service.setTspSource(onlineTSPSource);
 
-        DSSDocument toSignDocument = new FileDocument(new File(args[0]));
+        DSSDocument toSignDocument = new FileDocument(fileName);
         ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
             parameters);
 
@@ -138,7 +186,7 @@ public class Firmador
 
         Arrays.fill(pin, ' ');
 
-        signedDocument.save(args[0].substring(0, args[0].lastIndexOf("."))
+        signedDocument.save(fileName.substring(0, fileName.lastIndexOf("."))
             + "-firmado.pdf");
     }
 }
