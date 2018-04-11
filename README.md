@@ -11,10 +11,9 @@ https://ec.europa.eu/cefdigital/DSS/webapp-demo/doc/dss-documentation.html),
 para uso personal del autor, pero aquí está el código fuente para quien quiera
 un ejemplo de uso práctico bajo una licencia de software libre.
 
-El ejemplo es mínimo, diseñado para funcionar con Java 8 y usando
-la librería PKCS#11 de Firma Digital para GNU/Linux de 64 bits, que se espera
-que esté instalada. Para conocer una forma adecuada de cómo instalar Firma
-Digital en GNU/Linux, existen un par de artículos sobre cómo realizarlo en
+El ejemplo es mínimo, diseñado para funcionar con Java 8 y funciona en
+GNU/Linux, macOS y Windows. Para instalar Firma Digital de forma adecuada en
+GNU/Linux existen un par de artículos sobre cómo realizarlo en
 [Fedora](https://fran.cr/instalar-firma-digital-costa-rica-linux-fedora/) y
 [Ubuntu](https://fran.cr/instalar-firma-digital-costa-rica-gnu-linux-ubuntu-16-04/).
 
@@ -26,4 +25,4 @@ Para generar el JAR:
 
 Para ejecutar el JAR y firmar un documento PDF:
 
-`java -jar target/firmador.jar /ruta/al/documento.pdf`
+`java -jar target/firmador.jar`
