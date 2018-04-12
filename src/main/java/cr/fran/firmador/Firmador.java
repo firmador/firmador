@@ -31,9 +31,10 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import javax.security.auth.DestroyFailedException;
 
 import eu.europa.esig.dss.DigestAlgorithm;
 import eu.europa.esig.dss.DSSDocument;
@@ -56,9 +57,10 @@ import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 import eu.europa.esig.dss.x509.CertificateToken;
 
 public class Firmador {
-    private static char[] pin;
+    private static PasswordProtection pin;
     private static Dialog pinDialog;
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args)
+        throws IOException, DestroyFailedException {
         String fileName = null;
         if (args.length < 1) {
             FileDialog loadDialog = null;
@@ -83,13 +85,13 @@ public class Firmador {
         }
         pinDialog = new Dialog(pinDialog, "Ingresar PIN", true);
         pinDialog.setLocationRelativeTo(null);
-        final TextField pinField = new TextField(16);
+        final TextField pinField = new TextField(17);
         pinField.setEchoChar('●');
         pinField.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_ENTER:
-                        pin = pinField.getText().toCharArray();
+                        pin = new PasswordProtection(pinField.getText().toCharArray());
                         pinDialog.dispose();
                         break;
                     case KeyEvent.VK_ESCAPE:
@@ -194,7 +196,7 @@ public class Firmador {
         DSSDocument signedDocument = service.signDocument(toSignDocument,
             parameters, signatureValue);
 
-        Arrays.fill(pin, ' ');
+        pin.destroy();
 
         signedDocument.save(fileName.substring(0, fileName.lastIndexOf("."))
             + "-firmado.pdf");
