@@ -59,13 +59,14 @@ import eu.europa.esig.dss.x509.CertificateToken;
 public class Firmador {
     private static PasswordProtection pin;
     private static Dialog pinDialog;
+    private static FileDialog loadDialog;
     public static void main(String[] args)
         throws IOException, DestroyFailedException {
         String fileName = null;
         if (args.length < 1) {
-            FileDialog loadDialog = null;
             loadDialog = new FileDialog(loadDialog,
                 "Seleccionar documento a firmar");
+            loadDialog.setFile("*.pdf");
             loadDialog.setFilenameFilter(new FilenameFilter() {
                 public boolean accept(File dir, String name) {
                     return name.endsWith(".pdf") || name.endsWith(".PDF");
@@ -198,7 +199,22 @@ public class Firmador {
 
         pin.destroy();
 
-        signedDocument.save(fileName.substring(0, fileName.lastIndexOf("."))
-            + "-firmado.pdf");
+        FileDialog saveDialog = null;
+        saveDialog = new FileDialog(saveDialog,
+            "Guardar documento", FileDialog.SAVE);
+        saveDialog.setDirectory(loadDialog.getDirectory());
+        saveDialog.setFile(loadDialog.getFile().substring(0,
+            loadDialog.getFile().lastIndexOf(".")) + "-firmado.pdf");
+        saveDialog.setFilenameFilter(loadDialog.getFilenameFilter());
+        saveDialog.setLocationRelativeTo(null);
+        saveDialog.setVisible(true);
+        saveDialog.dispose();
+        if (saveDialog.getFile() == null) {
+            System.exit(1);
+        } else {
+            fileName = saveDialog.getDirectory() + saveDialog.getFile();
+        }
+
+        signedDocument.save(fileName);
     }
 }
