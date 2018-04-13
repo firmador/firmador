@@ -4,7 +4,7 @@
   <groupId>cr.fran.firmador</groupId>
   <artifactId>firmador</artifactId>
   <packaging>jar</packaging>
-  <version>1.0</version>
+  <version>1.0.0</version>
   <name>firmador</name>
   <url>https://github.com/fdelapena/firmador-pdf</url>
   <properties>
