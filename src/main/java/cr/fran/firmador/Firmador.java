@@ -56,6 +56,7 @@ import eu.europa.esig.dss.pades.signature.PAdESService;
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.Pkcs11SignatureToken;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
+import eu.europa.esig.dss.tsl.KeyUsageBit;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 import eu.europa.esig.dss.x509.CertificateToken;
@@ -131,27 +132,33 @@ public class Firmador {
          * ATENCIÓN: Se asume que solamente hay un token conectado.
          * Si no es el caso, podría intentar usar el PIN de otro dispositivo
          * y si no se verifica podría bloquearse por reintentos fallidos.
+         * En el futuro deberían recorrerse todos los certificados encontrados.
+         * FIXME.
+         * Más en el futuro debería soportar otros mecanismos de acceso a
+         * PKCS#11 específicos de cada sistema operativo, en busca de otros
+         * fabricantes que no sean Athena/NXP (para sello electrónico).
          */
         SignatureTokenConnection signingToken = new Pkcs11SignatureToken(
             pkcs11lib, pin);
 
-        List<DSSPrivateKeyEntry> keys = signingToken.getKeys();
-
         /*
-         * NOTA: en este ejemplo busca la llave privada 1, no se asegura que
-         * sea la de autenticación o la de firma. Para mayor robustez debería
-         * comprobarse que el uso de la llave contenga el bit de "no repudio".
+         * Usa la primera llave cuyo uso es no repudio, asumiendo que no hay
+         * más llaves con el mismo propósito en el mismo token.
+         * Esto debería funcionar bien con tarjetas de Firma Digital no
+         * manipuladas pero en el futuro sería conveniente comprobar que
+         * no hay ningún caso extremo y verificar que verdaderamente se trata
+         * de la única y permitir elegir cuál usar. FIXME.
          */
-        DSSPrivateKeyEntry privateKey = signingToken.getKeys().get(1);
+        DSSPrivateKeyEntry privateKey = null;
+        for (DSSPrivateKeyEntry candidatePrivateKey : signingToken.getKeys()) {
+            if (candidatePrivateKey.getCertificate().checkKeyUsage(
+                KeyUsageBit.nonRepudiation)) {
+                    privateKey = candidatePrivateKey;
+                }
+        }
 
         PAdESSignatureParameters parameters = new PAdESSignatureParameters();
 
-        /*
-         * En teoría la firma de archivado debería aplicarse (extender con otra
-         * firma de estampado de tiempo) cuando la existente tuviera alguna
-         * debilidad o llega la fecha de expiración de los certificados pero el
-         * reglamento dice LTV, así que ante la ambigüedad, mejor LTA que LT.
-         */
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
         parameters.setSignatureSize(9472 * 2);
         parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
