@@ -31,10 +31,14 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
 import javax.security.auth.DestroyFailedException;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import eu.europa.esig.dss.DigestAlgorithm;
 import eu.europa.esig.dss.DSSDocument;
@@ -61,17 +65,21 @@ public class Firmador {
     private static Dialog pinDialog;
     private static FileDialog loadDialog;
     public static void main(String[] args)
-        throws IOException, DestroyFailedException {
+        throws IOException, DestroyFailedException, ClassNotFoundException,
+            InstantiationException, IllegalAccessException,
+            UnsupportedLookAndFeelException {
+
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        loadDialog = new FileDialog(loadDialog,
+            "Seleccionar documento a firmar");
+        loadDialog.setFilenameFilter(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".pdf") || name.endsWith(".PDF");
+            }
+        });
         String fileName = null;
-        if (args.length < 1) {
-            loadDialog = new FileDialog(loadDialog,
-                "Seleccionar documento a firmar");
+        if (args.length == 0) {
             loadDialog.setFile("*.pdf");
-            loadDialog.setFilenameFilter(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    return name.endsWith(".pdf") || name.endsWith(".PDF");
-                }
-            });
             loadDialog.setLocationRelativeTo(null);
             loadDialog.setVisible(true);
             loadDialog.dispose();
@@ -202,9 +210,19 @@ public class Firmador {
         FileDialog saveDialog = null;
         saveDialog = new FileDialog(saveDialog,
             "Guardar documento", FileDialog.SAVE);
-        saveDialog.setDirectory(loadDialog.getDirectory());
-        saveDialog.setFile(loadDialog.getFile().substring(0,
-            loadDialog.getFile().lastIndexOf(".")) + "-firmado.pdf");
+        String saveDirectory = null;
+        String saveFileName = null;
+        if (args.length == 0) {
+            saveDirectory = loadDialog.getDirectory();
+            saveFileName = loadDialog.getFile();
+        } else {
+            Path path = Paths.get(fileName);
+            saveDirectory = path.getParent().toString();
+            saveFileName = path.getFileName().toString();
+        }
+        saveDialog.setDirectory(saveDirectory);
+        saveDialog.setFile(saveFileName.substring(0,
+            saveFileName.lastIndexOf(".")) + "-firmado.pdf");
         saveDialog.setFilenameFilter(loadDialog.getFilenameFilter());
         saveDialog.setLocationRelativeTo(null);
         saveDialog.setVisible(true);
