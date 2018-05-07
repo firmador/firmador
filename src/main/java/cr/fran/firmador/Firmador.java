@@ -19,27 +19,17 @@ along with firmador-pdf.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.fran.firmador;
 
-import java.awt.FileDialog;
-import java.awt.Dialog;
-import java.awt.TextField;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FilenameFilter;
+
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.security.auth.DestroyFailedException;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-
+import cr.fran.gui.GUIInterface;
+import cr.fran.gui.GUISelector;
 import eu.europa.esig.dss.DigestAlgorithm;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.DSSUtils;
@@ -57,67 +47,25 @@ import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.Pkcs11SignatureToken;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.tsl.KeyUsageBit;
-import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 import eu.europa.esig.dss.x509.CertificateToken;
 
 public class Firmador {
-    private static PasswordProtection pin;
-    private static Dialog pinDialog;
-    private static FileDialog loadDialog;
+
     public static void main(String[] args)
         throws IOException, DestroyFailedException, ClassNotFoundException,
             InstantiationException, IllegalAccessException,
             UnsupportedLookAndFeelException {
 
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        loadDialog = new FileDialog(loadDialog,
-            "Seleccionar documento a firmar");
-        loadDialog.setFilenameFilter(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".pdf") || name.endsWith(".PDF");
-            }
-        });
-        String fileName = null;
-        if (args.length == 0) {
-            loadDialog.setFile("*.pdf");
-            loadDialog.setLocationRelativeTo(null);
-            loadDialog.setVisible(true);
-            loadDialog.dispose();
-            if (loadDialog.getFile() == null) {
-                System.out.println("Sintaxis: firmador.jar fichero.pdf");
-                System.exit(1);
-            } else {
-                fileName = loadDialog.getDirectory() + loadDialog.getFile();
-            }
-        } else {
-            fileName = args[0];
-        }
-        pinDialog = new Dialog(pinDialog, "Ingresar PIN", true);
-        pinDialog.setLocationRelativeTo(null);
-        final TextField pinField = new TextField(17);
-        pinField.setEchoChar('●');
-        pinField.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_ENTER:
-                        pin = new PasswordProtection(pinField.getText().toCharArray());
-                        pinDialog.dispose();
-                        break;
-                    case KeyEvent.VK_ESCAPE:
-                        System.exit(1);
-                }
-            }
-        });
-        pinDialog.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent windowEvent) {
-                System.exit(1);
-            }
-        });
-        pinDialog.add(pinField);
-        pinDialog.pack();
-        pinDialog.setVisible(true);
+       
+        GUISelector guiselector = new GUISelector();
 
+        GUIInterface gui = guiselector.getInterface(args);
+        gui.setArgs(args);
+        String fileName = gui.getDocumentToSign();
+        PasswordProtection pin=gui.getPin();
+        
         String pkcs11lib = "";
         String osName = System.getProperty("os.name").toLowerCase();
         if (osName.contains("mac")) {
@@ -214,32 +162,8 @@ public class Firmador {
 
         pin.destroy();
 
-        FileDialog saveDialog = null;
-        saveDialog = new FileDialog(saveDialog,
-            "Guardar documento", FileDialog.SAVE);
-        String saveDirectory = null;
-        String saveFileName = null;
-        if (args.length == 0) {
-            saveDirectory = loadDialog.getDirectory();
-            saveFileName = loadDialog.getFile();
-        } else {
-            Path path = Paths.get(fileName);
-            saveDirectory = path.getParent().toString();
-            saveFileName = path.getFileName().toString();
-        }
-        saveDialog.setDirectory(saveDirectory);
-        saveDialog.setFile(saveFileName.substring(0,
-            saveFileName.lastIndexOf(".")) + "-firmado.pdf");
-        saveDialog.setFilenameFilter(loadDialog.getFilenameFilter());
-        saveDialog.setLocationRelativeTo(null);
-        saveDialog.setVisible(true);
-        saveDialog.dispose();
-        if (saveDialog.getFile() == null) {
-            System.exit(1);
-        } else {
-            fileName = saveDialog.getDirectory() + saveDialog.getFile();
-        }
 
+        fileName=gui.getPathToSave();
         signedDocument.save(fileName);
     }
 }
