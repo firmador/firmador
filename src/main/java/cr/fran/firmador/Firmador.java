@@ -58,14 +58,14 @@ public class Firmador {
             UnsupportedLookAndFeelException {
 
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-       
+
         GUISelector guiselector = new GUISelector();
 
         GUIInterface gui = guiselector.getInterface(args);
         gui.setArgs(args);
         String fileName = gui.getDocumentToSign();
         PasswordProtection pin=gui.getPin();
-        
+
         String pkcs11lib = "";
         String osName = System.getProperty("os.name").toLowerCase();
         if (osName.contains("mac")) {
@@ -108,7 +108,7 @@ public class Firmador {
         PAdESSignatureParameters parameters = new PAdESSignatureParameters();
 
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
-        parameters.setSignatureSize(9472 * 2);
+        parameters.setSignatureSize(13312);
         parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
         parameters.setSigningCertificate(privateKey.getCertificate());
 
