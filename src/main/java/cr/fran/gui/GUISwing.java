@@ -1,10 +1,30 @@
+/* firmador-pdf is a program to sign PDF documents using the PAdES standard.
+
+Copyright (C) 2018 Francisco de la Peña Fernández.
+
+This file is part of firmador-pdf.
+
+firmador-pdf is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+firmador-pdf is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with firmador-pdf.  If not, see <http://www.gnu.org/licenses/>.  */
+
 package cr.fran.gui;
 
+import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.FileDialog;
-import java.awt.TextField;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.Window;
+import java.awt.event.HierarchyListener;
+import java.awt.event.HierarchyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -13,6 +33,9 @@ import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -20,7 +43,6 @@ public class GUISwing implements GUIInterface {
 
     private static Dialog pinDialog;
     private static FileDialog loadDialog;
-    private static PasswordProtection pin;
     private String documenttosign = null;
     private String documenttosave = null;
 
@@ -31,7 +53,8 @@ public class GUISwing implements GUIInterface {
         String fileName = null;
 
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            UIManager.setLookAndFeel(
+                UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException e) {
             // TODO
         } catch (InstantiationException e) {
@@ -39,6 +62,7 @@ public class GUISwing implements GUIInterface {
         } catch (IllegalAccessException e) {
             // TODO
         } catch (UnsupportedLookAndFeelException e) {
+            // TODO
         }
 
         loadDialog = new FileDialog(loadDialog,
@@ -94,37 +118,36 @@ public class GUISwing implements GUIInterface {
     }
 
     public PasswordProtection getPin() {
-        pinDialog = new Dialog(pinDialog, "Ingresar PIN", true);
-        pinDialog.setLocationRelativeTo(null);
-        final TextField pinField = new TextField(17);
-        pinField.setEchoChar('●');
-        pinField.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_ENTER:
-                        pin = new PasswordProtection(pinField.getText()
-                            .toCharArray());
-                        pinDialog.dispose();
-                        break;
-                    case KeyEvent.VK_ESCAPE:
-                        System.exit(1);
+
+        JPasswordField pinField = new JPasswordField(14);
+        pinField.addHierarchyListener(new HierarchyListener() {
+            public void hierarchyChanged(HierarchyEvent e) {
+                final Component c = e.getComponent();
+                if (c.isShowing() &&
+                    (e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED)
+                    != 0) {
+                    Window toplevel = SwingUtilities.getWindowAncestor(c);
+                    toplevel.addWindowFocusListener(new WindowAdapter() {
+                        public void windowGainedFocus(WindowEvent e) {
+                            c.requestFocus();
+                        }
+                    });
                 }
             }
         });
-        pinDialog.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent windowEvent) {
-                System.exit(1);
-            }
-        });
-        pinDialog.add(pinField);
-        pinDialog.pack();
-        pinDialog.setVisible(true);
+        int action = JOptionPane.showConfirmDialog(null, pinField,
+            "Ingresar PIN", JOptionPane.OK_CANCEL_OPTION);
+        pinField.grabFocus();
+        if (action != 0) {
+            System.exit(1);
+        }
 
-        return pin;
+        return new PasswordProtection(pinField.getPassword());
     }
 
     public void setArgs(String[] args) {
         List<String> arguments = new ArrayList<String>();
+
         for (String params : args) {
             if (!params.startsWith("-")) {
                 arguments.add(params);

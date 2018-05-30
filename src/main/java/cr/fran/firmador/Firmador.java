@@ -58,7 +58,7 @@ public class Firmador {
         GUIInterface gui = guiselector.getInterface(args);
         gui.setArgs(args);
         String fileName = gui.getDocumentToSign();
-        PasswordProtection pin=gui.getPin();
+        PasswordProtection pin = gui.getPin();
 
         String pkcs11lib = "";
         String osName = System.getProperty("os.name").toLowerCase();

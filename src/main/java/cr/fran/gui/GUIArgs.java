@@ -12,7 +12,6 @@ public class GUIArgs implements GUIInterface {
 
     private String documenttosign;
     private String documenttosave;
-    private static PasswordProtection pin;
 
     public void setArgs(String[] args) {
         List<String> arguments = new ArrayList<String>();
@@ -47,9 +46,8 @@ public class GUIArgs implements GUIInterface {
             System.err.println("PIN not Found");
             System.exit(1);
         }
-        pin = new PasswordProtection(pintext.toCharArray());
 
-        return pin;
+        return new PasswordProtection(pintext.toCharArray());
     }
 
 }
