@@ -136,7 +136,8 @@ public class GUISwing implements GUIInterface {
             }
         });
         int action = JOptionPane.showConfirmDialog(null, pinField,
-            "Ingresar PIN", JOptionPane.OK_CANCEL_OPTION);
+            "Ingresar PIN", JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.PLAIN_MESSAGE);
         pinField.grabFocus();
         if (action != 0) {
             System.exit(1);
