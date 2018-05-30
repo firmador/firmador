@@ -26,8 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.security.auth.DestroyFailedException;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+
 import cr.fran.gui.GUIInterface;
 import cr.fran.gui.GUISelector;
 import eu.europa.esig.dss.DigestAlgorithm;
@@ -52,12 +51,7 @@ import eu.europa.esig.dss.x509.CertificateToken;
 
 public class Firmador {
 
-    public static void main(String[] args)
-        throws IOException, DestroyFailedException, ClassNotFoundException,
-            InstantiationException, IllegalAccessException,
-            UnsupportedLookAndFeelException {
-
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    public static void main(String[] args) {
 
         GUISelector guiselector = new GUISelector();
 
@@ -160,10 +154,17 @@ public class Firmador {
         DSSDocument signedDocument = service.signDocument(toSignDocument,
             parameters, signatureValue);
 
-        pin.destroy();
+        try {
+            pin.destroy();
+        } catch (DestroyFailedException e) {
+            // TODO
+        }
 
-
-        fileName=gui.getPathToSave();
-        signedDocument.save(fileName);
+        fileName = gui.getPathToSave();
+        try {
+            signedDocument.save(fileName);
+        } catch (IOException e) {
+            // TODO
+        }
     }
 }
