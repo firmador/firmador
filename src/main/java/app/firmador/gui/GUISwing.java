@@ -1,23 +1,23 @@
-/* firmador-pdf is a program to sign PDF documents using the PAdES standard.
+/* Firmador is a program to sign documents using AdES standards.
 
 Copyright (C) 2018 Francisco de la Peña Fernández.
 
-This file is part of firmador-pdf.
+This file is part of Firmador.
 
-firmador-pdf is free software: you can redistribute it and/or modify
+Firmador is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-firmador-pdf is distributed in the hope that it will be useful,
+Firmador is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with firmador-pdf.  If not, see <http://www.gnu.org/licenses/>.  */
+along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package cr.fran.gui;
+package app.firmador.gui;
 
 import java.awt.Component;
 import java.awt.Dialog;

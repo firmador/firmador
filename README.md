@@ -1,7 +1,7 @@
-# Firmador PDF
+# Firmador
 
-Firmador de documentos PDF que cumplen con la [Política de Formatos Oficiales
-de los Documentos Electrónicos Firmados Digitalmente](
+Herramienta de escritorio para firmar documentos que cumplen con la [Política
+de Formatos Oficiales de los Documentos Electrónicos Firmados Digitalmente](
 https://www.mifirmadigital.go.cr/wp-content/uploads/2016/03/DCFD-Política-de-Formato-Oficial-v1.0.pdf
 ) de Costa Rica.
 
@@ -18,7 +18,7 @@ los siguientes artículos para
 
 ## Descarga
 
-- [Descargar firmador PDF](https://fran.cr/descargas/firmador.jar)
+- [Descargar firmador](https://fran.cr/descargas/firmador.jar)
   para Windows, GNU/Linux y macOS (13 MB).
 
 
