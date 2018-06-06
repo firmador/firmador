@@ -26,11 +26,11 @@ import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GUIShell implements GUIInterface {
 
-    private static PasswordProtection pin;
     private String documenttosign = null;
     private String documenttosave = null;
 
@@ -51,6 +51,12 @@ public class GUIShell implements GUIInterface {
         }
     }
 
+    public void showError(Throwable error) {
+        System.err.println("Exception: " + error.getClass().getName());
+        System.err.println("Message: " + error.getLocalizedMessage());
+        System.exit(1);
+    }
+
     private String readFromInput(String message) {
         System.out.println(message);
         String plaintext = null;
@@ -63,16 +69,19 @@ public class GUIShell implements GUIInterface {
             System.err.println("I can't read in stdin");
             System.exit(1);
         }
+
         return plaintext;
     }
 
     public String getDocumentToSign() {
         String docpath = readFromInput("Path del documento a firmar: ");
+
         return Paths.get(docpath).toAbsolutePath().toString();
     }
 
     public String getPathToSave() {
         String docpath = readFromInput("Path del documento a guardar: ");
+
         return Paths.get(docpath).toAbsolutePath().toString();
     }
 
@@ -83,12 +92,10 @@ public class GUIShell implements GUIInterface {
         if (console != null) {
             password = console.readPassword("PIN: ");
         } else {
-            System.err.println(
-                "System console not present, maybe you are running on IDE, got fallback");
-            String docpath = readFromInput("PIN: ");
-            password = docpath.toCharArray();
+            password = readFromInput("PIN: ").toCharArray();
         }
-        pin = new PasswordProtection(password);
+        PasswordProtection pin = new PasswordProtection(password);
+        Arrays.fill(password, (char) 0);
 
         return pin;
     }

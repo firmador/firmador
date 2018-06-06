@@ -19,7 +19,6 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package app.firmador;
 
-
 import java.io.IOException;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ import javax.security.auth.DestroyFailedException;
 
 import app.firmador.gui.GUIInterface;
 import app.firmador.gui.GUISelector;
+import com.google.common.base.Throwables;
 import eu.europa.esig.dss.DigestAlgorithm;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.DSSUtils;
@@ -92,11 +92,16 @@ public class Firmador {
          * de la única y permitir elegir cuál usar. FIXME.
          */
         DSSPrivateKeyEntry privateKey = null;
-        for (DSSPrivateKeyEntry candidatePrivateKey : signingToken.getKeys()) {
-            if (candidatePrivateKey.getCertificate().checkKeyUsage(
-                KeyUsageBit.nonRepudiation)) {
-                    privateKey = candidatePrivateKey;
+        try {
+            for (DSSPrivateKeyEntry candidatePrivateKey
+                : signingToken.getKeys()) {
+                if (candidatePrivateKey.getCertificate().checkKeyUsage(
+                    KeyUsageBit.nonRepudiation)) {
+                        privateKey = candidatePrivateKey;
                 }
+            }
+        } catch (Exception|Error e) {
+            gui.showError(Throwables.getRootCause(e));
         }
 
         PAdESSignatureParameters parameters = new PAdESSignatureParameters();

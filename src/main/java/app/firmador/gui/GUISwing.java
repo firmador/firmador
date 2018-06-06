@@ -77,8 +77,7 @@ public class GUISwing implements GUIInterface {
         loadDialog.setVisible(true);
         loadDialog.dispose();
         if (loadDialog.getFile() == null) {
-            System.out.println("Sintaxis: firmador.jar fichero.pdf");
-            System.exit(1);
+            System.exit(0);
         } else {
             fileName = loadDialog.getDirectory() + loadDialog.getFile();
         }
@@ -109,7 +108,7 @@ public class GUISwing implements GUIInterface {
         saveDialog.setVisible(true);
         saveDialog.dispose();
         if (saveDialog.getFile() == null) {
-            System.exit(1);
+            System.exit(0);
         } else {
             fileName = saveDialog.getDirectory() + saveDialog.getFile();
         }
@@ -140,7 +139,7 @@ public class GUISwing implements GUIInterface {
             JOptionPane.PLAIN_MESSAGE);
         pinField.grabFocus();
         if (action != 0) {
-            System.exit(1);
+            System.exit(0);
         }
 
         return new PasswordProtection(pinField.getPassword());
@@ -162,6 +161,61 @@ public class GUISwing implements GUIInterface {
             documenttosave = Paths.get(arguments.get(1)).toAbsolutePath()
                 .toString();
         }
+    }
+
+    public void showError(Throwable error) {
+        String message = error.getLocalizedMessage();
+        String className = error.getClass().getName();
+
+        switch (className) {
+            case "java.lang.NoSuchMethodError":
+                message = "Esta aplicación es actualmente incompatible con " +
+                    "versiones superiores a Java 8.\n" +
+                    "Este inconveniente se corregirá en próximas versiones. " +
+                    "Disculpe las molestias.";
+                break;
+            case "java.security.ProviderException":
+                message = "No se ha encontrado la librería de Firma Digital " +
+                    "en el sistema.\n" +
+                    "¿Están instalados los controladores?";
+                break;
+            case "java.security.NoSuchAlgorithmException":
+                message = "No se ha encontrado ninguna tarjeta conectada al " +
+                    "lector.\n" +
+                    "Asegúrese de que está conectada la tarjeta al lector " +
+                    "de forma correcta.";
+                break;
+            case "sun.security.pkcs11.wrapper.PKCS11Exception":
+                switch(message) {
+                case "CKR_GENERAL_ERROR":
+                    message = "No se ha podido contactar con el servicio " +
+                        "del lector de tarjetas.\n" +
+                        "¿Está correctamente instalado o configurado?";
+                    break;
+                case "CKR_SLOT_ID_INVALID":
+                    message = "No se ha podido encontrar ningún lector " +
+                    "conectado o el controlador del lector no está instalado.";
+                    break;
+                case "CKR_PIN_INCORRECT":
+                    message = "¡PIN INCORRECTO!\n\n" +
+                        "ADVERTENCIA: si se ingresa un PIN incorrecto " +
+                        "varias veces sin acertar,\n" +
+                        "el dispositivo de firma se bloqueará.";
+                    break;
+                case "CKR_PIN_LOCKED":
+                    message = "PIN BLOQUEADO\n\n" +
+                        "Lo sentimos, el dispositivo de firma no se puede " +
+                        "utilizar porque está bloqueado.\n" +
+                        "Contacte con su proveedor para desbloquearla.";
+                    break;
+                }
+                break;
+        }
+
+        JOptionPane.showMessageDialog(null, message, className,
+            JOptionPane.ERROR_MESSAGE);
+
+        System.exit(1);
     }
 
 }

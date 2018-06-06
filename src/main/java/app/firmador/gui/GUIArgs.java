@@ -46,6 +46,12 @@ public class GUIArgs implements GUIInterface {
             .toString();
     }
 
+    public void showError(Throwable error) {
+        System.err.println("Exception: " + error.getClass().getName());
+        System.err.println("Message: " + error.getMessage());
+        System.exit(1);
+    }
+
     public String getDocumentToSign() {
         return documenttosign;
     }

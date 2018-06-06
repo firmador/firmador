@@ -9,6 +9,8 @@
   <url>https://gitlab.com/fdelapena/firmador</url>
   <properties>
     <encoding>UTF-8</encoding>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
     <dss.version>5.3</dss.version>
     <slf4j.version>1.7.25</slf4j.version>
     <logback.version>1.2.3</logback.version>
