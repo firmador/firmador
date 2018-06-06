@@ -180,13 +180,12 @@ public class GUISwing implements GUIInterface {
                     "¿Están instalados los controladores?";
                 break;
             case "java.security.NoSuchAlgorithmException":
-                message = "No se ha encontrado ninguna tarjeta conectada al " +
-                    "lector.\n" +
-                    "Asegúrese de que está conectada la tarjeta al lector " +
-                    "de forma correcta.";
+                message = "No se ha encontrado ninguna tarjeta conectada.\n" +
+                    "Asegúrese de que la tarjeta y el lector están " +
+                    "conectados de forma correcta.";
                 break;
             case "sun.security.pkcs11.wrapper.PKCS11Exception":
-                switch(message) {
+                switch (message) {
                 case "CKR_GENERAL_ERROR":
                     message = "No se ha podido contactar con el servicio " +
                         "del lector de tarjetas.\n" +
@@ -206,16 +205,23 @@ public class GUISwing implements GUIInterface {
                     message = "PIN BLOQUEADO\n\n" +
                         "Lo sentimos, el dispositivo de firma no se puede " +
                         "utilizar porque está bloqueado.\n" +
-                        "Contacte con su proveedor para desbloquearla.";
+                        "Contacte con su proveedor para desbloquearlo.";
                     break;
                 }
                 break;
+            default:
+                message = "Error: " + className + "\n" +
+                    "Detalle: " + message + "\n" +
+                    "Agradecemos que comunique este mensaje de error al " +
+                    "autor del programa\n" +
+                    "para detallar mejor el posible motivo de este error " +
+                    "en próximas versiones.";
         }
 
-        JOptionPane.showMessageDialog(null, message, className,
+        JOptionPane.showMessageDialog(null, message, "Error al firmar",
             JOptionPane.ERROR_MESSAGE);
 
-        System.exit(1);
+        System.exit(0);
     }
 
 }
