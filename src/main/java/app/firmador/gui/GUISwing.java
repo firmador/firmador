@@ -99,10 +99,15 @@ public class GUISwing implements GUIInterface {
 
         saveDirectory = loadDialog.getDirectory();
         saveFileName = loadDialog.getFile();
-
         saveDialog.setDirectory(saveDirectory);
+
+        String dotExtension = "";
+        int lastDot = saveFileName.lastIndexOf(".");
+        if (lastDot >= 0) {
+            dotExtension = saveFileName.substring(lastDot);
+        }
         saveDialog.setFile(saveFileName.substring(0,
-            saveFileName.lastIndexOf(".")) + "-firmado.pdf");
+            saveFileName.lastIndexOf(".")) + "-firmado" + dotExtension);
         saveDialog.setFilenameFilter(loadDialog.getFilenameFilter());
         saveDialog.setLocationRelativeTo(null);
         saveDialog.setVisible(true);
