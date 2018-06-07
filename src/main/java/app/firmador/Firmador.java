@@ -29,6 +29,7 @@ import javax.swing.ImageIcon;
 
 import app.firmador.gui.GUIInterface;
 import app.firmador.gui.GUISelector;
+import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.DigestAlgorithm;
 import eu.europa.esig.dss.DSSDocument;
@@ -55,7 +56,7 @@ public class Firmador {
     public static void main(String[] args) {
         try {
             Class.forName("com.apple.eawt.Application", false, null);
-            com.apple.eawt.Application.getApplication()
+            Application.getApplication()
                 .setDockIconImage(new ImageIcon(Firmador.class.getClassLoader()
                     .getResource("firmador.png")).getImage());
         } catch (ClassNotFoundException e) {
