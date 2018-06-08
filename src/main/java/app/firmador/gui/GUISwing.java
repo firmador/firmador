@@ -229,4 +229,13 @@ public class GUISwing implements GUIInterface {
         System.exit(0);
     }
 
+	@Override
+	public void showMessage(String message) {
+        JOptionPane.showMessageDialog(null, message, "Mensaje importante",
+                JOptionPane.OK_CANCEL_OPTION);
+
+            
+		
+	}
+
 }

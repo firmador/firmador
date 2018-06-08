@@ -75,4 +75,10 @@ public class GUIArgs implements GUIInterface {
         return new PasswordProtection(pintext.toCharArray());
     }
 
+	@Override
+	public void showMessage(String message) {
+		 System.out.println(message);
+		
+	}
+
 }
