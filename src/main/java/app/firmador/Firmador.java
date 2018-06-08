@@ -43,8 +43,8 @@ public class Firmador {
         String fileName = gui.getDocumentToSign();
         PasswordProtection pin = gui.getPin();
 
-        FirmadorXades fpdf = new FirmadorXades(gui);
-       // FirmadorPDF fpdf = new FirmadorPDF(gui);
+       // FirmadorXades fpdf = new FirmadorXades(gui);
+        FirmadorPDF fpdf = new FirmadorPDF(gui);
         
         DSSDocument toSignDocument = new FileDocument(fileName);
         DSSDocument signedDocument = fpdf.sign(toSignDocument, pin);
