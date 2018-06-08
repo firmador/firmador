@@ -100,4 +100,10 @@ public class GUIShell implements GUIInterface {
         return pin;
     }
 
+	@Override
+	public void showMessage(String message) {
+		 System.out.println(message);
+		
+	}
+
 }

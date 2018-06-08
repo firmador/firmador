@@ -25,6 +25,7 @@ public interface GUIInterface {
 
     void setArgs(String[] args);
     void showError(Throwable error);
+    void showMessage(String message);
     String getDocumentToSign();
     String getPathToSave();
     PasswordProtection getPin();
