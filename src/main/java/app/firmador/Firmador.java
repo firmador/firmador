@@ -22,12 +22,13 @@ package app.firmador;
 import java.io.IOException;
 import java.security.KeyStore.PasswordProtection;
 import javax.security.auth.DestroyFailedException;
+import javax.swing.ImageIcon;
 
+import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 
 import app.firmador.gui.GUIInterface;
 import app.firmador.gui.GUISelector;
-
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.FileDocument;
 
@@ -35,7 +36,14 @@ import eu.europa.esig.dss.FileDocument;
 public class Firmador {
 
     public static void main(String[] args) {
-
+        try {
+            Class.forName("com.apple.eawt.Application", false, null);
+            Application.getApplication()
+                .setDockIconImage(new ImageIcon(Firmador.class.getClassLoader()
+                    .getResource("firmador.png")).getImage());
+        } catch (ClassNotFoundException e) {
+            // El código es solamente para mostrar el icono en el dock en macOS
+        }
         GUISelector guiselector = new GUISelector();
 
         GUIInterface gui = guiselector.getInterface(args);

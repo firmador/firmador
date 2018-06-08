@@ -22,6 +22,7 @@ package app.firmador.gui;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.FileDialog;
+import java.awt.Image;
 import java.awt.Window;
 import java.awt.event.HierarchyListener;
 import java.awt.event.HierarchyEvent;
@@ -33,6 +34,7 @@ import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
@@ -141,7 +143,10 @@ public class GUISwing implements GUIInterface {
         });
         int action = JOptionPane.showConfirmDialog(null, pinField,
             "Ingresar PIN", JOptionPane.OK_CANCEL_OPTION,
-            JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.QUESTION_MESSAGE, new ImageIcon(
+                new ImageIcon(GUISwing.class.getClassLoader()
+                    .getResource("firmador.png"))
+                .getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH)));
         pinField.grabFocus();
         if (action != 0) {
             System.exit(0);
