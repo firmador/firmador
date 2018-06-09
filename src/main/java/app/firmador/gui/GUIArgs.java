@@ -31,19 +31,23 @@ public class GUIArgs implements GUIInterface {
 
     private String documenttosign;
     private String documenttosave;
+    private int slot;
 
     public void setArgs(String[] args) {
         List<String> arguments = new ArrayList<String>();
-
+        slot=0;
         for (String params : args) {
             if (!params.startsWith("-")) {
                 arguments.add(params);
+            }else if(params.startsWith("-slot")){
+            	slot=Integer.parseInt(params.replace("-slot", ""));
             }
         }
         documenttosign = Paths.get(arguments.get(0)).toAbsolutePath()
             .toString();
         documenttosave = Paths.get(arguments.get(1)).toAbsolutePath()
             .toString();
+        
     }
 
     public void showError(Throwable error) {
@@ -79,6 +83,12 @@ public class GUIArgs implements GUIInterface {
 	public void showMessage(String message) {
 		 System.out.println(message);
 		
+	}
+
+	@Override
+	public int getSelection(String[] options) {
+		// TODO Auto-generated method stub
+		return slot;
 	}
 
 }

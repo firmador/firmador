@@ -26,7 +26,7 @@ public class FirmadorPDF extends CRSigner{
 		// TODO Auto-generated constructor stub
 	}
 
-	public DSSDocument _sign(DSSDocument toSignDocument, PasswordProtection pin){
+	private DSSDocument _sign(DSSDocument toSignDocument, PasswordProtection pin){
 		 
 		CertificateVerifier commonCertificateVerifier = this.getCertificateVerifier();
 		SignatureTokenConnection signingToken = get_signatureConnection(pin);
@@ -37,6 +37,7 @@ public class FirmadorPDF extends CRSigner{
 		parameters.setSignatureSize(13312);
 		parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
 		parameters.setSigningCertificate(privateKey.getCertificate());
+		
         List<CertificateToken> certificateChain = getCertificateChain(
         		commonCertificateVerifier, parameters);
         parameters.setCertificateChain(certificateChain);

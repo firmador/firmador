@@ -243,4 +243,27 @@ public class GUISwing implements GUIInterface {
 		
 	}
 
+	@Override
+	public int getSelection(String[] options) {
+		int dev=0;
+		String input = (String) JOptionPane.showInputDialog(null, "Propietario: ",
+		        "Seleccione el dispositivo para firmar", JOptionPane.QUESTION_MESSAGE, null, // Use
+		                                                                        // default
+		                                                                        // icon
+		        options, // Array of choices
+		        options[0]); // Initial choice
+		
+		
+		if(input==null)  System.exit(0);
+		
+		for(int x=0; x<options.length; x++){
+			if(input.equals(options[x])){
+				dev=x;
+				x=options.length;
+			}
+		}
+		
+		return dev;
+	}
+
 }
