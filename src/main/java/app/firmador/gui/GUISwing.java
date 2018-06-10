@@ -215,15 +215,13 @@ public class GUISwing implements GUIInterface {
                         "Contacte con su proveedor para desbloquearlo.";
                     break;
                 }
-                break;
             default:
-                String errorMessage = "Error: " + className + "\n" +
+                message = "Error: " + className + "\n" +
                     "Detalle: " + message + "\n" +
                     "Agradecemos que comunique este mensaje de error al " +
                     "autor del programa\n" +
                     "para detallar mejor el posible motivo de este error " +
                     "en próximas versiones.";
-                message = errorMessage;
         }
 
         JOptionPane.showMessageDialog(null, message, "Error al firmar",
