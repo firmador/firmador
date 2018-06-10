@@ -214,6 +214,8 @@ public class GUISwing implements GUIInterface {
                         "utilizar porque está bloqueado.\n" +
                         "Contacte con su proveedor para desbloquearlo.";
                     break;
+                default:
+                    break;
                 }
             default:
                 message = "Error: " + className + "\n" +
@@ -222,6 +224,7 @@ public class GUISwing implements GUIInterface {
                     "autor del programa\n" +
                     "para detallar mejor el posible motivo de este error " +
                     "en próximas versiones.";
+                break;
         }
 
         JOptionPane.showMessageDialog(null, message, "Error al firmar",
