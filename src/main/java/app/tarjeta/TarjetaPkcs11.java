@@ -6,6 +6,7 @@ import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -121,7 +122,11 @@ public class TarjetaPkcs11 {
             Principal subjectDN = cert.getSubjectDN();
             Map<String, String> params = Splitter.on(", ")
                 .withKeyValueSeparator("=").split(subjectDN.getName());
-            dev = params.get("GIVENNAME") + " " + params.get("SURNAME");
+            dev = params.get("GIVENNAME") + " " + params.get("SURNAME")+" (";
+            
+            SimpleDateFormat dtformat = new SimpleDateFormat("dd/MM/yyyy");
+            
+            dev+=" Vence: "+dtformat.format(cert.getNotBefore())+ " )";
         } catch (CertificateException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
