@@ -1,5 +1,3 @@
-![Firmador](https://gitlab.com/fdelapena/firmador/raw/master/firmador.svg)
-
 # Firmador
 
 Herramienta de escritorio para firmar documentos que cumplen con la [Política
