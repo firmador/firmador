@@ -1,4 +1,4 @@
-![Firmador](firmador.svg)
+![Firmador](https://gitlab.com/fdelapena/firmador/raw/master/firmador.svg)
 
 # Firmador
 
