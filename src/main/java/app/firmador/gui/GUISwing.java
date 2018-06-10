@@ -68,12 +68,12 @@ public class GUISwing implements GUIInterface {
         }
 
         loadDialog = new FileDialog(loadDialog,
-                "Seleccionar documento a firmar");
-            loadDialog.setFilenameFilter(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    return name.endsWith(".pdf") || name.endsWith(".PDF");
-                }
-            });
+            "Seleccionar documento a firmar");
+        loadDialog.setFilenameFilter(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".pdf") || name.endsWith(".PDF");
+            }
+        });
         loadDialog.setFile("*.pdf");
         loadDialog.setLocationRelativeTo(null);
         loadDialog.setVisible(true);
@@ -143,10 +143,7 @@ public class GUISwing implements GUIInterface {
         });
         int action = JOptionPane.showConfirmDialog(null, pinField,
             "Ingresar PIN", JOptionPane.OK_CANCEL_OPTION,
-            JOptionPane.QUESTION_MESSAGE, new ImageIcon(
-                new ImageIcon(GUISwing.class.getClassLoader()
-                    .getResource("firmador.png"))
-                .getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH)));
+            JOptionPane.QUESTION_MESSAGE);
         pinField.grabFocus();
         if (action != 0) {
             System.exit(0);
@@ -220,12 +217,13 @@ public class GUISwing implements GUIInterface {
                 }
                 break;
             default:
-                message = "Error: " + className + "\n" +
+                String errorMessage = "Error: " + className + "\n" +
                     "Detalle: " + message + "\n" +
                     "Agradecemos que comunique este mensaje de error al " +
                     "autor del programa\n" +
                     "para detallar mejor el posible motivo de este error " +
                     "en próximas versiones.";
+                message = errorMessage;
         }
 
         JOptionPane.showMessageDialog(null, message, "Error al firmar",
@@ -234,36 +232,30 @@ public class GUISwing implements GUIInterface {
         System.exit(0);
     }
 
-	@Override
-	public void showMessage(String message) {
+    @Override
+    public void showMessage(String message) {
         JOptionPane.showMessageDialog(null, message, "Mensaje importante",
-                JOptionPane.OK_CANCEL_OPTION);
+            JOptionPane.INFORMATION_MESSAGE);
+    }
 
-            
-		
-	}
+    @Override
+    public int getSelection(String[] options) {
+        int dev = 0;
+        String input = (String) JOptionPane.showInputDialog(null,
+            "Propietario: ", "Seleccione el dispositivo para firmar",
+            JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
-	@Override
-	public int getSelection(String[] options) {
-		int dev=0;
-		String input = (String) JOptionPane.showInputDialog(null, "Propietario: ",
-		        "Seleccione el dispositivo para firmar", JOptionPane.QUESTION_MESSAGE, null, // Use
-		                                                                        // default
-		                                                                        // icon
-		        options, // Array of choices
-		        options[0]); // Initial choice
-		
-		
-		if(input==null)  System.exit(0);
-		
-		for(int x=0; x<options.length; x++){
-			if(input.equals(options[x])){
-				dev=x;
-				x=options.length;
-			}
-		}
-		
-		return dev;
-	}
+        if (input == null) {
+            System.exit(0);
+        }
+        for (int x = 0; x < options.length; x++) {
+            if (input.equals(options[x])) {
+                dev = x;
+                x = options.length;
+            }
+        }
+
+        return dev;
+    }
 
 }

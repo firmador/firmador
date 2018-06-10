@@ -22,10 +22,10 @@ import java.io.IOException;
 import java.security.KeyStore.PasswordProtection;
 import javax.security.auth.DestroyFailedException;
 import javax.swing.ImageIcon;
-import com.apple.eawt.Application;
-import com.google.common.base.Throwables;
 import app.firmador.gui.GUIInterface;
 import app.firmador.gui.GUISelector;
+import com.apple.eawt.Application;
+import com.google.common.base.Throwables;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.FileDocument;
 
@@ -35,11 +35,10 @@ public class Firmador {
 
     public static void main(String[] args) {
         try {
-            Class.forName("com.apple.eawt.Application", false, null);
-            Application.getApplication()
-                .setDockIconImage(new ImageIcon(Firmador.class.getClassLoader()
-                    .getResource("firmador.png")).getImage());
-        } catch (ClassNotFoundException e) {
+            Application.getApplication().setDockIconImage(new ImageIcon(
+                Firmador.class.getClassLoader().getResource("firmador.png"))
+                .getImage());
+        } catch (RuntimeException e) {
             // El código es solamente para mostrar el icono en el dock en macOS
         }
         GUISelector guiselector = new GUISelector();
@@ -48,7 +47,7 @@ public class Firmador {
         gui.setArgs(args);
         String fileName = gui.getDocumentToSign();
 
-       // FirmadorXades fpdf = new FirmadorXades(gui);
+        // FirmadorXades fpdf = new FirmadorXades(gui);
         FirmadorPDF fpdf = new FirmadorPDF(gui);
         fpdf.selectSlot();
 
@@ -61,14 +60,15 @@ public class Firmador {
         } catch (DestroyFailedException e) {
             // TODO
         }
-        if(signedDocument!= null){
-	        fileName = gui.getPathToSave();
-	        try {
-	            signedDocument.save(fileName);
-	            gui.showMessage("Documento guardado satisfactoriamente en \n"+fileName);
-	        } catch (IOException e) {
-	            gui.showError(Throwables.getRootCause(e));
-	        }
+        if(signedDocument != null) {
+            fileName = gui.getPathToSave();
+            try {
+                signedDocument.save(fileName);
+                gui.showMessage("Documento guardado satisfactoriamente en \n" +
+                    fileName);
+            } catch (IOException e) {
+                gui.showError(Throwables.getRootCause(e));
+            }
         }
     }
 }
