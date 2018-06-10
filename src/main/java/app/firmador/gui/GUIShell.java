@@ -31,9 +31,6 @@ import java.util.List;
 
 public class GUIShell implements GUIInterface {
 
-    private String documenttosign = null;
-    private String documenttosave = null;
-
     public void setArgs(String[] args) {
         List<String> arguments = new ArrayList<String>();
         for (String params : args) {
@@ -42,11 +39,11 @@ public class GUIShell implements GUIInterface {
             }
         }
         if (arguments.size() > 1) {
-            documenttosign = Paths.get(arguments.get(0)).toAbsolutePath()
+            Paths.get(arguments.get(0)).toAbsolutePath()
                 .toString();
         }
         if (arguments.size() > 2) {
-            documenttosave = Paths.get(arguments.get(1)).toAbsolutePath()
+            Paths.get(arguments.get(1)).toAbsolutePath()
                 .toString();
         }
     }

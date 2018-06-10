@@ -16,13 +16,10 @@ import sun.security.pkcs11.wrapper.CK_ATTRIBUTE;
 import sun.security.pkcs11.wrapper.PKCS11;
 import sun.security.pkcs11.wrapper.PKCS11Exception;
 
+@SuppressWarnings("restriction")
 public class TarjetaPkcs11 {
 
     private PKCS11 pkcs11 = null;
-
-    public void get_id_certificados() {
-        // FIXME
-    }
 
     public PKCS11 getPkcs11Manager(String rutaLibreriaSmartcard)
         throws IOException, PKCS11Exception {
@@ -75,7 +72,6 @@ public class TarjetaPkcs11 {
 
     private byte[] get_pkcs11_certificate_attr(long session, long oHandle,
         PKCS11 pkcs11) throws PKCS11Exception {
-        byte[] bytes = null;
         CK_ATTRIBUTE[] atributos = {
             new CK_ATTRIBUTE(258L)
         };

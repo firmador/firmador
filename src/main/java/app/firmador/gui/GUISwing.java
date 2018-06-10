@@ -20,9 +20,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package app.firmador.gui;
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.FileDialog;
-import java.awt.Image;
 import java.awt.Window;
 import java.awt.event.HierarchyListener;
 import java.awt.event.HierarchyEvent;
@@ -34,7 +32,6 @@ import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
@@ -43,7 +40,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class GUISwing implements GUIInterface {
 
-    private static Dialog pinDialog;
     private static FileDialog loadDialog;
     private String documenttosign = null;
     private String documenttosave = null;
@@ -233,13 +229,11 @@ public class GUISwing implements GUIInterface {
         System.exit(0);
     }
 
-    @Override
     public void showMessage(String message) {
         JOptionPane.showMessageDialog(null, message, "Mensaje importante",
             JOptionPane.INFORMATION_MESSAGE);
     }
 
-    @Override
     public int getSelection(String[] options) {
         int dev = 0;
         String input = (String) JOptionPane.showInputDialog(null,
