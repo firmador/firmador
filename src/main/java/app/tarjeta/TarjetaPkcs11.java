@@ -123,10 +123,10 @@ public class TarjetaPkcs11 {
             Map<String, String> params = Splitter.on(", ")
                 .withKeyValueSeparator("=").split(subjectDN.getName());
             dev = params.get("GIVENNAME") + " " + params.get("SURNAME")+" (";
-            
+
             SimpleDateFormat dtformat = new SimpleDateFormat("dd/MM/yyyy");
-            
-            dev+=" Vence: "+dtformat.format(cert.getNotBefore())+ " )";
+
+            dev += "Vence: " + dtformat.format(cert.getNotAfter()) + ")";
         } catch (CertificateException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
