@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018 Francisco de la Peña Fernández.
+Copyright (C) 2018 Firmador authors.
 
 This file is part of Firmador.
 

@@ -18,7 +18,7 @@ los siguientes artículos para
 
 ## Descarga
 
-- [Descargar firmador](https://fran.cr/descargas/firmador.jar)
+- [Descargar firmador](https://firmador.app/firmador.jar)
   para Windows, GNU/Linux y macOS (13 MB).
 
 
@@ -64,7 +64,10 @@ Para ejecutar el JAR:
 
 ## Licencia
 
-Copyright © 2018 Francisco de la Peña Fernández.
+Copyright © 2018 de los autores de Firmador.
+
+La lista de autores de Firmador se encuentra en el fichero
+[AUTHORS.md](AUTHORS.md).
 
 Este programa es software libre, distribuido bajo la licencia GPL versión 3 o
 en sus versiones posteriores.
