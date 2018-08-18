@@ -236,6 +236,15 @@ public class GUISwing implements GUIInterface {
 
     public int getSelection(String[] options) {
         int dev = 0;
+
+        if (options == null || options.length == 0) {
+            String message = "No se ha encontrado ninguna tarjeta " +
+                "conectada.\nAsegúrese de que la tarjeta y el lector están " +
+                "conectados de forma correcta.";
+            JOptionPane.showMessageDialog(null, message, "Error al firmar",
+            JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+        }
         String input = (String) JOptionPane.showInputDialog(null,
             "Propietario: ", "Seleccione el dispositivo para firmar",
             JOptionPane.QUESTION_MESSAGE, null, options, options[0]);

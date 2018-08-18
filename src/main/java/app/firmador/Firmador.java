@@ -32,14 +32,13 @@ import eu.europa.esig.dss.FileDocument;
 
 public class Firmador {
 
-
     public static void main(String[] args) {
         try {
             Application.getApplication().setDockIconImage(new ImageIcon(
                 Firmador.class.getClassLoader().getResource("firmador.png"))
                 .getImage());
         } catch (RuntimeException e) {
-            // El código es solamente para mostrar el icono en el dock en macOS
+            // macOS dock icon support specific code.
         }
         GUISelector guiselector = new GUISelector();
 
@@ -52,14 +51,13 @@ public class Firmador {
         fpdf.selectSlot();
 
         PasswordProtection pin = gui.getPin();
-        
+
         DSSDocument toSignDocument = new FileDocument(fileName);
         DSSDocument signedDocument = fpdf.sign(toSignDocument, pin);
         try {
             pin.destroy();
-        } catch (DestroyFailedException e) {
-            // TODO
-        }
+        } catch (DestroyFailedException e) {}
+
         if(signedDocument != null) {
             fileName = gui.getPathToSave();
             try {
@@ -71,4 +69,5 @@ public class Firmador {
             }
         }
     }
+
 }
