@@ -56,12 +56,11 @@ public class CRSigner {
     protected DSSPrivateKeyEntry
         getPrivateKey(SignatureTokenConnection signingToken) {
         /*
-         * Usa la primera llave cuyo uso es no repudio, asumiendo que no hay
-         * más llaves con el mismo propósito en el mismo token.
-         * Esto debería funcionar bien con tarjetas de Firma Digital no
-         * manipuladas pero en el futuro sería conveniente comprobar que
-         * no hay ningún caso extremo y verificar que verdaderamente se trata
-         * de la única y permitir elegir cuál usar. FIXME.
+         * Uses first non-repudiation key available assuming there are no more,
+         * keys with the same purpose with the same token.
+         * This should work fine with unmodified Firma Digital smart cards
+         * but it would be convenient checking there are no corner cases and
+         * verify there are no more keys available to allow selecting them.
          */
         DSSPrivateKeyEntry privateKey = null;
         try {
@@ -70,6 +69,7 @@ public class CRSigner {
                 if (candidatePrivateKey.getCertificate().checkKeyUsage(
                     KeyUsageBit.nonRepudiation)) {
                         privateKey = candidatePrivateKey;
+                        break;
                 }
             }
         } catch (Exception|Error e) {
@@ -85,14 +85,10 @@ public class CRSigner {
     public SignatureTokenConnection
         get_signatureConnection(PasswordProtection pin) {
         /*
-         * ATENCIÓN: Se asume que solamente hay un token conectado.
-         * Si no es el caso, podría intentar usar el PIN de otro dispositivo
-         * y si no se verifica podría bloquearse por reintentos fallidos.
-         * En el futuro deberían recorrerse todos los certificados encontrados.
-         * FIXME.
-         * Más en el futuro debería soportar otros mecanismos de acceso a
-         * PKCS#11 específicos de cada sistema operativo, en busca de otros
-         * fabricantes que no sean Athena/NXP (para sello electrónico).
+         * There should be other ways to find alternative PKCS#11 module
+         * configuration settings in the future, operating system specific,
+         * to support other hardware vendors apart of Athena/NXP (there are
+         * some homologated devices already for Sello Electrónico).
          */
         SignatureTokenConnection signingToken = null;
         if (this.selectedSlot != -1) {
@@ -143,7 +139,6 @@ public class CRSigner {
     private int getSelectedSlot(TarjetaPkcs11 tarjeta, long[] slots) {
         String[] propietarios = new String[slots.length];
         for (int x = 0; x < slots.length; x++) {
-            // FIXME: podria tener null y provocar null pointers exception
             propietarios[x] = tarjeta.getPropietario(slots[x]);
         }
 
