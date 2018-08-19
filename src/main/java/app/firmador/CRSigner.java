@@ -174,16 +174,19 @@ public class CRSigner {
             DSSUtils.loadPotentialIssuerCertificates(
                 parameters.getSigningCertificate(),
                 commonCertificateVerifier.getDataLoader()));
-        certificateChain.add(cert.get(0));
+        if (cert != null && !cert.isEmpty()) {
+            // FIXME add certificates for B level in app resources when offline
+            certificateChain.add(cert.get(0));
 
-        do {
-            cert = new ArrayList<CertificateToken>(
-                DSSUtils.loadPotentialIssuerCertificates(cert.get(0),
-                    commonCertificateVerifier.getDataLoader()));
-            if (!cert.isEmpty()) {
-                certificateChain.add(cert.get(0));
-            }
-        } while (!cert.isEmpty());
+            do {
+                cert = new ArrayList<CertificateToken>(
+                    DSSUtils.loadPotentialIssuerCertificates(cert.get(0),
+                        commonCertificateVerifier.getDataLoader()));
+                if (!cert.isEmpty()) {
+                    certificateChain.add(cert.get(0));
+                }
+            } while (!cert.isEmpty());
+        }
 
         return certificateChain;
     }
