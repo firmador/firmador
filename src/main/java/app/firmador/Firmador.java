@@ -18,17 +18,18 @@ You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package app.firmador;
+
 import java.io.IOException;
 import java.security.KeyStore.PasswordProtection;
 import javax.security.auth.DestroyFailedException;
 import javax.swing.ImageIcon;
+
 import app.firmador.gui.GUIInterface;
 import app.firmador.gui.GUISelector;
 import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.FileDocument;
-
 
 public class Firmador {
 
@@ -46,14 +47,14 @@ public class Firmador {
         gui.setArgs(args);
         String fileName = gui.getDocumentToSign();
 
-        // FirmadorXades fpdf = new FirmadorXades(gui);
-        FirmadorPDF fpdf = new FirmadorPDF(gui);
-        fpdf.selectSlot();
+        // FirmadorXAdES firmador = new FirmadorXAdES(gui);
+        FirmadorPAdES firmador = new FirmadorPAdES(gui);
+        firmador.selectSlot();
 
         PasswordProtection pin = gui.getPin();
 
         DSSDocument toSignDocument = new FileDocument(fileName);
-        DSSDocument signedDocument = fpdf.sign(toSignDocument, pin);
+        DSSDocument signedDocument = firmador.sign(toSignDocument, pin);
         try {
             pin.destroy();
         } catch (DestroyFailedException e) {}

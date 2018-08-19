@@ -48,9 +48,9 @@ import eu.europa.esig.dss.xades.DSSTransform;
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
 import eu.europa.esig.dss.xades.signature.XAdESService;
 
-public class FirmadorXades extends CRSigner{
+public class FirmadorXAdES extends CRSigner{
 
-    public FirmadorXades(GUIInterface gui) {
+    public FirmadorXAdES(GUIInterface gui) {
         super(gui);
     }
 
