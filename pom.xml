@@ -6,7 +6,7 @@
   <packaging>jar</packaging>
   <version>1.1.0</version>
   <name>firmador</name>
-  <url>https://gitlab.com/firmador/firmador</url>
+  <url>https://firmador.app</url>
   <properties>
     <encoding>UTF-8</encoding>
     <maven.compiler.source>1.7</maven.compiler.source>
