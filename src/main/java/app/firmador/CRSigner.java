@@ -188,17 +188,14 @@ public class CRSigner {
         } else {
             // Failed to fetch from AIA (e.g. offline), fallback to resources
             certificateChain.add(DSSUtils.loadCertificate(
-                CRSigner.class.getClassLoader()
-                .getResourceAsStream("CA SINPE - PERSONA FISICA v2.cer")
-                ));
+                CRSigner.class.getClassLoader().getResourceAsStream(
+                    "CA SINPE - PERSONA FISICA v2.cer")));
             certificateChain.add(DSSUtils.loadCertificate(
-                CRSigner.class.getClassLoader()
-                .getResourceAsStream("CA POLITICA PERSONA FISICA - COSTA RICA v2.crt")
-                ));
+                CRSigner.class.getClassLoader().getResourceAsStream(
+                    "CA POLITICA PERSONA FISICA - COSTA RICA v2.crt")));
             certificateChain.add(DSSUtils.loadCertificate(
-                CRSigner.class.getClassLoader()
-                .getResourceAsStream("CA RAIZ NACIONAL - COSTA RICA v2.crt")
-                ));
+                CRSigner.class.getClassLoader().getResourceAsStream(
+                    "CA RAIZ NACIONAL - COSTA RICA v2.crt")));
         }
 
         return certificateChain;
