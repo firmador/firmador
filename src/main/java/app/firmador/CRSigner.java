@@ -23,11 +23,10 @@ import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.base.Throwables;
-
 import app.firmador.gui.GUIInterface;
 import app.firmador.tarjeta.TarjetaPkcs11;
 import app.firmador.tarjeta.Utils;
+import com.google.common.base.Throwables;
 import eu.europa.esig.dss.AbstractSignatureParameters;
 import eu.europa.esig.dss.DSSUtils;
 import eu.europa.esig.dss.client.crl.OnlineCRLSource;
@@ -40,7 +39,6 @@ import eu.europa.esig.dss.tsl.KeyUsageBit;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 import eu.europa.esig.dss.x509.CertificateToken;
-
 
 public class CRSigner {
 

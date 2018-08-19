@@ -38,6 +38,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import com.google.common.base.Throwables;
+
 public class GUISwing implements GUIInterface {
 
     private static FileDialog loadDialog;
@@ -53,14 +55,8 @@ public class GUISwing implements GUIInterface {
         try {
             UIManager.setLookAndFeel(
                 UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException e) {
-            // TODO
-        } catch (InstantiationException e) {
-            // TODO
-        } catch (IllegalAccessException e) {
-            // TODO
-        } catch (UnsupportedLookAndFeelException e) {
-            // TODO
+        } catch (Exception e) {
+            showError(Throwables.getRootCause(e));
         }
 
         loadDialog = new FileDialog(loadDialog,

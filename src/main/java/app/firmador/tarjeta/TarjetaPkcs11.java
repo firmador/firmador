@@ -29,12 +29,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.base.Splitter;
-
 import sun.security.pkcs11.wrapper.CK_ATTRIBUTE;
 import sun.security.pkcs11.wrapper.PKCS11;
 import sun.security.pkcs11.wrapper.PKCS11Exception;
+
+import com.google.common.base.Splitter;
 
 @SuppressWarnings("restriction")
 public class TarjetaPkcs11 {
@@ -147,13 +146,10 @@ public class TarjetaPkcs11 {
 
             dev += "Vence: " + dtformat.format(cert.getNotAfter()) + ")";
         } catch (CertificateException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (PKCS11Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

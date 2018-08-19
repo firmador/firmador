@@ -23,12 +23,10 @@ import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 
-import com.google.common.base.Throwables;
-
 import app.firmador.gui.GUIInterface;
+import com.google.common.base.Throwables;
 import eu.europa.esig.dss.BLevelParameters;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.DigestAlgorithm;
