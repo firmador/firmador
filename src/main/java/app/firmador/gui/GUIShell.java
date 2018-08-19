@@ -98,29 +98,31 @@ public class GUIShell implements GUIInterface {
     @Override
     public void showMessage(String message) {
          System.out.println(message);
-        
     }
 
     @Override
     public int getSelection(String[] options) {
-        int dev=-1;
-        String readed;
-        while(dev==-1){
-            for(int x=0; x<options.length; x++){
-                System.out.println(x+") "+options[x]);
+        int dev = -1;
+        String selected;
+
+        while(dev == -1) {
+            for(int x = 0; x < options.length; x++) {
+                System.out.println(x + ") " + options[x]);
             }
-            readed = readFromInput("Opción a seleccionar: ");
-            try{
-                dev=Integer.parseInt(readed);
-                if(dev>=options.length){
-                    System.err.println("Opción invalida debe ser menor a "+options.length);
-                    dev=-1;
+            selected = readFromInput("Opción a seleccionar: ");
+            try {
+                dev = Integer.parseInt(selected);
+                if(dev >= options.length){
+                    System.err.println("Opción invalida debe ser menor a "
+                        + options.length);
+                    dev = -1;
                 }
-            }catch (Exception e) {
-                dev=-1;
+            } catch (Exception e) {
+                dev = -1;
                 System.err.println("Debe ingresar un número");
             }
         }
+
         return 0;
     }
 
