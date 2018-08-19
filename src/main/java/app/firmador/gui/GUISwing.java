@@ -216,8 +216,8 @@ public class GUISwing implements GUIInterface {
             default:
                 message = "Error: " + className + "\n" +
                     "Detalle: " + message + "\n" +
-                    "Agradecemos que comunique este mensaje de error al " +
-                    "autor del programa\n" +
+                    "Agradecemos que comunique este mensaje de error a los " +
+                    "autores del programa\n" +
                     "para detallar mejor el posible motivo de este error " +
                     "en próximas versiones.";
                 break;
