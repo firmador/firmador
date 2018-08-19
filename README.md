@@ -19,7 +19,7 @@ los siguientes artículos para
 ## Descarga
 
 - [Descargar firmador](https://firmador.app/firmador.jar)
-  para Windows, GNU/Linux y macOS (13 MB).
+  para Windows, GNU/Linux y macOS (18 MB).
 
 
 ## Capturas de pantalla

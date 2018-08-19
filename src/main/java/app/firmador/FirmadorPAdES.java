@@ -39,9 +39,9 @@ import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 import eu.europa.esig.dss.x509.CertificateToken;
 
-public class FirmadorPDF extends CRSigner {
+public class FirmadorPAdES extends CRSigner {
 
-    public FirmadorPDF(GUIInterface gui) {
+    public FirmadorPAdES(GUIInterface gui) {
         super(gui);
     }
 

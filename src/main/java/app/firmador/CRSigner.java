@@ -26,8 +26,8 @@ import java.util.List;
 import com.google.common.base.Throwables;
 
 import app.firmador.gui.GUIInterface;
-import app.tarjeta.TarjetaPkcs11;
-import app.tarjeta.Utils;
+import app.firmador.tarjeta.TarjetaPkcs11;
+import app.firmador.tarjeta.Utils;
 import eu.europa.esig.dss.AbstractSignatureParameters;
 import eu.europa.esig.dss.DSSUtils;
 import eu.europa.esig.dss.client.crl.OnlineCRLSource;
