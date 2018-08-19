@@ -35,19 +35,18 @@ public class GUIArgs implements GUIInterface {
 
     public void setArgs(String[] args) {
         List<String> arguments = new ArrayList<String>();
-        slot=0;
+        slot = 0;
         for (String params : args) {
             if (!params.startsWith("-")) {
                 arguments.add(params);
-            }else if(params.startsWith("-slot")){
-            	slot=Integer.parseInt(params.replace("-slot", ""));
+            } else if (params.startsWith("-slot")) {
+                slot = Integer.parseInt(params.replace("-slot", ""));
             }
         }
         documenttosign = Paths.get(arguments.get(0)).toAbsolutePath()
             .toString();
         documenttosave = Paths.get(arguments.get(1)).toAbsolutePath()
             .toString();
-        
     }
 
     public void showError(Throwable error) {
@@ -79,16 +78,14 @@ public class GUIArgs implements GUIInterface {
         return new PasswordProtection(pintext.toCharArray());
     }
 
-	@Override
-	public void showMessage(String message) {
-		 System.out.println(message);
-		
-	}
+    @Override
+    public void showMessage(String message) {
+         System.out.println(message);
+    }
 
-	@Override
-	public int getSelection(String[] options) {
-		// TODO Auto-generated method stub
-		return slot;
-	}
+    @Override
+    public int getSelection(String[] options) {
+        return slot;
+    }
 
 }

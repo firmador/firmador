@@ -41,7 +41,7 @@ import eu.europa.esig.dss.x509.CertificateToken;
 
 public class FirmadorPDF extends CRSigner {
 
-     public FirmadorPDF(GUIInterface gui) {
+    public FirmadorPDF(GUIInterface gui) {
         super(gui);
     }
 
