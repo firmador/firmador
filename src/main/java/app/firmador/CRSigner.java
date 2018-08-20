@@ -147,13 +147,15 @@ public class CRSigner {
         CommonCertificateVerifier commonCertificateVerifier =
                 new CommonCertificateVerifier();
 
-        // CRLs
+        // AIA
         CommonsDataLoader commonsHttpDataLoader = new CommonsDataLoader();
+
+        // CRLs
         OnlineCRLSource onlineCRLSource = new OnlineCRLSource();
         onlineCRLSource.setDataLoader(commonsHttpDataLoader);
+        commonCertificateVerifier.setCrlSource(onlineCRLSource);
 
         // OSCP
-        commonCertificateVerifier.setCrlSource(onlineCRLSource);
         OnlineOCSPSource onlineOCSPSource = new OnlineOCSPSource();
         onlineOCSPSource.setDataLoader(commonsHttpDataLoader);
         commonCertificateVerifier.setOcspSource(onlineOCSPSource);
