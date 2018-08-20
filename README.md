@@ -19,7 +19,7 @@ los siguientes artículos para
 ## Descarga
 
 - [Descargar firmador](https://firmador.app/firmador.jar)
-  para Windows, GNU/Linux y macOS (18 MB).
+  para Windows, GNU/Linux y macOS.
 
 
 ## Capturas de pantalla
@@ -72,4 +72,4 @@ La lista de autores de Firmador se encuentra en el fichero
 Este programa es software libre, distribuido bajo la licencia GPL versión 3 o
 en sus versiones posteriores.
 
-El texto de la licencia está disponible en el fichero COPYING.
+El texto de la licencia está disponible en el fichero [COPYING](COPYING).
