@@ -71,9 +71,8 @@ public class FirmadorPAdES extends CRSigner {
         ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
             parameters);
 
-        DigestAlgorithm digestAlgorithm = parameters.getDigestAlgorithm();
         SignatureValue signatureValue = signingToken.sign(dataToSign,
-            digestAlgorithm, privateKey);
+            parameters.getDigestAlgorithm(), privateKey);
 
         DSSDocument signedDocument = null;
         try {
