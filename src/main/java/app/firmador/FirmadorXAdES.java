@@ -29,8 +29,8 @@ import app.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.BLevelParameters;
 import eu.europa.esig.dss.DSSDocument;
+import eu.europa.esig.dss.DSSException;
 import eu.europa.esig.dss.DigestAlgorithm;
-import eu.europa.esig.dss.EncryptionAlgorithm;
 import eu.europa.esig.dss.SignatureLevel;
 import eu.europa.esig.dss.SignaturePackaging;
 import eu.europa.esig.dss.SignatureValue;
@@ -40,52 +40,53 @@ import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 import eu.europa.esig.dss.x509.CertificateToken;
-import eu.europa.esig.dss.x509.tsp.TSPSource;
 import eu.europa.esig.dss.xades.DSSReference;
 import eu.europa.esig.dss.xades.DSSTransform;
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
 import eu.europa.esig.dss.xades.signature.XAdESService;
 
-public class FirmadorXAdES extends CRSigner{
+public class FirmadorXAdES extends CRSigner {
 
     public FirmadorXAdES(GUIInterface gui) {
         super(gui);
     }
 
-    public DSSDocument _sign(DSSDocument toSignDocument,
+    private DSSDocument _sign(DSSDocument toSignDocument,
         PasswordProtection pin) {
 
         CertificateVerifier commonCertificateVerifier =
             this.getCertificateVerifier();
-        XAdESService xadesService = new XAdESService(
-            (CertificateVerifier)commonCertificateVerifier);
+        SignatureTokenConnection signingToken = get_signatureConnection(pin);
+        DSSPrivateKeyEntry privateKey = getPrivateKey(signingToken);
+        XAdESSignatureParameters parameters = new XAdESSignatureParameters();
 
-        // TSA
-        TSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
-        xadesService.setTspSource((TSPSource)onlineTSPSource);
+        parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
+        parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
+        parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
+        parameters.setSigningCertificate(privateKey.getCertificate());
+
+        List<CertificateToken> certificateChain = getCertificateChain(
+            commonCertificateVerifier, parameters);
+        parameters.setCertificateChain(certificateChain);
+
+        XAdESService service = new XAdESService(commonCertificateVerifier);
+
+        OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
+        service.setTspSource(onlineTSPSource);
+
+        ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
+            parameters);
+
+        SignatureValue signatureValue = signingToken.sign(dataToSign,
+            parameters.getDigestAlgorithm(), privateKey);
 
         BLevelParameters bLevelParams = new BLevelParameters();
         bLevelParams.setSigningDate(new Date());
 
-        XAdESSignatureParameters parameters = new XAdESSignatureParameters();
-        parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
-        parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
-        parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
         parameters.setBLevelParams(bLevelParams);
 
-        SignatureTokenConnection signingToken = get_signatureConnection(pin);
-        DSSPrivateKeyEntry signerkey = getPrivateKey(signingToken);
-        parameters.setSigningCertificate(signerkey.getCertificate());
-        parameters.setEncryptionAlgorithm(EncryptionAlgorithm.RSA);
-
-        final List<DSSReference> references = new ArrayList<DSSReference>();
-        DSSReference dssReference = new DSSReference();
-        dssReference.setId("xml_ref_id");
-        dssReference.setUri("");
-        dssReference.setContents(toSignDocument);
-        dssReference.setDigestMethodAlgorithm(parameters.getDigestAlgorithm());
-
-        final List<DSSTransform> transforms = new ArrayList<DSSTransform>();
+        final ArrayList<DSSTransform> transforms =
+            new ArrayList<DSSTransform>();
 
         DSSTransform dssTransform = new DSSTransform();
         dssTransform.setAlgorithm(CanonicalizationMethod.ENVELOPED);
@@ -95,24 +96,33 @@ public class FirmadorXAdES extends CRSigner{
         dssTransform.setAlgorithm(CanonicalizationMethod.EXCLUSIVE);
         transforms.add(dssTransform);
 
+        final ArrayList<DSSReference> references =
+            new ArrayList<DSSReference>();
+        DSSReference dssReference = new DSSReference();
+        dssReference.setId("xml_ref_id");
+        dssReference.setUri("");
+        dssReference.setContents(toSignDocument);
+        dssReference.setDigestMethodAlgorithm(parameters.getDigestAlgorithm());
         dssReference.setTransforms(transforms);
         references.add(dssReference);
 
         parameters.setReferences(references);
 
-        List<CertificateToken> certificateChain = getCertificateChain(
-                commonCertificateVerifier, parameters);
-        parameters.setCertificateChain(certificateChain);
-
-        ToBeSigned dataToSign = xadesService.getDataToSign(toSignDocument,
-            parameters);
-
-        DigestAlgorithm digestAlgorithm = parameters.getDigestAlgorithm();
-        SignatureValue signatureValue = signingToken.sign(dataToSign,
-            digestAlgorithm, signerkey);
-
-        DSSDocument signedDocument = xadesService.signDocument(toSignDocument,
-            parameters, signatureValue);
+        DSSDocument signedDocument = null;
+        try {
+            signedDocument = service.signDocument(toSignDocument,
+                parameters, signatureValue);
+        } catch (DSSException e) {
+            String className = Throwables.getRootCause(e).getClass().getName();
+            // Thrown when TSA is not available, retry with a lower profile
+            if (className =="java.net.UnknownHostException") {
+                parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
+                signedDocument = service.signDocument(toSignDocument,
+                    parameters, signatureValue);
+            } else {
+                gui.showError(Throwables.getRootCause(e));
+            }
+        }
 
         return signedDocument;
     }
