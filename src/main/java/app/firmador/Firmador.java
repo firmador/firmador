@@ -47,26 +47,28 @@ public class Firmador {
         gui.setArgs(args);
         String fileName = gui.getDocumentToSign();
 
-        // FirmadorXAdES firmador = new FirmadorXAdES(gui);
-        FirmadorPAdES firmador = new FirmadorPAdES(gui);
-        firmador.selectSlot();
+        if (fileName != null) {
+            // FirmadorXAdES firmador = new FirmadorXAdES(gui);
+            FirmadorPAdES firmador = new FirmadorPAdES(gui);
+            firmador.selectSlot();
 
-        PasswordProtection pin = gui.getPin();
-
-        DSSDocument toSignDocument = new FileDocument(fileName);
-        DSSDocument signedDocument = firmador.sign(toSignDocument, pin);
-        try {
-            pin.destroy();
-        } catch (DestroyFailedException e) {}
-
-        if(signedDocument != null) {
-            fileName = gui.getPathToSave();
+            PasswordProtection pin = gui.getPin();
+            DSSDocument toSignDocument = new FileDocument(fileName);
+            DSSDocument signedDocument = firmador.sign(toSignDocument, pin);
             try {
-                signedDocument.save(fileName);
-                gui.showMessage("Documento guardado satisfactoriamente en \n" +
-                    fileName);
-            } catch (IOException e) {
-                gui.showError(Throwables.getRootCause(e));
+                pin.destroy();
+            } catch (DestroyFailedException e) {}
+
+            if (signedDocument != null) {
+                fileName = gui.getPathToSave();
+                try {
+                    signedDocument.save(fileName);
+                    gui.showMessage(
+                        "Documento guardado satisfactoriamente en \n" +
+                        fileName);
+                } catch (IOException e) {
+                    gui.showError(Throwables.getRootCause(e));
+                }
             }
         }
     }
