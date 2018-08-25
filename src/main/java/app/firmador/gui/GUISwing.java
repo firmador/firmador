@@ -24,6 +24,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Window;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.WindowAdapter;
@@ -56,11 +58,6 @@ public class GUISwing implements GUIInterface {
     private String documenttosave = null;
 
     public String getDocumentToSign() {
-        if (documenttosign != null) {
-            return documenttosign;
-        }
-        String fileName = null;
-
         try {
             UIManager.setLookAndFeel(
                 UIManager.getSystemLookAndFeelClassName());
@@ -72,6 +69,28 @@ public class GUISwing implements GUIInterface {
         JTextField fileField = new JTextField("(Vacío)");
         fileField.setEditable(false);
         JButton fileButton = new JButton("Elegir...");
+        fileButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String fileName = null;
+
+                loadDialog = new FileDialog(loadDialog,
+                    "Seleccionar documento a firmar");
+                loadDialog.setFilenameFilter(new FilenameFilter() {
+                    public boolean accept(File dir, String name) {
+                        return name.endsWith(".pdf") || name.endsWith(".PDF");
+                    }
+                });
+                loadDialog.setFile("*.pdf");
+                loadDialog.setLocationRelativeTo(null);
+                loadDialog.setVisible(true);
+                loadDialog.dispose();
+                if (loadDialog.getFile() != null) {
+                    fileName = loadDialog.getDirectory() + loadDialog.getFile();
+                }
+                documenttosign = fileName;
+            }
+        });
+
         JPanel filePanel = new JPanel();
         filePanel.setBorder(new EmptyBorder(10, 10, 0, 10));
         filePanel.setLayout(new BorderLayout());
@@ -93,24 +112,7 @@ public class GUISwing implements GUIInterface {
         frame.add(tabbedPane, BorderLayout.CENTER);
         frame.setVisible(true);
 
-        loadDialog = new FileDialog(loadDialog,
-            "Seleccionar documento a firmar");
-        loadDialog.setFilenameFilter(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".pdf") || name.endsWith(".PDF");
-            }
-        });
-        loadDialog.setFile("*.pdf");
-        loadDialog.setLocationRelativeTo(null);
-        loadDialog.setVisible(true);
-        loadDialog.dispose();
-        if (loadDialog.getFile() == null) {
-            System.exit(0);
-        } else {
-            fileName = loadDialog.getDirectory() + loadDialog.getFile();
-        }
-
-        return fileName;
+        return documenttosign;
     }
 
     public String getPathToSave() {
@@ -140,9 +142,7 @@ public class GUISwing implements GUIInterface {
         saveDialog.setLocationRelativeTo(null);
         saveDialog.setVisible(true);
         saveDialog.dispose();
-        if (saveDialog.getFile() == null) {
-            System.exit(0);
-        } else {
+        if (saveDialog.getFile() != null) {
             fileName = saveDialog.getDirectory() + saveDialog.getFile();
         }
 
@@ -171,11 +171,11 @@ public class GUISwing implements GUIInterface {
             "Ingresar PIN", JOptionPane.OK_CANCEL_OPTION,
             JOptionPane.QUESTION_MESSAGE);
         pinField.grabFocus();
-        if (action != 0) {
-            System.exit(0);
+        if (action == 0) {
+            return new PasswordProtection(pinField.getPassword());
+        } else {
+            return new PasswordProtection(null);
         }
-
-        return new PasswordProtection(pinField.getPassword());
     }
 
     public void setArgs(String[] args) {
