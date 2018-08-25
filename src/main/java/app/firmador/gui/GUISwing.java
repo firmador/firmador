@@ -19,7 +19,9 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package app.firmador.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Window;
 import java.awt.event.HierarchyListener;
@@ -32,11 +34,18 @@ import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.EmptyBorder;
 
 import com.google.common.base.Throwables;
 
@@ -58,6 +67,31 @@ public class GUISwing implements GUIInterface {
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
         }
+
+        JLabel fileLabel = new JLabel("Documento: ");
+        JTextField fileField = new JTextField("(Vacío)");
+        fileField.setEditable(false);
+        JButton fileButton = new JButton("Elegir...");
+        JPanel filePanel = new JPanel();
+        filePanel.setBorder(new EmptyBorder(10, 10, 0, 10));
+        filePanel.setLayout(new BorderLayout());
+        filePanel.add(fileLabel, BorderLayout.LINE_START);
+        filePanel.add(fileField, BorderLayout.CENTER);
+        filePanel.add(fileButton, BorderLayout.LINE_END);
+        JPanel signPanel = new JPanel();
+        JPanel validatePanel = new JPanel();
+        JTabbedPane tabbedPane = new JTabbedPane();
+        signPanel.setOpaque(false);
+        validatePanel.setOpaque(false);
+        tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+        tabbedPane.addTab("Firmar", signPanel);
+        tabbedPane.addTab("Validar", validatePanel);
+        JFrame frame = new JFrame("Firmador");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setMinimumSize(new Dimension(360, 480));
+        frame.add(filePanel, BorderLayout.PAGE_START);
+        frame.add(tabbedPane, BorderLayout.CENTER);
+        frame.setVisible(true);
 
         loadDialog = new FileDialog(loadDialog,
             "Seleccionar documento a firmar");
