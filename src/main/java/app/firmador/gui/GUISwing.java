@@ -66,13 +66,11 @@ public class GUISwing implements GUIInterface {
         }
 
         JLabel fileLabel = new JLabel("Documento: ");
-        JTextField fileField = new JTextField("(Vacío)");
+        final JTextField fileField = new JTextField("(Vacío)");
         fileField.setEditable(false);
         JButton fileButton = new JButton("Elegir...");
         fileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String fileName = null;
-
                 loadDialog = new FileDialog(loadDialog,
                     "Seleccionar documento a firmar");
                 loadDialog.setFilenameFilter(new FilenameFilter() {
@@ -85,9 +83,10 @@ public class GUISwing implements GUIInterface {
                 loadDialog.setVisible(true);
                 loadDialog.dispose();
                 if (loadDialog.getFile() != null) {
-                    fileName = loadDialog.getDirectory() + loadDialog.getFile();
+                    fileField.setText(loadDialog.getDirectory()
+                        + loadDialog.getFile());
                 }
-                documenttosign = fileName;
+                documenttosign = fileField.getText();
             }
         });
 
