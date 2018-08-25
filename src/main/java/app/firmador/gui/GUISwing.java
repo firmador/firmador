@@ -64,14 +64,14 @@ public class GUISwing implements GUIInterface {
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
         }
-
         JLabel fileLabel = new JLabel("Documento: ");
         final JTextField fileField = new JTextField("(Vacío)");
         fileField.setEditable(false);
+        final JFrame frame = new JFrame("Firmador");
         JButton fileButton = new JButton("Elegir...");
         fileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                loadDialog = new FileDialog(loadDialog,
+                loadDialog = new FileDialog(frame,
                     "Seleccionar documento a firmar");
                 loadDialog.setFilenameFilter(new FilenameFilter() {
                     public boolean accept(File dir, String name) {
@@ -104,7 +104,6 @@ public class GUISwing implements GUIInterface {
         tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
         tabbedPane.addTab("Firmar", signPanel);
         tabbedPane.addTab("Validar", validatePanel);
-        JFrame frame = new JFrame("Firmador");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(360, 480));
         frame.add(filePanel, BorderLayout.PAGE_START);
