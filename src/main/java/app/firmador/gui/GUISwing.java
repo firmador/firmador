@@ -21,6 +21,7 @@ package app.firmador.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Window;
@@ -32,6 +33,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
@@ -90,24 +92,49 @@ public class GUISwing implements GUIInterface {
             }
         });
 
-        JPanel filePanel = new JPanel();
+        JPanel filePanel = new JPanel(new BorderLayout());
         filePanel.setBorder(new EmptyBorder(10, 10, 0, 10));
-        filePanel.setLayout(new BorderLayout());
         filePanel.add(fileLabel, BorderLayout.LINE_START);
         filePanel.add(fileField, BorderLayout.CENTER);
         filePanel.add(fileButton, BorderLayout.LINE_END);
         JPanel signPanel = new JPanel();
         JPanel validatePanel = new JPanel();
+        JPanel aboutPanel = new JPanel(new BorderLayout());
         JTabbedPane tabbedPane = new JTabbedPane();
         signPanel.setOpaque(false);
         validatePanel.setOpaque(false);
+        aboutPanel.setOpaque(false);
+        JLabel descriptionLabel = new JLabel(
+            "<html><p align='center'><img src='" +
+                GUISwing.class.getClassLoader().getResource("firmador.png") +
+            "' width='128' height='128'></p>" +
+            "<p>Firmador es una herramienta para firmar documentos " +
+            "digitalmente. Los documentos firmados con esta herramienta " +
+            "cumplen con la Política de Formatos Oficiales de los " +
+            "Documentos Electrónicos Firmados Digitalmente de Costa Rica." +
+            "</p></html>");
+        JButton websiteButton = new JButton("Visitar sitio web del proyecto");
+        websiteButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (Desktop.isDesktopSupported()) {
+                    try {
+                        Desktop.getDesktop().browse(
+                            new URI("https://firmador.app"));
+                    } catch (Exception ex) {}
+                }
+            }
+        });
+        aboutPanel.add(descriptionLabel, BorderLayout.PAGE_START);
+        aboutPanel.add(websiteButton, BorderLayout.PAGE_END);
         tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
         tabbedPane.addTab("Firmar", signPanel);
         tabbedPane.addTab("Validar", validatePanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(360, 480));
+        tabbedPane.addTab("Acerca de", aboutPanel);
         frame.add(filePanel, BorderLayout.PAGE_START);
         frame.add(tabbedPane, BorderLayout.CENTER);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setMinimumSize(new Dimension(480, 480));
         frame.setVisible(true);
 
         return documenttosign;
