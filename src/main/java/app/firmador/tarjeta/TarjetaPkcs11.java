@@ -35,7 +35,6 @@ import sun.security.pkcs11.wrapper.PKCS11Exception;
 
 import com.google.common.base.Splitter;
 
-@SuppressWarnings("restriction")
 public class TarjetaPkcs11 {
 
     private PKCS11 pkcs11 = null;
@@ -72,7 +71,6 @@ public class TarjetaPkcs11 {
             attrPriv.type = 0L;
             attrPriv.pValue = Long.valueOf(2L);
 
-            //type = 258L;
             byte[] p2Value = get_pkcs11_certificate_attr(sessionHandle, i,
                 pkcs11);
 
