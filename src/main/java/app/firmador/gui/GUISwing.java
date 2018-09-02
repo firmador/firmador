@@ -24,6 +24,8 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -33,11 +35,14 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -50,6 +55,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 
 public class GUISwing implements GUIInterface {
@@ -57,8 +63,15 @@ public class GUISwing implements GUIInterface {
     private static FileDialog loadDialog;
     private String documenttosign = null;
     private String documenttosave = null;
+    private Image image = new ImageIcon(GUISwing.class.getClassLoader()
+        .getResource("firmador.png")).getImage();
 
     public String getDocumentToSign() {
+        try {
+            Application.getApplication().setDockIconImage(image);
+        } catch (RuntimeException e) {
+            // macOS dock icon support specific code.
+        }
         try {
             UIManager.setLookAndFeel(
                 UIManager.getSystemLookAndFeelClassName());
@@ -69,9 +82,21 @@ public class GUISwing implements GUIInterface {
         final JTextField fileField = new JTextField("(Vacío)");
         fileField.setEditable(false);
         final JFrame frame = new JFrame("Firmador");
+        frame.setIconImage(
+            image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
+        // Workaround application name in GNOME
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        try {
+            Field awtAppClassNameField =
+                toolkit.getClass().getDeclaredField("awtAppClassName");
+            awtAppClassNameField.setAccessible(true);
+            awtAppClassNameField.set(toolkit, "Firmador");
+        } catch (Exception e) {
+            showError(Throwables.getRootCause(e));
+        }
         JButton fileButton = new JButton("Elegir...");
         fileButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent event) {
                 loadDialog = new FileDialog(frame,
                     "Seleccionar documento a firmar");
                 loadDialog.setFilenameFilter(new FilenameFilter() {
@@ -98,33 +123,42 @@ public class GUISwing implements GUIInterface {
         filePanel.add(fileButton, BorderLayout.LINE_END);
         JPanel signPanel = new JPanel();
         JPanel validatePanel = new JPanel();
-        JPanel aboutPanel = new JPanel(new BorderLayout());
+        JPanel aboutPanel = new JPanel();
+        aboutPanel.setLayout(new BoxLayout(aboutPanel, BoxLayout.PAGE_AXIS));
         JTabbedPane tabbedPane = new JTabbedPane();
         signPanel.setOpaque(false);
         validatePanel.setOpaque(false);
         aboutPanel.setOpaque(false);
+        JLabel iconLabel = new JLabel(new ImageIcon(
+            image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)),
+            JLabel.CENTER);
         JLabel descriptionLabel = new JLabel(
-            "<html><p align='center'><img src='" +
-                GUISwing.class.getClassLoader().getResource("firmador.png") +
-            "' width='128' height='128'></p>" +
-            "<p>Firmador es una herramienta para firmar documentos " +
-            "digitalmente. Los documentos firmados con esta herramienta " +
-            "cumplen con la Política de Formatos Oficiales de los " +
-            "Documentos Electrónicos Firmados Digitalmente de Costa Rica." +
-            "</p></html>");
+            "<html><p align='center'><b>Firmador</b><br><br>" +
+            "Versión 1.3.0<br><br>" +
+            "Herramienta para firmar documentos digitalmente.<br><br>" +
+            "Los documentos firmados con esta herramienta cumplen con la " +
+            "Política de Formatos Oficiales de los Documentos Electrónicos " +
+            "Firmados Digitalmente de Costa Rica.<br><br></p></html>",
+            JLabel.CENTER);
         JButton websiteButton = new JButton("Visitar sitio web del proyecto");
         websiteButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent event) {
                 if (Desktop.isDesktopSupported()) {
                     try {
                         Desktop.getDesktop().browse(
                             new URI("https://firmador.app"));
-                    } catch (Exception ex) {}
+                    } catch (Exception e) {
+                        showError(Throwables.getRootCause(e));
+                    }
                 }
             }
         });
-        aboutPanel.add(descriptionLabel, BorderLayout.PAGE_START);
-        aboutPanel.add(websiteButton, BorderLayout.PAGE_END);
+        iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        websiteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        aboutPanel.add(iconLabel);
+        aboutPanel.add(descriptionLabel);
+        aboutPanel.add(websiteButton);
         tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
         tabbedPane.addTab("Firmar", signPanel);
         tabbedPane.addTab("Validar", validatePanel);
@@ -133,7 +167,7 @@ public class GUISwing implements GUIInterface {
         frame.add(tabbedPane, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
-        frame.setMinimumSize(new Dimension(480, 480));
+        frame.setMinimumSize(new Dimension(480, 512));
         frame.setVisible(true);
 
         return documenttosign;
@@ -177,15 +211,16 @@ public class GUISwing implements GUIInterface {
 
         JPasswordField pinField = new JPasswordField(14);
         pinField.addHierarchyListener(new HierarchyListener() {
-            public void hierarchyChanged(HierarchyEvent e) {
-                final Component c = e.getComponent();
-                if (c.isShowing() &&
-                    (e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED)
+            public void hierarchyChanged(HierarchyEvent event) {
+                final Component component = event.getComponent();
+                if (component.isShowing() &&
+                    (event.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED)
                     != 0) {
-                    Window toplevel = SwingUtilities.getWindowAncestor(c);
+                    Window toplevel =
+                        SwingUtilities.getWindowAncestor(component);
                     toplevel.addWindowFocusListener(new WindowAdapter() {
-                        public void windowGainedFocus(WindowEvent e) {
-                            c.requestFocus();
+                        public void windowGainedFocus(WindowEvent event) {
+                            component.requestFocus();
                         }
                     });
                 }
