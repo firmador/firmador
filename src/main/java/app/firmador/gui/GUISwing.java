@@ -84,7 +84,6 @@ public class GUISwing implements GUIInterface {
         final JFrame frame = new JFrame("Firmador");
         frame.setIconImage(
             image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
-        // Workaround application name in GNOME
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         try {
             Field awtAppClassNameField =
@@ -92,7 +91,7 @@ public class GUISwing implements GUIInterface {
             awtAppClassNameField.setAccessible(true);
             awtAppClassNameField.set(toolkit, "Firmador");
         } catch (Exception e) {
-            showError(Throwables.getRootCause(e));
+            // Workaround application name in GNOME
         }
         JButton fileButton = new JButton("Elegir...");
         fileButton.addActionListener(new ActionListener() {
