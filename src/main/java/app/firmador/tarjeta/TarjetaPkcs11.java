@@ -35,6 +35,7 @@ import sun.security.pkcs11.wrapper.PKCS11Exception;
 
 import com.google.common.base.Splitter;
 
+@SuppressWarnings("restriction")
 public class TarjetaPkcs11 {
 
     private PKCS11 pkcs11 = null;
