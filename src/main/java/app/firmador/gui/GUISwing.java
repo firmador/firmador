@@ -165,8 +165,8 @@ public class GUISwing implements GUIInterface {
         frame.add(filePanel, BorderLayout.PAGE_START);
         frame.add(tabbedPane, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
         frame.setMinimumSize(new Dimension(480, 512));
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
         return documenttosign;
