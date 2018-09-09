@@ -96,7 +96,7 @@ public class GUISwing implements GUIInterface {
             awtAppClassNameField.setAccessible(true);
             awtAppClassNameField.set(toolkit, "Firmador");
         } catch (Exception e) {
-            // Workaround application name in GNOME
+            // Workaround application name in some desktop window managers.
         }
         JButton fileButton = new JButton("Elegir...");
         fileButton.addActionListener(new ActionListener() {
@@ -138,7 +138,9 @@ public class GUISwing implements GUIInterface {
             JLabel.CENTER);
         JLabel descriptionLabel = new JLabel(
             "<html><p align='center'><b>Firmador</b><br><br>" +
-            "Versión 1.3.0<br><br>" +
+            "Versión " +
+            Application.class.getPackage().getSpecificationVersion() +
+            "<br><br>" +
             "Herramienta para firmar documentos digitalmente.<br><br>" +
             "Los documentos firmados con esta herramienta cumplen con la " +
             "Política de Formatos Oficiales de los Documentos Electrónicos " +
