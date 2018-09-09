@@ -110,12 +110,14 @@ public class GUISwing implements GUIInterface {
 
                     PasswordProtection pin = getPin();
                     DSSDocument toSignDocument = new FileDocument(fileName);
-                    DSSDocument signedDocument =
-                        firmador.sign(toSignDocument, pin);
-                    try {
-                        pin.destroy();
-                    } catch (Exception e) {}
-
+                    DSSDocument signedDocument = null;
+                    if (pin.getPassword() != null
+                        && pin.getPassword().length != 0) {
+                        signedDocument = firmador.sign(toSignDocument, pin);
+                        try {
+                            pin.destroy();
+                        } catch (Exception e) {}
+                    }
                     if (signedDocument != null) {
                         fileName = getPathToSave();
                         if (fileName != null) {
