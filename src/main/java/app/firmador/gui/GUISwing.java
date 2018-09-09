@@ -255,7 +255,6 @@ public class GUISwing implements GUIInterface {
     }
 
     public PasswordProtection getPin() {
-
         JPasswordField pinField = new JPasswordField(14);
         pinField.addHierarchyListener(new HierarchyListener() {
             public void hierarchyChanged(HierarchyEvent event) {

@@ -50,7 +50,8 @@ public class FirmadorPAdES extends CRSigner {
 
         CertificateVerifier commonCertificateVerifier =
             this.getCertificateVerifier();
-        SignatureTokenConnection signingToken = get_signatureConnection(pin);
+        SignatureTokenConnection signingToken = getSignatureConnection(pin);
+
         DSSPrivateKeyEntry privateKey = getPrivateKey(signingToken);
         PAdESSignatureParameters parameters = new PAdESSignatureParameters();
 
@@ -73,7 +74,6 @@ public class FirmadorPAdES extends CRSigner {
 
         SignatureValue signatureValue = signingToken.sign(dataToSign,
             parameters.getDigestAlgorithm(), privateKey);
-
         DSSDocument signedDocument = null;
         try {
             signedDocument = service.signDocument(toSignDocument,
@@ -96,15 +96,15 @@ public class FirmadorPAdES extends CRSigner {
     public DSSDocument sign(DSSDocument toSignDocument,
         PasswordProtection pin) {
 
-        DSSDocument dev = null;
+        DSSDocument document = null;
 
         try {
-            dev = _sign(toSignDocument, pin);
+            document = _sign(toSignDocument, pin);
         } catch (Exception|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
 
-        return dev;
+        return document;
     }
 
 }

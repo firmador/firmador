@@ -81,7 +81,7 @@ public class CRSigner {
     }
 
     public SignatureTokenConnection
-        get_signatureConnection(PasswordProtection pin) {
+        getSignatureConnection(PasswordProtection pin) {
         /*
          * There should be other ways to find alternative PKCS#11 module
          * configuration settings in the future, operating system specific,

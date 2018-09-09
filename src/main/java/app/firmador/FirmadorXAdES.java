@@ -56,7 +56,7 @@ public class FirmadorXAdES extends CRSigner {
 
         CertificateVerifier commonCertificateVerifier =
             this.getCertificateVerifier();
-        SignatureTokenConnection signingToken = get_signatureConnection(pin);
+        SignatureTokenConnection signingToken = getSignatureConnection(pin);
         DSSPrivateKeyEntry privateKey = getPrivateKey(signingToken);
         XAdESSignatureParameters parameters = new XAdESSignatureParameters();
 
@@ -130,15 +130,15 @@ public class FirmadorXAdES extends CRSigner {
     public DSSDocument sign(DSSDocument toSignDocument,
         PasswordProtection pin) {
 
-        DSSDocument dev = null;
+        DSSDocument document = null;
 
         try {
-            dev = _sign(toSignDocument, pin);
+            document = _sign(toSignDocument, pin);
         } catch (Exception|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
 
-        return dev;
+        return document;
     }
 
 }
