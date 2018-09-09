@@ -23,6 +23,7 @@ import java.security.KeyStore.PasswordProtection;
 
 public interface GUIInterface {
 
+    void loadGUI();
     void setArgs(String[] args);
     void showError(Throwable error);
     void showMessage(String message);

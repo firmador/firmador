@@ -27,11 +27,46 @@ import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.firmador.FirmadorPAdES;
+//import app.firmador.FirmadorXAdES;
+import com.google.common.base.Throwables;
+import eu.europa.esig.dss.DSSDocument;
+import eu.europa.esig.dss.FileDocument;
+
 public class GUIArgs implements GUIInterface {
 
     private String documenttosign;
     private String documenttosave;
     private int slot;
+
+    public void loadGUI() {
+        String fileName = getDocumentToSign();
+
+        if (fileName != null) {
+            // FirmadorXAdES firmador = new FirmadorXAdES(this);
+            FirmadorPAdES firmador = new FirmadorPAdES(this);
+            firmador.selectSlot();
+
+            PasswordProtection pin = getPin();
+            DSSDocument toSignDocument = new FileDocument(fileName);
+            DSSDocument signedDocument = firmador.sign(toSignDocument, pin);
+            try {
+                pin.destroy();
+            } catch (Exception e) {}
+
+            if (signedDocument != null) {
+                fileName = getPathToSave();
+                try {
+                    signedDocument.save(fileName);
+                    showMessage(
+                        "Documento guardado satisfactoriamente en \n" +
+                        fileName);
+                } catch (IOException e) {
+                    showError(Throwables.getRootCause(e));
+                }
+            }
+        }
+    }
 
     public void setArgs(String[] args) {
         List<String> arguments = new ArrayList<String>();

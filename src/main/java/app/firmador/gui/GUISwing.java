@@ -35,6 +35,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.nio.file.Paths;
@@ -55,8 +56,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import app.firmador.FirmadorPAdES;
+//import app.firmador.FirmadorXAdES;
 import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
+import eu.europa.esig.dss.DSSDocument;
+import eu.europa.esig.dss.FileDocument;
 
 public class GUISwing implements GUIInterface {
 
@@ -66,7 +71,7 @@ public class GUISwing implements GUIInterface {
     private Image image = new ImageIcon(GUISwing.class.getClassLoader()
         .getResource("firmador.png")).getImage();
 
-    public String getDocumentToSign() {
+    public void loadGUI() {
         try {
             Application.getApplication().setDockIconImage(image);
         } catch (RuntimeException e) {
@@ -91,8 +96,41 @@ public class GUISwing implements GUIInterface {
             awtAppClassNameField.setAccessible(true);
             awtAppClassNameField.set(toolkit, "Firmador");
         } catch (Exception e) {
-            // Workaround application name in GNOME
+            // Workaround application name in some desktop window managers.
         }
+        JButton signButton = new JButton("Firmar...");
+        signButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                String fileName = getDocumentToSign();
+
+                if (fileName != null) {
+                    // FirmadorXAdES firmador = new FirmadorXAdES(this);
+                    FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
+                    firmador.selectSlot();
+
+                    PasswordProtection pin = getPin();
+                    DSSDocument toSignDocument = new FileDocument(fileName);
+                    DSSDocument signedDocument =
+                        firmador.sign(toSignDocument, pin);
+                    try {
+                        pin.destroy();
+                    } catch (Exception e) {}
+
+                    if (signedDocument != null) {
+                        fileName = getPathToSave();
+                        try {
+                            signedDocument.save(fileName);
+                            showMessage(
+                                "Documento guardado satisfactoriamente en \n" +
+                                fileName);
+                        } catch (IOException e) {
+                            showError(Throwables.getRootCause(e));
+                        }
+                    }
+                }
+            }
+        });
+        signButton.setEnabled(false);
         JButton fileButton = new JButton("Elegir...");
         fileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -110,6 +148,7 @@ public class GUISwing implements GUIInterface {
                 if (loadDialog.getFile() != null) {
                     fileField.setText(loadDialog.getDirectory()
                         + loadDialog.getFile());
+                    signButton.setEnabled(true);
                 }
                 documenttosign = fileField.getText();
             }
@@ -121,6 +160,7 @@ public class GUISwing implements GUIInterface {
         filePanel.add(fileField, BorderLayout.CENTER);
         filePanel.add(fileButton, BorderLayout.LINE_END);
         JPanel signPanel = new JPanel();
+        signPanel.add(signButton, BorderLayout.LINE_START);
         JPanel validatePanel = new JPanel();
         JPanel aboutPanel = new JPanel();
         aboutPanel.setLayout(new BoxLayout(aboutPanel, BoxLayout.PAGE_AXIS));
@@ -133,7 +173,9 @@ public class GUISwing implements GUIInterface {
             JLabel.CENTER);
         JLabel descriptionLabel = new JLabel(
             "<html><p align='center'><b>Firmador</b><br><br>" +
-            "Versión 1.3.0<br><br>" +
+            "Versión " +
+            Application.class.getPackage().getSpecificationVersion() +
+            "<br><br>" +
             "Herramienta para firmar documentos digitalmente.<br><br>" +
             "Los documentos firmados con esta herramienta cumplen con la " +
             "Política de Formatos Oficiales de los Documentos Electrónicos " +
@@ -168,7 +210,9 @@ public class GUISwing implements GUIInterface {
         frame.setMinimumSize(new Dimension(480, 512));
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
 
+    public String getDocumentToSign() {
         return documenttosign;
     }
 
@@ -311,14 +355,14 @@ public class GUISwing implements GUIInterface {
                 break;
         }
 
-        JOptionPane.showMessageDialog(null, message, "Error al firmar",
+        JOptionPane.showMessageDialog(null, message, "Mensaje de error",
             JOptionPane.ERROR_MESSAGE);
 
         System.exit(0);
     }
 
     public void showMessage(String message) {
-        JOptionPane.showMessageDialog(null, message, "Mensaje importante",
+        JOptionPane.showMessageDialog(null, message, "Mensaje de información",
             JOptionPane.INFORMATION_MESSAGE);
     }
 
