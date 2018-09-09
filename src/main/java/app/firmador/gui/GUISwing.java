@@ -98,6 +98,39 @@ public class GUISwing implements GUIInterface {
         } catch (Exception e) {
             // Workaround application name in some desktop window managers.
         }
+        JButton signButton = new JButton("Firmar...");
+        signButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                String fileName = getDocumentToSign();
+
+                if (fileName != null) {
+                    // FirmadorXAdES firmador = new FirmadorXAdES(this);
+                    FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
+                    firmador.selectSlot();
+
+                    PasswordProtection pin = getPin();
+                    DSSDocument toSignDocument = new FileDocument(fileName);
+                    DSSDocument signedDocument =
+                        firmador.sign(toSignDocument, pin);
+                    try {
+                        pin.destroy();
+                    } catch (Exception e) {}
+
+                    if (signedDocument != null) {
+                        fileName = getPathToSave();
+                        try {
+                            signedDocument.save(fileName);
+                            showMessage(
+                                "Documento guardado satisfactoriamente en \n" +
+                                fileName);
+                        } catch (IOException e) {
+                            showError(Throwables.getRootCause(e));
+                        }
+                    }
+                }
+            }
+        });
+        signButton.setEnabled(false);
         JButton fileButton = new JButton("Elegir...");
         fileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -115,6 +148,7 @@ public class GUISwing implements GUIInterface {
                 if (loadDialog.getFile() != null) {
                     fileField.setText(loadDialog.getDirectory()
                         + loadDialog.getFile());
+                    signButton.setEnabled(true);
                 }
                 documenttosign = fileField.getText();
             }
@@ -126,6 +160,7 @@ public class GUISwing implements GUIInterface {
         filePanel.add(fileField, BorderLayout.CENTER);
         filePanel.add(fileButton, BorderLayout.LINE_END);
         JPanel signPanel = new JPanel();
+        signPanel.add(signButton, BorderLayout.LINE_START);
         JPanel validatePanel = new JPanel();
         JPanel aboutPanel = new JPanel();
         aboutPanel.setLayout(new BoxLayout(aboutPanel, BoxLayout.PAGE_AXIS));
@@ -175,33 +210,6 @@ public class GUISwing implements GUIInterface {
         frame.setMinimumSize(new Dimension(480, 512));
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
-        String fileName = getDocumentToSign();
-
-        if (fileName != null) {
-            // FirmadorXAdES firmador = new FirmadorXAdES(this);
-            FirmadorPAdES firmador = new FirmadorPAdES(this);
-            firmador.selectSlot();
-
-            PasswordProtection pin = getPin();
-            DSSDocument toSignDocument = new FileDocument(fileName);
-            DSSDocument signedDocument = firmador.sign(toSignDocument, pin);
-            try {
-                pin.destroy();
-            } catch (Exception e) {}
-
-            if (signedDocument != null) {
-                fileName = getPathToSave();
-                try {
-                    signedDocument.save(fileName);
-                    showMessage(
-                        "Documento guardado satisfactoriamente en \n" +
-                        fileName);
-                } catch (IOException e) {
-                    showError(Throwables.getRootCause(e));
-                }
-            }
-        }
     }
 
     public String getDocumentToSign() {
@@ -347,14 +355,14 @@ public class GUISwing implements GUIInterface {
                 break;
         }
 
-        JOptionPane.showMessageDialog(null, message, "Error al firmar",
+        JOptionPane.showMessageDialog(null, message, "Mensaje de error",
             JOptionPane.ERROR_MESSAGE);
 
         System.exit(0);
     }
 
     public void showMessage(String message) {
-        JOptionPane.showMessageDialog(null, message, "Mensaje importante",
+        JOptionPane.showMessageDialog(null, message, "Mensaje de información",
             JOptionPane.INFORMATION_MESSAGE);
     }
 
