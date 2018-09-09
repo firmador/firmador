@@ -118,13 +118,15 @@ public class GUISwing implements GUIInterface {
 
                     if (signedDocument != null) {
                         fileName = getPathToSave();
-                        try {
-                            signedDocument.save(fileName);
-                            showMessage(
-                                "Documento guardado satisfactoriamente en \n" +
-                                fileName);
-                        } catch (IOException e) {
-                            showError(Throwables.getRootCause(e));
+                        if (fileName != null) {
+                            try {
+                                signedDocument.save(fileName);
+                                showMessage(
+                                    "Documento guardado satisfactoriamente" +
+                                    " en\n" + fileName);
+                            } catch (IOException e) {
+                                showError(Throwables.getRootCause(e));
+                            }
                         }
                     }
                 }
