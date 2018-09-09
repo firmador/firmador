@@ -35,6 +35,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.nio.file.Paths;
@@ -55,8 +56,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import app.firmador.FirmadorPAdES;
+//import app.firmador.FirmadorXAdES;
 import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
+import eu.europa.esig.dss.DSSDocument;
+import eu.europa.esig.dss.FileDocument;
 
 public class GUISwing implements GUIInterface {
 
@@ -66,7 +71,7 @@ public class GUISwing implements GUIInterface {
     private Image image = new ImageIcon(GUISwing.class.getClassLoader()
         .getResource("firmador.png")).getImage();
 
-    public String getDocumentToSign() {
+    public void loadGUI() {
         try {
             Application.getApplication().setDockIconImage(image);
         } catch (RuntimeException e) {
@@ -169,6 +174,35 @@ public class GUISwing implements GUIInterface {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
+        String fileName = getDocumentToSign();
+
+        if (fileName != null) {
+            // FirmadorXAdES firmador = new FirmadorXAdES(this);
+            FirmadorPAdES firmador = new FirmadorPAdES(this);
+            firmador.selectSlot();
+
+            PasswordProtection pin = getPin();
+            DSSDocument toSignDocument = new FileDocument(fileName);
+            DSSDocument signedDocument = firmador.sign(toSignDocument, pin);
+            try {
+                pin.destroy();
+            } catch (Exception e) {}
+
+            if (signedDocument != null) {
+                fileName = getPathToSave();
+                try {
+                    signedDocument.save(fileName);
+                    showMessage(
+                        "Documento guardado satisfactoriamente en \n" +
+                        fileName);
+                } catch (IOException e) {
+                    showError(Throwables.getRootCause(e));
+                }
+            }
+        }
+    }
+
+    public String getDocumentToSign() {
         return documenttosign;
     }
 
