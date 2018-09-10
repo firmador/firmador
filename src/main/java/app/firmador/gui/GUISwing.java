@@ -33,6 +33,7 @@ import java.awt.event.HierarchyListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -62,6 +63,8 @@ import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.FileDocument;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
 public class GUISwing implements GUIInterface {
 
@@ -136,6 +139,7 @@ public class GUISwing implements GUIInterface {
         });
         signButton.setEnabled(false);
         JButton fileButton = new JButton("Elegir...");
+        final JLabel imageLabel = new JLabel();
         fileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 loadDialog = new FileDialog(frame,
@@ -153,6 +157,17 @@ public class GUISwing implements GUIInterface {
                     fileField.setText(loadDialog.getDirectory()
                         + loadDialog.getFile());
                     signButton.setEnabled(true);
+                    int page = 0;
+                    BufferedImage pageImage = null;
+                    try {
+                        PDDocument doc =
+                            PDDocument.load(new File(fileField.getText()));
+                        PDFRenderer renderer = new PDFRenderer(doc);
+                        pageImage = renderer.renderImage(page, (float)0.5);
+                    } catch (Exception e) {
+                        showError(Throwables.getRootCause(e));
+                    }
+                    imageLabel.setIcon(new ImageIcon(pageImage));
                 }
                 documenttosign = fileField.getText();
             }
@@ -165,6 +180,7 @@ public class GUISwing implements GUIInterface {
         filePanel.add(fileButton, BorderLayout.LINE_END);
         JPanel signPanel = new JPanel();
         signPanel.add(signButton);
+        signPanel.add(imageLabel);
         JPanel validatePanel = new JPanel();
         JPanel aboutPanel = new JPanel();
         aboutPanel.setLayout(new BoxLayout(aboutPanel, BoxLayout.PAGE_AXIS));
