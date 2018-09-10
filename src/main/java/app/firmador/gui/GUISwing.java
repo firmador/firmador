@@ -57,6 +57,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import app.firmador.Firmador;
 import app.firmador.FirmadorPAdES;
 //import app.firmador.FirmadorXAdES;
 import app.firmador.Validator;
@@ -218,7 +219,7 @@ public class GUISwing implements GUIInterface {
         JLabel descriptionLabel = new JLabel(
             "<html><p align='center'><b>Firmador</b><br><br>" +
             "Versión " +
-            Application.class.getPackage().getSpecificationVersion() +
+            Firmador.class.getPackage().getSpecificationVersion() +
             "<br><br>" +
             "Herramienta para firmar documentos digitalmente.<br><br>" +
             "Los documentos firmados con esta herramienta cumplen con la " +
