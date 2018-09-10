@@ -59,10 +59,15 @@ import javax.swing.border.EmptyBorder;
 
 import app.firmador.FirmadorPAdES;
 //import app.firmador.FirmadorXAdES;
+import app.firmador.Validator;
 import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.FileDocument;
+import eu.europa.esig.dss.validation.reports.DetailedReport;
+import eu.europa.esig.dss.validation.reports.wrapper.DiagnosticData;
+import eu.europa.esig.dss.validation.reports.SimpleReport;
+import eu.europa.esig.dss.validation.reports.Reports;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
@@ -101,7 +106,7 @@ public class GUISwing implements GUIInterface {
         } catch (Exception e) {
             // Workaround application name in some desktop window managers.
         }
-        JButton signButton = new JButton("Firmar...");
+        JButton signButton = new JButton("Firmar documento");
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 String fileName = getDocumentToSign();
@@ -137,7 +142,23 @@ public class GUISwing implements GUIInterface {
                 }
             }
         });
+        JButton validateButton = new JButton("Validar documento");
+        validateButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                String fileName = getDocumentToSign();
+
+                if (fileName != null) {
+                    Validator validator = new Validator(fileName);
+                    Reports reports = validator.getReports();
+                    DiagnosticData diagnosticData = reports.getDiagnosticData();
+                    DetailedReport detailedReport = reports.getDetailedReport();
+                    SimpleReport simpleReport = reports.getSimpleReport();
+                }
+            }
+        });
+
         signButton.setEnabled(false);
+        validateButton.setEnabled(false);
         JButton fileButton = new JButton("Elegir...");
         final JLabel imageLabel = new JLabel();
         fileButton.addActionListener(new ActionListener() {
@@ -157,6 +178,7 @@ public class GUISwing implements GUIInterface {
                     fileField.setText(loadDialog.getDirectory()
                         + loadDialog.getFile());
                     signButton.setEnabled(true);
+                    validateButton.setEnabled(true);
                     int page = 0;
                     BufferedImage pageImage = null;
                     try {
@@ -182,6 +204,8 @@ public class GUISwing implements GUIInterface {
         signPanel.add(signButton);
         signPanel.add(imageLabel);
         JPanel validatePanel = new JPanel();
+        validatePanel.add(validateButton);
+        validatePanel.add(imageLabel);
         JPanel aboutPanel = new JPanel();
         aboutPanel.setLayout(new BoxLayout(aboutPanel, BoxLayout.PAGE_AXIS));
         JTabbedPane tabbedPane = new JTabbedPane();
