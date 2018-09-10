@@ -324,7 +324,6 @@ public class GUISwing implements GUIInterface {
                     "conectados de forma correcta.";
                 break;
             case "sun.security.pkcs11.wrapper.PKCS11Exception":
-                messageType = JOptionPane.WARNING_MESSAGE;
                 switch (message) {
                 case "CKR_GENERAL_ERROR":
                     message = "No se ha podido contactar con el servicio " +
@@ -336,6 +335,7 @@ public class GUISwing implements GUIInterface {
                     "conectado o el controlador del lector no está instalado.";
                     break;
                 case "CKR_PIN_INCORRECT":
+                    messageType = JOptionPane.WARNING_MESSAGE;
                     message = "¡PIN INCORRECTO!\n\n" +
                         "ADVERTENCIA: si se ingresa un PIN incorrecto " +
                         "varias veces sin acertar,\n" +
