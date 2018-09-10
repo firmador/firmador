@@ -110,21 +110,25 @@ public class GUISwing implements GUIInterface {
 
                     PasswordProtection pin = getPin();
                     DSSDocument toSignDocument = new FileDocument(fileName);
-                    DSSDocument signedDocument =
-                        firmador.sign(toSignDocument, pin);
-                    try {
-                        pin.destroy();
-                    } catch (Exception e) {}
-
+                    DSSDocument signedDocument = null;
+                    if (pin.getPassword() != null
+                        && pin.getPassword().length != 0) {
+                        signedDocument = firmador.sign(toSignDocument, pin);
+                        try {
+                            pin.destroy();
+                        } catch (Exception e) {}
+                    }
                     if (signedDocument != null) {
                         fileName = getPathToSave();
-                        try {
-                            signedDocument.save(fileName);
-                            showMessage(
-                                "Documento guardado satisfactoriamente en \n" +
-                                fileName);
-                        } catch (IOException e) {
-                            showError(Throwables.getRootCause(e));
+                        if (fileName != null) {
+                            try {
+                                signedDocument.save(fileName);
+                                showMessage(
+                                    "Documento guardado satisfactoriamente" +
+                                    " en\n" + fileName);
+                            } catch (IOException e) {
+                                showError(Throwables.getRootCause(e));
+                            }
                         }
                     }
                 }
@@ -160,7 +164,7 @@ public class GUISwing implements GUIInterface {
         filePanel.add(fileField, BorderLayout.CENTER);
         filePanel.add(fileButton, BorderLayout.LINE_END);
         JPanel signPanel = new JPanel();
-        signPanel.add(signButton, BorderLayout.LINE_START);
+        signPanel.add(signButton);
         JPanel validatePanel = new JPanel();
         JPanel aboutPanel = new JPanel();
         aboutPanel.setLayout(new BoxLayout(aboutPanel, BoxLayout.PAGE_AXIS));
@@ -251,7 +255,6 @@ public class GUISwing implements GUIInterface {
     }
 
     public PasswordProtection getPin() {
-
         JPasswordField pinField = new JPasswordField(14);
         pinField.addHierarchyListener(new HierarchyListener() {
             public void hierarchyChanged(HierarchyEvent event) {
@@ -300,6 +303,7 @@ public class GUISwing implements GUIInterface {
 
     public void showError(Throwable error) {
         String message = error.getLocalizedMessage();
+        int messageType = JOptionPane.ERROR_MESSAGE;
         String className = error.getClass().getName();
 
         switch (className) {
@@ -331,6 +335,7 @@ public class GUISwing implements GUIInterface {
                     "conectado o el controlador del lector no está instalado.";
                     break;
                 case "CKR_PIN_INCORRECT":
+                    messageType = JOptionPane.WARNING_MESSAGE;
                     message = "¡PIN INCORRECTO!\n\n" +
                         "ADVERTENCIA: si se ingresa un PIN incorrecto " +
                         "varias veces sin acertar,\n" +
@@ -345,6 +350,7 @@ public class GUISwing implements GUIInterface {
                 default:
                     break;
                 }
+                break;
             default:
                 message = "Error: " + className + "\n" +
                     "Detalle: " + message + "\n" +
@@ -355,14 +361,16 @@ public class GUISwing implements GUIInterface {
                 break;
         }
 
-        JOptionPane.showMessageDialog(null, message, "Mensaje de error",
-            JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, message, "Mensaje de Firmador",
+            messageType);
 
-        System.exit(0);
+        if (messageType == JOptionPane.ERROR_MESSAGE) {
+            System.exit(0);
+        }
     }
 
     public void showMessage(String message) {
-        JOptionPane.showMessageDialog(null, message, "Mensaje de información",
+        JOptionPane.showMessageDialog(null, message, "Mensaje de Firmador",
             JOptionPane.INFORMATION_MESSAGE);
     }
 

@@ -61,18 +61,16 @@ public class CRSigner {
          * verify there are no more keys available to allow selecting them.
          */
         DSSPrivateKeyEntry privateKey = null;
-        try {
-            for (DSSPrivateKeyEntry candidatePrivateKey
-                : signingToken.getKeys()) {
-                if (candidatePrivateKey.getCertificate().checkKeyUsage(
-                    KeyUsageBit.nonRepudiation)) {
-                        privateKey = candidatePrivateKey;
-                        break;
-                }
+
+        for (DSSPrivateKeyEntry candidatePrivateKey
+            : signingToken.getKeys()) {
+            if (candidatePrivateKey.getCertificate().checkKeyUsage(
+                KeyUsageBit.nonRepudiation)) {
+                    privateKey = candidatePrivateKey;
+                    break;
             }
-        } catch (Exception|Error e) {
-            gui.showError(Throwables.getRootCause(e));
         }
+
         return privateKey;
     }
 
@@ -81,7 +79,7 @@ public class CRSigner {
     }
 
     public SignatureTokenConnection
-        get_signatureConnection(PasswordProtection pin) {
+        getSignatureConnection(PasswordProtection pin) {
         /*
          * There should be other ways to find alternative PKCS#11 module
          * configuration settings in the future, operating system specific,
