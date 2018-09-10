@@ -51,7 +51,6 @@ public class FirmadorPAdES extends CRSigner {
         CertificateVerifier commonCertificateVerifier =
             this.getCertificateVerifier();
         SignatureTokenConnection signingToken = getSignatureConnection(pin);
-
         DSSPrivateKeyEntry privateKey = getPrivateKey(signingToken);
         PAdESSignatureParameters parameters = new PAdESSignatureParameters();
 
