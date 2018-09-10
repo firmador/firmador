@@ -61,18 +61,16 @@ public class CRSigner {
          * verify there are no more keys available to allow selecting them.
          */
         DSSPrivateKeyEntry privateKey = null;
-        try {
-            for (DSSPrivateKeyEntry candidatePrivateKey
-                : signingToken.getKeys()) {
-                if (candidatePrivateKey.getCertificate().checkKeyUsage(
-                    KeyUsageBit.nonRepudiation)) {
-                        privateKey = candidatePrivateKey;
-                        break;
-                }
+
+        for (DSSPrivateKeyEntry candidatePrivateKey
+            : signingToken.getKeys()) {
+            if (candidatePrivateKey.getCertificate().checkKeyUsage(
+                KeyUsageBit.nonRepudiation)) {
+                    privateKey = candidatePrivateKey;
+                    break;
             }
-        } catch (Exception|Error e) {
-            gui.showError(Throwables.getRootCause(e));
         }
+
         return privateKey;
     }
 
