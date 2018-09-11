@@ -57,17 +57,15 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import app.firmador.Firmador;
 import app.firmador.FirmadorPAdES;
 //import app.firmador.FirmadorXAdES;
+import app.firmador.Report;
 import app.firmador.Validator;
 import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.FileDocument;
-import eu.europa.esig.dss.validation.reports.DetailedReport;
-import eu.europa.esig.dss.validation.reports.wrapper.DiagnosticData;
-import eu.europa.esig.dss.validation.reports.SimpleReport;
-import eu.europa.esig.dss.validation.reports.Reports;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
@@ -142,6 +140,8 @@ public class GUISwing implements GUIInterface {
                 }
             }
         });
+
+        JLabel validateLabel = new JLabel();
         JButton validateButton = new JButton("Validar documento");
         validateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -149,10 +149,12 @@ public class GUISwing implements GUIInterface {
 
                 if (fileName != null) {
                     Validator validator = new Validator(fileName);
-                    Reports reports = validator.getReports();
-                    DiagnosticData diagnosticData = reports.getDiagnosticData();
-                    DetailedReport detailedReport = reports.getDetailedReport();
-                    SimpleReport simpleReport = reports.getSimpleReport();
+                    try {
+                        Report report = new Report(validator.getReports());
+                        validateLabel.setText(report.getReport());
+                    } catch (Exception e) {
+                        validateLabel.setText("Error al generar reporte.");
+                    }
                 }
             }
         });
@@ -185,7 +187,7 @@ public class GUISwing implements GUIInterface {
                         PDDocument doc =
                             PDDocument.load(new File(fileField.getText()));
                         PDFRenderer renderer = new PDFRenderer(doc);
-                        pageImage = renderer.renderImage(page, (float)0.5);
+                        pageImage = renderer.renderImage(page, (float)0.4);
                     } catch (Exception e) {
                         showError(Throwables.getRootCause(e));
                     }
@@ -205,7 +207,7 @@ public class GUISwing implements GUIInterface {
         signPanel.add(imageLabel);
         JPanel validatePanel = new JPanel();
         validatePanel.add(validateButton);
-        validatePanel.add(imageLabel);
+        validatePanel.add(validateLabel);
         JPanel aboutPanel = new JPanel();
         aboutPanel.setLayout(new BoxLayout(aboutPanel, BoxLayout.PAGE_AXIS));
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -218,7 +220,7 @@ public class GUISwing implements GUIInterface {
         JLabel descriptionLabel = new JLabel(
             "<html><p align='center'><b>Firmador</b><br><br>" +
             "Versión " +
-            Application.class.getPackage().getSpecificationVersion() +
+            Firmador.class.getPackage().getSpecificationVersion() +
             "<br><br>" +
             "Herramienta para firmar documentos digitalmente.<br><br>" +
             "Los documentos firmados con esta herramienta cumplen con la " +
