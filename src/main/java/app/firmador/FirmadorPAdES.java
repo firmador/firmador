@@ -78,7 +78,6 @@ public class FirmadorPAdES extends CRSigner {
             signedDocument = service.signDocument(toSignDocument,
                 parameters, signatureValue);
         } catch (DSSException e) {
-            /*
             String className = Throwables.getRootCause(e).getClass().getName();
             // Thrown when TSA is not available, retry with a lower profile
             if (className =="java.net.UnknownHostException") {
@@ -86,9 +85,8 @@ public class FirmadorPAdES extends CRSigner {
                 signedDocument = service.signDocument(toSignDocument,
                     parameters, signatureValue);
             } else {
-            */
                 gui.showError(Throwables.getRootCause(e));
-            //}
+            }
         }
 
         return signedDocument;
