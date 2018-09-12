@@ -40,7 +40,6 @@ public class Report {
     public Report(Reports reports) throws Exception {
         TransformerFactory transformerFactory =
             DomUtils.getSecureTransformerFactory();
-        // TODO create a proper template understandable by CR end users
         InputStream is =
             Report.class.getResourceAsStream("/xslt/html/simple-report.xslt");
         Templates templateSimpleReport =
