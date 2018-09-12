@@ -20,6 +20,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package app.firmador;
 
 import eu.europa.esig.dss.DSSDocument;
+import eu.europa.esig.dss.DSSUtils;
 import eu.europa.esig.dss.FileDocument;
 import eu.europa.esig.dss.client.crl.OnlineCRLSource;
 import eu.europa.esig.dss.client.http.commons.CommonsDataLoader;
@@ -28,20 +29,28 @@ import eu.europa.esig.dss.validation.CertificateVerifier;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import eu.europa.esig.dss.validation.reports.Reports;
+import eu.europa.esig.dss.x509.CertificateSource;
+import eu.europa.esig.dss.x509.CommonTrustedCertificateSource;
 
 public class Validator {
 
     private SignedDocumentValidator documentValidator;
 
     public Validator(String fileName) {
+        CertificateSource trustedCertSource =
+            new CommonTrustedCertificateSource();
+        trustedCertSource.addCertificate(DSSUtils.loadCertificate(
+            Validator.class.getClassLoader().getResourceAsStream(
+                "CA RAIZ NACIONAL - COSTA RICA v2.crt")));
+        trustedCertSource.addCertificate(DSSUtils.loadCertificate(
+            Validator.class.getClassLoader().getResourceAsStream(
+                "CA RAIZ NACIONAL COSTA RICA.cer")));
+
         CertificateVerifier cv = new CommonCertificateVerifier();
         cv.setDataLoader(new CommonsDataLoader());
         cv.setOcspSource(new OnlineOCSPSource());
         cv.setCrlSource(new OnlineCRLSource());
-        // TODO For CR, trusting CA RAIZ NACIONAL should be enough
-        //cv.setTrustedCertSource(trustedCertSource);
-        // [remove] AIA should be enough for CR, not using offline validation
-        //cv.setAdjunctCertSource(adjunctCertSource);
+        cv.setTrustedCertSource(trustedCertSource);
 
         DSSDocument document = new FileDocument(fileName);
 
