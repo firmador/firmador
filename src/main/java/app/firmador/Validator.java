@@ -50,7 +50,6 @@ public class Validator {
     }
 
     public Reports getReports() {
-        // TODO use custom validation policy for CR instead of default
         Reports reports = documentValidator.validateDocument();
 
         return reports;
