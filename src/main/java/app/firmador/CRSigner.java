@@ -62,8 +62,7 @@ public class CRSigner {
          */
         DSSPrivateKeyEntry privateKey = null;
 
-        for (DSSPrivateKeyEntry candidatePrivateKey
-            : signingToken.getKeys()) {
+        for (DSSPrivateKeyEntry candidatePrivateKey : signingToken.getKeys()) {
             if (candidatePrivateKey.getCertificate().checkKeyUsage(
                 KeyUsageBit.nonRepudiation)) {
                     privateKey = candidatePrivateKey;
@@ -87,9 +86,10 @@ public class CRSigner {
          * some homologated devices already for Sello Electrónico).
          */
         SignatureTokenConnection signingToken = null;
+
         if (this.selectedSlot != -1) {
-            signingToken = new Pkcs11SignatureToken(
-                getPkcs11Lib(), pin, (int) selectedSlot);
+            signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin,
+                (int) selectedSlot);
         } else {
             TarjetaPkcs11 tarjeta = new TarjetaPkcs11();
             long[] slots = null;
@@ -102,12 +102,12 @@ public class CRSigner {
             if (slots != null) {
                 if (slots.length > 0) {
                     if (slots.length == 1) {
-                        signingToken = new Pkcs11SignatureToken(
-                            getPkcs11Lib(), pin);
+                        signingToken = new Pkcs11SignatureToken(getPkcs11Lib(),
+                            pin);
                     } else {
                         selectedSlot = getSelectedSlot(tarjeta, slots);
-                        signingToken = new Pkcs11SignatureToken(
-                                getPkcs11Lib(), pin, selectedSlot);
+                        signingToken = new Pkcs11SignatureToken(getPkcs11Lib(),
+                            pin, selectedSlot);
                     }
                 }
             }
