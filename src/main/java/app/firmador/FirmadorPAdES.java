@@ -80,7 +80,7 @@ public class FirmadorPAdES extends CRSigner {
         } catch (DSSException e) {
             String className = Throwables.getRootCause(e).getClass().getName();
             // Thrown when TSA is not available, retry with a lower profile
-            if (className =="java.net.UnknownHostException") {
+            if (className == "java.net.UnknownHostException") {
                 parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
                 signedDocument = service.signDocument(toSignDocument,
                     parameters, signatureValue);
