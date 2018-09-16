@@ -141,8 +141,10 @@ public class GUISwing implements GUIInterface {
             }
         });
 
-        JLabel validateLabel = new JLabel();
+        JLabel reportLabel = new JLabel();
         JButton validateButton = new JButton("Validar documento");
+        reportLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        validateButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         validateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 String fileName = getDocumentToSign();
@@ -151,9 +153,9 @@ public class GUISwing implements GUIInterface {
                     Validator validator = new Validator(fileName);
                     try {
                         Report report = new Report(validator.getReports());
-                        validateLabel.setText(report.getReport());
+                        reportLabel.setText(report.getReport());
                     } catch (Exception e) {
-                        validateLabel.setText("Error al generar reporte.");
+                        reportLabel.setText("Error al generar reporte.");
                     }
                 }
             }
@@ -206,8 +208,10 @@ public class GUISwing implements GUIInterface {
         signPanel.add(signButton);
         signPanel.add(imageLabel);
         JPanel validatePanel = new JPanel();
+        validatePanel.setLayout(new BoxLayout(validatePanel,
+            BoxLayout.PAGE_AXIS));
         validatePanel.add(validateButton);
-        validatePanel.add(validateLabel);
+        validatePanel.add(reportLabel);
         JPanel aboutPanel = new JPanel();
         aboutPanel.setLayout(new BoxLayout(aboutPanel, BoxLayout.PAGE_AXIS));
         JTabbedPane tabbedPane = new JTabbedPane();
