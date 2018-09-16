@@ -26,13 +26,12 @@
                     test="dss:ValidSignaturesCount = dss:SignaturesCount">
                     <b>está firmado digitalmente</b>. Contiene
                     <xsl:value-of select="dss:ValidSignaturesCount"/>
-                    firmas válidas.
+                    firma(s) válida(s).
                 </xsl:when>
                 <xsl:otherwise>
-                    contiene firmas digitales pero con errores:
-                    <b><xsl:value-of select="dss:ValidSignaturesCount"/> de
-                    <xsl:value-of select="dss:SignaturesCount"/> firmas son
-                    válidas</b>.
+                    contiene <xsl:value-of select="dss:SignaturesCount"/>
+                    firma(s) digital(es) pero <b>se han encontrado
+                    problemas</b>.
                 </xsl:otherwise>
             </xsl:choose>
         </p>
