@@ -75,8 +75,8 @@ public class FirmadorPAdES extends CRSigner {
             parameters.getDigestAlgorithm(), privateKey);
         DSSDocument signedDocument = null;
         try {
-            signedDocument = service.signDocument(toSignDocument,
-                parameters, signatureValue);
+            signedDocument = service.signDocument(toSignDocument, parameters,
+                signatureValue);
         } catch (DSSException e) {
             String className = Throwables.getRootCause(e).getClass().getName();
             // Thrown when TSA is not available, retry with a lower profile
@@ -104,6 +104,24 @@ public class FirmadorPAdES extends CRSigner {
         }
 
         return document;
+    }
+
+    public DSSDocument extend(DSSDocument document) {
+        CertificateVerifier certificateVerifier =
+            this.getCertificateVerifier();
+        PAdESSignatureParameters parameters = new PAdESSignatureParameters();
+
+        parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
+
+        PAdESService padesService = new PAdESService(certificateVerifier);
+
+        OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
+        padesService.setTspSource(onlineTSPSource);
+
+        DSSDocument extendedDocument = padesService.extendDocument(document,
+            parameters);
+
+        return extendedDocument;
     }
 
 }
