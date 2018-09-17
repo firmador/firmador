@@ -20,6 +20,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package app.firmador.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
@@ -56,6 +57,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import app.firmador.Firmador;
 import app.firmador.FirmadorPAdES;
@@ -76,6 +78,12 @@ public class GUISwing implements GUIInterface {
     private String documenttosave = null;
     private Image image = new ImageIcon(GUISwing.class.getClassLoader()
         .getResource("firmador.png")).getImage();
+    private JTextField fileField;
+    private JTabbedPane tabbedPane;
+    private JLabel imageLabel;
+    private JLabel reportLabel;
+    private JButton signButton;
+    private JButton extendButton;
 
     public void loadGUI() {
         try {
@@ -90,7 +98,7 @@ public class GUISwing implements GUIInterface {
             showError(Throwables.getRootCause(e));
         }
         JLabel fileLabel = new JLabel("Documento: ");
-        final JTextField fileField = new JTextField("(Vacío)");
+        fileField = new JTextField("(Vacío)");
         fileField.setEditable(false);
         final JFrame frame = new JFrame("Firmador");
         frame.setIconImage(
@@ -104,7 +112,8 @@ public class GUISwing implements GUIInterface {
         } catch (Exception e) {
             // Workaround application name in some desktop window managers.
         }
-        JButton signButton = new JButton("Firmar documento");
+        signButton = new JButton("Firmar documento");
+        signButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 String fileName = getDocumentToSign();
@@ -132,6 +141,7 @@ public class GUISwing implements GUIInterface {
                                 showMessage(
                                     "Documento guardado satisfactoriamente" +
                                     " en\n" + fileName);
+                                loadDocument(fileName);
                             } catch (IOException e) {
                                 showError(Throwables.getRootCause(e));
                             }
@@ -141,28 +151,44 @@ public class GUISwing implements GUIInterface {
             }
         });
 
-        JLabel validateLabel = new JLabel();
-        JButton validateButton = new JButton("Validar documento");
-        validateButton.addActionListener(new ActionListener() {
+        reportLabel = new JLabel();
+        reportLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        extendButton = new JButton("Agregar sello de tiempo al documento");
+        extendButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        extendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 String fileName = getDocumentToSign();
 
                 if (fileName != null) {
-                    Validator validator = new Validator(fileName);
-                    try {
-                        Report report = new Report(validator.getReports());
-                        validateLabel.setText(report.getReport());
-                    } catch (Exception e) {
-                        validateLabel.setText("Error al generar reporte.");
+                    // FirmadorXAdES firmador = new FirmadorXAdES(this);
+                    FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
+
+                    DSSDocument toExtendDocument = new FileDocument(fileName);
+                    DSSDocument extendedDocument = null;
+                    extendedDocument = firmador.extend(toExtendDocument);
+                    if (extendedDocument != null) {
+                        fileName = getPathToSaveExtended();
+                        if (fileName != null) {
+                            try {
+                                extendedDocument.save(fileName);
+                                showMessage(
+                                    "Documento guardado satisfactoriamente" +
+                                    " en\n" + fileName);
+                                loadDocument(fileName);
+                            } catch (IOException e) {
+                                showError(Throwables.getRootCause(e));
+                            }
+                        }
                     }
                 }
             }
         });
 
         signButton.setEnabled(false);
-        validateButton.setEnabled(false);
+        extendButton.setEnabled(false);
         JButton fileButton = new JButton("Elegir...");
-        final JLabel imageLabel = new JLabel();
+        imageLabel = new JLabel();
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         fileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 loadDialog = new FileDialog(frame,
@@ -177,23 +203,9 @@ public class GUISwing implements GUIInterface {
                 loadDialog.setVisible(true);
                 loadDialog.dispose();
                 if (loadDialog.getFile() != null) {
-                    fileField.setText(loadDialog.getDirectory()
+                    loadDocument(loadDialog.getDirectory()
                         + loadDialog.getFile());
-                    signButton.setEnabled(true);
-                    validateButton.setEnabled(true);
-                    int page = 0;
-                    BufferedImage pageImage = null;
-                    try {
-                        PDDocument doc =
-                            PDDocument.load(new File(fileField.getText()));
-                        PDFRenderer renderer = new PDFRenderer(doc);
-                        pageImage = renderer.renderImage(page, (float)0.4);
-                    } catch (Exception e) {
-                        showError(Throwables.getRootCause(e));
-                    }
-                    imageLabel.setIcon(new ImageIcon(pageImage));
                 }
-                documenttosign = fileField.getText();
             }
         });
 
@@ -203,14 +215,17 @@ public class GUISwing implements GUIInterface {
         filePanel.add(fileField, BorderLayout.CENTER);
         filePanel.add(fileButton, BorderLayout.LINE_END);
         JPanel signPanel = new JPanel();
+        signPanel.setLayout(new BoxLayout(signPanel, BoxLayout.PAGE_AXIS));
         signPanel.add(signButton);
         signPanel.add(imageLabel);
         JPanel validatePanel = new JPanel();
-        validatePanel.add(validateButton);
-        validatePanel.add(validateLabel);
+        validatePanel.setLayout(new BoxLayout(validatePanel,
+            BoxLayout.PAGE_AXIS));
+        validatePanel.add(extendButton);
+        validatePanel.add(reportLabel);
         JPanel aboutPanel = new JPanel();
         aboutPanel.setLayout(new BoxLayout(aboutPanel, BoxLayout.PAGE_AXIS));
-        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane = new JTabbedPane();
         signPanel.setOpaque(false);
         validatePanel.setOpaque(false);
         aboutPanel.setOpaque(false);
@@ -248,7 +263,7 @@ public class GUISwing implements GUIInterface {
         aboutPanel.add(websiteButton);
         tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
         tabbedPane.addTab("Firmar", signPanel);
-        tabbedPane.addTab("Validar", validatePanel);
+        tabbedPane.addTab("Validación", validatePanel);
         tabbedPane.addTab("Acerca de", aboutPanel);
         frame.add(filePanel, BorderLayout.PAGE_START);
         frame.add(tabbedPane, BorderLayout.CENTER);
@@ -256,17 +271,59 @@ public class GUISwing implements GUIInterface {
         frame.setMinimumSize(new Dimension(480, 512));
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+        if (documenttosign != null) {
+            loadDocument(documenttosign);
+        }
+    }
+
+    public void loadDocument(String fileName) {
+        fileField.setText(fileName);
+        signButton.setEnabled(true);
+        extendButton.setEnabled(true);
+        int page = 0;
+        BufferedImage pageImage = null;
+        try {
+            PDDocument doc =
+                PDDocument.load(new File(fileName));
+            PDFRenderer renderer = new PDFRenderer(doc);
+            pageImage = renderer.renderImage(page, (float)0.4);
+        } catch (Exception e) {
+            showError(Throwables.getRootCause(e));
+        }
+        imageLabel.setBorder(new LineBorder(Color.BLACK));
+        imageLabel.setIcon(new ImageIcon(pageImage));
+
+        tabbedPane.setSelectedIndex(1);
+
+        Validator validator = new Validator(fileName);
+        try {
+            Report report = new Report(validator.getReports());
+            reportLabel.setText(report.getReport());
+        } catch (Exception e) {
+            reportLabel.setText("Error al generar reporte.");
+        }
     }
 
     public String getDocumentToSign() {
-        return documenttosign;
+        return fileField.getText();
     }
 
     public String getPathToSave() {
         if (documenttosave != null) {
             return documenttosave;
         }
+        String pathToSave = showSaveDialog("-firmado");
 
+        return pathToSave;
+    }
+
+    public String getPathToSaveExtended() {
+        String pathToExtend = showSaveDialog("-sellado");
+
+        return pathToExtend;
+    }
+
+    public String showSaveDialog(String suffix) {
         String fileName = null;
         FileDialog saveDialog = null;
         saveDialog = new FileDialog(saveDialog,
@@ -284,7 +341,7 @@ public class GUISwing implements GUIInterface {
             dotExtension = saveFileName.substring(lastDot);
         }
         saveDialog.setFile(saveFileName.substring(0,
-            saveFileName.lastIndexOf(".")) + "-firmado" + dotExtension);
+            saveFileName.lastIndexOf(".")) + suffix + dotExtension);
         saveDialog.setFilenameFilter(loadDialog.getFilenameFilter());
         saveDialog.setLocationRelativeTo(null);
         saveDialog.setVisible(true);
