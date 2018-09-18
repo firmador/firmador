@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.firmador.gui.GUIInterface;
-import app.firmador.tarjeta.TarjetaPkcs11;
-import app.firmador.tarjeta.Utils;
+import app.firmador.token.Token;
+import app.firmador.token.Utils;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.AbstractSignatureParameters;
 import eu.europa.esig.dss.DSSUtils;
@@ -91,11 +91,11 @@ public class CRSigner {
             signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin,
                 (int) selectedSlot);
         } else {
-            TarjetaPkcs11 tarjeta = new TarjetaPkcs11();
+            Token token = new Token();
             long[] slots = null;
 
             try {
-                slots = tarjeta.getSlots();
+                slots = token.getSlots();
             } catch (Exception|Error e) {
                 gui.showError(Throwables.getRootCause(e));
             }
@@ -105,7 +105,7 @@ public class CRSigner {
                         signingToken = new Pkcs11SignatureToken(getPkcs11Lib(),
                             pin);
                     } else {
-                        selectedSlot = getSelectedSlot(tarjeta, slots);
+                        selectedSlot = getSelectedSlot(token, slots);
                         signingToken = new Pkcs11SignatureToken(getPkcs11Lib(),
                             pin, selectedSlot);
                     }
@@ -117,28 +117,28 @@ public class CRSigner {
     }
 
     public void selectSlot() {
-        TarjetaPkcs11 tarjeta = new TarjetaPkcs11();
+        Token token = new Token();
         long[] slots = null;
 
         try {
-            slots = tarjeta.getSlots();
+            slots = token.getSlots();
         } catch (Exception|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
         if (slots.length == 1) {
             selectedSlot = 0;
         } else {
-            selectedSlot = getSelectedSlot(tarjeta, slots);
+            selectedSlot = getSelectedSlot(token, slots);
         }
     }
 
-    private int getSelectedSlot(TarjetaPkcs11 tarjeta, long[] slots) {
-        String[] propietarios = new String[slots.length];
+    private int getSelectedSlot(Token token, long[] slots) {
+        String[] owners = new String[slots.length];
         for (int x = 0; x < slots.length; x++) {
-            propietarios[x] = tarjeta.getPropietario(slots[x]);
+            owners[x] = token.getOwner(slots[x]);
         }
 
-        return gui.getSelection(propietarios);
+        return gui.getSelection(owners);
     }
 
     public CertificateVerifier getCertificateVerifier() {

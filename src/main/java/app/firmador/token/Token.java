@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package app.firmador.tarjeta;
+package app.firmador.token;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -36,7 +36,7 @@ import sun.security.pkcs11.wrapper.PKCS11Exception;
 import com.google.common.base.Splitter;
 
 @SuppressWarnings("restriction")
-public class TarjetaPkcs11 {
+public class Token {
 
     private PKCS11 pkcs11 = null;
 
@@ -130,7 +130,7 @@ public class TarjetaPkcs11 {
         return getSlots(null);
     }
 
-    public String getPropietario(long slot) {
+    public String getOwner(long slot) {
         String dev = null;
 
         try {
