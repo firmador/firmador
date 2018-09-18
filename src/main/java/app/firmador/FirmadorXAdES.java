@@ -20,30 +20,23 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package app.firmador;
 
 import java.security.KeyStore.PasswordProtection;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import javax.xml.crypto.dsig.CanonicalizationMethod;
 
 import app.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
-import eu.europa.esig.dss.BLevelParameters;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.DSSException;
-import eu.europa.esig.dss.DigestAlgorithm;
 import eu.europa.esig.dss.SignatureLevel;
 import eu.europa.esig.dss.SignaturePackaging;
 import eu.europa.esig.dss.SignatureValue;
 import eu.europa.esig.dss.ToBeSigned;
 import eu.europa.esig.dss.client.tsp.OnlineTSPSource;
+import eu.europa.esig.dss.xades.XAdESSignatureParameters;
+import eu.europa.esig.dss.xades.signature.XAdESService;
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 import eu.europa.esig.dss.x509.CertificateToken;
-import eu.europa.esig.dss.xades.DSSReference;
-import eu.europa.esig.dss.xades.DSSTransform;
-import eu.europa.esig.dss.xades.XAdESSignatureParameters;
-import eu.europa.esig.dss.xades.signature.XAdESService;
 
 public class FirmadorXAdES extends CRSigner {
 
@@ -62,7 +55,6 @@ public class FirmadorXAdES extends CRSigner {
 
         parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
         parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
-        parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
         parameters.setSigningCertificate(privateKey.getCertificate());
 
         List<CertificateToken> certificateChain = getCertificateChain(
@@ -79,44 +71,15 @@ public class FirmadorXAdES extends CRSigner {
 
         SignatureValue signatureValue = signingToken.sign(dataToSign,
             parameters.getDigestAlgorithm(), privateKey);
-
-        BLevelParameters bLevelParams = new BLevelParameters();
-        bLevelParams.setSigningDate(new Date());
-
-        parameters.setBLevelParams(bLevelParams);
-
-        final ArrayList<DSSTransform> transforms =
-            new ArrayList<DSSTransform>();
-
-        DSSTransform dssTransform = new DSSTransform();
-        dssTransform.setAlgorithm(CanonicalizationMethod.ENVELOPED);
-        transforms.add(dssTransform);
-
-        dssTransform = new DSSTransform();
-        dssTransform.setAlgorithm(CanonicalizationMethod.EXCLUSIVE);
-        transforms.add(dssTransform);
-
-        final ArrayList<DSSReference> references =
-            new ArrayList<DSSReference>();
-        DSSReference dssReference = new DSSReference();
-        dssReference.setId("xml_ref_id");
-        dssReference.setUri("");
-        dssReference.setContents(toSignDocument);
-        dssReference.setDigestMethodAlgorithm(parameters.getDigestAlgorithm());
-        dssReference.setTransforms(transforms);
-        references.add(dssReference);
-
-        parameters.setReferences(references);
-
         DSSDocument signedDocument = null;
         try {
-            signedDocument = service.signDocument(toSignDocument,
-                parameters, signatureValue);
+            signedDocument = service.signDocument(toSignDocument, parameters,
+                signatureValue);
         } catch (DSSException e) {
             String className = Throwables.getRootCause(e).getClass().getName();
             // Thrown when TSA is not available, retry with a lower profile
-            if (className =="java.net.UnknownHostException") {
-                parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
+            if (className == "java.net.UnknownHostException") {
+                parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
                 signedDocument = service.signDocument(toSignDocument,
                     parameters, signatureValue);
             } else {
@@ -139,6 +102,24 @@ public class FirmadorXAdES extends CRSigner {
         }
 
         return document;
+    }
+
+    public DSSDocument extend(DSSDocument document) {
+        CertificateVerifier certificateVerifier =
+            this.getCertificateVerifier();
+        XAdESSignatureParameters parameters = new XAdESSignatureParameters();
+
+        parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
+
+        XAdESService xadesService = new XAdESService(certificateVerifier);
+
+        OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
+        xadesService.setTspSource(onlineTSPSource);
+
+        DSSDocument extendedDocument = xadesService.extendDocument(document,
+            parameters);
+
+        return extendedDocument;
     }
 
 }
