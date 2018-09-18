@@ -22,13 +22,12 @@ package app.firmador;
 import java.security.KeyStore.PasswordProtection;
 import java.util.List;
 
-import com.google.common.base.Throwables;
-
 import app.firmador.gui.GUIInterface;
+import com.google.common.base.Throwables;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.DSSException;
-import eu.europa.esig.dss.DigestAlgorithm;
 import eu.europa.esig.dss.SignatureLevel;
+
 import eu.europa.esig.dss.SignatureValue;
 import eu.europa.esig.dss.ToBeSigned;
 import eu.europa.esig.dss.client.tsp.OnlineTSPSource;
@@ -56,7 +55,6 @@ public class FirmadorPAdES extends CRSigner {
 
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
         parameters.setSignatureSize(13312);
-        parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
         parameters.setSigningCertificate(privateKey.getCertificate());
 
         List<CertificateToken> certificateChain = getCertificateChain(
