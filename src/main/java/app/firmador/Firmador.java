@@ -19,6 +19,8 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package app.firmador;
 
+import javax.swing.SwingUtilities;
+
 import app.firmador.gui.GUIInterface;
 import app.firmador.gui.GUISelector;
 
@@ -26,10 +28,13 @@ public class Firmador {
 
     public static void main(String[] args) {
         GUISelector guiselector = new GUISelector();
-
         GUIInterface gui = guiselector.getInterface(args);
         gui.setArgs(args);
-        gui.loadGUI();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                gui.loadGUI();
+            }
+        });
     }
 
 }
