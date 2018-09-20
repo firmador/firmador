@@ -76,6 +76,8 @@ public class GUISwing implements GUIInterface {
     private static FileDialog loadDialog;
     private String documenttosign = null;
     private String documenttosave = null;
+    private String lastDirectory = null;
+    private String lastFile = null;
     private Image image = new ImageIcon(GUISwing.class.getClassLoader()
         .getResource("firmador.png")).getImage();
     private JTextField fileField;
@@ -206,6 +208,8 @@ public class GUISwing implements GUIInterface {
                 if (loadDialog.getFile() != null) {
                     loadDocument(loadDialog.getDirectory()
                         + loadDialog.getFile());
+                    lastDirectory = loadDialog.getDirectory();
+                    lastFile = loadDialog.getFile();
                 }
             }
         });
@@ -332,26 +336,23 @@ public class GUISwing implements GUIInterface {
         FileDialog saveDialog = null;
         saveDialog = new FileDialog(saveDialog,
             "Guardar documento", FileDialog.SAVE);
-        String saveDirectory = null;
-        String saveFileName = null;
-
-        saveDirectory = loadDialog.getDirectory();
-        saveFileName = loadDialog.getFile();
-        saveDialog.setDirectory(saveDirectory);
+        saveDialog.setDirectory(lastDirectory);
 
         String dotExtension = "";
-        int lastDot = saveFileName.lastIndexOf(".");
+        int lastDot = lastFile.lastIndexOf(".");
         if (lastDot >= 0) {
-            dotExtension = saveFileName.substring(lastDot);
+            dotExtension = lastFile.substring(lastDot);
         }
-        saveDialog.setFile(saveFileName.substring(0,
-            saveFileName.lastIndexOf(".")) + suffix + dotExtension);
+        saveDialog.setFile(lastFile.substring(0,
+            lastFile.lastIndexOf(".")) + suffix + dotExtension);
         saveDialog.setFilenameFilter(loadDialog.getFilenameFilter());
         saveDialog.setLocationRelativeTo(null);
         saveDialog.setVisible(true);
         saveDialog.dispose();
         if (saveDialog.getFile() != null) {
             fileName = saveDialog.getDirectory() + saveDialog.getFile();
+            lastDirectory = saveDialog.getDirectory();
+            lastFile = saveDialog.getFile();
         }
 
         return fileName;
