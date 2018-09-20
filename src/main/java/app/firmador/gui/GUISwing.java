@@ -284,7 +284,6 @@ public class GUISwing implements GUIInterface {
     public void loadDocument(String fileName) {
         fileField.setText(fileName);
         signButton.setEnabled(true);
-        extendButton.setEnabled(true);
         int page = 0;
         BufferedImage pageImage = null;
         try {
@@ -298,9 +297,14 @@ public class GUISwing implements GUIInterface {
         imageLabel.setBorder(new LineBorder(Color.BLACK));
         imageLabel.setIcon(new ImageIcon(pageImage));
 
-        tabbedPane.setSelectedIndex(1);
-
         Validator validator = new Validator(fileName);
+        if (validator.isSigned()) {
+            extendButton.setEnabled(true);
+            tabbedPane.setSelectedIndex(1);
+        } else {
+            extendButton.setEnabled(false);
+            tabbedPane.setSelectedIndex(0);
+        }
         try {
             Report report = new Report(validator.getReports());
             reportLabel.setText(report.getReport());
