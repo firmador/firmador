@@ -58,8 +58,11 @@ public class Validator {
 
     public Reports getReports() {
         Reports reports = documentValidator.validateDocument();
-
         return reports;
+    }
+
+    public boolean isSigned() {
+        return !documentValidator.getSignatures().isEmpty();
     }
 
 }
