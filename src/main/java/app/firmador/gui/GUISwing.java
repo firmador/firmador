@@ -122,6 +122,7 @@ public class GUISwing implements GUIInterface {
                     // FirmadorXAdES firmador = new FirmadorXAdES(this);
                     FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
                     firmador.selectSlot();
+                    if (firmador.selectedSlot == -1) return;
 
                     PasswordProtection pin = getPin();
                     DSSDocument toSignDocument = new FileDocument(fileName);
@@ -485,14 +486,14 @@ public class GUISwing implements GUIInterface {
                 "conectados de forma correcta.";
             JOptionPane.showMessageDialog(null, message, "Error al firmar",
             JOptionPane.ERROR_MESSAGE);
-            System.exit(0);
+            return -1;
         }
         String input = (String) JOptionPane.showInputDialog(null,
             "Propietario: ", "Seleccione el dispositivo para firmar",
             JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
         if (input == null) {
-            System.exit(0);
+            return -1;
         }
         for (int x = 0; x < options.length; x++) {
             if (input.equals(options[x])) {

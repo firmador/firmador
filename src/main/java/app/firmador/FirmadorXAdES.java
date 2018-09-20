@@ -63,6 +63,7 @@ public class FirmadorXAdES extends CRSigner {
             parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
             parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
             parameters.setSigningCertificate(privateKey.getCertificate());
+            parameters.setSignWithExpiredCertificate(true);
 
             List<CertificateToken> certificateChain = getCertificateChain(
                 verifier, parameters);
