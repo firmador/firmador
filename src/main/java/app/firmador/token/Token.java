@@ -20,9 +20,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package app.firmador.token;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.security.Principal;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
@@ -31,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import sun.security.pkcs11.wrapper.CK_ATTRIBUTE;
 import sun.security.pkcs11.wrapper.PKCS11;
-import sun.security.pkcs11.wrapper.PKCS11Exception;
 
 import com.google.common.base.Splitter;
 
@@ -102,7 +99,7 @@ public class Token {
         byte[] bytes = attributes[0].getByteArray();
 
         if (bytes == null) {
-            throw new CertificateException("Array de certificados null");
+            throw new Exception("Arreglo de certificados nulo");
         }
         CertificateFactory certificateFactory = CertificateFactory
             .getInstance("X.509");
