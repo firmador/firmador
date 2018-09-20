@@ -44,46 +44,68 @@ public class FirmadorPAdES extends CRSigner {
         super(gui);
     }
 
-    private DSSDocument _sign(DSSDocument toSignDocument,
+    public DSSDocument sign(DSSDocument toSignDocument,
         PasswordProtection pin) {
 
-        CertificateVerifier commonCertificateVerifier =
-            this.getCertificateVerifier();
-        SignatureTokenConnection signingToken = getSignatureConnection(pin);
-        DSSPrivateKeyEntry privateKey = getPrivateKey(signingToken);
+        CertificateVerifier verifier = this.getCertificateVerifier();
+        verifier.setCheckRevocationForUntrustedChains(true);
+
+        PAdESService service = new PAdESService(verifier);
+
         PAdESSignatureParameters parameters = new PAdESSignatureParameters();
-        commonCertificateVerifier.setCheckRevocationForUntrustedChains(true);
 
-        parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
-        parameters.setSignatureSize(13312);
-        parameters.setSigningCertificate(privateKey.getCertificate());
+        SignatureValue signatureValue = null;
 
-        List<CertificateToken> certificateChain = getCertificateChain(
-            commonCertificateVerifier, parameters);
-        parameters.setCertificateChain(certificateChain);
+        try {
+            SignatureTokenConnection token = getSignatureConnection(pin);
+            DSSPrivateKeyEntry privateKey = getPrivateKey(token);
 
-        PAdESService service = new PAdESService(commonCertificateVerifier);
+            parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
+            parameters.setSignatureSize(13312);
+            parameters.setSigningCertificate(privateKey.getCertificate());
 
-        OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
-        service.setTspSource(onlineTSPSource);
+            List<CertificateToken> certificateChain = getCertificateChain(
+                verifier, parameters);
+            parameters.setCertificateChain(certificateChain);
 
-        ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
-            parameters);
+            OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
+            service.setTspSource(onlineTSPSource);
 
-        SignatureValue signatureValue = signingToken.sign(dataToSign,
-            parameters.getDigestAlgorithm(), privateKey);
+            ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
+                parameters);
+
+            signatureValue = token.sign(dataToSign,
+                parameters.getDigestAlgorithm(), privateKey);
+        } catch (DSSException|Error e) {
+            gui.showError(Throwables.getRootCause(e));
+        }
+
         DSSDocument signedDocument = null;
         try {
             signedDocument = service.signDocument(toSignDocument, parameters,
                 signatureValue);
-        } catch (DSSException e) {
-            String className = Throwables.getRootCause(e).getClass().getName();
-            // Thrown when TSA is not available, retry with a lower profile
-            if (className == "java.net.UnknownHostException") {
-                parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
+        } catch (Exception e) {
+            e.printStackTrace();
+            gui.showMessage(
+                "Aviso: no se ha podido agregar el sello de tiempo y la " +
+                "información de revocación porque es posible\n" +
+                "que haya problemas de conexión con los servidores del " +
+                "sistema de Firma Digital.\n" +
+                "Detalle del error: " + Throwables.getRootCause(e) + "\n" +
+                "\n" +
+                "Se ha agregado una firma básica solamente. No obstante, si " +
+                "el sello de tiempo resultara importante\n" +
+                "para este documento, debería agregarse lo antes posible " +
+                "antes de enviarlo al destinatario.\n" +
+                "\n" +
+                "Si lo prefiere, puede cancelar el guardado del documento " +
+                "firmado e intentar firmarlo más tarde.\n");
+
+            parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
+            try {
                 signedDocument = service.signDocument(toSignDocument,
                     parameters, signatureValue);
-            } else {
+            } catch (Exception ex) {
                 e.printStackTrace();
                 gui.showError(Throwables.getRootCause(e));
             }
@@ -92,36 +114,36 @@ public class FirmadorPAdES extends CRSigner {
         return signedDocument;
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument,
-        PasswordProtection pin) {
-
-        DSSDocument document = null;
-
-        try {
-            document = _sign(toSignDocument, pin);
-        } catch (Exception|Error e) {
-            e.printStackTrace();
-            gui.showError(Throwables.getRootCause(e));
-        }
-
-        return document;
-    }
-
     public DSSDocument extend(DSSDocument document) {
         PAdESSignatureParameters parameters = new PAdESSignatureParameters();
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
 
-        CertificateVerifier certificateVerifier =
-            this.getCertificateVerifier();
-        certificateVerifier.setCheckRevocationForUntrustedChains(true);
+        CertificateVerifier verifier = this.getCertificateVerifier();
+        verifier.setCheckRevocationForUntrustedChains(true);
 
-        PAdESService padesService = new PAdESService(certificateVerifier);
+        PAdESService padesService = new PAdESService(verifier);
 
         OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
         padesService.setTspSource(onlineTSPSource);
 
-        DSSDocument extendedDocument = padesService.extendDocument(document,
-            parameters);
+        DSSDocument extendedDocument = null;
+        try {
+            extendedDocument = padesService.extendDocument(document,
+                parameters);
+        } catch (Exception e) {
+            e.printStackTrace();
+            gui.showMessage(
+                "Aviso: no se ha podido agregar el sello de tiempo y la " +
+                "información de revocación porque es posible\n" +
+                "que haya problemas de conexión con los servidores del " +
+                "sistema de Firma Digital.\n" +
+                "Detalle del error: " + Throwables.getRootCause(e) + "\n" +
+                "\n" +
+                "Inténtelo de nuevo más tarde. Si el problema persiste, " +
+                "compruebe su conexión a Internet o verifique\n" +
+                "que no se trata de un problema de los servidores de Firma " +
+                "Digital o de un error de este programa.\n");
+        }
 
         return extendedDocument;
     }
