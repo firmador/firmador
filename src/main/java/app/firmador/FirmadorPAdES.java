@@ -52,6 +52,7 @@ public class FirmadorPAdES extends CRSigner {
         SignatureTokenConnection signingToken = getSignatureConnection(pin);
         DSSPrivateKeyEntry privateKey = getPrivateKey(signingToken);
         PAdESSignatureParameters parameters = new PAdESSignatureParameters();
+        commonCertificateVerifier.setCheckRevocationForUntrustedChains(true);
 
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
         parameters.setSignatureSize(13312);
@@ -83,6 +84,7 @@ public class FirmadorPAdES extends CRSigner {
                 signedDocument = service.signDocument(toSignDocument,
                     parameters, signatureValue);
             } else {
+                e.printStackTrace();
                 gui.showError(Throwables.getRootCause(e));
             }
         }
@@ -98,6 +100,7 @@ public class FirmadorPAdES extends CRSigner {
         try {
             document = _sign(toSignDocument, pin);
         } catch (Exception|Error e) {
+            e.printStackTrace();
             gui.showError(Throwables.getRootCause(e));
         }
 
@@ -105,11 +108,12 @@ public class FirmadorPAdES extends CRSigner {
     }
 
     public DSSDocument extend(DSSDocument document) {
+        PAdESSignatureParameters parameters = new PAdESSignatureParameters();
+        parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
+
         CertificateVerifier certificateVerifier =
             this.getCertificateVerifier();
-        PAdESSignatureParameters parameters = new PAdESSignatureParameters();
-
-        parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
+        certificateVerifier.setCheckRevocationForUntrustedChains(true);
 
         PAdESService padesService = new PAdESService(certificateVerifier);
 
