@@ -2,64 +2,92 @@
 
 Herramienta de escritorio para firmar documentos que cumplen con la [Política
 de Formatos Oficiales de los Documentos Electrónicos Firmados Digitalmente](
-https://www.mifirmadigital.go.cr/wp-content/uploads/2016/03/DCFD-Política-de-Formato-Oficial-v1.0.pdf
+https://mifirmadigital.go.cr/wp-content/uploads/2016/03/DCFD-Política-de-Formato-Oficial-v1.0.pdf
 ) de Costa Rica.
 
-Está diseñado para funcionar con Java 8 y funciona en GNU/Linux, macOS y
-Windows. En el caso de macOS y Windows requiere [instalar Java 8 (JRE)](
-http://www.oracle.com/technetwork/java/javase/downloads/index.html#JDK8) y los
-controladores de lector y tarjeta del sitio web de
-[descargas de Soporte Firma Digital](https://www.soportefirmadigital.com/sfdj/dl.aspx).
+Está diseñado para funcionar con Java y funciona en GNU/Linux, macOS y Windows.
+En el caso de macOS y Windows requiere instalar [Java](https://java.com/) y los
+controladores de lector y tarjeta del sitio web de [descargas de Soporte Firma
+Digital](https://soportefirmadigital.com/sfdj/dl.aspx).
 En el caso de GNU/Linux, la forma recomendada para instalarlo está explicada en
-los siguientes artículos para
-[Fedora](https://fran.cr/instalar-firma-digital-costa-rica-linux-fedora/) y
+los siguientes artículos para instalar firma digital de Costa Rica en
+[Fedora](https://fran.cr/instalar-firma-digital-costa-rica-linux-fedora/) y en
 [Ubuntu](https://fran.cr/instalar-firma-digital-costa-rica-gnu-linux-ubuntu/).
 
 
 ## Descarga
 
-- [Descargar firmador](https://firmador.app/firmador.jar)
-  para Windows, GNU/Linux y macOS.
+- [Descargar firmador](https://firmador.app/firmador.jar) para Windows,
+  GNU/Linux y macOS.
 
 
 ## Capturas de pantalla
 
-GNU/Linux:
+![Firmador para GNU/Linux](pantallazos/gnulinux.png)
 
-![Seleccionar documento](pantallazos/gnulinux-load.png)
+![Firmador para macOS](pantallazos/macos.png)
 
-![Ingresar PIN](pantallazos/gnulinux-pin.png)
+![Firmado para Windows](pantallazos/windows.png)
 
-![Guardar documento](pantallazos/gnulinux-save.png)
 
-macOS:
+## Instalación y ejecución
 
-![Seleccionar documento](pantallazos/macos-load.png)
+Por el momento Firmador no requiere instalación, es un paquete ejecutable.
 
-![Ingresar PIN](pantallazos/macos-pin.png)
+En Windows se puede abrir directamente con doble clic.
 
-![Guardar documento](pantallazos/macos-save.png)
+En macOS se puede ejecutar también con doble clic, aunque la primera vez habrá
+que abrirlo con control + clic o bien clic secundario sobre el fichero desde el
+Finder y seleccionar Abrir. El sistema preguntará si se quiere abrir una
+aplicación descargada de Internet y habrá que confirmar. Una vez hecho esto,
+las siguientes aperturas funcionarán con doble clic.
 
-Windows:
+En algunas distribuciones como Ubuntu se puede ejecutar con doble clic si se
+configura el fichero como ejecutable. En las que no esté disponible esta
+característica, se puede ejecutar desde terminal con `java -jar firmador.jar`.
 
-![Seleccionar documento](pantallazos/windows-load.png)
-
-![Ingresar PIN](pantallazos/windows-pin.png)
-
-![Guardar documento](pantallazos/windows-save.png)
+En próximas versiones podría distribuirse con instaladores propios para Windows
+y macOS, desde el momento en el que Oracle no ofrezca instaladores para Java y
+por tanto deba incorporarse con el propio instalador. Asimismo, podrían
+ofrecerse paquetes para distribuciones GNU/Linux para mayor comodidad de
+ejecución.
 
 
 ## Compilación del código fuente
 
-Para compilar el ejemplo se requiere Maven.
+Para las personas interesadas en el desarrollo de Firmador, para compilar
+Firmador se requiere git, Maven y OpenJDK.
+
+En este momento se requiere una versión en desarrollo (snapshot) de DSS, la
+librería implementación de referencia de los formatos AdES, que se puede
+obtener desde el repositorio git de DSS con espejo en GitHub para descargar más
+rápidamente:
+
+    git clone https://github.com/esig/dss.git
+
+Para entrar en el directorio del repositorio descargado:
+
+    cd dss
+
+Para cambiar a la rama de desarrollo:
+
+    git checkout develop
+
+Para compilar e instalar esta dependencia en el repositorio local de Maven:
+
+    mvn install
+
+Para obtener el código fuente de Firmador, ejecutar:
+
+    git clone https://gitlab.com/firmador/firmador.git
 
 Para generar el JAR:
 
-`mvn clean package`
+    mvn clean package
 
 Para ejecutar el JAR:
 
-`java -jar target/firmador.jar`
+    java -jar target/firmador.jar
 
 
 ## Licencia
