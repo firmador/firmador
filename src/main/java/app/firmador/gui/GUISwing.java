@@ -306,9 +306,9 @@ public class GUISwing implements GUIInterface {
             reportLabel.setText(report.getReport());
         } catch (Exception e) {
             e.printStackTrace();
-            reportLabel.setText("Error al generar reporte. Agradeceríamos " +
-                "que informara sobre este inconveniente a los " +
-                "desarrolladores de la aplicación para buscar una solución.");
+            reportLabel.setText("<html>Error al generar reporte. " +
+                "Agradeceríamos que informara sobre este inconveniente a " +
+                "los desarrolladores de la aplicación para repararlo.</html>");
         }
     }
 
