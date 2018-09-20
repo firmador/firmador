@@ -57,8 +57,8 @@ public class FirmadorXAdES extends CRSigner {
         SignatureValue signatureValue = null;
 
         try {
-            SignatureTokenConnection signingToken = getSignatureConnection(pin);
-            DSSPrivateKeyEntry privateKey = getPrivateKey(signingToken);
+            SignatureTokenConnection token = getSignatureConnection(pin);
+            DSSPrivateKeyEntry privateKey = getPrivateKey(token);
 
             parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
             parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
