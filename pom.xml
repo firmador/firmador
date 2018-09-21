@@ -14,6 +14,8 @@
     <dss.version>5.4-SNAPSHOT</dss.version>
     <logback.version>1.2.3</logback.version>
     <shade.version>3.2.0</shade.version>
+    <jaxb.version>2.3.0</jaxb.version>
+    <activation.version>1.2.0</activation.version>
   </properties>
   <build>
     <finalName>${project.artifactId}</finalName>
@@ -43,7 +45,7 @@
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <manifestEntries>
-                    <Main-Class>${project.groupId}.Firmador</Main-Class>
+                    <Main-Class>Firmador</Main-Class>
                     <Specification-Version>${project.version}</Specification-Version>
                   </manifestEntries>
                 </transformer>
@@ -99,6 +101,26 @@
       <groupId>com.apple</groupId>
       <artifactId>AppleJavaExtensions</artifactId>
       <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>${jaxb.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-core</artifactId>
+      <version>${jaxb.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>${jaxb.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.activation</groupId>
+      <artifactId>javax.activation</artifactId>
+      <version>${activation.version}</version>
     </dependency>
   </dependencies>
   <repositories>

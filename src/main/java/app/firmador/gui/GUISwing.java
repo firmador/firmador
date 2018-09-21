@@ -26,7 +26,6 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -38,7 +37,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
@@ -59,7 +57,6 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import app.firmador.Firmador;
 import app.firmador.FirmadorPAdES;
 //import app.firmador.FirmadorXAdES;
 import app.firmador.Report;
@@ -105,15 +102,6 @@ public class GUISwing implements GUIInterface {
         final JFrame frame = new JFrame("Firmador");
         frame.setIconImage(
             image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        try {
-            Field awtAppClassNameField =
-                toolkit.getClass().getDeclaredField("awtAppClassName");
-            awtAppClassNameField.setAccessible(true);
-            awtAppClassNameField.set(toolkit, "Firmador");
-        } catch (Exception e) {
-            // Workaround application name in some desktop window managers.
-        }
         signButton = new JButton("Firmar documento");
         signButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         signButton.addActionListener(new ActionListener() {
@@ -240,7 +228,7 @@ public class GUISwing implements GUIInterface {
         JLabel descriptionLabel = new JLabel(
             "<html><p align='center'><b>Firmador</b><br><br>" +
             "Versión " +
-            Firmador.class.getPackage().getSpecificationVersion() +
+            getClass().getPackage().getSpecificationVersion() +
             "<br><br>" +
             "Herramienta para firmar documentos digitalmente.<br><br>" +
             "Los documentos firmados con esta herramienta cumplen con la " +
