@@ -279,6 +279,7 @@ public class GUISwing implements GUIInterface {
                 PDDocument.load(new File(fileName));
             PDFRenderer renderer = new PDFRenderer(doc);
             pageImage = renderer.renderImage(page, (float)0.4);
+            doc.close();
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
         }
