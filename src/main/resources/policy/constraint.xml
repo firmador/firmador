@@ -16,6 +16,24 @@
         lista de control y resultado se basa en el procedimiento del estándar
         ETSI EN 319 102-1 en su última versión.
     </Description>
+    <ContainerConstraints>
+        <AcceptableContainerTypes Level="FAIL">
+            <Id>ASiC-S</Id>
+            <Id>ASiC-E</Id>
+        </AcceptableContainerTypes>
+<!--        <ZipCommentPresent Level="WARN"/> -->
+<!--        <AcceptableZipComment Level="WARN"> -->
+<!--            <Id>mimetype=application/vnd.etsi.asic-s+zip</Id> -->
+<!--            <Id>mimetype=application/vnd.etsi.asic-e+zip</Id> -->
+<!--        </AcceptableZipComment> -->
+        <MimeTypeFilePresent Level="FAIL"/>
+        <AcceptableMimeTypeFileContent Level="WARN">
+            <Id>application/vnd.etsi.asic-s+zip</Id>
+            <Id>application/vnd.etsi.asic-e+zip</Id>
+        </AcceptableMimeTypeFileContent>
+        <ManifestFilePresent Level="FAIL"/>
+        <AllFilesSigned Level="WARN"/>
+    </ContainerConstraints>
     <SignatureConstraints>
         <AcceptablePolicies Level="FAIL">
             <Id>ANY_POLICY</Id>
@@ -39,7 +57,7 @@
                 <RevocationInfoAccessPresent Level="WARN"/>
                 <RevocationDataAvailable Level="FAIL"/>
                 <RevocationDataNextUpdatePresent Level="WARN"/>
-                <RevocationDataFreshness Level="WARN"/>
+                <RevocationDataFreshness Level="FAIL"/>
                 <KeyUsage Level="WARN">
                     <Id>nonRepudiation</Id>
                 </KeyUsage>
@@ -78,7 +96,7 @@
                 <NotExpired Level="FAIL"/>
                 <RevocationDataAvailable Level="FAIL"/>
                 <RevocationDataNextUpdatePresent Level="WARN"/>
-                <RevocationDataFreshness Level="WARN"/>
+                <RevocationDataFreshness Level="FAIL"/>
                 <NotRevoked Level="FAIL"/>
                 <NotOnHold Level="FAIL"/>
                 <Cryptographic Level="FAIL">
@@ -166,7 +184,7 @@
                 <RevocationInfoAccessPresent Level="WARN"/>
                 <RevocationDataAvailable Level="FAIL"/>
                 <RevocationDataNextUpdatePresent Level="WARN"/>
-                <RevocationDataFreshness Level="WARN"/>
+                <RevocationDataFreshness Level="FAIL"/>
                 <KeyUsage Level="WARN">
                     <Id>nonRepudiation</Id>
                 </KeyUsage>
@@ -205,7 +223,7 @@
                 <NotExpired Level="FAIL"/>
                 <RevocationDataAvailable Level="FAIL"/>
                 <RevocationDataNextUpdatePresent Level="WARN"/>
-                <RevocationDataFreshness Level="WARN"/>
+                <RevocationDataFreshness Level="FAIL"/>
                 <NotRevoked Level="FAIL"/>
                 <NotOnHold Level="FAIL"/>
                 <Cryptographic Level="FAIL">
@@ -278,23 +296,21 @@
     </CounterSignatureConstraints>
     <Timestamp>
         <TimestampDelay Level="FAIL" Unit="DAYS" Value="0"/>
-        <RevocationTimeAgainstBestSignatureTime    Level="FAIL"/>
+        <RevocationTimeAgainstBestSignatureTime Level="FAIL"/>
         <BestSignatureTimeBeforeIssuanceDateOfSigningCertificate Level="FAIL"/>
-        <SigningCertificateValidityAtBestSignatureTime Level="FAIL"/>
-        <AlgorithmReliableAtBestSignatureTime Level="FAIL"/>
         <Coherence Level="WARN"/>
         <BasicSignatureConstraints>
             <ReferenceDataExistence Level="FAIL"/>
             <ReferenceDataIntact Level="FAIL"/>
             <SignatureIntact Level="FAIL"/>
-            <ProspectiveCertificateChain Level="WARN"/>
+            <ProspectiveCertificateChain Level="FAIL"/>
             <SigningCertificate>
                 <Recognition Level="FAIL"/>
                 <Signature Level="FAIL"/>
                 <NotExpired Level="FAIL"/>
                 <RevocationDataAvailable Level="FAIL"/>
                 <RevocationDataNextUpdatePresent Level="WARN"/>
-                <RevocationDataFreshness Level="WARN"/>
+                <RevocationDataFreshness Level="FAIL"/>
                 <NotRevoked Level="FAIL"/>
                 <NotOnHold Level="FAIL"/>
                 <NotSelfSigned Level="WARN"/>
@@ -328,7 +344,7 @@
                 <NotExpired Level="FAIL"/>
                 <RevocationDataAvailable Level="WARN"/>
                 <RevocationDataNextUpdatePresent Level="WARN"/>
-                <RevocationDataFreshness Level="WARN"/>
+                <RevocationDataFreshness Level="FAIL"/>
                 <NotRevoked Level="FAIL"/>
                 <NotOnHold Level="FAIL"/>
                 <Cryptographic Level="FAIL">
@@ -395,7 +411,7 @@
                 <NotExpired Level="FAIL"/>
                 <RevocationDataAvailable Level="FAIL"/>
                 <RevocationDataNextUpdatePresent Level="WARN"/>
-                <RevocationDataFreshness Level="WARN"/>
+                <RevocationDataFreshness Level="FAIL"/>
                 <NotRevoked Level="FAIL"/>
                 <NotOnHold Level="FAIL"/>
                 <Cryptographic Level="WARN">
@@ -428,7 +444,7 @@
                 <NotExpired Level="FAIL"/>
                 <RevocationDataAvailable Level="WARN"/>
                 <RevocationDataNextUpdatePresent Level="WARN"/>
-                <RevocationDataFreshness Level="WARN"/>
+                <RevocationDataFreshness Level="FAIL"/>
                 <NotRevoked Level="FAIL"/>
                 <NotOnHold Level="FAIL"/>
                 <Cryptographic Level="FAIL">
