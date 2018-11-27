@@ -60,7 +60,7 @@ public class FirmadorPAdES extends CRSigner {
             SignatureTokenConnection token = getSignatureConnection(pin);
             DSSPrivateKeyEntry privateKey = getPrivateKey(token);
 
-            parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
+            parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LT);
             parameters.setSignatureSize(13312);
             parameters.setSigningCertificate(privateKey.getCertificate());
             parameters.setSignWithExpiredCertificate(true);
