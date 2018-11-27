@@ -78,11 +78,11 @@
         <xsl:apply-templates select="dss:Warnings"/>
         <xsl:apply-templates select="dss:Infos"/>
         <p>
-            Fecha declarada de la firma:
+            Fecha declarada de la firma (hora UTC):
             <xsl:value-of select="dss:SigningTime"/>
         </p>
         <p>
-            Fecha mínima probada de la existencia de la firma:
+            Fecha mínima probada de la existencia de la firma (hora UTC):
             <xsl:value-of select="dss:BestSignatureTime"/>
         </p>
         <p></p>
