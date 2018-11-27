@@ -91,8 +91,13 @@ public class GUISwing implements GUIInterface {
             // macOS dock icon support specific code.
         }
         try {
-            UIManager.setLookAndFeel(
-                UIManager.getSystemLookAndFeelClassName());
+            try {
+                UIManager.setLookAndFeel(
+                    "com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+            } catch (javax.swing.UnsupportedLookAndFeelException e) {
+                UIManager.setLookAndFeel(
+                    UIManager.getSystemLookAndFeelClassName());
+            }
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
         }
