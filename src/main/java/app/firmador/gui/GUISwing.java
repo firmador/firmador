@@ -91,8 +91,14 @@ public class GUISwing implements GUIInterface {
             // macOS dock icon support specific code.
         }
         try {
-            UIManager.setLookAndFeel(
-                UIManager.getSystemLookAndFeelClassName());
+            try {
+                UIManager.setLookAndFeel(
+                    "com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+            } catch (javax.swing.UnsupportedLookAndFeelException |
+                java.lang.ClassNotFoundException e) {
+                UIManager.setLookAndFeel(
+                    UIManager.getSystemLookAndFeelClassName());
+            }
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
         }
@@ -448,7 +454,15 @@ public class GUISwing implements GUIInterface {
                     break;
                 }
                 break;
+            case "java.io.IOException":
+                if (message.contains("asepkcs") || message.contains("libASEP11")) {
+                    message = "No se ha encontrado la librería de Firma Digital " +
+                        "en el sistema.\n" +
+                        "¿Están instalados los controladores?";
+                    break;
+                }
             default:
+                error.printStackTrace();
                 message = "Error: " + className + "\n" +
                     "Detalle: " + message + "\n" +
                     "Agradecemos que comunique este mensaje de error a los " +
