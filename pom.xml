@@ -92,7 +92,12 @@
     </dependency>
     <dependency>
       <groupId>eu.europa.ec.joinup.sd-dss</groupId>
-      <artifactId>dss-xades</artifactId>
+      <artifactId>dss-asic-xades</artifactId>
+      <version>${dss.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+      <artifactId>dss-asic-cades</artifactId>
       <version>${dss.version}</version>
     </dependency>
     <dependency>
