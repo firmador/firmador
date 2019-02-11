@@ -118,6 +118,7 @@ public class FirmadorPAdES extends CRSigner {
     public DSSDocument extend(DSSDocument document) {
         PAdESSignatureParameters parameters = new PAdESSignatureParameters();
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
+        parameters.setSignatureSize(2765);
 
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
