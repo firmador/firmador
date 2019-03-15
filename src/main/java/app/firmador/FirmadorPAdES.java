@@ -21,11 +21,14 @@ package app.firmador;
 
 import java.awt.Font;
 import java.security.KeyStore.PasswordProtection;
+import java.util.Date;
 import java.util.List;
+import javax.security.auth.x500.X500Principal;
 
 import app.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.DigestAlgorithm;
+import eu.europa.esig.dss.DSSASN1Utils;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.DSSException;
 import eu.europa.esig.dss.SignatureLevel;
@@ -43,6 +46,7 @@ import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 import eu.europa.esig.dss.x509.CertificateToken;
+import org.bouncycastle.asn1.x500.style.BCStyle;
 
 public class FirmadorPAdES extends CRSigner {
 
@@ -64,39 +68,17 @@ public class FirmadorPAdES extends CRSigner {
 
         SignatureValue signatureValue = null;
 
+        DSSDocument signedDocument = null;
+
         try {
             SignatureTokenConnection token = getSignatureConnection(pin);
             DSSPrivateKeyEntry privateKey = getPrivateKey(token);
-
+            CertificateToken certificate = privateKey.getCertificate();
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LT);
             parameters.setSignatureSize(13312);
-            parameters.setSigningCertificate(privateKey.getCertificate());
+            parameters.setSigningCertificate(certificate);
             parameters.setSignWithExpiredCertificate(true);
-
-            SignatureImageParameters imageParameters =
-                new SignatureImageParameters();
-            imageParameters.setxAxis(100);
-            imageParameters.setyAxis(700);
-            SignatureImageTextParameters textParameters =
-                new SignatureImageTextParameters();
-            // TODO: waiting for new DSS API changes allowing built-in fonts
-            textParameters.setFont(
-                new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10)));
-            // TODO: use CN, serial and date properly
-            textParameters.setText(
-                "Firmado digitalmente por: " +
-                privateKey.getCertificate().getSubjectX500Principal().getName() + "\n" +
-                "Identificación: CPF-XX-XXXX-XXXX. Fecha declarada: XXXX-XX-XX\n" +
-                "Toda versión impresa es nula por no contener firma digital.");
-            imageParameters.setTextParameters(textParameters);
-            parameters.setSignatureImageParameters(imageParameters);
-            // TODO: check if there is an empty signature field (placeholder)
-            // to use it for axis and (maybe) adjust the size to fit into the rect
-            // if possible without needing to prompt the user.
-            // If using GUI, placing values by default but allowing to tweak them may be
-            // fine.
-            //parameters.setSignatureFieldId("Signature1");
 
             List<CertificateToken> certificateChain = getCertificateChain(
                 verifier, parameters);
@@ -104,6 +86,34 @@ public class FirmadorPAdES extends CRSigner {
 
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
+
+            // TODO: check if there is an empty signature field (placeholder)
+            // to use it for axis and (maybe) adjust the size to fit into the rect
+            // if possible without needing to prompt the user.
+            // If using GUI, placing values by default but allowing to tweak them may be
+            // fine.
+            //parameters.setSignatureFieldId("Signature1");
+
+            SignatureImageParameters imageParameters =
+                new SignatureImageParameters();
+            imageParameters.setxAxis(100);
+            imageParameters.setyAxis(700);
+            SignatureImageTextParameters textParameters =
+                new SignatureImageTextParameters();
+            textParameters.setFont(
+                new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10)));
+
+            String cn = DSSASN1Utils.getSubjectCommonName(certificate);
+            String sn = DSSASN1Utils.extractAttributeFromX500Principal(
+                BCStyle.SN, certificate.getSubjectX500Principal());
+            Date date = new Date();
+            parameters.bLevel().setSigningDate(date);
+            textParameters.setText(
+                "Firmado digitalmente por " + cn + "\n" +
+                "Identificación: " + sn + ". Fecha declarada: " + date + "\n" +
+                "Toda versión impresa es nula al no contener firma digital.");
+            imageParameters.setTextParameters(textParameters);
+            parameters.setSignatureImageParameters(imageParameters);
 
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
                 parameters);
@@ -114,7 +124,6 @@ public class FirmadorPAdES extends CRSigner {
             gui.showError(Throwables.getRootCause(e));
         }
 
-        DSSDocument signedDocument = null;
         try {
             signedDocument = service.signDocument(toSignDocument, parameters,
                 signatureValue);
