@@ -67,34 +67,30 @@ rápidamente:
 
 Para entrar en el directorio del repositorio descargado:
 
-    pushd dss
+    cd dss
 
 Para cambiar a la rama de desarrollo:
 
     git checkout develop
 
-Para compilar mucho más rápido saltando todos los tests posibles excepto los
-de algunas dependencias intermedias:
+Para compilar e instalar mucho más rápido saltando todos los tests posibles
+excepto los de algunas dependencias intermedias:
 
-    pushd dss-utils
-    mvn install -DskipTests
-    popd
+    mvn -pl eu.europa.ec.joinup.sd-dss:sd-dss -pl eu.europa.ec.joinup.sd-dss:dss-model install -DskipTests -Dmaven.test.skip=true
+    mvn -pl eu.europa.ec.joinup.sd-dss:dss-utils -pl eu.europa.ec.joinup.sd-dss:dss-crl-parser install -DskipTests
+    mvn install -DskipTests -Dmaven.test.skip=true
 
-    pushd dss-crl-parser
-    mvn install -DskipTests
-    popd
+Fallarán una dependencia, entonces ejecutar:
 
-    pushd dss-pades
-    mvn install -DskipTests
-    popd
+    mvn -pl eu.europa.ec.joinup.sd-dss:dss-utils -pl eu.europa.ec.joinup.sd-dss:dss-pades install -DskipTests
 
-Para compilar e instalar esta dependencia en el repositorio local de Maven:
+Y para terminar de compilar e instalar:
 
     mvn install -DskipTests -Dmaven.test.skip=true
 
 Para salir del directorio dss:
 
-    popd
+    cd ..
 
 Para obtener el código fuente de Firmador, ejecutar:
 
