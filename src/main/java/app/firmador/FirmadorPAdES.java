@@ -19,6 +19,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package app.firmador;
 
+import java.awt.Font;
 import java.security.KeyStore.PasswordProtection;
 import java.util.List;
 
@@ -26,11 +27,11 @@ import app.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.DSSException;
-//import eu.europa.esig.dss.DSSJavaFont;
 import eu.europa.esig.dss.SignatureLevel;
 import eu.europa.esig.dss.SignatureValue;
 import eu.europa.esig.dss.ToBeSigned;
 import eu.europa.esig.dss.client.tsp.OnlineTSPSource;
+import eu.europa.esig.dss.pades.DSSJavaFont;
 import eu.europa.esig.dss.pades.PAdESSignatureParameters;
 import eu.europa.esig.dss.pades.SignatureImageParameters;
 import eu.europa.esig.dss.pades.SignatureImageTextParameters;
@@ -78,8 +79,8 @@ public class FirmadorPAdES extends CRSigner {
             SignatureImageTextParameters textParameters =
                 new SignatureImageTextParameters();
             // TODO: waiting for new DSS API changes allowing built-in fonts
-            //textParameters.setFont(
-            //    new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12)));
+            textParameters.setFont(
+                new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10)));
             // TODO: use CN, serial and date properly
             textParameters.setText(
                 "Firmado digitalmente por: " +
