@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018 Firmador authors.
+Copyright (C) 2019 Firmador authors.
 
 This file is part of Firmador.
 
@@ -26,13 +26,17 @@ import app.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.DSSException;
+//import eu.europa.esig.dss.DSSJavaFont;
 import eu.europa.esig.dss.SignatureLevel;
-
 import eu.europa.esig.dss.SignatureValue;
 import eu.europa.esig.dss.ToBeSigned;
 import eu.europa.esig.dss.client.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.pades.PAdESSignatureParameters;
+import eu.europa.esig.dss.pades.SignatureImageParameters;
+import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pades.signature.PAdESService;
+import eu.europa.esig.dss.pdf.PdfObjFactory;
+import eu.europa.esig.dss.pdf.pdfbox.PdfBoxNativeObjectFactory;
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.validation.CertificateVerifier;
@@ -46,6 +50,8 @@ public class FirmadorPAdES extends CRSigner {
 
     public DSSDocument sign(DSSDocument toSignDocument,
         PasswordProtection pin) {
+
+        PdfObjFactory.setInstance(new PdfBoxNativeObjectFactory());
 
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
@@ -64,6 +70,30 @@ public class FirmadorPAdES extends CRSigner {
             parameters.setSignatureSize(13312);
             parameters.setSigningCertificate(privateKey.getCertificate());
             parameters.setSignWithExpiredCertificate(true);
+
+            SignatureImageParameters imageParameters =
+                new SignatureImageParameters();
+            imageParameters.setxAxis(100);
+            imageParameters.setyAxis(700);
+            SignatureImageTextParameters textParameters =
+                new SignatureImageTextParameters();
+            // TODO: waiting for new DSS API changes allowing built-in fonts
+            //textParameters.setFont(
+            //    new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12)));
+            // TODO: use CN, serial and date properly
+            textParameters.setText(
+                "Firmado digitalmente por: " +
+                privateKey.getCertificate().getSubjectX500Principal().getName() + "\n" +
+                "Identificación: CPF-XX-XXXX-XXXX. Fecha declarada: XXXX-XX-XX\n" +
+                "Toda versión impresa es nula por no contener firma digital.");
+            imageParameters.setTextParameters(textParameters);
+            parameters.setSignatureImageParameters(imageParameters);
+            // TODO: check if there is an empty signature field (placeholder)
+            // to use it for axis and (maybe) adjust the size to fit into the rect
+            // if possible without needing to prompt the user.
+            // If using GUI, placing values by default but allowing to tweak them may be
+            // fine.
+            //parameters.setSignatureFieldId("Signature1");
 
             List<CertificateToken> certificateChain = getCertificateChain(
                 verifier, parameters);
