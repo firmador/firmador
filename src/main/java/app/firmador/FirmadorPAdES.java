@@ -25,6 +25,7 @@ import java.util.List;
 
 import app.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
+import eu.europa.esig.dss.DigestAlgorithm;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.DSSException;
 import eu.europa.esig.dss.SignatureLevel;
@@ -67,6 +68,7 @@ public class FirmadorPAdES extends CRSigner {
             SignatureTokenConnection token = getSignatureConnection(pin);
             DSSPrivateKeyEntry privateKey = getPrivateKey(token);
 
+            parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LT);
             parameters.setSignatureSize(13312);
             parameters.setSigningCertificate(privateKey.getCertificate());
