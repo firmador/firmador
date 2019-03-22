@@ -31,6 +31,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.HierarchyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -207,6 +209,19 @@ public class GUISwing implements GUIInterface {
                 }
             }
         });
+        JLabel signatureLabel = new JLabel("Arrastre posición firma",
+			JLabel.CENTER);
+        signatureLabel.setBackground(new Color(127, 127, 127, 127));
+        signatureLabel.setOpaque(true);
+        signatureLabel.setBounds(64, 0, 175, 20);
+        imageLabel.addMouseMotionListener(new MouseMotionAdapter() {
+            public void mouseDragged(MouseEvent e) {
+                signatureLabel.setLocation(
+                    e.getX() - signatureLabel.getWidth() / 2,
+                    e.getY() - signatureLabel.getHeight() / 2);
+            }
+        });
+        imageLabel.add(signatureLabel);
 
         JPanel filePanel = new JPanel(new BorderLayout());
         filePanel.setBorder(new EmptyBorder(10, 10, 0, 10));
