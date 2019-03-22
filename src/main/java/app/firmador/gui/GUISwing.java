@@ -54,6 +54,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -83,8 +85,10 @@ public class GUISwing implements GUIInterface {
     private JTabbedPane tabbedPane;
     private JLabel imageLabel;
     private JLabel reportLabel;
+    private JSpinner pageSpinner;
     private JButton signButton;
     private JButton extendButton;
+    private int page, x, y;
 
     public void loadGUI() {
         try {
@@ -110,6 +114,8 @@ public class GUISwing implements GUIInterface {
         final JFrame frame = new JFrame("Firmador");
         frame.setIconImage(
             image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
+        pageSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
+        pageSpinner.setMaximumSize(pageSpinner.getPreferredSize());
         signButton = new JButton("Firmar documento");
         signButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         signButton.addActionListener(new ActionListener() {
@@ -117,7 +123,7 @@ public class GUISwing implements GUIInterface {
                 String fileName = getDocumentToSign();
 
                 if (fileName != null) {
-                    // FirmadorXAdES firmador = new FirmadorXAdES(this);
+                  //FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
                     FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
                     firmador.selectSlot();
                     if (firmador.selectedSlot == -1) return;
@@ -127,6 +133,7 @@ public class GUISwing implements GUIInterface {
                     DSSDocument signedDocument = null;
                     if (pin.getPassword() != null
                         && pin.getPassword().length != 0) {
+                        firmador.addVisibleSignature(page, x, y);
                         signedDocument = firmador.sign(toSignDocument, pin);
                         try {
                             pin.destroy();
@@ -159,7 +166,7 @@ public class GUISwing implements GUIInterface {
                 String fileName = getDocumentToSign();
 
                 if (fileName != null) {
-                    // FirmadorXAdES firmador = new FirmadorXAdES(this);
+                  //FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
                     FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
 
                     DSSDocument toExtendDocument = new FileDocument(fileName);
@@ -210,7 +217,7 @@ public class GUISwing implements GUIInterface {
             }
         });
         JLabel signatureLabel = new JLabel("Arrastre posición firma",
-			JLabel.CENTER);
+            JLabel.CENTER);
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
         signatureLabel.setBounds(64, 0, 175, 20);
@@ -230,8 +237,9 @@ public class GUISwing implements GUIInterface {
         filePanel.add(fileButton, BorderLayout.LINE_END);
         JPanel signPanel = new JPanel();
         signPanel.setLayout(new BoxLayout(signPanel, BoxLayout.PAGE_AXIS));
-        signPanel.add(signButton);
         signPanel.add(imageLabel);
+        signPanel.add(pageSpinner);
+        signPanel.add(signButton);
         JPanel validatePanel = new JPanel();
         validatePanel.setLayout(new BoxLayout(validatePanel,
             BoxLayout.PAGE_AXIS));
@@ -293,13 +301,13 @@ public class GUISwing implements GUIInterface {
     public void loadDocument(String fileName) {
         fileField.setText(fileName);
         signButton.setEnabled(true);
-        int page = 0;
+        page = 1;
         BufferedImage pageImage = null;
         try {
             PDDocument doc =
                 PDDocument.load(new File(fileName));
             PDFRenderer renderer = new PDFRenderer(doc);
-            pageImage = renderer.renderImage(page, (float)0.4);
+            pageImage = renderer.renderImage(page - 1, (float)0.4);
             doc.close();
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));

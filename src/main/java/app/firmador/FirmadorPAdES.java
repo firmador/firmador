@@ -50,8 +50,16 @@ import org.bouncycastle.asn1.x500.style.BCStyle;
 
 public class FirmadorPAdES extends CRSigner {
 
+    private int page, x, y;
+
     public FirmadorPAdES(GUIInterface gui) {
         super(gui);
+    }
+
+    public void addVisibleSignature(int page, int x, int y) {
+        this.page = page;
+        this.x = x;
+        this.y = y;
     }
 
     public DSSDocument sign(DSSDocument toSignDocument,
@@ -96,8 +104,8 @@ public class FirmadorPAdES extends CRSigner {
 
             SignatureImageParameters imageParameters =
                 new SignatureImageParameters();
-            imageParameters.setxAxis(100);
-            imageParameters.setyAxis(700);
+            imageParameters.setxAxis(x);
+            imageParameters.setyAxis(y);
             SignatureImageTextParameters textParameters =
                 new SignatureImageTextParameters();
             textParameters.setFont(
