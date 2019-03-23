@@ -80,7 +80,7 @@ excepto los de algunas dependencias intermedias:
     mvn -pl eu.europa.ec.joinup.sd-dss:dss-utils -pl eu.europa.ec.joinup.sd-dss:dss-crl-parser install -DskipTests
     mvn install -DskipTests -Dmaven.test.skip=true
 
-Fallarán una dependencia, entonces ejecutar:
+Fallará una dependencia, entonces ejecutar:
 
     mvn -pl eu.europa.ec.joinup.sd-dss:dss-utils -pl eu.europa.ec.joinup.sd-dss:dss-pades install -DskipTests
 
@@ -98,7 +98,7 @@ Para obtener el código fuente de Firmador, ejecutar:
 
 Para entrar en el directorio del repositorio descargado:
 
-    pushd firmador
+    cd firmador
 
 Para generar el JAR:
 
