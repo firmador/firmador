@@ -21,6 +21,7 @@ package app.firmador.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
@@ -90,7 +91,7 @@ public class GUISwing implements GUIInterface {
     private JSpinner pageSpinner;
     private JButton signButton;
     private JButton extendButton;
-    private int page, x, y;
+    private int page;
 
     public void loadGUI() {
         try {
@@ -137,7 +138,8 @@ public class GUISwing implements GUIInterface {
                     DSSDocument signedDocument = null;
                     if (pin.getPassword() != null
                         && pin.getPassword().length != 0) {
-                        firmador.addVisibleSignature(page,
+                        firmador.addVisibleSignature(
+                            (int)pageSpinner.getValue(),
                             (int)Math.round(signatureLabel.getX() * 2.5),
                             (int)Math.round(signatureLabel.getY() * 2.5));
                         signedDocument = firmador.sign(toSignDocument, pin);
@@ -224,11 +226,12 @@ public class GUISwing implements GUIInterface {
                 }
             }
         });
-        signatureLabel = new JLabel("arrastre posición firma",
-            JLabel.CENTER);
+        signatureLabel = new JLabel("Firma visible", JLabel.CENTER);
+        signatureLabel.setCursor(
+            Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
-        signatureLabel.setBounds(89, 0, 150, 20);
+        signatureLabel.setBounds(119, 0, 120, 20);
         imageLabel.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 signatureLabel.setLocation(
