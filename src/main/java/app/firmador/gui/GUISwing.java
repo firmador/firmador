@@ -84,7 +84,9 @@ public class GUISwing implements GUIInterface {
     private JTextField fileField;
     private JTabbedPane tabbedPane;
     private JLabel imageLabel;
+    private JLabel signatureLabel;
     private JLabel reportLabel;
+    private JLabel pageLabel;
     private JSpinner pageSpinner;
     private JButton signButton;
     private JButton extendButton;
@@ -114,7 +116,9 @@ public class GUISwing implements GUIInterface {
         final JFrame frame = new JFrame("Firmador");
         frame.setIconImage(
             image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
-        pageSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
+        pageLabel = new JLabel("Página:");
+        pageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pageSpinner = new JSpinner(new SpinnerNumberModel());
         pageSpinner.setMaximumSize(pageSpinner.getPreferredSize());
         signButton = new JButton("Firmar documento");
         signButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -133,7 +137,9 @@ public class GUISwing implements GUIInterface {
                     DSSDocument signedDocument = null;
                     if (pin.getPassword() != null
                         && pin.getPassword().length != 0) {
-                        firmador.addVisibleSignature(page, x, y);
+                        firmador.addVisibleSignature(page,
+                            (int)Math.round(signatureLabel.getX() * 2.5),
+                            (int)Math.round(signatureLabel.getY() * 2.5));
                         signedDocument = firmador.sign(toSignDocument, pin);
                         try {
                             pin.destroy();
@@ -191,6 +197,8 @@ public class GUISwing implements GUIInterface {
         });
 
         signButton.setEnabled(false);
+        pageLabel.setEnabled(false);
+        pageSpinner.setEnabled(false);
         extendButton.setEnabled(false);
         JButton fileButton = new JButton("Elegir...");
         imageLabel = new JLabel();
@@ -216,11 +224,11 @@ public class GUISwing implements GUIInterface {
                 }
             }
         });
-        JLabel signatureLabel = new JLabel("Arrastre posición firma",
+        signatureLabel = new JLabel("arrastre posición firma",
             JLabel.CENTER);
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
-        signatureLabel.setBounds(64, 0, 175, 20);
+        signatureLabel.setBounds(89, 0, 150, 20);
         imageLabel.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 signatureLabel.setLocation(
@@ -237,9 +245,10 @@ public class GUISwing implements GUIInterface {
         filePanel.add(fileButton, BorderLayout.LINE_END);
         JPanel signPanel = new JPanel();
         signPanel.setLayout(new BoxLayout(signPanel, BoxLayout.PAGE_AXIS));
-        signPanel.add(imageLabel);
-        signPanel.add(pageSpinner);
         signPanel.add(signButton);
+        signPanel.add(imageLabel);
+        signPanel.add(pageLabel);
+        signPanel.add(pageSpinner);
         JPanel validatePanel = new JPanel();
         validatePanel.setLayout(new BoxLayout(validatePanel,
             BoxLayout.PAGE_AXIS));
@@ -301,6 +310,8 @@ public class GUISwing implements GUIInterface {
     public void loadDocument(String fileName) {
         fileField.setText(fileName);
         signButton.setEnabled(true);
+        pageLabel.setEnabled(true);
+        pageSpinner.setEnabled(true);
         page = 1;
         BufferedImage pageImage = null;
         try {

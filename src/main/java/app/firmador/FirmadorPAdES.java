@@ -22,6 +22,7 @@ package app.firmador;
 import java.awt.Color;
 import java.awt.Font;
 import java.security.KeyStore.PasswordProtection;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.security.auth.x500.X500Principal;
@@ -110,17 +111,24 @@ public class FirmadorPAdES extends CRSigner {
             SignatureImageTextParameters textParameters =
                 new SignatureImageTextParameters();
             textParameters.setFont(
-                new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10)));
+                new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
 
             String cn = DSSASN1Utils.getSubjectCommonName(certificate);
+            X500Principal principal = certificate.getSubjectX500Principal();
+            String o = DSSASN1Utils.extractAttributeFromX500Principal(
+                BCStyle.O, principal);
             String sn = DSSASN1Utils.extractAttributeFromX500Principal(
-                BCStyle.SN, certificate.getSubjectX500Principal());
+                BCStyle.SN, principal);
             Date date = new Date();
             parameters.bLevel().setSigningDate(date);
+            SimpleDateFormat sdf;
+            String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+                .format(date);
             textParameters.setText(
-                "Firmado digitalmente por " + cn + "\n" +
-                "Identificación: " + sn + ". Fecha declarada: " + date + "\n" +
-                "Toda versión impresa es nula al no contener firma digital.");
+                "Firmado por " + cn + "\n" +
+                o + ", " + sn + ". Fecha declarada: " + fecha + "\n" +
+                "Esta representación visual no es una fuente de confianza, " +
+                "valide siempre la firma.");
             textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
             imageParameters.setTextParameters(textParameters);
             parameters.setSignatureImageParameters(imageParameters);
