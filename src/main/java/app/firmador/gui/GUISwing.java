@@ -63,6 +63,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import app.firmador.FirmadorPAdES;
 //import app.firmador.FirmadorXAdES;
@@ -94,6 +96,9 @@ public class GUISwing implements GUIInterface {
     private JButton signButton;
     private JButton extendButton;
     private int page;
+    private BufferedImage pageImage = null;
+    private PDDocument doc;
+    private PDFRenderer renderer;
 
     public void loadGUI() {
         try {
@@ -123,6 +128,15 @@ public class GUISwing implements GUIInterface {
         pageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         pageSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
         pageSpinner.setMaximumSize(pageSpinner.getPreferredSize());
+        pageSpinner.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                try {
+                    pageImage = renderer.renderImage(page - 1, (float)0.4);
+                } catch (Exception ex) {
+                    showError(Throwables.getRootCause(ex));
+                }
+            }
+        });
         signButton = new JButton("Firmar documento");
         signButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         signButton.addActionListener(new ActionListener() {
@@ -321,11 +335,12 @@ public class GUISwing implements GUIInterface {
         pageLabel.setEnabled(true);
         pageSpinner.setEnabled(true);
         page = 1;
-        BufferedImage pageImage = null;
         try {
-            PDDocument doc =
-                PDDocument.load(new File(fileName));
-            PDFRenderer renderer = new PDFRenderer(doc);
+            if (doc != null) {
+                doc.close();
+            }
+            doc = PDDocument.load(new File(fileName));
+            renderer = new PDFRenderer(doc);
             pageImage = renderer.renderImage(page - 1, (float)0.4);
             int pages = doc.getNumberOfPages();
             if (pages > 0) {
@@ -335,7 +350,6 @@ public class GUISwing implements GUIInterface {
                 model.setMaximum(pages);
                 pageSpinner.setValue(1);
             }
-            doc.close();
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
         }
