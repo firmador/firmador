@@ -19,6 +19,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package app.firmador;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.security.KeyStore.PasswordProtection;
 import java.util.Date;
@@ -96,10 +97,10 @@ public class FirmadorPAdES extends CRSigner {
             service.setTspSource(onlineTSPSource);
 
             // TODO: check if there is an empty signature field (placeholder)
-            // to use it for axis and (maybe) adjust the size to fit into the rect
-            // if possible without needing to prompt the user.
-            // If using GUI, placing values by default but allowing to tweak them may be
-            // fine.
+            // to use it for axis and (maybe) adjust the size to fit into the
+            // rect if possible without needing to prompt the user.
+            // If using GUI, placing values by default but allowing to tweak
+            // them may be fine.
             //parameters.setSignatureFieldId("Signature1");
 
             SignatureImageParameters imageParameters =
@@ -120,6 +121,7 @@ public class FirmadorPAdES extends CRSigner {
                 "Firmado digitalmente por " + cn + "\n" +
                 "Identificación: " + sn + ". Fecha declarada: " + date + "\n" +
                 "Toda versión impresa es nula al no contener firma digital.");
+            textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
             imageParameters.setTextParameters(textParameters);
             parameters.setSignatureImageParameters(imageParameters);
 
