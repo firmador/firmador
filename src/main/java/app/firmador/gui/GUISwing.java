@@ -27,6 +27,7 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -45,6 +46,7 @@ import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -231,7 +233,7 @@ public class GUISwing implements GUIInterface {
             Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
-        signatureLabel.setBounds(119, 0, 120, 20);
+        signatureLabel.setBounds(119, 0, 120, 13);
         imageLabel.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 signatureLabel.setLocation(
@@ -248,8 +250,11 @@ public class GUISwing implements GUIInterface {
         filePanel.add(fileButton, BorderLayout.LINE_END);
         JPanel signPanel = new JPanel();
         signPanel.setLayout(new BoxLayout(signPanel, BoxLayout.PAGE_AXIS));
+        signPanel.add(Box.createVerticalStrut(5));
         signPanel.add(signButton);
+        signPanel.add(Box.createVerticalStrut(5));
         signPanel.add(imageLabel);
+        signPanel.add(Box.createVerticalStrut(5));
         signPanel.add(pageLabel);
         signPanel.add(pageSpinner);
         JPanel validatePanel = new JPanel();
@@ -302,7 +307,7 @@ public class GUISwing implements GUIInterface {
         frame.add(filePanel, BorderLayout.PAGE_START);
         frame.add(tabbedPane, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(480, 512));
+        frame.setMinimumSize(new Dimension(480, 576));
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         if (documenttosign != null) {
