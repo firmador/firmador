@@ -121,7 +121,7 @@ public class GUISwing implements GUIInterface {
             image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
         pageLabel = new JLabel("Página:");
         pageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        pageSpinner = new JSpinner(new SpinnerNumberModel());
+        pageSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
         pageSpinner.setMaximumSize(pageSpinner.getPreferredSize());
         signButton = new JButton("Firmar documento");
         signButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -327,6 +327,14 @@ public class GUISwing implements GUIInterface {
                 PDDocument.load(new File(fileName));
             PDFRenderer renderer = new PDFRenderer(doc);
             pageImage = renderer.renderImage(page - 1, (float)0.4);
+            int pages = doc.getNumberOfPages();
+            if (pages > 0) {
+                SpinnerNumberModel model =
+                    ((SpinnerNumberModel)pageSpinner.getModel());
+                model.setMinimum(1);
+                model.setMaximum(pages);
+                pageSpinner.setValue(1);
+            }
             doc.close();
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));

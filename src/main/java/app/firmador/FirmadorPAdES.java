@@ -131,6 +131,7 @@ public class FirmadorPAdES extends CRSigner {
                 "valide siempre la firma.");
             textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
             imageParameters.setTextParameters(textParameters);
+            imageParameters.setPage(page);
             parameters.setSignatureImageParameters(imageParameters);
 
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
