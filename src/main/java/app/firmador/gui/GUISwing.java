@@ -95,8 +95,7 @@ public class GUISwing implements GUIInterface {
     private JSpinner pageSpinner;
     private JButton signButton;
     private JButton extendButton;
-    private int page;
-    private BufferedImage pageImage = null;
+    private BufferedImage pageImage;
     private PDDocument doc;
     private PDFRenderer renderer;
 
@@ -131,7 +130,12 @@ public class GUISwing implements GUIInterface {
         pageSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 try {
-                    pageImage = renderer.renderImage(page - 1, (float)0.4);
+                    int page = (int)(pageSpinner.getValue());
+                    if (page > 0) {
+                        pageImage = renderer.renderImage(
+                            page - 1, (float)(1 / 2.5));
+                        imageLabel.setIcon(new ImageIcon(pageImage));
+                    }
                 } catch (Exception ex) {
                     showError(Throwables.getRootCause(ex));
                 }
@@ -334,16 +338,15 @@ public class GUISwing implements GUIInterface {
         signButton.setEnabled(true);
         pageLabel.setEnabled(true);
         pageSpinner.setEnabled(true);
-        page = 1;
         try {
             if (doc != null) {
                 doc.close();
             }
             doc = PDDocument.load(new File(fileName));
-            renderer = new PDFRenderer(doc);
-            pageImage = renderer.renderImage(page - 1, (float)0.4);
             int pages = doc.getNumberOfPages();
+            renderer = new PDFRenderer(doc);
             if (pages > 0) {
+                pageImage = renderer.renderImage(0, (float)(1 / 2.5));
                 SpinnerNumberModel model =
                     ((SpinnerNumberModel)pageSpinner.getModel());
                 model.setMinimum(1);
