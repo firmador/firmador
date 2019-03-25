@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018 Firmador authors.
+Copyright (C) 2019 Firmador authors.
 
 This file is part of Firmador.
 
@@ -19,33 +19,55 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package app.firmador;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.security.KeyStore.PasswordProtection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import javax.security.auth.x500.X500Principal;
 
 import app.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
+import eu.europa.esig.dss.DigestAlgorithm;
+import eu.europa.esig.dss.DSSASN1Utils;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.DSSException;
 import eu.europa.esig.dss.SignatureLevel;
-
 import eu.europa.esig.dss.SignatureValue;
 import eu.europa.esig.dss.ToBeSigned;
 import eu.europa.esig.dss.client.tsp.OnlineTSPSource;
+import eu.europa.esig.dss.pades.DSSJavaFont;
 import eu.europa.esig.dss.pades.PAdESSignatureParameters;
+import eu.europa.esig.dss.pades.SignatureImageParameters;
+import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pades.signature.PAdESService;
+import eu.europa.esig.dss.pdf.PdfObjFactory;
+import eu.europa.esig.dss.pdf.pdfbox.PdfBoxNativeObjectFactory;
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 import eu.europa.esig.dss.x509.CertificateToken;
+import org.bouncycastle.asn1.x500.style.BCStyle;
 
 public class FirmadorPAdES extends CRSigner {
+
+    private int page, x, y;
 
     public FirmadorPAdES(GUIInterface gui) {
         super(gui);
     }
 
+    public void addVisibleSignature(int page, int x, int y) {
+        this.page = page;
+        this.x = x;
+        this.y = y;
+    }
+
     public DSSDocument sign(DSSDocument toSignDocument,
         PasswordProtection pin) {
+
+        PdfObjFactory.setInstance(new PdfBoxNativeObjectFactory());
 
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
@@ -56,13 +78,16 @@ public class FirmadorPAdES extends CRSigner {
 
         SignatureValue signatureValue = null;
 
+        DSSDocument signedDocument = null;
+
         try {
             SignatureTokenConnection token = getSignatureConnection(pin);
             DSSPrivateKeyEntry privateKey = getPrivateKey(token);
-
+            CertificateToken certificate = privateKey.getCertificate();
+            parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LT);
             parameters.setSignatureSize(13312);
-            parameters.setSigningCertificate(privateKey.getCertificate());
+            parameters.setSigningCertificate(certificate);
             parameters.setSignWithExpiredCertificate(true);
 
             List<CertificateToken> certificateChain = getCertificateChain(
@@ -71,6 +96,43 @@ public class FirmadorPAdES extends CRSigner {
 
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
+
+            // TODO: check if there is an empty signature field (placeholder)
+            // to use it for axis and (maybe) adjust the size to fit into the
+            // rect if possible without needing to prompt the user.
+            // If using GUI, placing values by default but allowing to tweak
+            // them may be fine.
+            //parameters.setSignatureFieldId("Signature1");
+
+            SignatureImageParameters imageParameters =
+                new SignatureImageParameters();
+            imageParameters.setxAxis(x);
+            imageParameters.setyAxis(y);
+            SignatureImageTextParameters textParameters =
+                new SignatureImageTextParameters();
+            textParameters.setFont(
+                new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
+
+            String cn = DSSASN1Utils.getSubjectCommonName(certificate);
+            X500Principal principal = certificate.getSubjectX500Principal();
+            String o = DSSASN1Utils.extractAttributeFromX500Principal(
+                BCStyle.O, principal);
+            String sn = DSSASN1Utils.extractAttributeFromX500Principal(
+                BCStyle.SN, principal);
+            Date date = new Date();
+            parameters.bLevel().setSigningDate(date);
+            SimpleDateFormat sdf;
+            String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+                .format(date);
+            textParameters.setText(
+                "Firmado por " + cn + "\n" +
+                o + ", " + sn + ". Fecha declarada: " + fecha + "\n" +
+                "Esta representación visual no es una fuente de confianza, " +
+                "valide siempre la firma.");
+            textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
+            imageParameters.setTextParameters(textParameters);
+            imageParameters.setPage(page);
+            parameters.setSignatureImageParameters(imageParameters);
 
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
                 parameters);
@@ -81,7 +143,6 @@ public class FirmadorPAdES extends CRSigner {
             gui.showError(Throwables.getRootCause(e));
         }
 
-        DSSDocument signedDocument = null;
         try {
             signedDocument = service.signDocument(toSignDocument, parameters,
                 signatureValue);

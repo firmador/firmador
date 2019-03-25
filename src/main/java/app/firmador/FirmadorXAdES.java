@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018 Firmador authors.
+Copyright (C) 2019 Firmador authors.
 
 This file is part of Firmador.
 
@@ -24,6 +24,7 @@ import java.util.List;
 
 import app.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
+import eu.europa.esig.dss.DigestAlgorithm;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.DSSException;
 import eu.europa.esig.dss.SignatureLevel;
@@ -60,6 +61,7 @@ public class FirmadorXAdES extends CRSigner {
             SignatureTokenConnection token = getSignatureConnection(pin);
             DSSPrivateKeyEntry privateKey = getPrivateKey(token);
 
+            parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
             parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
             parameters.setSigningCertificate(privateKey.getCertificate());
@@ -118,6 +120,7 @@ public class FirmadorXAdES extends CRSigner {
     public DSSDocument extend(DSSDocument document) {
         XAdESSignatureParameters parameters = new XAdESSignatureParameters();
         parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
+
 
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);

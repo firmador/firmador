@@ -58,9 +58,47 @@ ejecución.
 Para las personas interesadas en el desarrollo de Firmador, para compilar
 Firmador se requiere git, Maven y OpenJDK.
 
+En este momento se requiere una versión en desarrollo (snapshot) de DSS, la
+librería implementación de referencia de los formatos AdES, que se puede
+obtener desde el repositorio git de DSS con espejo en GitHub para descargar más
+rápidamente:
+
+    git clone https://github.com/esig/dss.git
+
+Para entrar en el directorio del repositorio descargado:
+
+    cd dss
+
+Para cambiar a la rama de desarrollo:
+
+    git checkout develop
+
+Para compilar e instalar mucho más rápido saltando todos los tests posibles
+excepto los de algunas dependencias intermedias:
+
+    mvn -pl eu.europa.ec.joinup.sd-dss:sd-dss -pl eu.europa.ec.joinup.sd-dss:dss-model install -DskipTests -Dmaven.test.skip=true
+    mvn -pl eu.europa.ec.joinup.sd-dss:dss-utils -pl eu.europa.ec.joinup.sd-dss:dss-crl-parser install -DskipTests
+    mvn install -DskipTests -Dmaven.test.skip=true
+
+Fallará una dependencia, entonces ejecutar:
+
+    mvn -pl eu.europa.ec.joinup.sd-dss:dss-utils -pl eu.europa.ec.joinup.sd-dss:dss-pades install -DskipTests
+
+Y para terminar de compilar e instalar:
+
+    mvn install -DskipTests -Dmaven.test.skip=true
+
+Para salir del directorio dss:
+
+    cd ..
+
 Para obtener el código fuente de Firmador, ejecutar:
 
     git clone https://gitlab.com/firmador/firmador.git
+
+Para entrar en el directorio del repositorio descargado:
+
+    cd firmador
 
 Para generar el JAR:
 
@@ -73,7 +111,7 @@ Para ejecutar el JAR:
 
 ## Licencia
 
-Copyright © 2018 de los autores de Firmador.
+Copyright © 2019 de los autores de Firmador.
 
 La lista de autores de Firmador se encuentra en el fichero
 [AUTHORS.md](AUTHORS.md).

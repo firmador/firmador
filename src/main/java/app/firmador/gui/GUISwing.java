@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018 Firmador authors.
+Copyright (C) 2019 Firmador authors.
 
 This file is part of Firmador.
 
@@ -21,16 +21,20 @@ package app.firmador.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.HierarchyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -42,6 +46,7 @@ import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -52,10 +57,14 @@ import javax.swing.JPasswordField;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import app.firmador.FirmadorPAdES;
 //import app.firmador.FirmadorXAdES;
@@ -80,9 +89,15 @@ public class GUISwing implements GUIInterface {
     private JTextField fileField;
     private JTabbedPane tabbedPane;
     private JLabel imageLabel;
+    private JLabel signatureLabel;
     private JLabel reportLabel;
+    private JLabel pageLabel;
+    private JSpinner pageSpinner;
     private JButton signButton;
     private JButton extendButton;
+    private BufferedImage pageImage;
+    private PDDocument doc;
+    private PDFRenderer renderer;
 
     public void loadGUI() {
         try {
@@ -108,6 +123,24 @@ public class GUISwing implements GUIInterface {
         final JFrame frame = new JFrame("Firmador");
         frame.setIconImage(
             image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
+        pageLabel = new JLabel("Página:");
+        pageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pageSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
+        pageSpinner.setMaximumSize(pageSpinner.getPreferredSize());
+        pageSpinner.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                try {
+                    int page = (int)(pageSpinner.getValue());
+                    if (page > 0) {
+                        pageImage = renderer.renderImage(
+                            page - 1, (float)(1 / 2.5));
+                        imageLabel.setIcon(new ImageIcon(pageImage));
+                    }
+                } catch (Exception ex) {
+                    showError(Throwables.getRootCause(ex));
+                }
+            }
+        });
         signButton = new JButton("Firmar documento");
         signButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         signButton.addActionListener(new ActionListener() {
@@ -115,7 +148,7 @@ public class GUISwing implements GUIInterface {
                 String fileName = getDocumentToSign();
 
                 if (fileName != null) {
-                    // FirmadorXAdES firmador = new FirmadorXAdES(this);
+                  //FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
                     FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
                     firmador.selectSlot();
                     if (firmador.selectedSlot == -1) return;
@@ -125,6 +158,10 @@ public class GUISwing implements GUIInterface {
                     DSSDocument signedDocument = null;
                     if (pin.getPassword() != null
                         && pin.getPassword().length != 0) {
+                        firmador.addVisibleSignature(
+                            (int)pageSpinner.getValue(),
+                            (int)Math.round(signatureLabel.getX() * 2.5),
+                            (int)Math.round(signatureLabel.getY() * 2.5));
                         signedDocument = firmador.sign(toSignDocument, pin);
                         try {
                             pin.destroy();
@@ -157,7 +194,7 @@ public class GUISwing implements GUIInterface {
                 String fileName = getDocumentToSign();
 
                 if (fileName != null) {
-                    // FirmadorXAdES firmador = new FirmadorXAdES(this);
+                  //FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
                     FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
 
                     DSSDocument toExtendDocument = new FileDocument(fileName);
@@ -182,6 +219,8 @@ public class GUISwing implements GUIInterface {
         });
 
         signButton.setEnabled(false);
+        pageLabel.setEnabled(false);
+        pageSpinner.setEnabled(false);
         extendButton.setEnabled(false);
         JButton fileButton = new JButton("Elegir...");
         imageLabel = new JLabel();
@@ -207,6 +246,20 @@ public class GUISwing implements GUIInterface {
                 }
             }
         });
+        signatureLabel = new JLabel("Firma visible", JLabel.CENTER);
+        signatureLabel.setCursor(
+            Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+        signatureLabel.setBackground(new Color(127, 127, 127, 127));
+        signatureLabel.setOpaque(true);
+        signatureLabel.setBounds(119, 0, 120, 13);
+        imageLabel.addMouseMotionListener(new MouseMotionAdapter() {
+            public void mouseDragged(MouseEvent e) {
+                signatureLabel.setLocation(
+                    e.getX() - signatureLabel.getWidth() / 2,
+                    e.getY() - signatureLabel.getHeight() / 2);
+            }
+        });
+        imageLabel.add(signatureLabel);
 
         JPanel filePanel = new JPanel(new BorderLayout());
         filePanel.setBorder(new EmptyBorder(10, 10, 0, 10));
@@ -215,8 +268,13 @@ public class GUISwing implements GUIInterface {
         filePanel.add(fileButton, BorderLayout.LINE_END);
         JPanel signPanel = new JPanel();
         signPanel.setLayout(new BoxLayout(signPanel, BoxLayout.PAGE_AXIS));
+        signPanel.add(Box.createVerticalStrut(5));
         signPanel.add(signButton);
+        signPanel.add(Box.createVerticalStrut(5));
         signPanel.add(imageLabel);
+        signPanel.add(Box.createVerticalStrut(5));
+        signPanel.add(pageLabel);
+        signPanel.add(pageSpinner);
         JPanel validatePanel = new JPanel();
         validatePanel.setLayout(new BoxLayout(validatePanel,
             BoxLayout.PAGE_AXIS));
@@ -267,7 +325,7 @@ public class GUISwing implements GUIInterface {
         frame.add(filePanel, BorderLayout.PAGE_START);
         frame.add(tabbedPane, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(480, 512));
+        frame.setMinimumSize(new Dimension(480, 576));
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         if (documenttosign != null) {
@@ -278,14 +336,23 @@ public class GUISwing implements GUIInterface {
     public void loadDocument(String fileName) {
         fileField.setText(fileName);
         signButton.setEnabled(true);
-        int page = 0;
-        BufferedImage pageImage = null;
+        pageLabel.setEnabled(true);
+        pageSpinner.setEnabled(true);
         try {
-            PDDocument doc =
-                PDDocument.load(new File(fileName));
-            PDFRenderer renderer = new PDFRenderer(doc);
-            pageImage = renderer.renderImage(page, (float)0.4);
-            doc.close();
+            if (doc != null) {
+                doc.close();
+            }
+            doc = PDDocument.load(new File(fileName));
+            int pages = doc.getNumberOfPages();
+            renderer = new PDFRenderer(doc);
+            if (pages > 0) {
+                pageImage = renderer.renderImage(0, (float)(1 / 2.5));
+                SpinnerNumberModel model =
+                    ((SpinnerNumberModel)pageSpinner.getModel());
+                model.setMinimum(1);
+                model.setMaximum(pages);
+                pageSpinner.setValue(1);
+            }
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
         }
