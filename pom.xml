@@ -4,7 +4,7 @@
   <groupId>app.firmador</groupId>
   <artifactId>firmador</artifactId>
   <packaging>jar</packaging>
-  <version>1.4.0-SNAPSHOT</version>
+  <version>1.4.0</version>
   <name>firmador</name>
   <url>https://firmador.app</url>
   <properties>
