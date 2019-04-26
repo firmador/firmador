@@ -2,7 +2,7 @@
 
 Herramienta de escritorio para firmar documentos que cumplen con la [Política
 de Formatos Oficiales de los Documentos Electrónicos Firmados Digitalmente](
-https://mifirmadigital.go.cr/wp-content/uploads/2016/03/DCFD-Política-de-Formato-Oficial-v1.0.pdf
+https://www.mifirmadigital.go.cr/?smd_process_download=1&download_id=372
 ) de Costa Rica.
 
 Está diseñado para funcionar con Java y funciona en GNU/Linux, macOS y Windows.
