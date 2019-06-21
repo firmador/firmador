@@ -28,6 +28,7 @@ import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -57,7 +58,10 @@ import javax.swing.JPasswordField;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.Scrollable;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -275,11 +279,18 @@ public class GUISwing implements GUIInterface {
         signPanel.add(Box.createVerticalStrut(5));
         signPanel.add(pageLabel);
         signPanel.add(pageSpinner);
-        JPanel validatePanel = new JPanel();
+        JPanel validatePanel = new ScrollableJPanel();
         validatePanel.setLayout(new BoxLayout(validatePanel,
             BoxLayout.PAGE_AXIS));
         validatePanel.add(extendButton);
         validatePanel.add(reportLabel);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setHorizontalScrollBarPolicy(
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(null);
+        scrollPane.setViewportView(validatePanel);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
         JPanel aboutPanel = new JPanel();
         aboutPanel.setLayout(new BoxLayout(aboutPanel, BoxLayout.PAGE_AXIS));
         tabbedPane = new JTabbedPane();
@@ -320,7 +331,7 @@ public class GUISwing implements GUIInterface {
         aboutPanel.add(websiteButton);
         tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
         tabbedPane.addTab("Firmar", signPanel);
-        tabbedPane.addTab("Validación", validatePanel);
+        tabbedPane.addTab("Validación", scrollPane);
         tabbedPane.addTab("Acerca de", aboutPanel);
         frame.add(filePanel, BorderLayout.PAGE_START);
         frame.add(tabbedPane, BorderLayout.CENTER);
@@ -578,6 +589,32 @@ public class GUISwing implements GUIInterface {
         }
 
         return dev;
+    }
+
+}
+
+class ScrollableJPanel extends JPanel implements Scrollable {
+
+    public Dimension getPreferredScrollableViewportSize() {
+        return this.getPreferredSize();
+    }
+
+    public int getScrollableUnitIncrement(Rectangle visibleRect,
+        int orientation, int direction) {
+        return 50;
+    }
+
+    public int getScrollableBlockIncrement(Rectangle visibleRect,
+        int orientation, int direction) {
+        return 80;
+    }
+
+    public boolean getScrollableTracksViewportWidth() {
+        return true;
+    }
+
+    public boolean getScrollableTracksViewportHeight() {
+        return false;
     }
 
 }
