@@ -19,12 +19,9 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package app.firmador;
 
-import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -37,13 +34,9 @@ public class Report {
     private StringWriter writer = new StringWriter();
 
     public Report(Reports reports) throws Exception {
-        TransformerFactory transformerFactory =
-            DomUtils.getSecureTransformerFactory();
-        InputStream is =
-            Report.class.getResourceAsStream("/xslt/html/simple-report.xslt");
-        Templates templateSimpleReport =
-            transformerFactory.newTemplates(new StreamSource(is));
-        Transformer transformer = templateSimpleReport.newTransformer();
+        Transformer transformer = DomUtils.getSecureTransformerFactory()
+            .newTemplates(new StreamSource(Report.class.getResourceAsStream(
+                "/xslt/html/simple-report.xslt"))).newTransformer();
         transformer.setErrorListener(new DSSXmlErrorListener());
         transformer.transform(
             new StreamSource(new StringReader(reports.getXmlSimpleReport())),
