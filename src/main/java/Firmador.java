@@ -25,6 +25,8 @@ import app.firmador.gui.GUISelector;
 public class Firmador {
 
     public static void main(String[] args) {
+        // Workaround illegal access for Java 9+ until jaxb 2.4.0 gets released
+        System.setProperty( "com.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize", "true");
         GUISelector guiselector = new GUISelector();
         GUIInterface gui = guiselector.getInterface(args);
         gui.setArgs(args);
