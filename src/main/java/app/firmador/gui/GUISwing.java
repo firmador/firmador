@@ -71,13 +71,14 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import app.firmador.FirmadorPAdES;
-//import app.firmador.FirmadorXAdES;
+import app.firmador.FirmadorXAdES;
 import app.firmador.Report;
 import app.firmador.Validator;
 import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.DSSDocument;
 import eu.europa.esig.dss.FileDocument;
+import eu.europa.esig.dss.MimeType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
@@ -152,21 +153,30 @@ public class GUISwing implements GUIInterface {
                 String fileName = getDocumentToSign();
 
                 if (fileName != null) {
-                  //FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
-                    FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
-                    firmador.selectSlot();
-                    if (firmador.selectedSlot == -1) return;
-
-                    PasswordProtection pin = getPin();
                     DSSDocument toSignDocument = new FileDocument(fileName);
                     DSSDocument signedDocument = null;
+                    PasswordProtection pin = getPin();
                     if (pin.getPassword() != null
                         && pin.getPassword().length != 0) {
-                        firmador.addVisibleSignature(
-                            (int)pageSpinner.getValue(),
-                            (int)Math.round(signatureLabel.getX() * 2.5),
-                            (int)Math.round(signatureLabel.getY() * 2.5));
-                        signedDocument = firmador.sign(toSignDocument, pin);
+                        if (toSignDocument.getMimeType() == MimeType.PDF) {
+                            FirmadorPAdES firmador = new FirmadorPAdES(
+                                GUISwing.this);
+                            firmador.selectSlot();
+                            if (firmador.selectedSlot == -1) return;
+                            firmador.addVisibleSignature(
+                                (int)pageSpinner.getValue(),
+                                (int)Math.round(signatureLabel.getX() * 2.5),
+                                (int)Math.round(signatureLabel.getY() * 2.5));
+                            signedDocument = firmador.sign(toSignDocument,
+                                pin);
+                        } else {
+                            FirmadorXAdES firmador = new FirmadorXAdES(
+                                GUISwing.this);
+                            firmador.selectSlot();
+                            if (firmador.selectedSlot == -1) return;
+                            signedDocument = firmador.sign(toSignDocument,
+                                pin);
+                        }
                         try {
                             pin.destroy();
                         } catch (Exception e) {}
@@ -198,12 +208,18 @@ public class GUISwing implements GUIInterface {
                 String fileName = getDocumentToSign();
 
                 if (fileName != null) {
-                  //FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
-                    FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
 
                     DSSDocument toExtendDocument = new FileDocument(fileName);
                     DSSDocument extendedDocument = null;
-                    extendedDocument = firmador.extend(toExtendDocument);
+                    if (toExtendDocument.getMimeType() == MimeType.PDF) {
+                        FirmadorPAdES firmador = new FirmadorPAdES(
+                            GUISwing.this);
+                        extendedDocument = firmador.extend(toExtendDocument);
+                    } else {
+                        FirmadorXAdES firmador = new FirmadorXAdES(
+                            GUISwing.this);
+                        extendedDocument = firmador.extend(toExtendDocument);
+                    }
                     if (extendedDocument != null) {
                         fileName = getPathToSaveExtended();
                         if (fileName != null) {
@@ -348,28 +364,34 @@ public class GUISwing implements GUIInterface {
     public void loadDocument(String fileName) {
         fileField.setText(fileName);
         signButton.setEnabled(true);
-        pageLabel.setEnabled(true);
-        pageSpinner.setEnabled(true);
         try {
             if (doc != null) {
                 doc.close();
             }
-            doc = PDDocument.load(new File(fileName));
-            int pages = doc.getNumberOfPages();
-            renderer = new PDFRenderer(doc);
-            if (pages > 0) {
-                pageImage = renderer.renderImage(0, (float)(1 / 2.5));
-                SpinnerNumberModel model =
-                    ((SpinnerNumberModel)pageSpinner.getModel());
-                model.setMinimum(1);
-                model.setMaximum(pages);
-                pageSpinner.setValue(1);
+            DSSDocument mimeDocument = new FileDocument(fileName);
+            if (mimeDocument.getMimeType() == MimeType.PDF) {
+                doc = PDDocument.load(new File(fileName));
+                int pages = doc.getNumberOfPages();
+                renderer = new PDFRenderer(doc);
+                if (pages > 0) {
+                    pageImage = renderer.renderImage(0, (float)(1 / 2.5));
+                    SpinnerNumberModel model =
+                        ((SpinnerNumberModel)pageSpinner.getModel());
+                    model.setMinimum(1);
+                    model.setMaximum(pages);
+                    pageLabel.setEnabled(true);
+                    pageSpinner.setEnabled(true);
+                    pageSpinner.setValue(1);
+                }
+                imageLabel.setBorder(new LineBorder(Color.BLACK));
+                imageLabel.setIcon(new ImageIcon(pageImage));
+            }
+            else if (mimeDocument.getMimeType() == MimeType.XML) {
+                // TODO: how to display the XML?
             }
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
         }
-        imageLabel.setBorder(new LineBorder(Color.BLACK));
-        imageLabel.setIcon(new ImageIcon(pageImage));
 
         Validator validator = new Validator(fileName);
         if (validator.isSigned()) {
