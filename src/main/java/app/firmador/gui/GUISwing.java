@@ -235,10 +235,11 @@ public class GUISwing implements GUIInterface {
                     "Seleccionar documento a firmar");
                 loadDialog.setFilenameFilter(new FilenameFilter() {
                     public boolean accept(File dir, String name) {
-                        return name.endsWith(".pdf") || name.endsWith(".PDF");
+                        return name.endsWith(".pdf") || name.endsWith(".PDF")
+                            || name.endsWith(".xml") || name.endsWith(".XML");
                     }
                 });
-                loadDialog.setFile("*.pdf");
+                loadDialog.setFile("*.pdf;*.xml");
                 loadDialog.setLocationRelativeTo(null);
                 loadDialog.setVisible(true);
                 loadDialog.dispose();
@@ -422,6 +423,7 @@ public class GUISwing implements GUIInterface {
         }
         saveDialog.setFile(lastFile.substring(0,
             lastFile.lastIndexOf(".")) + suffix + dotExtension);
+        // FIXME now files have different extensions (PDF, XML).
         saveDialog.setFilenameFilter(loadDialog.getFilenameFilter());
         saveDialog.setLocationRelativeTo(null);
         saveDialog.setVisible(true);
