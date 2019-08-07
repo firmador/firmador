@@ -251,8 +251,8 @@ public class GUISwing implements GUIInterface {
                     "Seleccionar documento a firmar");
                 loadDialog.setFilenameFilter(new FilenameFilter() {
                     public boolean accept(File dir, String name) {
-                        return name.endsWith(".pdf") || name.endsWith(".PDF")
-                            || name.endsWith(".xml") || name.endsWith(".XML");
+                        return name.toLowerCase().endsWith(".pdf")
+                            || name.toLowerCase().endsWith(".xml");
                     }
                 });
                 loadDialog.setFile("*.pdf;*.xml");
