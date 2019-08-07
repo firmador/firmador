@@ -11,8 +11,9 @@ controladores de lector y tarjeta del sitio web de [descargas de Soporte Firma
 Digital](https://soportefirmadigital.com/sfdj/dl.aspx).
 En el caso de GNU/Linux, la forma recomendada para instalarlo está explicada en
 los siguientes artículos para instalar firma digital de Costa Rica en
-[Fedora](https://fran.cr/instalar-firma-digital-costa-rica-linux-fedora/) y en
-[Ubuntu](https://fran.cr/instalar-firma-digital-costa-rica-gnu-linux-ubuntu/).
+[Fedora/RHEL/CentOS](https://fran.cr/instalar-firma-digital-costa-rica-linux-fedora/), en
+[Debian/Ubuntu](https://fran.cr/instalar-firma-digital-costa-rica-gnu-linux-ubuntu/) y
+en [openSUSE/SLE/SLES](https://fran.cr/instalar-firma-digital-costa-rica-gnu-linux-opensuse-leap-sles-sle/).
 
 
 ## Descarga
@@ -27,7 +28,7 @@ los siguientes artículos para instalar firma digital de Costa Rica en
 
 ![Firmador para macOS](pantallazos/macos.png)
 
-![Firmado para Windows](pantallazos/windows.png)
+![Firmador para Windows](pantallazos/windows.png)
 
 
 ## Instalación y ejecución
