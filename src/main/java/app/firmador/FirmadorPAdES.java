@@ -97,13 +97,6 @@ public class FirmadorPAdES extends CRSigner {
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
 
-            // TODO: check if there is an empty signature field (placeholder)
-            // to use it for axis and (maybe) adjust the size to fit into the
-            // rect if possible without needing to prompt the user.
-            // If using GUI, placing values by default but allowing to tweak
-            // them may be fine.
-            //parameters.setSignatureFieldId("Signature1");
-
             SignatureImageParameters imageParameters =
                 new SignatureImageParameters();
             imageParameters.setxAxis(x);
@@ -121,7 +114,6 @@ public class FirmadorPAdES extends CRSigner {
                 BCStyle.SN, principal);
             Date date = new Date();
             parameters.bLevel().setSigningDate(date);
-            SimpleDateFormat sdf;
             String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
                 .format(date);
             textParameters.setText(

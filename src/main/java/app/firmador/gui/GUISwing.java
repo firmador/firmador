@@ -27,8 +27,6 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -61,7 +59,6 @@ import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.Scrollable;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -74,6 +71,7 @@ import app.firmador.FirmadorPAdES;
 import app.firmador.FirmadorXAdES;
 import app.firmador.Report;
 import app.firmador.Validator;
+import app.firmador.gui.ScrollableJPanel;
 import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -613,32 +611,6 @@ public class GUISwing implements GUIInterface {
         }
 
         return dev;
-    }
-
-}
-
-class ScrollableJPanel extends JPanel implements Scrollable {
-
-    public Dimension getPreferredScrollableViewportSize() {
-        return this.getPreferredSize();
-    }
-
-    public int getScrollableUnitIncrement(Rectangle visibleRect,
-        int orientation, int direction) {
-        return 50;
-    }
-
-    public int getScrollableBlockIncrement(Rectangle visibleRect,
-        int orientation, int direction) {
-        return 80;
-    }
-
-    public boolean getScrollableTracksViewportWidth() {
-        return true;
-    }
-
-    public boolean getScrollableTracksViewportHeight() {
-        return false;
     }
 
 }
