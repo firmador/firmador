@@ -29,25 +29,25 @@ import java.util.List;
 
 import app.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
-import eu.europa.esig.dss.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.SignatureLevel;
+import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.DSSException;
+import eu.europa.esig.dss.model.SignatureValue;
+import eu.europa.esig.dss.model.ToBeSigned;
+import eu.europa.esig.dss.model.x509.CertificateToken;
 
-import eu.europa.esig.dss.DSSDocument;
-import eu.europa.esig.dss.DSSException;
-import eu.europa.esig.dss.SignatureLevel;
-import eu.europa.esig.dss.SignatureValue;
-import eu.europa.esig.dss.ToBeSigned;
-import eu.europa.esig.dss.client.tsp.OnlineTSPSource;
-import eu.europa.esig.dss.SignaturePackaging;
+import eu.europa.esig.dss.enumerations.SignaturePackaging;
+
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
-
-
 import eu.europa.esig.dss.xades.signature.XAdESService;
 
+
+import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.validation.CertificateVerifier;
-import eu.europa.esig.dss.x509.CertificateToken;
 
 
 public class FirmadorXAdES extends CRSigner {

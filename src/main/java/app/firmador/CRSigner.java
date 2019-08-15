@@ -28,17 +28,17 @@ import app.firmador.token.Token;
 import app.firmador.token.Utils;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.AbstractSignatureParameters;
-import eu.europa.esig.dss.DSSUtils;
-import eu.europa.esig.dss.client.crl.OnlineCRLSource;
-import eu.europa.esig.dss.client.http.commons.CommonsDataLoader;
-import eu.europa.esig.dss.client.ocsp.OnlineOCSPSource;
+import eu.europa.esig.dss.enumerations.KeyUsageBit;
+import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.service.crl.OnlineCRLSource;
+import eu.europa.esig.dss.service.http.commons.CommonsDataLoader;
+import eu.europa.esig.dss.service.ocsp.OnlineOCSPSource;
+import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.Pkcs11SignatureToken;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
-import eu.europa.esig.dss.x509.KeyUsageBit;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
-import eu.europa.esig.dss.x509.CertificateToken;
 
 public class CRSigner {
 
@@ -64,7 +64,7 @@ public class CRSigner {
 
         for (DSSPrivateKeyEntry candidatePrivateKey : signingToken.getKeys()) {
             if (candidatePrivateKey.getCertificate().checkKeyUsage(
-                KeyUsageBit.nonRepudiation)) {
+                KeyUsageBit.NON_REPUDIATION)) {
                     privateKey = candidatePrivateKey;
                     break;
             }
