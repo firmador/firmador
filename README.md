@@ -72,20 +72,9 @@ Para entrar en el directorio del repositorio descargado:
 
     cd dss
 
-Para compilar e instalar mucho más rápido saltando todos los tests posibles
-excepto los de algunas dependencias intermedias:
+Para compilar e instalar mucho más rápido saltando los tests:
 
-    mvn -pl eu.europa.ec.joinup.sd-dss:sd-dss -pl eu.europa.ec.joinup.sd-dss:dss-model install -DskipTests -Dmaven.test.skip=true
-    mvn -pl eu.europa.ec.joinup.sd-dss:dss-utils -pl eu.europa.ec.joinup.sd-dss:dss-crl-parser install -DskipTests
-    mvn install -DskipTests -Dmaven.test.skip=true
-
-Fallará una dependencia, entonces ejecutar:
-
-    mvn -pl eu.europa.ec.joinup.sd-dss:dss-utils -pl eu.europa.ec.joinup.sd-dss:dss-pades install -DskipTests
-
-Y para terminar de compilar e instalar:
-
-    mvn install -DskipTests -Dmaven.test.skip=true
+    mvn install -DskipTests -Dmaven.test.skip.exec
 
 Para salir del directorio dss:
 
