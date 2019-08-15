@@ -1,10 +1,11 @@
 package app.firmador.gui.swing;
 
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 
-class ScrollableJPanel extends JPanel implements Scrollable {
+public class ScrollableJPanel extends JPanel implements Scrollable {
 
     public Dimension getPreferredScrollableViewportSize() {
         return this.getPreferredSize();

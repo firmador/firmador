@@ -71,7 +71,7 @@ import app.firmador.FirmadorPAdES;
 import app.firmador.FirmadorXAdES;
 import app.firmador.Report;
 import app.firmador.Validator;
-import app.firmador.gui.ScrollableJPanel;
+import app.firmador.gui.swing.ScrollableJPanel;
 import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.model.DSSDocument;
