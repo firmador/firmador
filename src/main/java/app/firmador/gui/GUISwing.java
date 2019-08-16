@@ -555,9 +555,10 @@ public class GUISwing implements GUIInterface {
                 }
                 break;
             case "java.io.IOException":
-                if (message.contains("asepkcs") || message.contains("libASEP11")) {
-                    message = "No se ha encontrado la librería de Firma Digital " +
-                        "en el sistema.\n" +
+                if (message.contains("asepkcs") ||
+                    message.contains("libASEP11")) {
+                    message = "No se ha encontrado la librería de Firma " +
+                        "Digital en el sistema.\n" +
                         "¿Están instalados los controladores?";
                     break;
                 }
