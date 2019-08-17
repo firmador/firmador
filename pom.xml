@@ -13,7 +13,6 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <dss.version>5.5-SNAPSHOT</dss.version>
     <slf4j.version>1.7.28</slf4j.version>
-    <shade.version>3.2.1</shade.version>
     <jaxb.version>2.3.0</jaxb.version>
   </properties>
   <build>
@@ -22,7 +21,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>${shade.version}</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -59,11 +58,6 @@
   <dependencies>
     <dependency>
       <groupId>eu.europa.ec.joinup.sd-dss</groupId>
-      <artifactId>dss-pades</artifactId>
-      <version>${dss.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>eu.europa.ec.joinup.sd-dss</groupId>
       <artifactId>dss-pades-pdfbox</artifactId>
       <version>${dss.version}</version>
       <exclusions>
@@ -91,12 +85,7 @@
     </dependency>
     <dependency>
       <groupId>eu.europa.ec.joinup.sd-dss</groupId>
-      <artifactId>dss-asic-xades</artifactId>
-      <version>${dss.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>eu.europa.ec.joinup.sd-dss</groupId>
-      <artifactId>dss-asic-cades</artifactId>
+      <artifactId>dss-xades</artifactId>
       <version>${dss.version}</version>
     </dependency>
     <dependency>
