@@ -29,14 +29,13 @@ import javax.security.auth.x500.X500Principal;
 
 import app.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
-import eu.europa.esig.dss.DigestAlgorithm;
-import eu.europa.esig.dss.DSSASN1Utils;
-import eu.europa.esig.dss.DSSDocument;
-import eu.europa.esig.dss.DSSException;
-import eu.europa.esig.dss.SignatureLevel;
-import eu.europa.esig.dss.SignatureValue;
-import eu.europa.esig.dss.ToBeSigned;
-import eu.europa.esig.dss.client.tsp.OnlineTSPSource;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.SignatureLevel;
+import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.DSSException;
+import eu.europa.esig.dss.model.SignatureValue;
+import eu.europa.esig.dss.model.ToBeSigned;
+import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.pades.DSSJavaFont;
 import eu.europa.esig.dss.pades.PAdESSignatureParameters;
 import eu.europa.esig.dss.pades.SignatureImageParameters;
@@ -44,10 +43,11 @@ import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pades.signature.PAdESService;
 import eu.europa.esig.dss.pdf.PdfObjFactory;
 import eu.europa.esig.dss.pdf.pdfbox.PdfBoxNativeObjectFactory;
+import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
+import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.validation.CertificateVerifier;
-import eu.europa.esig.dss.x509.CertificateToken;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 
 public class FirmadorPAdES extends CRSigner {
@@ -97,13 +97,6 @@ public class FirmadorPAdES extends CRSigner {
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
 
-            // TODO: check if there is an empty signature field (placeholder)
-            // to use it for axis and (maybe) adjust the size to fit into the
-            // rect if possible without needing to prompt the user.
-            // If using GUI, placing values by default but allowing to tweak
-            // them may be fine.
-            //parameters.setSignatureFieldId("Signature1");
-
             SignatureImageParameters imageParameters =
                 new SignatureImageParameters();
             imageParameters.setxAxis(x);
@@ -121,7 +114,6 @@ public class FirmadorPAdES extends CRSigner {
                 BCStyle.SN, principal);
             Date date = new Date();
             parameters.bLevel().setSigningDate(date);
-            SimpleDateFormat sdf;
             String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
                 .format(date);
             textParameters.setText(

@@ -11,8 +11,9 @@ controladores de lector y tarjeta del sitio web de [descargas de Soporte Firma
 Digital](https://soportefirmadigital.com/sfdj/dl.aspx).
 En el caso de GNU/Linux, la forma recomendada para instalarlo está explicada en
 los siguientes artículos para instalar firma digital de Costa Rica en
-[Fedora](https://fran.cr/instalar-firma-digital-costa-rica-linux-fedora/) y en
-[Ubuntu](https://fran.cr/instalar-firma-digital-costa-rica-gnu-linux-ubuntu/).
+[Fedora/RHEL/CentOS](https://fran.cr/instalar-firma-digital-costa-rica-linux-fedora/), en
+[Debian/Ubuntu](https://fran.cr/instalar-firma-digital-costa-rica-gnu-linux-ubuntu/) y
+en [openSUSE/SLE/SLES](https://fran.cr/instalar-firma-digital-costa-rica-gnu-linux-opensuse-leap-sles-sle/).
 
 
 ## Descarga
@@ -27,7 +28,7 @@ los siguientes artículos para instalar firma digital de Costa Rica en
 
 ![Firmador para macOS](pantallazos/macos.png)
 
-![Firmado para Windows](pantallazos/windows.png)
+![Firmador para Windows](pantallazos/windows.png)
 
 
 ## Instalación y ejecución
@@ -58,35 +59,22 @@ ejecución.
 Para las personas interesadas en el desarrollo de Firmador, para compilar
 Firmador se requiere git, Maven y OpenJDK.
 
-En este momento se requiere una versión en desarrollo (snapshot) de DSS, la
-librería implementación de referencia de los formatos AdES, que se puede
-obtener desde el repositorio git de DSS con espejo en GitHub para descargar más
-rápidamente:
+En este momento se requiere una versión en desarrollo (snapshot) de DSS la
+librería implementación de referencia de los formatos AdES. Para compilar
+la rama de desarrollo de DSS 5.5 se requiere OpenJDK 9 o posterior.
 
-    git clone https://github.com/esig/dss.git
+La rama de desarrollo de DSS puede obtener desde el repositorio oficial
+descargando solo lo necesario mediante el siguiente comando:
+
+    git clone --branch develop --depth 1 --single-branch https://ec.europa.eu/cefdigital/code/scm/esig/dss.git
 
 Para entrar en el directorio del repositorio descargado:
 
     cd dss
 
-Para cambiar a la rama de desarrollo:
+Para compilar e instalar mucho más rápido saltando los tests:
 
-    git checkout develop
-
-Para compilar e instalar mucho más rápido saltando todos los tests posibles
-excepto los de algunas dependencias intermedias:
-
-    mvn -pl eu.europa.ec.joinup.sd-dss:sd-dss -pl eu.europa.ec.joinup.sd-dss:dss-model install -DskipTests -Dmaven.test.skip=true
-    mvn -pl eu.europa.ec.joinup.sd-dss:dss-utils -pl eu.europa.ec.joinup.sd-dss:dss-crl-parser install -DskipTests
-    mvn install -DskipTests -Dmaven.test.skip=true
-
-Fallará una dependencia, entonces ejecutar:
-
-    mvn -pl eu.europa.ec.joinup.sd-dss:dss-utils -pl eu.europa.ec.joinup.sd-dss:dss-pades install -DskipTests
-
-Y para terminar de compilar e instalar:
-
-    mvn install -DskipTests -Dmaven.test.skip=true
+    mvn install -DskipTests -Dmaven.test.skip.exec
 
 Para salir del directorio dss:
 

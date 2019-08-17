@@ -19,34 +19,55 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package app.firmador;
 
+
+
 import java.security.KeyStore.PasswordProtection;
+
+
 import java.util.List;
+
 
 import app.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
-import eu.europa.esig.dss.DigestAlgorithm;
-import eu.europa.esig.dss.DSSDocument;
-import eu.europa.esig.dss.DSSException;
-import eu.europa.esig.dss.SignatureLevel;
-import eu.europa.esig.dss.SignaturePackaging;
-import eu.europa.esig.dss.SignatureValue;
-import eu.europa.esig.dss.ToBeSigned;
-import eu.europa.esig.dss.client.tsp.OnlineTSPSource;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.SignatureLevel;
+import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.DSSException;
+import eu.europa.esig.dss.model.SignatureValue;
+import eu.europa.esig.dss.model.ToBeSigned;
+import eu.europa.esig.dss.model.x509.CertificateToken;
+
+import eu.europa.esig.dss.enumerations.SignaturePackaging;
+
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
 import eu.europa.esig.dss.xades.signature.XAdESService;
+
+
+import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
+
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.validation.CertificateVerifier;
-import eu.europa.esig.dss.x509.CertificateToken;
+
 
 public class FirmadorXAdES extends CRSigner {
+
+
 
     public FirmadorXAdES(GUIInterface gui) {
         super(gui);
     }
 
+
+
+
+
+
+
     public DSSDocument sign(DSSDocument toSignDocument,
         PasswordProtection pin) {
+
+
 
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
@@ -57,22 +78,61 @@ public class FirmadorXAdES extends CRSigner {
 
         SignatureValue signatureValue = null;
 
+        DSSDocument signedDocument = null;
+
         try {
             SignatureTokenConnection token = getSignatureConnection(pin);
             DSSPrivateKeyEntry privateKey = getPrivateKey(token);
-
+            CertificateToken certificate = privateKey.getCertificate();
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
-            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
+            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
             parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
-            parameters.setSigningCertificate(privateKey.getCertificate());
+            parameters.setSigningCertificate(certificate);
             parameters.setSignWithExpiredCertificate(true);
-
+            parameters.setPrettyPrint(true);
             List<CertificateToken> certificateChain = getCertificateChain(
                 verifier, parameters);
             parameters.setCertificateChain(certificateChain);
-
+            parameters.setEn319132(false);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
                 parameters);
@@ -83,7 +143,6 @@ public class FirmadorXAdES extends CRSigner {
             gui.showError(Throwables.getRootCause(e));
         }
 
-        DSSDocument signedDocument = null;
         try {
             signedDocument = service.signDocument(toSignDocument, parameters,
                 signatureValue);

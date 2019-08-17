@@ -27,8 +27,6 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -61,7 +59,6 @@ import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.Scrollable;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -71,13 +68,15 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import app.firmador.FirmadorPAdES;
-//import app.firmador.FirmadorXAdES;
+import app.firmador.FirmadorXAdES;
 import app.firmador.Report;
 import app.firmador.Validator;
+import app.firmador.gui.swing.ScrollableJPanel;
 import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
-import eu.europa.esig.dss.DSSDocument;
-import eu.europa.esig.dss.FileDocument;
+import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.FileDocument;
+import eu.europa.esig.dss.model.MimeType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
@@ -152,21 +151,30 @@ public class GUISwing implements GUIInterface {
                 String fileName = getDocumentToSign();
 
                 if (fileName != null) {
-                  //FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
-                    FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
-                    firmador.selectSlot();
-                    if (firmador.selectedSlot == -1) return;
-
-                    PasswordProtection pin = getPin();
                     DSSDocument toSignDocument = new FileDocument(fileName);
                     DSSDocument signedDocument = null;
+                    PasswordProtection pin = getPin();
                     if (pin.getPassword() != null
                         && pin.getPassword().length != 0) {
-                        firmador.addVisibleSignature(
-                            (int)pageSpinner.getValue(),
-                            (int)Math.round(signatureLabel.getX() * 2.5),
-                            (int)Math.round(signatureLabel.getY() * 2.5));
-                        signedDocument = firmador.sign(toSignDocument, pin);
+                        if (toSignDocument.getMimeType() == MimeType.PDF) {
+                            FirmadorPAdES firmador = new FirmadorPAdES(
+                                GUISwing.this);
+                            firmador.selectSlot();
+                            if (firmador.selectedSlot == -1) return;
+                            firmador.addVisibleSignature(
+                                (int)pageSpinner.getValue(),
+                                (int)Math.round(signatureLabel.getX() * 2.5),
+                                (int)Math.round(signatureLabel.getY() * 2.5));
+                            signedDocument = firmador.sign(toSignDocument,
+                                pin);
+                        } else {
+                            FirmadorXAdES firmador = new FirmadorXAdES(
+                                GUISwing.this);
+                            firmador.selectSlot();
+                            if (firmador.selectedSlot == -1) return;
+                            signedDocument = firmador.sign(toSignDocument,
+                                pin);
+                        }
                         try {
                             pin.destroy();
                         } catch (Exception e) {}
@@ -198,12 +206,18 @@ public class GUISwing implements GUIInterface {
                 String fileName = getDocumentToSign();
 
                 if (fileName != null) {
-                  //FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
-                    FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
 
                     DSSDocument toExtendDocument = new FileDocument(fileName);
                     DSSDocument extendedDocument = null;
-                    extendedDocument = firmador.extend(toExtendDocument);
+                    if (toExtendDocument.getMimeType() == MimeType.PDF) {
+                        FirmadorPAdES firmador = new FirmadorPAdES(
+                            GUISwing.this);
+                        extendedDocument = firmador.extend(toExtendDocument);
+                    } else {
+                        FirmadorXAdES firmador = new FirmadorXAdES(
+                            GUISwing.this);
+                        extendedDocument = firmador.extend(toExtendDocument);
+                    }
                     if (extendedDocument != null) {
                         fileName = getPathToSaveExtended();
                         if (fileName != null) {
@@ -235,10 +249,11 @@ public class GUISwing implements GUIInterface {
                     "Seleccionar documento a firmar");
                 loadDialog.setFilenameFilter(new FilenameFilter() {
                     public boolean accept(File dir, String name) {
-                        return name.endsWith(".pdf") || name.endsWith(".PDF");
+                        return name.toLowerCase().endsWith(".pdf")
+                            || name.toLowerCase().endsWith(".xml");
                     }
                 });
-                loadDialog.setFile("*.pdf");
+                loadDialog.setFile("*.pdf;*.xml");
                 loadDialog.setLocationRelativeTo(null);
                 loadDialog.setVisible(true);
                 loadDialog.dispose();
@@ -347,28 +362,34 @@ public class GUISwing implements GUIInterface {
     public void loadDocument(String fileName) {
         fileField.setText(fileName);
         signButton.setEnabled(true);
-        pageLabel.setEnabled(true);
-        pageSpinner.setEnabled(true);
         try {
             if (doc != null) {
                 doc.close();
             }
-            doc = PDDocument.load(new File(fileName));
-            int pages = doc.getNumberOfPages();
-            renderer = new PDFRenderer(doc);
-            if (pages > 0) {
-                pageImage = renderer.renderImage(0, (float)(1 / 2.5));
-                SpinnerNumberModel model =
-                    ((SpinnerNumberModel)pageSpinner.getModel());
-                model.setMinimum(1);
-                model.setMaximum(pages);
-                pageSpinner.setValue(1);
+            DSSDocument mimeDocument = new FileDocument(fileName);
+            if (mimeDocument.getMimeType() == MimeType.PDF) {
+                doc = PDDocument.load(new File(fileName));
+                int pages = doc.getNumberOfPages();
+                renderer = new PDFRenderer(doc);
+                if (pages > 0) {
+                    pageImage = renderer.renderImage(0, (float)(1 / 2.5));
+                    SpinnerNumberModel model =
+                        ((SpinnerNumberModel)pageSpinner.getModel());
+                    model.setMinimum(1);
+                    model.setMaximum(pages);
+                    pageLabel.setEnabled(true);
+                    pageSpinner.setEnabled(true);
+                    pageSpinner.setValue(1);
+                }
+                imageLabel.setBorder(new LineBorder(Color.BLACK));
+                imageLabel.setIcon(new ImageIcon(pageImage));
+            }
+            else if (mimeDocument.getMimeType() == MimeType.XML) {
+                // TODO: how to display the XML?
             }
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
         }
-        imageLabel.setBorder(new LineBorder(Color.BLACK));
-        imageLabel.setIcon(new ImageIcon(pageImage));
 
         Validator validator = new Validator(fileName);
         if (validator.isSigned()) {
@@ -422,6 +443,7 @@ public class GUISwing implements GUIInterface {
         }
         saveDialog.setFile(lastFile.substring(0,
             lastFile.lastIndexOf(".")) + suffix + dotExtension);
+        // FIXME now files have different extensions (PDF, XML).
         saveDialog.setFilenameFilter(loadDialog.getFilenameFilter());
         saveDialog.setLocationRelativeTo(null);
         saveDialog.setVisible(true);
@@ -533,9 +555,10 @@ public class GUISwing implements GUIInterface {
                 }
                 break;
             case "java.io.IOException":
-                if (message.contains("asepkcs") || message.contains("libASEP11")) {
-                    message = "No se ha encontrado la librería de Firma Digital " +
-                        "en el sistema.\n" +
+                if (message.contains("asepkcs") ||
+                    message.contains("libASEP11")) {
+                    message = "No se ha encontrado la librería de Firma " +
+                        "Digital en el sistema.\n" +
                         "¿Están instalados los controladores?";
                     break;
                 }
@@ -589,32 +612,6 @@ public class GUISwing implements GUIInterface {
         }
 
         return dev;
-    }
-
-}
-
-class ScrollableJPanel extends JPanel implements Scrollable {
-
-    public Dimension getPreferredScrollableViewportSize() {
-        return this.getPreferredSize();
-    }
-
-    public int getScrollableUnitIncrement(Rectangle visibleRect,
-        int orientation, int direction) {
-        return 50;
-    }
-
-    public int getScrollableBlockIncrement(Rectangle visibleRect,
-        int orientation, int direction) {
-        return 80;
-    }
-
-    public boolean getScrollableTracksViewportWidth() {
-        return true;
-    }
-
-    public boolean getScrollableTracksViewportHeight() {
-        return false;
     }
 
 }

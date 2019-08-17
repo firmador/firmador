@@ -30,8 +30,8 @@ import java.util.List;
 import app.firmador.FirmadorPAdES;
 //import app.firmador.FirmadorXAdES;
 import com.google.common.base.Throwables;
-import eu.europa.esig.dss.DSSDocument;
-import eu.europa.esig.dss.FileDocument;
+import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.FileDocument;
 
 public class GUIArgs implements GUIInterface {
 
