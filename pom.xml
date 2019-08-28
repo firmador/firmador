@@ -48,6 +48,9 @@
                     <Specification-Version>${project.version}</Specification-Version>
                   </manifestEntries>
                 </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/services/eu.europa.esig.dss.validation.DocumentValidatorFactory</resource>
+                </transformer>
               </transformers>
             </configuration>
           </execution>
