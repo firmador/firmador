@@ -85,25 +85,17 @@ public class FirmadorXAdES extends CRSigner {
             DSSPrivateKeyEntry privateKey = getPrivateKey(token);
             CertificateToken certificate = privateKey.getCertificate();
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
-            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
+            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
             parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
             parameters.setSigningCertificate(certificate);
             parameters.setSignWithExpiredCertificate(true);
-            parameters.setPrettyPrint(true);
+            //parameters.setPrettyPrint(true);
             List<CertificateToken> certificateChain = getCertificateChain(
                 verifier, parameters);
             parameters.setCertificateChain(certificateChain);
             parameters.setEn319132(false);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
-
-
-
-
-
-
-
-
 
 
 
@@ -178,8 +170,8 @@ public class FirmadorXAdES extends CRSigner {
 
     public DSSDocument extend(DSSDocument document) {
         XAdESSignatureParameters parameters = new XAdESSignatureParameters();
-        parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
-
+        parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
+        //parameters.setPrettyPrint(true);
 
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
