@@ -24,6 +24,7 @@ import java.awt.Rectangle;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 
+@SuppressWarnings("serial")
 public class ScrollableJPanel extends JPanel implements Scrollable {
 
     public Dimension getPreferredScrollableViewportSize() {
