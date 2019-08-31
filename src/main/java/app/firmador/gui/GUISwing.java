@@ -133,10 +133,10 @@ public class GUISwing implements GUIInterface {
         pageSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 try {
-                    int page = (int)(pageSpinner.getValue());
+                    int page = (int)pageSpinner.getValue();
                     if (page > 0) {
                         pageImage = renderer.renderImage(
-                            page - 1, (float)(1 / 2.5));
+                            page - 1, 1 / 2.5f);
                         imageLabel.setIcon(new ImageIcon(pageImage));
                     }
                 } catch (Exception ex) {
@@ -238,7 +238,9 @@ public class GUISwing implements GUIInterface {
 
         signButton.setEnabled(false);
         pageLabel.setEnabled(false);
+        pageLabel.setVisible(false);
         pageSpinner.setEnabled(false);
+        pageSpinner.setVisible(false);
         extendButton.setEnabled(false);
         JButton fileButton = new JButton("Elegir...");
         imageLabel = new JLabel();
@@ -371,8 +373,10 @@ public class GUISwing implements GUIInterface {
                 doc = PDDocument.load(new File(fileName));
                 int pages = doc.getNumberOfPages();
                 renderer = new PDFRenderer(doc);
+                pageLabel.setVisible(true);
+                pageSpinner.setVisible(true);
                 if (pages > 0) {
-                    pageImage = renderer.renderImage(0, (float)(1 / 2.5));
+                    pageImage = renderer.renderImage(0, 1 / 2.5f);
                     SpinnerNumberModel model =
                         ((SpinnerNumberModel)pageSpinner.getModel());
                     model.setMinimum(1);
@@ -383,9 +387,12 @@ public class GUISwing implements GUIInterface {
                 }
                 imageLabel.setBorder(new LineBorder(Color.BLACK));
                 imageLabel.setIcon(new ImageIcon(pageImage));
+                imageLabel.setVisible(true);
             }
             else if (mimeDocument.getMimeType() == MimeType.XML) {
-                // TODO: how to display the XML?
+                imageLabel.setVisible(false);
+                pageLabel.setVisible(false);
+                pageSpinner.setVisible(false);
             }
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
@@ -443,7 +450,6 @@ public class GUISwing implements GUIInterface {
         }
         saveDialog.setFile(lastFile.substring(0,
             lastFile.lastIndexOf(".")) + suffix + dotExtension);
-        // FIXME now files have different extensions (PDF, XML).
         saveDialog.setFilenameFilter(loadDialog.getFilenameFilter());
         saveDialog.setLocationRelativeTo(null);
         saveDialog.setVisible(true);
@@ -597,9 +603,10 @@ public class GUISwing implements GUIInterface {
             JOptionPane.ERROR_MESSAGE);
             return -1;
         }
-        String input = (String) JOptionPane.showInputDialog(null,
-            "Propietario: ", "Seleccione el dispositivo para firmar",
-            JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        String input = JOptionPane.showInputDialog(null, "Propietario: ",
+            "Seleccione el dispositivo para firmar",
+            JOptionPane.QUESTION_MESSAGE, null, options, options[0])
+            .toString();
 
         if (input == null) {
             return -1;
