@@ -69,6 +69,7 @@ import javax.swing.event.ChangeListener;
 
 import app.firmador.FirmadorPAdES;
 import app.firmador.FirmadorXAdES;
+import app.firmador.FirmadorOpenDocument;
 import app.firmador.Report;
 import app.firmador.Validator;
 import app.firmador.gui.swing.ScrollableJPanel;
@@ -156,7 +157,8 @@ public class GUISwing implements GUIInterface {
                     PasswordProtection pin = getPin();
                     if (pin.getPassword() != null
                         && pin.getPassword().length != 0) {
-                        if (toSignDocument.getMimeType() == MimeType.PDF) {
+                        MimeType mimeType = toSignDocument.getMimeType();
+                        if (mimeType == MimeType.PDF) {
                             FirmadorPAdES firmador = new FirmadorPAdES(
                                 GUISwing.this);
                             firmador.selectSlot();
@@ -165,6 +167,16 @@ public class GUISwing implements GUIInterface {
                                 (int)pageSpinner.getValue(),
                                 (int)Math.round(signatureLabel.getX() * 2.5),
                                 (int)Math.round(signatureLabel.getY() * 2.5));
+                            signedDocument = firmador.sign(toSignDocument,
+                                pin);
+                        } else if (mimeType == MimeType.ODG
+                            || mimeType == MimeType.ODP
+                            || mimeType == MimeType.ODS
+                            || mimeType == MimeType.ODT) {
+                            FirmadorOpenDocument firmador =
+                                new FirmadorOpenDocument(GUISwing.this);
+                            firmador.selectSlot();
+                            if (firmador.selectedSlot == -1) return;
                             signedDocument = firmador.sign(toSignDocument,
                                 pin);
                         } else {
@@ -209,9 +221,17 @@ public class GUISwing implements GUIInterface {
 
                     DSSDocument toExtendDocument = new FileDocument(fileName);
                     DSSDocument extendedDocument = null;
-                    if (toExtendDocument.getMimeType() == MimeType.PDF) {
+                    MimeType mimeType = toExtendDocument.getMimeType();
+                    if (mimeType == MimeType.PDF) {
                         FirmadorPAdES firmador = new FirmadorPAdES(
                             GUISwing.this);
+                        extendedDocument = firmador.extend(toExtendDocument);
+                    } else if (mimeType == MimeType.ODG
+                        || mimeType == MimeType.ODP
+                        || mimeType == MimeType.ODS
+                        || mimeType == MimeType.ODT) {
+                        FirmadorOpenDocument firmador =
+                            new FirmadorOpenDocument(GUISwing.this);
                         extendedDocument = firmador.extend(toExtendDocument);
                     } else {
                         FirmadorXAdES firmador = new FirmadorXAdES(
@@ -251,11 +271,15 @@ public class GUISwing implements GUIInterface {
                     "Seleccionar documento a firmar");
                 loadDialog.setFilenameFilter(new FilenameFilter() {
                     public boolean accept(File dir, String name) {
-                        return name.toLowerCase().endsWith(".pdf")
+                        return name.toLowerCase().endsWith(".odg")
+                            || name.toLowerCase().endsWith(".odp")
+                            || name.toLowerCase().endsWith(".ods")
+                            || name.toLowerCase().endsWith(".odt")
+                            || name.toLowerCase().endsWith(".pdf")
                             || name.toLowerCase().endsWith(".xml");
                     }
                 });
-                loadDialog.setFile("*.pdf;*.xml");
+                loadDialog.setFile("*.odg;*.odp;*.ods;*.odt;*.pdf;*.xml");
                 loadDialog.setLocationRelativeTo(null);
                 loadDialog.setVisible(true);
                 loadDialog.dispose();
@@ -369,7 +393,8 @@ public class GUISwing implements GUIInterface {
                 doc.close();
             }
             DSSDocument mimeDocument = new FileDocument(fileName);
-            if (mimeDocument.getMimeType() == MimeType.PDF) {
+            MimeType mimeType = mimeDocument.getMimeType();
+            if (mimeType == MimeType.PDF) {
                 doc = PDDocument.load(new File(fileName));
                 int pages = doc.getNumberOfPages();
                 renderer = new PDFRenderer(doc);
@@ -389,7 +414,9 @@ public class GUISwing implements GUIInterface {
                 imageLabel.setIcon(new ImageIcon(pageImage));
                 imageLabel.setVisible(true);
             }
-            else if (mimeDocument.getMimeType() == MimeType.XML) {
+            else if (mimeType == mimeType.ODG || mimeType == MimeType.ODP
+                || mimeType == MimeType.ODS || mimeType == MimeType.ODT
+                || mimeType == MimeType.XML) {
                 imageLabel.setVisible(false);
                 pageLabel.setVisible(false);
                 pageSpinner.setVisible(false);

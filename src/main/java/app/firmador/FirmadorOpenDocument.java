@@ -19,13 +19,13 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package app.firmador;
 
-import java.awt.Color;
-import java.awt.Font;
+
+
 import java.security.KeyStore.PasswordProtection;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
+
 import java.util.List;
-import javax.security.auth.x500.X500Principal;
+
 
 import app.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
@@ -36,46 +36,46 @@ import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
-import eu.europa.esig.dss.pades.DSSJavaFont;
-import eu.europa.esig.dss.pades.PAdESSignatureParameters;
-import eu.europa.esig.dss.pades.SignatureImageParameters;
-import eu.europa.esig.dss.pades.SignatureImageTextParameters;
-import eu.europa.esig.dss.pades.signature.PAdESService;
-import eu.europa.esig.dss.pdf.PdfObjFactory;
-import eu.europa.esig.dss.pdf.pdfbox.PdfBoxNativeObjectFactory;
+import eu.europa.esig.dss.enumerations.ASiCContainerType;
+import eu.europa.esig.dss.enumerations.SignaturePackaging;
+
+import eu.europa.esig.dss.asic.xades.ASiCWithXAdESSignatureParameters;
+import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
+
+
 import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
-import eu.europa.esig.dss.spi.DSSASN1Utils;
+
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.validation.CertificateVerifier;
-import org.bouncycastle.asn1.x500.style.BCStyle;
 
-public class FirmadorPAdES extends CRSigner {
 
-    private int page, x, y;
+public class FirmadorOpenDocument extends CRSigner {
 
-    public FirmadorPAdES(GUIInterface gui) {
+
+
+    public FirmadorOpenDocument(GUIInterface gui) {
         super(gui);
     }
 
-    public void addVisibleSignature(int page, int x, int y) {
-        this.page = page;
-        this.x = x;
-        this.y = y;
-    }
+
+
+
+
+
 
     public DSSDocument sign(DSSDocument toSignDocument,
         PasswordProtection pin) {
 
-        PdfObjFactory.setInstance(new PdfBoxNativeObjectFactory());
+
 
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
 
-        PAdESService service = new PAdESService(verifier);
+        ASiCWithXAdESService service = new ASiCWithXAdESService(verifier);
 
-        PAdESSignatureParameters parameters = new PAdESSignatureParameters();
-
+        ASiCWithXAdESSignatureParameters parameters =
+            new ASiCWithXAdESSignatureParameters();
         SignatureValue signatureValue = null;
 
         DSSDocument signedDocument = null;
@@ -85,46 +85,46 @@ public class FirmadorPAdES extends CRSigner {
             DSSPrivateKeyEntry privateKey = getPrivateKey(token);
             CertificateToken certificate = privateKey.getCertificate();
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
-            parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LT);
-            parameters.setSignatureSize(13312);
+            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
+            parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
             parameters.setSigningCertificate(certificate);
             parameters.setSignWithExpiredCertificate(true);
-
+            //parameters.setPrettyPrint(true);
             List<CertificateToken> certificateChain = getCertificateChain(
                 verifier, parameters);
             parameters.setCertificateChain(certificateChain);
-
+            parameters.setEn319132(false);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
 
-            SignatureImageParameters imageParameters =
-                new SignatureImageParameters();
-            imageParameters.setxAxis(x);
-            imageParameters.setyAxis(y);
-            SignatureImageTextParameters textParameters =
-                new SignatureImageTextParameters();
-            textParameters.setFont(
-                new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
 
-            String cn = DSSASN1Utils.getSubjectCommonName(certificate);
-            X500Principal principal = certificate.getSubjectX500Principal();
-            String o = DSSASN1Utils.extractAttributeFromX500Principal(
-                BCStyle.O, principal);
-            String sn = DSSASN1Utils.extractAttributeFromX500Principal(
-                BCStyle.SN, principal);
-            Date date = new Date();
-            parameters.bLevel().setSigningDate(date);
-            String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
-                .format(date);
-            textParameters.setText(
-                "Firmado por " + cn + "\n" +
-                o + ", " + sn + ". Fecha declarada: " + fecha + "\n" +
-                "Esta representación visual no es una fuente de confianza, " +
-                "valide siempre la firma.");
-            textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
-            imageParameters.setTextParameters(textParameters);
-            imageParameters.setPage(page);
-            parameters.setSignatureImageParameters(imageParameters);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
                 parameters);
@@ -155,7 +155,7 @@ public class FirmadorPAdES extends CRSigner {
                 "Si lo prefiere, puede cancelar el guardado del documento " +
                 "firmado e intentar firmarlo más tarde.\n");
 
-            parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
+            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
             try {
                 signedDocument = service.signDocument(toSignDocument,
                     parameters, signatureValue);
@@ -169,15 +169,15 @@ public class FirmadorPAdES extends CRSigner {
     }
 
     public DSSDocument extend(DSSDocument document) {
-        PAdESSignatureParameters parameters = new PAdESSignatureParameters();
-
-        parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
-        parameters.setSignatureSize(2765);
-
+        ASiCWithXAdESSignatureParameters parameters =
+            new ASiCWithXAdESSignatureParameters();
+        parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
+        //parameters.setPrettyPrint(true);
+        parameters.aSiC().setContainerType(ASiCContainerType.ASiC_E);
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
 
-        PAdESService service = new PAdESService(verifier);
+        ASiCWithXAdESService service = new ASiCWithXAdESService(verifier);
 
         OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
         service.setTspSource(onlineTSPSource);

@@ -170,20 +170,21 @@ public class FirmadorXAdES extends CRSigner {
 
     public DSSDocument extend(DSSDocument document) {
         XAdESSignatureParameters parameters = new XAdESSignatureParameters();
-        parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
+
+        parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
         //parameters.setPrettyPrint(true);
 
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
 
-        XAdESService xadesService = new XAdESService(verifier);
+        XAdESService service = new XAdESService(verifier);
 
         OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
-        xadesService.setTspSource(onlineTSPSource);
+        service.setTspSource(onlineTSPSource);
 
         DSSDocument extendedDocument = null;
         try {
-            extendedDocument = xadesService.extendDocument(document,
+            extendedDocument = service.extendDocument(document,
                 parameters);
         } catch (Exception e) {
             e.printStackTrace();
