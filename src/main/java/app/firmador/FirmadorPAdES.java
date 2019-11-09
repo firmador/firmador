@@ -172,7 +172,7 @@ public class FirmadorPAdES extends CRSigner {
         PAdESSignatureParameters parameters = new PAdESSignatureParameters();
 
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
-        parameters.setSignatureSize(2765);
+        parameters.setSignatureSize(3072);
 
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
