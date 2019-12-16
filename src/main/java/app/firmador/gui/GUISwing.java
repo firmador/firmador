@@ -69,7 +69,7 @@ import javax.swing.event.ChangeListener;
 
 import app.firmador.FirmadorPAdES;
 import app.firmador.FirmadorXAdES;
-import app.firmador.FirmadorOpenDocument;
+//import app.firmador.FirmadorOpenDocument;
 import app.firmador.Report;
 import app.firmador.Validator;
 import app.firmador.gui.swing.ScrollableJPanel;
