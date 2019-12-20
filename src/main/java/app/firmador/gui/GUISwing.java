@@ -70,7 +70,7 @@ import javax.swing.event.ChangeListener;
 
 import app.firmador.FirmadorPAdES;
 import app.firmador.FirmadorXAdES;
-//import app.firmador.FirmadorOpenDocument;
+import app.firmador.FirmadorOpenDocument;
 import app.firmador.Report;
 import app.firmador.Validator;
 import app.firmador.gui.swing.CopyableJLabel;
@@ -176,20 +176,16 @@ public class GUISwing implements GUIInterface {
                                 (int)Math.round(signatureLabel.getY() * 2.5));
                             signedDocument = firmador.sign(toSignDocument,
                                 pin);
-/*
-
                         } else if (mimeType == MimeType.ODG
                             || mimeType == MimeType.ODP
                             || mimeType == MimeType.ODS
                             || mimeType == MimeType.ODT) {
-                            // Requires DSS 5.6+
                             FirmadorOpenDocument firmador =
                                 new FirmadorOpenDocument(GUISwing.this);
                             firmador.selectSlot();
                             if (firmador.selectedSlot == -1) return;
                             signedDocument = firmador.sign(toSignDocument,
                                 pin);
-*/
                         } else {
                             FirmadorXAdES firmador = new FirmadorXAdES(
                                 GUISwing.this);
@@ -237,16 +233,13 @@ public class GUISwing implements GUIInterface {
                         FirmadorPAdES firmador = new FirmadorPAdES(
                             GUISwing.this);
                         extendedDocument = firmador.extend(toExtendDocument);
-/*
                     } else if (mimeType == MimeType.ODG
                         || mimeType == MimeType.ODP
                         || mimeType == MimeType.ODS
                         || mimeType == MimeType.ODT) {
-                        // Requires DSS 5.6+
                         FirmadorOpenDocument firmador =
                             new FirmadorOpenDocument(GUISwing.this);
                         extendedDocument = firmador.extend(toExtendDocument);
-*/
                     } else {
                         FirmadorXAdES firmador = new FirmadorXAdES(
                             GUISwing.this);
@@ -287,15 +280,15 @@ public class GUISwing implements GUIInterface {
                     "Seleccionar documento a firmar");
                 loadDialog.setFilenameFilter(new FilenameFilter() {
                     public boolean accept(File dir, String name) {
-                        return /* name.toLowerCase().endsWith(".odg")
+                        return name.toLowerCase().endsWith(".odg")
                             || name.toLowerCase().endsWith(".odp")
                             || name.toLowerCase().endsWith(".ods")
                             || name.toLowerCase().endsWith(".odt")
-                            ||*/ name.toLowerCase().endsWith(".pdf")
+                            || name.toLowerCase().endsWith(".pdf")
                             || name.toLowerCase().endsWith(".xml");
                     }
                 });
-                //loadDialog.setFile("*.odg;*.odp;*.ods;*.odt;*.pdf;*.xml");
+                loadDialog.setFile("*.odg;*.odp;*.ods;*.odt;*.pdf;*.xml");
                 loadDialog.setFile("*.pdf;*.xml");
                 loadDialog.setLocationRelativeTo(null);
                 loadDialog.setVisible(true);
@@ -434,9 +427,9 @@ public class GUISwing implements GUIInterface {
                 imageLabel.setIcon(new ImageIcon(pageImage));
                 imageLabel.setVisible(true);
             }
-            else if (/*mimeType == mimeType.ODG || mimeType == MimeType.ODP
+            else if (mimeType == mimeType.ODG || mimeType == MimeType.ODP
                 || mimeType == MimeType.ODS || mimeType == MimeType.ODT
-                ||*/ mimeType == MimeType.XML) {
+                || mimeType == MimeType.XML) {
                 imageLabel.setVisible(false);
                 pageLabel.setVisible(false);
                 pageSpinner.setVisible(false);

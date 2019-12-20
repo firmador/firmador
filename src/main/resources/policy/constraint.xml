@@ -25,6 +25,7 @@
 		<AllFilesSigned Level="WARN" />
 	</ContainerConstraints>
 	<SignatureConstraints>
+		<StructuralValidation Level="WARN" />
 		<AcceptablePolicies Level="FAIL">
 			<Id>ANY_POLICY</Id>
 			<Id>NO_POLICY</Id>
@@ -39,7 +40,9 @@
 			<ReferenceDataIntact Level="FAIL" />
 			<ManifestEntryObjectExistence Level="WARN" />
 			<SignatureIntact Level="FAIL" />
+			<SignatureDuplicated Level="FAIL" />
 			<ProspectiveCertificateChain Level="FAIL" />
+			<SignerInformationStore Level="FAIL" />
 <!-- 			<TrustedServiceTypeIdentifier Level="WARN"> -->
 <!-- 				<Id>http://uri.etsi.org/TrstSvc/Svctype/CA/QC</Id> -->
 <!-- 			</TrustedServiceTypeIdentifier> -->
@@ -112,6 +115,7 @@
 			<ReferenceDataExistence Level="FAIL" />
 			<ReferenceDataIntact Level="FAIL" />
 			<SignatureIntact Level="FAIL" />
+			<SignatureDuplicated Level="FAIL" />
 			<ProspectiveCertificateChain Level="FAIL" />
 <!-- 			<TrustedServiceTypeIdentifier Level="WARN"> -->
 <!-- 				<Id>http://uri.etsi.org/TrstSvc/Svctype/CA/QC</Id> -->
@@ -314,6 +318,8 @@
 			<Algo Size="160">PLAIN-ECDSA</Algo>
 		</MiniPublicKeySize>
 		<AcceptableDigestAlgo>
+			<Algo>MD2</Algo>
+			<Algo>MD5</Algo>
 			<Algo>SHA1</Algo>
 			<Algo>SHA224</Algo>
 			<Algo>SHA256</Algo>
@@ -328,6 +334,8 @@
 		</AcceptableDigestAlgo>
 		<AlgoExpirationDate Format="yyyy">
 			<!-- Digest algorithms -->
+			<Algo Date="2004">MD2</Algo>
+			<Algo Date="2007">MD5</Algo> <!-- ETSI TS 101 861 V1.3.1 -->
 			<Algo Date="2009">SHA1</Algo> <!-- ETSI TS 102 176-1 (Historical) V2.0.0 -->
 			<Algo Date="2023">SHA224</Algo> <!-- ETSI 119 312 V1.3.1 -->
 			<Algo Date="2026">SHA256</Algo> <!-- ETSI 119 312 V1.3.1 -->

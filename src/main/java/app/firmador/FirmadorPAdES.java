@@ -41,7 +41,7 @@ import eu.europa.esig.dss.pades.PAdESSignatureParameters;
 import eu.europa.esig.dss.pades.SignatureImageParameters;
 import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pades.signature.PAdESService;
-import eu.europa.esig.dss.pdf.PdfObjFactory;
+
 import eu.europa.esig.dss.pdf.pdfbox.PdfBoxNativeObjectFactory;
 import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
@@ -110,13 +110,13 @@ public class FirmadorPAdES extends CRSigner {
     public DSSDocument sign(DSSDocument toSignDocument,
         PasswordProtection pin) {
 
-        PdfObjFactory.setInstance(new PdfBoxNativeObjectFactory());
+
 
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
 
         PAdESService service = new PAdESService(verifier);
-
+        service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
         parameters = new PAdESSignatureParameters();
 
         SignatureValue signatureValue = null;
