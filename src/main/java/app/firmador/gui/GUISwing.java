@@ -72,6 +72,7 @@ import app.firmador.FirmadorXAdES;
 //import app.firmador.FirmadorOpenDocument;
 import app.firmador.Report;
 import app.firmador.Validator;
+import app.firmador.gui.swing.CopyableJLabel;
 import app.firmador.gui.swing.ScrollableJPanel;
 import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
@@ -94,7 +95,7 @@ public class GUISwing implements GUIInterface {
     private JTabbedPane tabbedPane;
     private JLabel imageLabel;
     private JLabel signatureLabel;
-    private JLabel reportLabel;
+    private CopyableJLabel reportLabel;
     private JLabel pageLabel;
     private JSpinner pageSpinner;
     private JButton signButton;
@@ -213,7 +214,7 @@ public class GUISwing implements GUIInterface {
             }
         });
 
-        reportLabel = new JLabel();
+        reportLabel = new CopyableJLabel();
         reportLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         extendButton = new JButton("Agregar sello de tiempo al documento");
         extendButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -614,7 +615,7 @@ public class GUISwing implements GUIInterface {
                 break;
         }
 
-        JOptionPane.showMessageDialog(null, message, "Mensaje de Firmador",
+        JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador",
             messageType);
 
         if (messageType == JOptionPane.ERROR_MESSAGE) {
@@ -623,7 +624,7 @@ public class GUISwing implements GUIInterface {
     }
 
     public void showMessage(String message) {
-        JOptionPane.showMessageDialog(null, message, "Mensaje de Firmador",
+        JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador",
             JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -634,7 +635,7 @@ public class GUISwing implements GUIInterface {
             String message = "No se ha encontrado ninguna tarjeta " +
                 "conectada.\nAsegúrese de que la tarjeta y el lector están " +
                 "conectados de forma correcta.";
-            JOptionPane.showMessageDialog(null, message, "Error al firmar",
+            JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Error al firmar",
             JOptionPane.ERROR_MESSAGE);
             return -1;
         }
