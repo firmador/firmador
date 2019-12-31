@@ -28,6 +28,7 @@ import app.firmador.token.Token;
 import app.firmador.token.Utils;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.AbstractSignatureParameters;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.KeyUsageBit;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.service.crl.OnlineCRLSource;
@@ -155,6 +156,7 @@ public class CRSigner {
 
         // OSCP
         OnlineOCSPSource onlineOCSPSource = new OnlineOCSPSource();
+        onlineOCSPSource.setCertIDDigestAlgorithm(DigestAlgorithm.SHA1);
         onlineOCSPSource.setDataLoader(commonsHttpDataLoader);
         commonCertificateVerifier.setOcspSource(onlineOCSPSource);
 
