@@ -61,7 +61,7 @@ Firmador se requiere git, Maven y OpenJDK.
 
 En este momento se requiere una versión en desarrollo (snapshot) de DSS la
 librería implementación de referencia de los formatos AdES. Para compilar
-la rama de desarrollo de DSS 5.5 se requiere OpenJDK 9 o posterior.
+la rama de desarrollo de DSS 5.6 se requiere OpenJDK 9 o posterior.
 
 La rama de desarrollo de DSS puede obtener desde el repositorio oficial
 descargando solo lo necesario mediante el siguiente comando:
