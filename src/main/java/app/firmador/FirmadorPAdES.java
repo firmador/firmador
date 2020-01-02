@@ -111,7 +111,7 @@ public class FirmadorPAdES extends CRSigner {
             String o = DSSASN1Utils.extractAttributeFromX500Principal(
                 BCStyle.O, principal);
             String sn = DSSASN1Utils.extractAttributeFromX500Principal(
-                BCStyle.SN, principal);
+                BCStyle.SERIALNUMBER, principal);
             Date date = new Date();
             parameters.bLevel().setSigningDate(date);
             String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
