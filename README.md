@@ -78,7 +78,7 @@ Para ejecutar el JAR:
 
 ## Licencia
 
-Copyright © 2019 de los autores de Firmador.
+Copyright © 2020 de los autores de Firmador.
 
 La lista de autores de Firmador se encuentra en el fichero
 [AUTHORS.md](AUTHORS.md).
