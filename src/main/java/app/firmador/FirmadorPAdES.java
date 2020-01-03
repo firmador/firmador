@@ -67,7 +67,6 @@ public class FirmadorPAdES extends CRSigner {
 
 
 	public void setVisible_signature(boolean visible_signature) {
-		System.out.println("Poniendo el dato en signat"+ visible_signature);
 		this.visible_signature = visible_signature;
 	}
 
