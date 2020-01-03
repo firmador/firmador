@@ -53,17 +53,60 @@ import org.bouncycastle.asn1.x500.style.BCStyle;
 public class FirmadorPAdES extends CRSigner {
 
     private int page, x, y;
-
+    PAdESSignatureParameters parameters;
+    private boolean visible_signature = true; 
+    
     public FirmadorPAdES(GUIInterface gui) {
         super(gui);
     }
 
-    public void addVisibleSignature(int page, int x, int y) {
+    
+    public boolean isVisible_signature() {
+		return visible_signature;
+	}
+
+
+	public void setVisible_signature(boolean visible_signature) {
+		this.visible_signature = visible_signature;
+	}
+
+
+	public void addVisibleSignature(int page, int x, int y) {
         this.page = page;
         this.x = x;
         this.y = y;
     }
 
+    
+    private void appendVisibleSignature(CertificateToken certificate, Date date) {
+        SignatureImageParameters imageParameters =
+                new SignatureImageParameters();
+            imageParameters.setxAxis(x);
+            imageParameters.setyAxis(y);
+            SignatureImageTextParameters textParameters =
+                new SignatureImageTextParameters();
+            textParameters.setFont(
+                new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
+    	  String cn = DSSASN1Utils.getSubjectCommonName(certificate);
+          X500Principal principal = certificate.getSubjectX500Principal();
+          String o = DSSASN1Utils.extractAttributeFromX500Principal(
+              BCStyle.O, principal);
+          String sn = DSSASN1Utils.extractAttributeFromX500Principal(
+              BCStyle.SERIALNUMBER, principal);
+
+          String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+              .format(date);
+          textParameters.setText(
+              "Firmado por " + cn + "\n" +
+              o + ", " + sn + ". Fecha declarada: " + fecha + "\n" +
+              "Esta representación visual no es una fuente de confianza, " +
+              "valide siempre la firma.");
+          textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
+          imageParameters.setTextParameters(textParameters);
+          imageParameters.setPage(page);
+          parameters.setSignatureImageParameters(imageParameters);
+    }
+    
     public DSSDocument sign(DSSDocument toSignDocument,
         PasswordProtection pin) {
 
@@ -74,7 +117,7 @@ public class FirmadorPAdES extends CRSigner {
 
         PAdESService service = new PAdESService(verifier);
 
-        PAdESSignatureParameters parameters = new PAdESSignatureParameters();
+        parameters = new PAdESSignatureParameters();
 
         SignatureValue signatureValue = null;
 
@@ -96,36 +139,12 @@ public class FirmadorPAdES extends CRSigner {
 
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
-
-            SignatureImageParameters imageParameters =
-                new SignatureImageParameters();
-            imageParameters.setxAxis(x);
-            imageParameters.setyAxis(y);
-            SignatureImageTextParameters textParameters =
-                new SignatureImageTextParameters();
-            textParameters.setFont(
-                new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
-
-            String cn = DSSASN1Utils.getSubjectCommonName(certificate);
-            X500Principal principal = certificate.getSubjectX500Principal();
-            String o = DSSASN1Utils.extractAttributeFromX500Principal(
-                BCStyle.O, principal);
-            String sn = DSSASN1Utils.extractAttributeFromX500Principal(
-                BCStyle.SERIALNUMBER, principal);
             Date date = new Date();
+            
+            if(visible_signature) {
+            	appendVisibleSignature(certificate, date);
+            }
             parameters.bLevel().setSigningDate(date);
-            String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
-                .format(date);
-            textParameters.setText(
-                "Firmado por " + cn + "\n" +
-                o + ", " + sn + ". Fecha declarada: " + fecha + "\n" +
-                "Esta representación visual no es una fuente de confianza, " +
-                "valide siempre la firma.");
-            textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
-            imageParameters.setTextParameters(textParameters);
-            imageParameters.setPage(page);
-            parameters.setSignatureImageParameters(imageParameters);
-
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
                 parameters);
 
