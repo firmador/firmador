@@ -49,6 +49,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -95,6 +96,7 @@ public class GUISwing implements GUIInterface {
     private JTabbedPane tabbedPane;
     private JLabel imageLabel;
     private JLabel signatureLabel;
+    private JCheckBox signatureVisibleCheckBox;
     private CopyableJLabel reportLabel;
     private JLabel pageLabel;
     private JSpinner pageSpinner;
@@ -130,6 +132,9 @@ public class GUISwing implements GUIInterface {
             image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
         pageLabel = new JLabel("Página:");
         pageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        signatureVisibleCheckBox = new JCheckBox(" Sin firma visible");
+        signatureVisibleCheckBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
         pageSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
         pageSpinner.setMaximumSize(pageSpinner.getPreferredSize());
         pageSpinner.addChangeListener(new ChangeListener() {
@@ -164,6 +169,7 @@ public class GUISwing implements GUIInterface {
                                 GUISwing.this);
                             firmador.selectSlot();
                             if (firmador.selectedSlot == -1) return;
+                            firmador.setVisible_signature(!signatureVisibleCheckBox.isSelected());
                             firmador.addVisibleSignature(
                                 (int)pageSpinner.getValue(),
                                 (int)Math.round(signatureLabel.getX() * 2.5),
@@ -270,6 +276,8 @@ public class GUISwing implements GUIInterface {
         pageSpinner.setEnabled(false);
         pageSpinner.setVisible(false);
         extendButton.setEnabled(false);
+        signatureVisibleCheckBox.setEnabled(false);
+        signatureVisibleCheckBox.setVisible(false);
         JButton fileButton = new JButton("Elegir...");
         imageLabel = new JLabel();
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -329,6 +337,7 @@ public class GUISwing implements GUIInterface {
         signPanel.add(Box.createVerticalStrut(5));
         signPanel.add(pageLabel);
         signPanel.add(pageSpinner);
+        signPanel.add(signatureVisibleCheckBox);
         JPanel validatePanel = new ScrollableJPanel();
         validatePanel.setLayout(new BoxLayout(validatePanel,
             BoxLayout.PAGE_AXIS));
@@ -409,6 +418,7 @@ public class GUISwing implements GUIInterface {
                 renderer = new PDFRenderer(doc);
                 pageLabel.setVisible(true);
                 pageSpinner.setVisible(true);
+                signatureVisibleCheckBox.setVisible(true);
                 if (pages > 0) {
                     pageImage = renderer.renderImage(0, 1 / 2.5f);
                     SpinnerNumberModel model =
@@ -417,6 +427,7 @@ public class GUISwing implements GUIInterface {
                     model.setMaximum(pages);
                     pageLabel.setEnabled(true);
                     pageSpinner.setEnabled(true);
+                    signatureVisibleCheckBox.setEnabled(true);
                     pageSpinner.setValue(1);
                 }
                 imageLabel.setBorder(new LineBorder(Color.BLACK));
@@ -429,6 +440,7 @@ public class GUISwing implements GUIInterface {
                 imageLabel.setVisible(false);
                 pageLabel.setVisible(false);
                 pageSpinner.setVisible(false);
+                signatureVisibleCheckBox.setVisible(false);
             }
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
