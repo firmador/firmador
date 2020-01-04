@@ -289,7 +289,6 @@ public class GUISwing implements GUIInterface {
                     }
                 });
                 loadDialog.setFile("*.odg;*.odp;*.ods;*.odt;*.pdf;*.xml");
-                loadDialog.setFile("*.pdf;*.xml");
                 loadDialog.setLocationRelativeTo(null);
                 loadDialog.setVisible(true);
                 loadDialog.dispose();
@@ -399,12 +398,12 @@ public class GUISwing implements GUIInterface {
     public void loadDocument(String fileName) {
         fileField.setText(fileName);
         signButton.setEnabled(true);
+        DSSDocument mimeDocument = new FileDocument(fileName);
+        MimeType mimeType = mimeDocument.getMimeType();
         try {
             if (doc != null) {
                 doc.close();
             }
-            DSSDocument mimeDocument = new FileDocument(fileName);
-            MimeType mimeType = mimeDocument.getMimeType();
             if (mimeType == MimeType.PDF) {
                 doc = PDDocument.load(new File(fileName));
                 int pages = doc.getNumberOfPages();
@@ -439,23 +438,45 @@ public class GUISwing implements GUIInterface {
             showError(Throwables.getRootCause(e));
         }
 
-        Validator validator = new Validator(fileName);
-        if (validator.isSigned()) {
-            extendButton.setEnabled(true);
-            tabbedPane.setSelectedIndex(1);
-        } else {
+        Validator validator = null;
+        try {
+            validator = new Validator(fileName);
+            if (validator.isSigned()) {
+                extendButton.setEnabled(true);
+                tabbedPane.setSelectedIndex(1);
+            } else {
+                extendButton.setEnabled(false);
+                tabbedPane.setSelectedIndex(0);
+            }
+        } catch (Exception e) {
+            if (mimeType == MimeType.ODG || mimeType == MimeType.ODP
+                || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
+                // Workaround for DSS 5.6 not recognizing unsigned ODF files
+            } else {
+                e.printStackTrace();
+                reportLabel.setText("<html>Error al validar documento. " +
+                    "Agradeceríamos que informara sobre este inconveniente " +
+                    "a los desarrolladores de la aplicación para repararlo." +
+                    "</html>");
+            }
+            reportLabel.setText("<html></html>");
             extendButton.setEnabled(false);
             tabbedPane.setSelectedIndex(0);
         }
-        try {
-            Report report = new Report(validator.getReports());
-            reportLabel.setText(report.getReport());
-        } catch (Exception e) {
-            e.printStackTrace();
-            reportLabel.setText("<html>Error al generar reporte. " +
-                "Agradeceríamos que informara sobre este inconveniente a " +
-                "los desarrolladores de la aplicación para repararlo.</html>");
+
+        if (validator != null) {
+            try {
+                Report report = new Report(validator.getReports());
+                reportLabel.setText(report.getReport());
+            } catch (Exception e) {
+                e.printStackTrace();
+                reportLabel.setText("<html>Error al generar reporte. " +
+                    "Agradeceríamos que informara sobre este inconveniente " +
+                    "a los desarrolladores de la aplicación para repararlo." +
+                    "</html>");
+            }
         }
+
     }
 
     public String getDocumentToSign() {
