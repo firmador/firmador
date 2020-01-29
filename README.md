@@ -59,38 +59,6 @@ ejecución.
 Para las personas interesadas en el desarrollo de Firmador, para compilar
 Firmador se requiere git, Maven y OpenJDK.
 
-En este momento se requiere una versión en desarrollo (snapshot) de DSS la
-librería implementación de referencia de los formatos AdES. Para compilar
-la rama de desarrollo de DSS 5.6 se requiere OpenJDK 9 o posterior.
-
-La rama de desarrollo de DSS puede obtener desde el repositorio oficial
-descargando solo lo necesario mediante el siguiente comando:
-
-    git clone --branch develop --depth 1 --single-branch https://ec.europa.eu/cefdigital/code/scm/esig/dss.git
-
-Para entrar en el directorio del repositorio descargado:
-
-    cd dss
-
-Para compilar e instalar mucho más rápido saltando los tests:
-
-    mvn install -DskipTests -Dmaven.test.skip.exec
-
-Si el paso anterior no funcionara, hay que asegurarse de usar un compilador
-java (javac) versión 9 o posterior para compilar DSS, aunque luego se
-compile Firmador con la versión 8. Si con el comando `alternatives` o
-`update-alternatives` se configura javac con una versión 9 o superior y
-el maven-enfoncer-plugin sigue detectando la 8 y la salida de
-`javac -version` indica que tenemos la 9 o superior, se puede forzar
-mediante la definición de la variable de entorno `JAVA_HOME`. Por ejemplo
-para sistemas tipo UNIX (GNU/Linux o macOS) se puede obtener así:
-
-    JAVA_HOME="$(dirname $(dirname $(readlink $(readlink $(which javac)))))" mvn install -DskipTests -Dmaven.test.skip.exec
-
-Para salir del directorio dss:
-
-    cd ..
-
 Para obtener el código fuente de Firmador, ejecutar:
 
     git clone https://gitlab.com/firmador/firmador.git
