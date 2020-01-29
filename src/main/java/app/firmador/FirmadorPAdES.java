@@ -62,16 +62,16 @@ public class FirmadorPAdES extends CRSigner {
 
     
     public boolean isVisible_signature() {
-		return visible_signature;
-	}
+        return visible_signature;
+    }
 
 
-	public void setVisible_signature(boolean visible_signature) {
-		this.visible_signature = visible_signature;
-	}
+    public void setVisible_signature(boolean visible_signature) {
+        this.visible_signature = visible_signature;
+    }
 
 
-	public void addVisibleSignature(int page, int x, int y) {
+    public void addVisibleSignature(int page, int x, int y) {
         this.page = page;
         this.x = x;
         this.y = y;
@@ -87,7 +87,7 @@ public class FirmadorPAdES extends CRSigner {
                 new SignatureImageTextParameters();
             textParameters.setFont(
                 new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
-    	  String cn = DSSASN1Utils.getSubjectCommonName(certificate);
+          String cn = DSSASN1Utils.getSubjectCommonName(certificate);
           X500Principal principal = certificate.getSubjectX500Principal();
           String o = DSSASN1Utils.extractAttributeFromX500Principal(
               BCStyle.O, principal);
@@ -142,7 +142,7 @@ public class FirmadorPAdES extends CRSigner {
             Date date = new Date();
             
             if(visible_signature) {
-            	appendVisibleSignature(certificate, date);
+                appendVisibleSignature(certificate, date);
             }
             parameters.bLevel().setSigningDate(date);
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
