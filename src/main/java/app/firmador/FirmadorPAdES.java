@@ -104,7 +104,7 @@ public class FirmadorPAdES extends CRSigner {
           textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
           imageParameters.setTextParameters(textParameters);
           imageParameters.setPage(page);
-          parameters.setSignatureImageParameters(imageParameters);
+          parameters.setImageParameters(imageParameters);
     }
     
     public DSSDocument sign(DSSDocument toSignDocument,
@@ -129,7 +129,7 @@ public class FirmadorPAdES extends CRSigner {
             CertificateToken certificate = privateKey.getCertificate();
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LT);
-            parameters.setSignatureSize(13312);
+            parameters.setContentSize(13312);
             parameters.setSigningCertificate(certificate);
             parameters.setSignWithExpiredCertificate(true);
 
@@ -191,7 +191,7 @@ public class FirmadorPAdES extends CRSigner {
         PAdESSignatureParameters parameters = new PAdESSignatureParameters();
 
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
-        parameters.setSignatureSize(3072);
+        parameters.setContentSize(3072);
 
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
