@@ -12,8 +12,7 @@
     <xsl:template match="dss:SignaturesCount"/>
     <xsl:template match="dss:ValidSignaturesCount"/>
     <xsl:template match="dss:ValidationTime"/>
-    <xsl:template match="dss:ContainerType"/>
-    <xsl:template match="dss:Policy"/>
+    <xsl:template match="dss:ValidationPolicy"/>
     <xsl:template name="documentInformation">
         <p>
             El documento <xsl:value-of select="dss:DocumentName"/>
@@ -35,12 +34,37 @@
                 </xsl:otherwise>
             </xsl:choose>
         </p>
-        <p></p>
     </xsl:template>
-    <xsl:template match="dss:Signature">
-        <xsl:if test="@CounterSignature = 'true'"><p>Contrafirma</p></xsl:if>
-        <xsl:apply-templates select="dss:Filename"/>
-        <xsl:apply-templates select="dss:SignatureLevel"/>
+    <xsl:template match="dss:Signature|dss:Timestamp">
+        <xsl:if test="@CounterSignature = 'true'"><p>[Contrafirma]</p></xsl:if>
+        <xsl:if test="dss:Filename">
+            <p>
+                <xsl:variable name="nodeName" select="name()"/>
+                <xsl:if test="$nodeName = 'Signature'">Nombre del fichero de firma:</xsl:if>
+                <xsl:if test="$nodeName = 'Timestamp'">Nombre del fichero de sello de tiempo:</xsl:if>
+                <xsl:value-of select="dss:Filename"/>
+            </p>
+        </xsl:if>
+        <xsl:if test="dss:SignatureLevel | dss:TimestampLevel">
+            <p>
+                Calificación:
+                <xsl:if test="dss:SignatureLevel">
+                    <xsl:value-of select="dss:SignatureLevel"/>
+                </xsl:if>
+                <xsl:if test="dss:TimestampLevel">
+                    <xsl:value-of select="dss:TimestampLevel"/>
+                </xsl:if>
+            </p>
+            <p>
+                Descripción:
+                <xsl:if test="dss:SignatureLevel">
+                    <xsl:value-of select="dss:SignatureLevel/@description"/>
+                </xsl:if>
+                <xsl:if test="dss:TimestampLevel">
+                    <xsl:value-of select="dss:TimestampLevel/@description"/>
+                </xsl:if>
+            </p>
+        </xsl:if>
         <p>Firmado por <b>
             <xsl:choose>
                 <xsl:when test="dss:CertificateChain">
@@ -54,45 +78,43 @@
                         </xsl:choose>
                     </xsl:for-each>
                 </xsl:when>
-                <xsl:otherwise>
-                    <xsl:text> / </xsl:text>
-                </xsl:otherwise>
             </xsl:choose></b>
         </p>
-        <xsl:variable name="indicationText" select="dss:Indication/text()"/>
-        <p>Firma:
+        <p>Firma
+            <xsl:variable name="indicationText" select="dss:Indication/text()"/>
             <xsl:choose>
-                <xsl:when test="$indicationText='TOTAL_PASSED'">
-                    <b>válida</b>
-                </xsl:when>
-                <xsl:when test="$indicationText='INDETERMINATE'">
-                    <b>sin determinación</b>
-                </xsl:when>
-                <xsl:when test="$indicationText='TOTAL_FAILED'">
-                    <b>no válida</b>
-                </xsl:when>
-            </xsl:choose>, formato <xsl:value-of select="@SignatureFormat"/>.
+                <xsl:when test="$indicationText='TOTAL_PASSED'"><b>válida</b></xsl:when>
+                <xsl:when test="$indicationText='PASSED'"><b>válida</b></xsl:when>
+                <xsl:when test="$indicationText='INDETERMINATE'"><b>sin determinación</b></xsl:when>
+                <xsl:when test="$indicationText='TOTAL_FAILED'"><b>válida</b></xsl:when>
+                <xsl:when test="$indicationText='TOTAL_FAILED'"><b>no válida</b></xsl:when>
+            </xsl:choose>
+            <xsl:if test="@SignatureFormat">, formato <xsl:value-of select="@SignatureFormat"/>.</xsl:if>
         </p>
         <xsl:apply-templates select="dss:SubIndication"/>
         <xsl:apply-templates select="dss:Errors"/>
         <xsl:apply-templates select="dss:Warnings"/>
         <xsl:apply-templates select="dss:Infos"/>
-        <p>
-            Fecha declarada de la firma (hora UTC):
-            <xsl:value-of select="dss:SigningTime"/>
-        </p>
-        <p>
-            Fecha mínima probada de la existencia de la firma (hora UTC):
-            <xsl:value-of select="dss:BestSignatureTime"/>
-        </p>
+
+        <xsl:if test="dss:SigningTime">
+            <p>
+                Fecha declarada de la firma (hora UTC):
+                <xsl:value-of select="dss:SigningTime"/>
+            </p>
+        </xsl:if>
+        <xsl:if test="dss:ProductionTime">
+            <p>
+                Fecha de producción (hora UTC):
+                <xsl:value-of select="dss:ProductionTime"/>
+            </p>
+        </xsl:if>
+        <xsl:if test="dss:BestSignatureTime">
+            <p>
+                Fecha mínima probada de la existencia de la firma (hora UTC):
+                <xsl:value-of select="dss:BestSignatureTime"/>
+            </p>
+        </xsl:if>
         <p></p>
-    </xsl:template>
-    <xsl:template match="dss:SignatureLevel">
-            <p>Calificación: <xsl:value-of select="."/></p>
-            <p>Descripción: <xsl:value-of select="@description"/></p>
-    </xsl:template>
-    <xsl:template match="dss:Filename">
-        <p>Nombre del fichero de firma: <xsl:value-of select="."/></p>
     </xsl:template>
     <xsl:template match="dss:SubIndication">
         <p>Subindicación: <xsl:value-of select="."/></p>

@@ -96,7 +96,7 @@ public class FirmadorOpenDocument extends CRSigner {
             parameters.setEn319132(false);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
-
+            parameters.aSiC().setContainerType(ASiCContainerType.ASiC_E);
 
 
 

@@ -41,7 +41,7 @@ import eu.europa.esig.dss.pades.PAdESSignatureParameters;
 import eu.europa.esig.dss.pades.SignatureImageParameters;
 import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pades.signature.PAdESService;
-import eu.europa.esig.dss.pdf.PdfObjFactory;
+
 import eu.europa.esig.dss.pdf.pdfbox.PdfBoxNativeObjectFactory;
 import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
@@ -62,16 +62,16 @@ public class FirmadorPAdES extends CRSigner {
 
     
     public boolean isVisible_signature() {
-		return visible_signature;
-	}
+        return visible_signature;
+    }
 
 
-	public void setVisible_signature(boolean visible_signature) {
-		this.visible_signature = visible_signature;
-	}
+    public void setVisible_signature(boolean visible_signature) {
+        this.visible_signature = visible_signature;
+    }
 
 
-	public void addVisibleSignature(int page, int x, int y) {
+    public void addVisibleSignature(int page, int x, int y) {
         this.page = page;
         this.x = x;
         this.y = y;
@@ -87,7 +87,7 @@ public class FirmadorPAdES extends CRSigner {
                 new SignatureImageTextParameters();
             textParameters.setFont(
                 new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
-    	  String cn = DSSASN1Utils.getSubjectCommonName(certificate);
+          String cn = DSSASN1Utils.getSubjectCommonName(certificate);
           X500Principal principal = certificate.getSubjectX500Principal();
           String o = DSSASN1Utils.extractAttributeFromX500Principal(
               BCStyle.O, principal);
@@ -104,19 +104,19 @@ public class FirmadorPAdES extends CRSigner {
           textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
           imageParameters.setTextParameters(textParameters);
           imageParameters.setPage(page);
-          parameters.setSignatureImageParameters(imageParameters);
+          parameters.setImageParameters(imageParameters);
     }
     
     public DSSDocument sign(DSSDocument toSignDocument,
         PasswordProtection pin) {
 
-        PdfObjFactory.setInstance(new PdfBoxNativeObjectFactory());
+
 
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
 
         PAdESService service = new PAdESService(verifier);
-
+        service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
         parameters = new PAdESSignatureParameters();
 
         SignatureValue signatureValue = null;
@@ -129,7 +129,7 @@ public class FirmadorPAdES extends CRSigner {
             CertificateToken certificate = privateKey.getCertificate();
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LT);
-            parameters.setSignatureSize(13312);
+            parameters.setContentSize(13312);
             parameters.setSigningCertificate(certificate);
             parameters.setSignWithExpiredCertificate(true);
 
@@ -142,7 +142,7 @@ public class FirmadorPAdES extends CRSigner {
             Date date = new Date();
             
             if(visible_signature) {
-            	appendVisibleSignature(certificate, date);
+                appendVisibleSignature(certificate, date);
             }
             parameters.bLevel().setSigningDate(date);
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
@@ -191,7 +191,7 @@ public class FirmadorPAdES extends CRSigner {
         PAdESSignatureParameters parameters = new PAdESSignatureParameters();
 
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
-        parameters.setSignatureSize(3072);
+        parameters.setContentSize(3072);
 
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
