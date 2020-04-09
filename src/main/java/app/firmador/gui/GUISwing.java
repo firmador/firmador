@@ -426,7 +426,7 @@ public class GUISwing implements GUIInterface {
                 imageLabel.setIcon(new ImageIcon(pageImage));
                 imageLabel.setVisible(true);
             }
-            else if (mimeType == mimeType.ODG || mimeType == MimeType.ODP
+            else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP
                 || mimeType == MimeType.ODS || mimeType == MimeType.ODT
                 || mimeType == MimeType.XML) {
                 imageLabel.setVisible(false);
