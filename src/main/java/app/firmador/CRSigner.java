@@ -27,9 +27,9 @@ import app.firmador.gui.GUIInterface;
 import app.firmador.token.Token;
 import app.firmador.token.Utils;
 import com.google.common.base.Throwables;
-import eu.europa.esig.dss.AbstractSignatureParameters;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.KeyUsageBit;
+import eu.europa.esig.dss.model.SerializableSignatureParameters;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.service.crl.OnlineCRLSource;
 import eu.europa.esig.dss.service.http.commons.CommonsDataLoader;
@@ -165,7 +165,7 @@ public class CRSigner {
 
     public List<CertificateToken> getCertificateChain(
         CertificateVerifier commonCertificateVerifier,
-        AbstractSignatureParameters parameters) {
+        SerializableSignatureParameters parameters) {
 
         List<CertificateToken> certificateChain =
             new ArrayList<CertificateToken>();
