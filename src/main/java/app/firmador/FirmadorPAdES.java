@@ -36,12 +36,12 @@ import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.model.x509.X500PrincipalHelper;
 import eu.europa.esig.dss.pades.DSSJavaFont;
 import eu.europa.esig.dss.pades.PAdESSignatureParameters;
 import eu.europa.esig.dss.pades.SignatureImageParameters;
 import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pades.signature.PAdESService;
-
 import eu.europa.esig.dss.pdf.pdfbox.PdfBoxNativeObjectFactory;
 import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
@@ -54,13 +54,12 @@ public class FirmadorPAdES extends CRSigner {
 
     private int page, x, y;
     PAdESSignatureParameters parameters;
-    private boolean visible_signature = true; 
-    
+    private boolean visible_signature = true;
+
     public FirmadorPAdES(GUIInterface gui) {
         super(gui);
     }
 
-    
     public boolean isVisible_signature() {
         return visible_signature;
     }
@@ -70,14 +69,12 @@ public class FirmadorPAdES extends CRSigner {
         this.visible_signature = visible_signature;
     }
 
-
     public void addVisibleSignature(int page, int x, int y) {
         this.page = page;
         this.x = x;
         this.y = y;
     }
 
-    
     private void appendVisibleSignature(CertificateToken certificate, Date date) {
         SignatureImageParameters imageParameters =
                 new SignatureImageParameters();
@@ -88,11 +85,11 @@ public class FirmadorPAdES extends CRSigner {
             textParameters.setFont(
                 new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
           String cn = DSSASN1Utils.getSubjectCommonName(certificate);
-          X500Principal principal = certificate.getSubjectX500Principal();
+          X500PrincipalHelper subject = certificate.getSubject();
           String o = DSSASN1Utils.extractAttributeFromX500Principal(
-              BCStyle.O, principal);
+              BCStyle.O, subject);
           String sn = DSSASN1Utils.extractAttributeFromX500Principal(
-              BCStyle.SERIALNUMBER, principal);
+              BCStyle.SERIALNUMBER, subject);
 
           String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
               .format(date);
@@ -106,7 +103,7 @@ public class FirmadorPAdES extends CRSigner {
           imageParameters.setPage(page);
           parameters.setImageParameters(imageParameters);
     }
-    
+
     public DSSDocument sign(DSSDocument toSignDocument,
         PasswordProtection pin) {
 
@@ -140,7 +137,7 @@ public class FirmadorPAdES extends CRSigner {
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
             Date date = new Date();
-            
+
             if(visible_signature) {
                 appendVisibleSignature(certificate, date);
             }
@@ -161,18 +158,18 @@ public class FirmadorPAdES extends CRSigner {
             e.printStackTrace();
             gui.showMessage(
                 "Aviso: no se ha podido agregar el sello de tiempo y la " +
-                "información de revocación porque es posible\n" +
-                "que haya problemas de conexión con los servidores del " +
-                "sistema de Firma Digital.\n" +
-                "Detalle del error: " + Throwables.getRootCause(e) + "\n" +
-                "\n" +
+                "información de revocación porque es posible<br>" +
+                "que haya problemas de conexión a Internet o con los " +
+                "servidores del sistema de Firma Digital.<br>" +
+                "Detalle del error: " + Throwables.getRootCause(e) + "<br>" +
+                "<br>" +
                 "Se ha agregado una firma básica solamente. No obstante, si " +
-                "el sello de tiempo resultara importante\n" +
+                "el sello de tiempo resultara importante<br>" +
                 "para este documento, debería agregarse lo antes posible " +
-                "antes de enviarlo al destinatario.\n" +
-                "\n" +
+                "antes de enviarlo al destinatario.<br>" +
+                "<br>" +
                 "Si lo prefiere, puede cancelar el guardado del documento " +
-                "firmado e intentar firmarlo más tarde.\n");
+                "firmado e intentar firmarlo más tarde.<br>");
 
             parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
             try {
@@ -188,8 +185,8 @@ public class FirmadorPAdES extends CRSigner {
     }
 
     public DSSDocument extend(DSSDocument document) {
-        PAdESSignatureParameters parameters = new PAdESSignatureParameters();
-
+        PAdESSignatureParameters parameters =
+            new PAdESSignatureParameters();
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
         parameters.setContentSize(3072);
 
@@ -209,15 +206,15 @@ public class FirmadorPAdES extends CRSigner {
             e.printStackTrace();
             gui.showMessage(
                 "Aviso: no se ha podido agregar el sello de tiempo y la " +
-                "información de revocación porque es posible\n" +
-                "que haya problemas de conexión con los servidores del " +
-                "sistema de Firma Digital.\n" +
-                "Detalle del error: " + Throwables.getRootCause(e) + "\n" +
-                "\n" +
+                "información de revocación porque es posible<br>" +
+                "que haya problemas de conexión a Internet o con los " +
+                "servidores del sistema de Firma Digital.<br>" +
+                "Detalle del error: " + Throwables.getRootCause(e) + "<br>" +
+                "<br>" +
                 "Inténtelo de nuevo más tarde. Si el problema persiste, " +
-                "compruebe su conexión a Internet o verifique\n" +
+                "compruebe su conexión o verifique<br>" +
                 "que no se trata de un problema de los servidores de Firma " +
-                "Digital o de un error de este programa.\n");
+                "Digital o de un error de este programa.<br>");
         }
 
         return extendedDocument;

@@ -46,7 +46,7 @@ public class Validator {
                 "CA RAIZ NACIONAL COSTA RICA.cer")));
 
         CertificateVerifier cv = new CommonCertificateVerifier();
-        cv.setTrustedCertSource(trustedCertSource);
+        cv.setTrustedCertSources(trustedCertSource);
         cv.setDataLoader(new CommonsDataLoader());
         cv.setOcspSource(new OnlineOCSPSource());
         cv.setCrlSource(new OnlineCRLSource());

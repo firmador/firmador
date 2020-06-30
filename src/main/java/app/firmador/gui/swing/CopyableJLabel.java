@@ -33,7 +33,7 @@ public class CopyableJLabel extends JTextPane {
     public CopyableJLabel(String text) {
         super();
         setDefault();
-        setText(text);
+        setText("<html>" + text + "</html>");
     }
 
     private void setDefault() {

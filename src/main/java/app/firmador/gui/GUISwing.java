@@ -205,7 +205,7 @@ public class GUISwing implements GUIInterface {
                                 signedDocument.save(fileName);
                                 showMessage(
                                     "Documento guardado satisfactoriamente" +
-                                    " en\n" + fileName);
+                                    " en<br>" + fileName);
                                 loadDocument(fileName);
                             } catch (IOException e) {
                                 showError(Throwables.getRootCause(e));
@@ -252,7 +252,7 @@ public class GUISwing implements GUIInterface {
                                 extendedDocument.save(fileName);
                                 showMessage(
                                     "Documento guardado satisfactoriamente" +
-                                    " en\n" + fileName);
+                                    " en<br>" + fileName);
                                 loadDocument(fileName);
                             } catch (IOException e) {
                                 showError(Throwables.getRootCause(e));
@@ -580,25 +580,25 @@ public class GUISwing implements GUIInterface {
         switch (className) {
             case "java.lang.NoSuchMethodError":
                 message = "Esta aplicación es actualmente incompatible con " +
-                    "versiones superiores a Java 8.\n" +
+                    "versiones superiores a Java 8.<br>" +
                     "Este inconveniente se corregirá en próximas versiones. " +
                     "Disculpe las molestias.";
                 break;
             case "java.security.ProviderException":
                 message = "No se ha encontrado la librería de Firma Digital " +
-                    "en el sistema.\n" +
+                    "en el sistema.<br>" +
                     "¿Están instalados los controladores?";
                 break;
             case "java.security.NoSuchAlgorithmException":
-                message = "No se ha encontrado ninguna tarjeta conectada.\n" +
-                    "Asegúrese de que la tarjeta y el lector están " +
+                message = "No se ha encontrado ninguna tarjeta conectada." +
+                    "<br>Asegúrese de que la tarjeta y el lector están " +
                     "conectados de forma correcta.";
                 break;
             case "sun.security.pkcs11.wrapper.PKCS11Exception":
                 switch (message) {
                 case "CKR_GENERAL_ERROR":
                     message = "No se ha podido contactar con el servicio " +
-                        "del lector de tarjetas.\n" +
+                        "del lector de tarjetas.<br>" +
                         "¿Está correctamente instalado o configurado?";
                     break;
                 case "CKR_SLOT_ID_INVALID":
@@ -607,15 +607,15 @@ public class GUISwing implements GUIInterface {
                     break;
                 case "CKR_PIN_INCORRECT":
                     messageType = JOptionPane.WARNING_MESSAGE;
-                    message = "¡PIN INCORRECTO!\n\n" +
+                    message = "¡PIN INCORRECTO!<br><br>" +
                         "ADVERTENCIA: si se ingresa un PIN incorrecto " +
-                        "varias veces sin acertar,\n" +
+                        "varias veces sin acertar,<br>" +
                         "el dispositivo de firma se bloqueará.";
                     break;
                 case "CKR_PIN_LOCKED":
-                    message = "PIN BLOQUEADO\n\n" +
+                    message = "PIN BLOQUEADO<br><br>" +
                         "Lo sentimos, el dispositivo de firma no se puede " +
-                        "utilizar porque está bloqueado.\n" +
+                        "utilizar porque está bloqueado.<br>" +
                         "Contacte con su proveedor para desbloquearlo.";
                     break;
                 default:
@@ -626,16 +626,16 @@ public class GUISwing implements GUIInterface {
                 if (message.contains("asepkcs") ||
                     message.contains("libASEP11")) {
                     message = "No se ha encontrado la librería de Firma " +
-                        "Digital en el sistema.\n" +
+                        "Digital en el sistema.<br>" +
                         "¿Están instalados los controladores?";
                     break;
                 }
             default:
                 error.printStackTrace();
-                message = "Error: " + className + "\n" +
-                    "Detalle: " + message + "\n" +
+                message = "Error: " + className + "<br>" +
+                    "Detalle: " + message + "<br>" +
                     "Agradecemos que comunique este mensaje de error a los " +
-                    "autores del programa\n" +
+                    "autores del programa<br>" +
                     "para detallar mejor el posible motivo de este error " +
                     "en próximas versiones.";
                 break;
@@ -659,7 +659,7 @@ public class GUISwing implements GUIInterface {
 
         if (options == null || options.length == 0) {
             String message = "No se ha encontrado ninguna tarjeta " +
-                "conectada.\nAsegúrese de que la tarjeta y el lector están " +
+                "conectada.<br>Asegúrese de que la tarjeta y el lector están " +
                 "conectados de forma correcta.";
             JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Error al firmar",
             JOptionPane.ERROR_MESSAGE);
