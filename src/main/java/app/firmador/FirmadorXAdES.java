@@ -38,10 +38,10 @@ import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
-
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
-import eu.europa.esig.dss.xades.signature.XAdESService;
 
+
+import eu.europa.esig.dss.xades.signature.XAdESService;
 
 import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 
@@ -53,10 +53,50 @@ import eu.europa.esig.dss.validation.CertificateVerifier;
 public class FirmadorXAdES extends CRSigner {
 
 
+    XAdESSignatureParameters parameters;
+
 
     public FirmadorXAdES(GUIInterface gui) {
         super(gui);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -74,7 +114,7 @@ public class FirmadorXAdES extends CRSigner {
 
         XAdESService service = new XAdESService(verifier);
 
-        XAdESSignatureParameters parameters = new XAdESSignatureParameters();
+        parameters = new XAdESSignatureParameters();
 
         SignatureValue signatureValue = null;
 
@@ -89,37 +129,13 @@ public class FirmadorXAdES extends CRSigner {
             parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
             parameters.setSigningCertificate(certificate);
             parameters.setSignWithExpiredCertificate(true);
-            //parameters.setPrettyPrint(true);
+            parameters.setPrettyPrint(true);
             List<CertificateToken> certificateChain = getCertificateChain(
                 verifier, parameters);
             parameters.setCertificateChain(certificateChain);
             parameters.setEn319132(false);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -142,18 +158,18 @@ public class FirmadorXAdES extends CRSigner {
             e.printStackTrace();
             gui.showMessage(
                 "Aviso: no se ha podido agregar el sello de tiempo y la " +
-                "información de revocación porque es posible\n" +
-                "que haya problemas de conexión con los servidores del " +
-                "sistema de Firma Digital.\n" +
-                "Detalle del error: " + Throwables.getRootCause(e) + "\n" +
-                "\n" +
+                "información de revocación porque es posible<br>" +
+                "que haya problemas de conexión a Internet o con los " +
+                "servidores del sistema de Firma Digital.<br>" +
+                "Detalle del error: " + Throwables.getRootCause(e) + "<br>" +
+                "<br>" +
                 "Se ha agregado una firma básica solamente. No obstante, si " +
-                "el sello de tiempo resultara importante\n" +
+                "el sello de tiempo resultara importante<br>" +
                 "para este documento, debería agregarse lo antes posible " +
-                "antes de enviarlo al destinatario.\n" +
-                "\n" +
+                "antes de enviarlo al destinatario.<br>" +
+                "<br>" +
                 "Si lo prefiere, puede cancelar el guardado del documento " +
-                "firmado e intentar firmarlo más tarde.\n");
+                "firmado e intentar firmarlo más tarde.<br>");
 
             parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
             try {
@@ -169,10 +185,10 @@ public class FirmadorXAdES extends CRSigner {
     }
 
     public DSSDocument extend(DSSDocument document) {
-        XAdESSignatureParameters parameters = new XAdESSignatureParameters();
-
+        XAdESSignatureParameters parameters =
+            new XAdESSignatureParameters();
         parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
-        //parameters.setPrettyPrint(true);
+        parameters.setPrettyPrint(true);
 
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
@@ -190,15 +206,15 @@ public class FirmadorXAdES extends CRSigner {
             e.printStackTrace();
             gui.showMessage(
                 "Aviso: no se ha podido agregar el sello de tiempo y la " +
-                "información de revocación porque es posible\n" +
-                "que haya problemas de conexión con los servidores del " +
-                "sistema de Firma Digital.\n" +
-                "Detalle del error: " + Throwables.getRootCause(e) + "\n" +
-                "\n" +
+                "información de revocación porque es posible<br>" +
+                "que haya problemas de conexión a Internet o con los " +
+                "servidores del sistema de Firma Digital.<br>" +
+                "Detalle del error: " + Throwables.getRootCause(e) + "<br>" +
+                "<br>" +
                 "Inténtelo de nuevo más tarde. Si el problema persiste, " +
-                "compruebe su conexión a Internet o verifique\n" +
+                "compruebe su conexión o verifique<br>" +
                 "que no se trata de un problema de los servidores de Firma " +
-                "Digital o de un error de este programa.\n");
+                "Digital o de un error de este programa.<br>");
         }
 
         return extendedDocument;
