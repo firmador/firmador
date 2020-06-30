@@ -156,7 +156,6 @@ public class CRSigner {
 
         // OSCP
         OnlineOCSPSource onlineOCSPSource = new OnlineOCSPSource();
-        onlineOCSPSource.setCertIDDigestAlgorithm(DigestAlgorithm.SHA1);
         onlineOCSPSource.setDataLoader(commonsHttpDataLoader);
         commonCertificateVerifier.setOcspSource(onlineOCSPSource);
 
