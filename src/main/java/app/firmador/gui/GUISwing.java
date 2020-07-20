@@ -300,12 +300,12 @@ public class GUISwing implements GUIInterface {
                 }
             }
         });
-        signatureLabel = new JLabel("Firma visible", JLabel.CENTER);
+        signatureLabel = new JLabel("<html>Firma<br>visible</html>", JLabel.CENTER);
         signatureLabel.setCursor(
             Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
-        signatureLabel.setBounds(119, 0, 120, 13);
+        signatureLabel.setBounds(119, 0, 60, 25);
         imageLabel.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 signatureLabel.setLocation(
