@@ -95,7 +95,7 @@ public class FirmadorPAdES extends CRSigner {
               .format(date);
           textParameters.setText(
               "Firmado por " + cn + "\n" +
-              o + ", " + sn + "." + \n" + 
+              o + ", " + sn + "." + "\n" + 
               "Fecha declarada: " + fecha + "\n" +
               "Esta representación visual" + "\n" + 
               "no es una fuente de confianza." + "\n" +
