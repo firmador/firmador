@@ -142,8 +142,7 @@ public class GUISwing implements GUIInterface {
                 try {
                     int page = (int)pageSpinner.getValue();
                     if (page > 0) {
-                        pageImage = renderer.renderImage(
-                            page - 1, 1 / 2.5f);
+                        pageImage = renderer.renderImage(page - 1, 1 / 2.5f);
                         imageLabel.setIcon(new ImageIcon(pageImage));
                     }
                 } catch (Exception ex) {
@@ -169,7 +168,8 @@ public class GUISwing implements GUIInterface {
                                 GUISwing.this);
                             firmador.selectSlot();
                             if (firmador.selectedSlot == -1) return;
-                            firmador.setVisible_signature(!signatureVisibleCheckBox.isSelected());
+                            firmador.setVisible_signature(
+                                !signatureVisibleCheckBox.isSelected());
                             firmador.addVisibleSignature(
                                 (int)pageSpinner.getValue(),
                                 (int)Math.round(signatureLabel.getX() * 2.5),
@@ -300,12 +300,16 @@ public class GUISwing implements GUIInterface {
                 }
             }
         });
-        signatureLabel = new JLabel("<html>Firma<br>visible</html>", JLabel.CENTER);
+        signatureLabel =
+            new JLabel("<html><span style='font-size: 8pt'>" +
+                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIRMA<br>" +
+                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VISIBLE</span></html>");
         signatureLabel.setCursor(
             Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+        signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
-        signatureLabel.setBounds(119, 0, 60, 25);
+        signatureLabel.setBounds(119, 0, 80, 20);
         imageLabel.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 signatureLabel.setLocation(
@@ -335,13 +339,13 @@ public class GUISwing implements GUIInterface {
             BoxLayout.PAGE_AXIS));
         validatePanel.add(extendButton);
         validatePanel.add(reportLabel);
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setHorizontalScrollBarPolicy(
+        JScrollPane validateScrollPane = new JScrollPane();
+        validateScrollPane.setHorizontalScrollBarPolicy(
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setBorder(null);
-        scrollPane.setViewportView(validatePanel);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
+        validateScrollPane.setBorder(null);
+        validateScrollPane.setViewportView(validatePanel);
+        validateScrollPane.setOpaque(false);
+        validateScrollPane.getViewport().setOpaque(false);
         JPanel aboutPanel = new JPanel();
         aboutPanel.setLayout(new BoxLayout(aboutPanel, BoxLayout.PAGE_AXIS));
         tabbedPane = new JTabbedPane();
@@ -382,7 +386,7 @@ public class GUISwing implements GUIInterface {
         aboutPanel.add(websiteButton);
         tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
         tabbedPane.addTab("Firmar", signPanel);
-        tabbedPane.addTab("Validación", scrollPane);
+        tabbedPane.addTab("Validación", validateScrollPane);
         tabbedPane.addTab("Acerca de", aboutPanel);
         frame.add(filePanel, BorderLayout.PAGE_START);
         frame.add(tabbedPane, BorderLayout.CENTER);
@@ -641,8 +645,8 @@ public class GUISwing implements GUIInterface {
                 break;
         }
 
-        JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador",
-            messageType);
+        JOptionPane.showMessageDialog(null, new CopyableJLabel(message),
+            "Mensaje de Firmador", messageType);
 
         if (messageType == JOptionPane.ERROR_MESSAGE) {
             System.exit(0);
@@ -650,8 +654,8 @@ public class GUISwing implements GUIInterface {
     }
 
     public void showMessage(String message) {
-        JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador",
-            JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, new CopyableJLabel(message),
+            "Mensaje de Firmador", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public int getSelection(String[] options) {
@@ -659,10 +663,10 @@ public class GUISwing implements GUIInterface {
 
         if (options == null || options.length == 0) {
             String message = "No se ha encontrado ninguna tarjeta " +
-                "conectada.<br>Asegúrese de que la tarjeta y el lector están " +
-                "conectados de forma correcta.";
-            JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Error al firmar",
-            JOptionPane.ERROR_MESSAGE);
+                "conectada.<br>Asegúrese de que la tarjeta y el lector " +
+                "están conectados de forma correcta.";
+            JOptionPane.showMessageDialog(null, new CopyableJLabel(message),
+                "Error al firmar", JOptionPane.ERROR_MESSAGE);
             return -1;
         }
         String input = JOptionPane.showInputDialog(null, "Propietario: ",
