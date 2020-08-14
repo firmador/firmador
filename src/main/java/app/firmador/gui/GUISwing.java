@@ -90,7 +90,7 @@ public class GUISwing implements GUIInterface {
     private String documenttosave = null;
     private String lastDirectory = null;
     private String lastFile = null;
-    private Image image = new ImageIcon(GUISwing.class.getClassLoader()
+    private Image image = new ImageIcon(this.getClass().getClassLoader()
         .getResource("firmador.png")).getImage();
     private JTextField fileField;
     private JTabbedPane tabbedPane;
