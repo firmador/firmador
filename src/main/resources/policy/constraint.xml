@@ -1,10 +1,22 @@
 <ConstraintsParameters Name="Lista de control para Costa Rica" xmlns="http://dss.esig.europa.eu/validation/policy">
-	<Description>Valida firmas digitales e indica si las firmas de los documentos son válidas y si tienen el nivel adecuado para considerar si el documento cumple con la
-		Política de Formatos Oficiales de los Documentos Electrónicos Firmados Digitalmente, versión 1.0 (OID: 2.16.188.1.1.1.2.1). Los documentos deben utilizar certificados emitidos
-		a partir de la Autoridad de Certificación Raíz Nacional de Costa Rica en toda la cadena, incluyendo el sellado de tiempo, validados contra listas CRL y OCSP de las autoridades
-		de la jerarquía. Cabe indicar que esta versión de la política no incluye ninguna indicación del estándar sobre el que se basa el proceso, si bien esta lista de control y
-		resultado se basa en el procedimiento del estándar ETSI EN 319 102-1 en su última versión. La única diferencia con el constraint.xml oficial es la desactivación del bloque
-		eIDAS porque no se hace uso de Trusted Lists en Costa Rica.
+	<Description>
+		Valida firmas digitales e indica si las firmas de los
+		documentos son válidas y si tienen el nivel adecuado para
+		considerar si el documento cumple con la Política de Formatos
+		Oficiales de los Documentos Electrónicos Firmados Digitalmente,
+		versión 1.0 (OID: 2.16.188.1.1.1.2.1). Los documentos deben
+		utilizar certificados emitidos a partir de la Autoridad de
+		Certificación Raíz Nacional de Costa Rica en toda la cadena,
+		incluyendo el sellado de tiempo, validados contra listas CRL y
+		OCSP de las autoridades de la jerarquía. Cabe indicar que esta
+		versión de la política no incluye ninguna indicación de la
+		norma sobre el que se basa el proceso, si bien esta lista de
+		control y resultado se basa en el procedimiento de la norma
+		ETSI EN 319 102-1 en su última versión. Las únicas diferencias
+		con el constraint.xml oficial es la desactivación del bloque
+		eIDAS porque no se hace uso de Trusted Lists en Costa Rica y
+		también se cambia una línea de FAIL a WARN por falta de datos
+		de revocación, causando TRY_LATER en el validador días después.
 	</Description>
 	<ContainerConstraints>
 		<AcceptableContainerTypes Level="FAIL">
@@ -240,7 +252,7 @@
 				<Recognition Level="FAIL" />
 				<Signature Level="FAIL" />
 				<NotExpired Level="FAIL" />
-				<RevocationDataAvailable Level="FAIL" />
+				<RevocationDataAvailable Level="WARN" /><!-- Modificado para Costa Rica -->
 				<RevocationDataNextUpdatePresent Level="WARN" />
 				<RevocationDataFreshness Level="FAIL" />
 				<NotRevoked Level="FAIL" />

@@ -35,7 +35,7 @@ public class Report {
 
     public Report(Reports reports) throws Exception {
         Transformer transformer = DomUtils.getSecureTransformerFactory()
-            .newTemplates(new StreamSource(Report.class.getResourceAsStream(
+            .newTemplates(new StreamSource(this.getClass().getResourceAsStream(
                 "/xslt/html/simple-report.xslt"))).newTransformer();
         transformer.setErrorListener(new DSSXmlErrorListener());
         transformer.transform(

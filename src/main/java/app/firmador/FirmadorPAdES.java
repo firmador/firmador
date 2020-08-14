@@ -125,11 +125,10 @@ public class FirmadorPAdES extends CRSigner {
             SignatureTokenConnection token = getSignatureConnection(pin);
             DSSPrivateKeyEntry privateKey = getPrivateKey(token);
             CertificateToken certificate = privateKey.getCertificate();
-            parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LT);
             parameters.setContentSize(13312);
+            parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
-            parameters.setSignWithExpiredCertificate(true);
 
             List<CertificateToken> certificateChain = getCertificateChain(
                 verifier, parameters);

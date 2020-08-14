@@ -39,10 +39,10 @@ public class Validator {
         CertificateSource trustedCertSource =
             new CommonTrustedCertificateSource();
         trustedCertSource.addCertificate(DSSUtils.loadCertificate(
-            Validator.class.getClassLoader().getResourceAsStream(
+            this.getClass().getClassLoader().getResourceAsStream(
                 "CA RAIZ NACIONAL - COSTA RICA v2.crt")));
         trustedCertSource.addCertificate(DSSUtils.loadCertificate(
-            Validator.class.getClassLoader().getResourceAsStream(
+            this.getClass().getClassLoader().getResourceAsStream(
                 "CA RAIZ NACIONAL COSTA RICA.cer")));
 
         CertificateVerifier cv = new CommonCertificateVerifier();
