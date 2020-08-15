@@ -19,8 +19,11 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package app.firmador.gui.swing;
 
+import java.awt.Font;
 import javax.swing.BorderFactory;
+import javax.swing.JEditorPane;
 import javax.swing.JTextPane;
+import javax.swing.UIManager;
 
 @SuppressWarnings("serial")
 public class CopyableJLabel extends JTextPane {
@@ -37,12 +40,11 @@ public class CopyableJLabel extends JTextPane {
     }
 
     private void setDefault() {
-        this.setContentType("text/html"); // let the text pane know this is what you want
-        this.setEditable(false); // as before
-        this.setBackground(null); // this is the same as a JLabel
-        //this.setBorder(null); // remove the border
+        this.setContentType("text/html");
+        this.setEditable(false);
         this.setOpaque(false);
-
+        this.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+        this.setFont(UIManager.getFont("Label.font"));
         this.setBorder(BorderFactory.createCompoundBorder(
             this.getBorder(),
             BorderFactory.createEmptyBorder(5, 5, 5, 5)));

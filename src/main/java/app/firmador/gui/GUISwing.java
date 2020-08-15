@@ -134,7 +134,7 @@ public class GUISwing implements GUIInterface {
         pageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         signatureVisibleCheckBox = new JCheckBox(" Sin firma visible");
         signatureVisibleCheckBox.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+        signatureVisibleCheckBox.setOpaque(false);
         pageSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
         pageSpinner.setMaximumSize(pageSpinner.getPreferredSize());
         pageSpinner.addChangeListener(new ChangeListener() {
@@ -458,12 +458,11 @@ public class GUISwing implements GUIInterface {
                 // Workaround for DSS 5.6 not recognizing unsigned ODF files
             } else {
                 e.printStackTrace();
-                reportLabel.setText("<html>Error al validar documento. " +
+                reportLabel.setText("Error al validar documento. " +
                     "Agradeceríamos que informara sobre este inconveniente " +
-                    "a los desarrolladores de la aplicación para repararlo." +
-                    "</html>");
+                    "a los desarrolladores de la aplicación para repararlo.");
             }
-            reportLabel.setText("<html></html>");
+            reportLabel.setText("");
             extendButton.setEnabled(false);
             tabbedPane.setSelectedIndex(0);
         }
@@ -474,10 +473,9 @@ public class GUISwing implements GUIInterface {
                 reportLabel.setText(report.getReport());
             } catch (Exception e) {
                 e.printStackTrace();
-                reportLabel.setText("<html>Error al generar reporte. " +
+                reportLabel.setText("Error al generar reporte. " +
                     "Agradeceríamos que informara sobre este inconveniente " +
-                    "a los desarrolladores de la aplicación para repararlo." +
-                    "</html>");
+                    "a los desarrolladores de la aplicación para repararlo.");
             }
         }
 
