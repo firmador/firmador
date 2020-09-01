@@ -25,7 +25,6 @@ import java.security.KeyStore.PasswordProtection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import javax.security.auth.x500.X500Principal;
 
 import app.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;

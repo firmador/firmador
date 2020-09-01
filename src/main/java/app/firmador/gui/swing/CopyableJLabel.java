@@ -19,7 +19,6 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package app.firmador.gui.swing;
 
-import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JTextPane;
