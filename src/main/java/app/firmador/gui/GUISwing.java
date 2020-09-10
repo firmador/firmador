@@ -70,6 +70,7 @@ import javax.swing.event.ChangeListener;
 
 import app.firmador.FirmadorPAdES;
 import app.firmador.FirmadorXAdES;
+import app.firmador.Remote;
 import app.firmador.FirmadorOpenDocument;
 import app.firmador.Report;
 import app.firmador.Validator;
@@ -123,6 +124,15 @@ public class GUISwing implements GUIInterface {
             }
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
+        }
+        Boolean isRemote = System.getProperty("jnlp.remoteOrigin") != null;
+        if (isRemote) {
+            try {
+                // FIXME use SwingWorker
+                new Remote(System.getProperty("jnlp.remoteOrigin"));
+            } catch (IOException | InterruptedException ex) {
+                ex.printStackTrace();
+            }
         }
         JLabel fileLabel = new JLabel("Documento: ");
         fileField = new JTextField("(Vacío)");
