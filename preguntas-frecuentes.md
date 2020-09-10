@@ -1,5 +1,36 @@
 # Preguntas frecuentes
 
+## ¿Cómo utilizar Firmador por línea de comandos o de forma automatizada?
+
+Firmador cuenta actualmente con 3 tipos de interfaces de usuario:
+- `swing` (predeterminada)
+- `shell` (interactiva por consola)
+- `args` (no interactiva, con parámetros)
+
+Para seleccionar la interfaz, utilizar -d seguido de la interfaz sin espacios.
+
+Ejemplo para seleccionar la interfaz interactiva por consola:
+
+    java -jar firmador.jar -dshell
+
+Ejemplo para la interfaz por parámetros:
+
+    java -jar firmador.jar -dargs original.pdf firmado.pdf
+
+En este caso solicita el pin de forma interactiva pero podría suministrarse
+por ejemplo de la siguiente manera para que quede completamente automatizado:
+
+    echo 0000 | java -jar firmador.jar -dargs original.pdf firmado.pdf
+
+Donde `0000` es un pin de ejemplo, así como las rutas de carga y guardado, que
+pueden ser absolutas o relativas. Se recomienda entrecomillar las rutas si
+contienen caracteres especiales, como por ejemplo espacios.
+
+También hay un parámetro `-slot`, en caso de que existiera más de un slot en el
+sistema, al que se le puede proporcionar el número deseado. Este parámetro es
+opcional.
+
+
 ## ¿Cómo integrar firmador en un sitio web para que se lance la app, cargue un documento en la app y suba el documento firmado automáticamente?
 
 Desde JavaScript deberá crearse una conexión XMLHttpRequest a 127.0.0.1:3516
