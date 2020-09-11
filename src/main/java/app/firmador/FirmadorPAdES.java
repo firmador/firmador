@@ -52,7 +52,7 @@ import org.bouncycastle.asn1.x500.style.BCStyle;
 
 public class FirmadorPAdES extends CRSigner {
 
-    private int page, x, y;
+    private int page = 1, x, y;
     PAdESSignatureParameters parameters;
     private boolean visible_signature = true;
 
@@ -138,7 +138,7 @@ public class FirmadorPAdES extends CRSigner {
             service.setTspSource(onlineTSPSource);
             Date date = new Date();
 
-            if(visible_signature) {
+            if (visible_signature) {
                 appendVisibleSignature(certificate, date);
             }
             parameters.bLevel().setSigningDate(date);
