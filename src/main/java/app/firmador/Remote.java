@@ -21,80 +21,45 @@ package app.firmador;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeUnit;
 import javax.swing.SwingWorker;
 
-import org.apache.http.ConnectionClosedException;
-import org.apache.http.ExceptionLogger;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.config.SocketConfig;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.bootstrap.HttpServer;
 import org.apache.http.impl.bootstrap.ServerBootstrap;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpProcessor;
-import org.apache.http.protocol.HttpProcessorBuilder;
 import org.apache.http.protocol.HttpRequestHandler;
-import org.apache.http.protocol.ResponseConnControl;
-import org.apache.http.protocol.ResponseContent;
-import org.apache.http.protocol.ResponseDate;
-import org.apache.http.protocol.ResponseServer;
 
 public class Remote extends SwingWorker<Void, Void> {
     private HttpServer server;
-    protected Void doInBackground() throws InterruptedException {
-        server.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-        //FIXME call publish on POST request
-        return null;
-    }
     public Remote(String origin) throws IOException, InterruptedException {
         HttpRequestHandler requestHandler = new HttpRequestHandler() {
             public void handle(HttpRequest request, HttpResponse response,
                 HttpContext context) throws HttpException, IOException {
+                System.out.println(request.toString());
                 response.setStatusCode(HttpStatus.SC_OK);
                 response.setHeader("Access-Control-Allow-Origin", origin);
                 response.setHeader("Vary", "Origin");
                 // FIXME return signed document
-                response.setEntity(new StringEntity("Prueba",
+                response.setEntity(new StringEntity("Prueba\n",
                     ContentType.TEXT_PLAIN));
             }
         };
-        HttpProcessor httpProcessor = HttpProcessorBuilder.create()
-            .add(new ResponseDate())
-            .add(new ResponseServer("Firmador"))
-            .add(new ResponseContent())
-            .add(new ResponseConnControl())
-            .build();
-        SocketConfig socketConfig = SocketConfig.custom()
-            .setSoTimeout(15000)
-            .setTcpNoDelay(true)
-            .build();
         server = ServerBootstrap.bootstrap()
             .setListenerPort(3516)
             .setLocalAddress(InetAddress.getLoopbackAddress())
-            .setHttpProcessor(httpProcessor)
-            .setSocketConfig(socketConfig)
-            .setExceptionLogger(new StdErrorExceptionLogger())
             .registerHandler("*", requestHandler)
             .create();
         server.start();
     }
-}
-
-class StdErrorExceptionLogger implements ExceptionLogger {
-    @Override
-    public void log(Exception ex) {
-        if (ex instanceof SocketTimeoutException) {
-            System.err.println("Connection timed out");
-        } else if (ex instanceof ConnectionClosedException) {
-            System.err.println(ex.getMessage());
-        } else {
-            ex.printStackTrace();
-        }
+    protected Void doInBackground() throws InterruptedException {
+        server.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+        // FIXME call publish() on POST request
+        return null;
     }
 }
