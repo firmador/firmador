@@ -128,8 +128,7 @@ public class GUISwing implements GUIInterface {
         Boolean isRemote = System.getProperty("jnlp.remoteOrigin") != null;
         if (isRemote) {
             try {
-                // FIXME use SwingWorker
-                new Remote(System.getProperty("jnlp.remoteOrigin"));
+                new Remote(System.getProperty("jnlp.remoteOrigin")).execute();
             } catch (IOException | InterruptedException ex) {
                 ex.printStackTrace();
             }

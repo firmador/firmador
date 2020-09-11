@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeUnit;
+import javax.swing.SwingWorker;
 
 import org.apache.http.ConnectionClosedException;
 import org.apache.http.ExceptionLogger;
@@ -44,7 +45,13 @@ import org.apache.http.protocol.ResponseContent;
 import org.apache.http.protocol.ResponseDate;
 import org.apache.http.protocol.ResponseServer;
 
-public class Remote {
+public class Remote extends SwingWorker<Void, Void> {
+    private HttpServer server;
+    protected Void doInBackground() throws InterruptedException {
+        server.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+        //FIXME call publish on POST request
+        return null;
+    }
     public Remote(String origin) throws IOException, InterruptedException {
         HttpRequestHandler requestHandler = new HttpRequestHandler() {
             public void handle(HttpRequest request, HttpResponse response,
@@ -67,7 +74,7 @@ public class Remote {
             .setSoTimeout(15000)
             .setTcpNoDelay(true)
             .build();
-        HttpServer server = ServerBootstrap.bootstrap()
+        server = ServerBootstrap.bootstrap()
             .setListenerPort(3516)
             .setLocalAddress(InetAddress.getLoopbackAddress())
             .setHttpProcessor(httpProcessor)
@@ -76,7 +83,6 @@ public class Remote {
             .registerHandler("*", requestHandler)
             .create();
         server.start();
-        server.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
     }
 }
 
