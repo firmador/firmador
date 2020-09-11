@@ -32,7 +32,7 @@ import sun.security.pkcs11.wrapper.PKCS11;
 
 import com.google.common.base.Splitter;
 
-//@SuppressWarnings("restriction")
+@SuppressWarnings("restriction")
 public class Token {
 
     private PKCS11 pkcs11 = null;
