@@ -1,5 +1,6 @@
 # Preguntas frecuentes
 
+
 ## ¿Cómo utilizar Firmador por línea de comandos o de forma automatizada?
 
 Firmador cuenta actualmente con 3 tipos de interfaces de usuario:
@@ -69,6 +70,15 @@ Si se quieren probar la propiedad sin crear un JNLP, se puede lanzar por línea
 de comandos mediante:
 
     java -Djnlp.remoteOrigin=https://example.org -jar target/firmador.jar
+
+Para no sobrecargar el servidor de firmador.app, se recomienda modificar el
+atributo `codebase` y alojar el JAR en un servidor propio, además de que reduce
+el riesgo de que en caso de caerse el servidor de firmador.app, afecte a
+integraciones de terceros. Aun así, si se quiere experimentar con una versión
+de Firmador habilitada para CORS en cualquier dominio, existe
+https://firmador.app/firmador-en-pruebas.jnlp que permite recibir peticiones
+desde cualquier origen. Esta versión puede recibir modificaciones, cambios y
+caídas al tratarse de una versión para desarrollo y pruebas.
 
 
 ## ¿Por qué Firmador utiliza el puerto 3516 para el mecanismo de firma remota y no otro número en particular?
