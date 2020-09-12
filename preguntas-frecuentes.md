@@ -77,7 +77,7 @@ el riesgo de que en caso de caerse el servidor de firmador.app, afecte a
 integraciones de terceros. Aun así, si se quiere experimentar con una versión
 de Firmador habilitada para CORS en cualquier dominio, existe
 https://firmador.app/firmador-en-pruebas.jnlp que permite recibir peticiones
-desde cualquier origen. Esta versión puede recibir modificaciones, cambios y
+desde cualquier origen. Esta versión puede recibir modificaciones inestables y
 caídas al tratarse de una versión para desarrollo y pruebas.
 
 
