@@ -24,12 +24,12 @@ import java.net.InetAddress;
 import java.util.concurrent.TimeUnit;
 import javax.swing.SwingWorker;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.bootstrap.HttpServer;
 import org.apache.http.impl.bootstrap.ServerBootstrap;
 import org.apache.http.protocol.HttpContext;
@@ -37,17 +37,21 @@ import org.apache.http.protocol.HttpRequestHandler;
 
 public class Remote extends SwingWorker<Void, Void> {
     private HttpServer server;
+    private HttpEntity entity;
     public Remote(String origin) throws IOException, InterruptedException {
         HttpRequestHandler requestHandler = new HttpRequestHandler() {
             public void handle(HttpRequest request, HttpResponse response,
                 HttpContext context) throws HttpException, IOException {
-                System.out.println(request.toString());
-                response.setStatusCode(HttpStatus.SC_OK);
+                response.setStatusCode(HttpStatus.SC_ACCEPTED);
                 response.setHeader("Access-Control-Allow-Origin", origin);
                 response.setHeader("Vary", "Origin");
-                // FIXME return signed document
-                response.setEntity(new StringEntity("Prueba\n",
-                    ContentType.TEXT_PLAIN));
+                if (request instanceof HttpEntityEnclosingRequest) {
+                    entity = ((HttpEntityEnclosingRequest)request).getEntity();
+                    if (entity.getContentLength() > 0) {
+                        // FIXME return signed document
+                        //response.setEntity(new InputStreamEntity());
+                    }
+                }
             }
         };
         server = ServerBootstrap.bootstrap()
@@ -59,7 +63,6 @@ public class Remote extends SwingWorker<Void, Void> {
     }
     protected Void doInBackground() throws InterruptedException {
         server.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-        // FIXME call publish() on POST request
         return null;
     }
 }
