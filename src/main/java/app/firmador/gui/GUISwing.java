@@ -395,11 +395,15 @@ public class GUISwing implements GUIInterface {
         aboutPanel.add(descriptionLabel);
         aboutPanel.add(websiteButton);
         tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
-        tabbedPane.addTab("Firmar", signPanel);
-        tabbedPane.addTab("Validación", validateScrollPane);
-        tabbedPane.addTab("Acerca de", aboutPanel);
-        frame.add(filePanel, BorderLayout.PAGE_START);
-        frame.add(tabbedPane, BorderLayout.CENTER);
+        if (!isRemote) {
+            tabbedPane.addTab("Firmar", signPanel);
+            tabbedPane.addTab("Validación", validateScrollPane);
+            tabbedPane.addTab("Acerca de", aboutPanel);
+            frame.add(filePanel, BorderLayout.PAGE_START);
+            frame.add(tabbedPane, BorderLayout.CENTER);
+        } else {
+            frame.add(signPanel, BorderLayout.CENTER);
+        }
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(480, 576));
         frame.setLocationRelativeTo(null);
