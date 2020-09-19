@@ -125,10 +125,11 @@ public class GUISwing implements GUIInterface {
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
         }
-        Boolean isRemote = System.getProperty("jnlp.remoteOrigin") != null;
+        String origin = System.getProperty("jnlp.remoteOrigin");
+        Boolean isRemote = (origin != null);
         if (isRemote) {
             try {
-                new Remote(System.getProperty("jnlp.remoteOrigin")).execute();
+                new Remote(origin).execute();
             } catch (IOException | InterruptedException ex) {
                 ex.printStackTrace();
             }
