@@ -37,14 +37,18 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -62,6 +66,7 @@ import javax.swing.JSpinner;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -70,7 +75,6 @@ import javax.swing.event.ChangeListener;
 
 import app.firmador.FirmadorPAdES;
 import app.firmador.FirmadorXAdES;
-import app.firmador.Remote;
 import app.firmador.FirmadorOpenDocument;
 import app.firmador.Report;
 import app.firmador.Validator;
@@ -80,13 +84,26 @@ import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
+import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.MimeType;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.impl.bootstrap.HttpServer;
+import org.apache.http.impl.bootstrap.ServerBootstrap;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpRequestHandler;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 public class GUISwing implements GUIInterface {
 
     private static FileDialog loadDialog;
+    private Boolean isRemote = false;
+    private Boolean alreadySignedDocument = false;
     private String documenttosign = null;
     private String documenttosave = null;
     private String lastDirectory = null;
@@ -99,6 +116,9 @@ public class GUISwing implements GUIInterface {
     private JLabel signatureLabel;
     private JCheckBox signatureVisibleCheckBox;
     private CopyableJLabel reportLabel;
+    private DSSDocument toSignDocument;
+    private DSSDocument signedDocument;
+    private byte[] toSignByteArray;
     private JLabel pageLabel;
     private JSpinner pageSpinner;
     private JButton signButton;
@@ -126,13 +146,68 @@ public class GUISwing implements GUIInterface {
             showError(Throwables.getRootCause(e));
         }
         String origin = System.getProperty("jnlp.remoteOrigin");
-        Boolean isRemote = (origin != null);
+        isRemote = (origin != null);
         if (isRemote) {
-            try {
-                new Remote(origin).execute();
-            } catch (IOException | InterruptedException ex) {
-                ex.printStackTrace();
-            }
+            SwingWorker<Void, byte[]> remote =
+                new SwingWorker<Void, byte[]>() {
+                protected Void doInBackground()
+                    throws IOException, InterruptedException {
+                    HttpRequestHandler requestHandler =
+                        new HttpRequestHandler() {
+                        public void handle(
+                            HttpRequest request, HttpResponse response,
+                            HttpContext context)
+                                throws HttpException, IOException {
+                            response.setStatusCode(HttpStatus.SC_ACCEPTED);
+                            response.setHeader("Access-Control-Allow-Origin",
+                                origin);
+                            response.setHeader("Vary", "Origin");
+                            if (request instanceof HttpEntityEnclosingRequest)
+                            {
+                                HttpEntity entity =
+                                    ((HttpEntityEnclosingRequest)request)
+                                    .getEntity();
+                                if (entity.getContentLength() > 0) {
+                                    System.out.println("Recibidos " +
+                                        entity.getContentLength() + " bytes");
+                                    ByteArrayOutputStream os =
+                                        new ByteArrayOutputStream();
+                                    int bytes;
+                                    byte[] data = new byte[4096];
+                                    try {
+                                        while ((bytes = entity.getContent()
+                                            .read(data, 0, data.length))
+                                                != -1) {
+                                            os.write(data, 0, bytes);
+                                        }
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                    publish(os.toByteArray());
+                                }
+                                if (alreadySignedDocument) {
+                                    // FIXME return signed document
+                                    //response.setEntity();
+                                }
+                            }
+                        }
+                    };
+                    HttpServer server = ServerBootstrap.bootstrap()
+                        .setListenerPort(3516)
+                        .setLocalAddress(InetAddress.getLoopbackAddress())
+                        .registerHandler("*", requestHandler)
+                        .create();
+                    server.start();
+                    server.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+                    return null;
+                }
+                protected void process(List<byte[]> chunks) {
+                    toSignByteArray = chunks.get(chunks.size() - 1);
+                    toSignDocument = new InMemoryDocument(toSignByteArray);
+                    loadDocument(null);
+                }
+            };
+            remote.execute();
         }
         JLabel fileLabel = new JLabel("Documento: ");
         fileField = new JTextField("(Vacío)");
@@ -164,65 +239,7 @@ public class GUISwing implements GUIInterface {
         signButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                String fileName = getDocumentToSign();
-
-                if (fileName != null) {
-                    DSSDocument toSignDocument = new FileDocument(fileName);
-                    DSSDocument signedDocument = null;
-                    PasswordProtection pin = getPin();
-                    if (pin.getPassword() != null
-                        && pin.getPassword().length != 0) {
-                        MimeType mimeType = toSignDocument.getMimeType();
-                        if (mimeType == MimeType.PDF) {
-                            FirmadorPAdES firmador = new FirmadorPAdES(
-                                GUISwing.this);
-                            firmador.selectSlot();
-                            if (firmador.selectedSlot == -1) return;
-                            firmador.setVisible_signature(
-                                !signatureVisibleCheckBox.isSelected());
-                            firmador.addVisibleSignature(
-                                (int)pageSpinner.getValue(),
-                                (int)Math.round(signatureLabel.getX() * 2.5),
-                                (int)Math.round(signatureLabel.getY() * 2.5));
-                            signedDocument = firmador.sign(toSignDocument,
-                                pin);
-                        } else if (mimeType == MimeType.ODG
-                            || mimeType == MimeType.ODP
-                            || mimeType == MimeType.ODS
-                            || mimeType == MimeType.ODT) {
-                            FirmadorOpenDocument firmador =
-                                new FirmadorOpenDocument(GUISwing.this);
-                            firmador.selectSlot();
-                            if (firmador.selectedSlot == -1) return;
-                            signedDocument = firmador.sign(toSignDocument,
-                                pin);
-                        } else {
-                            FirmadorXAdES firmador = new FirmadorXAdES(
-                                GUISwing.this);
-                            firmador.selectSlot();
-                            if (firmador.selectedSlot == -1) return;
-                            signedDocument = firmador.sign(toSignDocument,
-                                pin);
-                        }
-                        try {
-                            pin.destroy();
-                        } catch (Exception e) {}
-                    }
-                    if (signedDocument != null) {
-                        fileName = getPathToSave();
-                        if (fileName != null) {
-                            try {
-                                signedDocument.save(fileName);
-                                showMessage(
-                                    "Documento guardado satisfactoriamente" +
-                                    " en<br>" + fileName);
-                                loadDocument(fileName);
-                            } catch (IOException e) {
-                                showError(Throwables.getRootCause(e));
-                            }
-                        }
-                    }
-                }
+                signDocument();
             }
         });
 
@@ -232,44 +249,7 @@ public class GUISwing implements GUIInterface {
         extendButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         extendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                String fileName = getDocumentToSign();
-
-                if (fileName != null) {
-
-                    DSSDocument toExtendDocument = new FileDocument(fileName);
-                    DSSDocument extendedDocument = null;
-                    MimeType mimeType = toExtendDocument.getMimeType();
-                    if (mimeType == MimeType.PDF) {
-                        FirmadorPAdES firmador = new FirmadorPAdES(
-                            GUISwing.this);
-                        extendedDocument = firmador.extend(toExtendDocument);
-                    } else if (mimeType == MimeType.ODG
-                        || mimeType == MimeType.ODP
-                        || mimeType == MimeType.ODS
-                        || mimeType == MimeType.ODT) {
-                        FirmadorOpenDocument firmador =
-                            new FirmadorOpenDocument(GUISwing.this);
-                        extendedDocument = firmador.extend(toExtendDocument);
-                    } else {
-                        FirmadorXAdES firmador = new FirmadorXAdES(
-                            GUISwing.this);
-                        extendedDocument = firmador.extend(toExtendDocument);
-                    }
-                    if (extendedDocument != null) {
-                        fileName = getPathToSaveExtended();
-                        if (fileName != null) {
-                            try {
-                                extendedDocument.save(fileName);
-                                showMessage(
-                                    "Documento guardado satisfactoriamente" +
-                                    " en<br>" + fileName);
-                                loadDocument(fileName);
-                            } catch (IOException e) {
-                                showError(Throwables.getRootCause(e));
-                            }
-                        }
-                    }
-                }
+                extendDocument();
             }
         });
 
@@ -286,28 +266,7 @@ public class GUISwing implements GUIInterface {
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         fileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                loadDialog = new FileDialog(frame,
-                    "Seleccionar documento a firmar");
-                loadDialog.setFilenameFilter(new FilenameFilter() {
-                    public boolean accept(File dir, String name) {
-                        return name.toLowerCase().endsWith(".odg")
-                            || name.toLowerCase().endsWith(".odp")
-                            || name.toLowerCase().endsWith(".ods")
-                            || name.toLowerCase().endsWith(".odt")
-                            || name.toLowerCase().endsWith(".pdf")
-                            || name.toLowerCase().endsWith(".xml");
-                    }
-                });
-                loadDialog.setFile("*.odg;*.odp;*.ods;*.odt;*.pdf;*.xml");
-                loadDialog.setLocationRelativeTo(null);
-                loadDialog.setVisible(true);
-                loadDialog.dispose();
-                if (loadDialog.getFile() != null) {
-                    loadDocument(loadDialog.getDirectory()
-                        + loadDialog.getFile());
-                    lastDirectory = loadDialog.getDirectory();
-                    lastFile = loadDialog.getFile();
-                }
+                showLoadDialog(frame);
             }
         });
         signatureLabel =
@@ -378,14 +337,7 @@ public class GUISwing implements GUIInterface {
         JButton websiteButton = new JButton("Visitar sitio web del proyecto");
         websiteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if (Desktop.isDesktopSupported()) {
-                    try {
-                        Desktop.getDesktop().browse(
-                            new URI("https://firmador.app"));
-                    } catch (Exception e) {
-                        showError(Throwables.getRootCause(e));
-                    }
-                }
+                openProjectWebsite();
             }
         });
         iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -416,14 +368,23 @@ public class GUISwing implements GUIInterface {
     public void loadDocument(String fileName) {
         fileField.setText(fileName);
         signButton.setEnabled(true);
-        DSSDocument mimeDocument = new FileDocument(fileName);
+        DSSDocument mimeDocument;
+        if (isRemote) {
+            mimeDocument = toSignDocument;
+        } else {
+            mimeDocument = new FileDocument(fileName);
+        }
         MimeType mimeType = mimeDocument.getMimeType();
         try {
             if (doc != null) {
                 doc.close();
             }
-            if (mimeType == MimeType.PDF) {
-                doc = PDDocument.load(new File(fileName));
+            if (mimeType == MimeType.PDF || isRemote) {
+                if (isRemote) { // Only supports PDF for remote for now
+                    doc = PDDocument.load(toSignByteArray);
+                } else {
+                    doc = PDDocument.load(new File(fileName));
+                }
                 int pages = doc.getNumberOfPages();
                 renderer = new PDFRenderer(doc);
                 pageLabel.setVisible(true);
@@ -456,43 +417,178 @@ public class GUISwing implements GUIInterface {
             showError(Throwables.getRootCause(e));
         }
 
-        Validator validator = null;
-        try {
-            validator = new Validator(fileName);
-            if (validator.isSigned()) {
-                extendButton.setEnabled(true);
-                tabbedPane.setSelectedIndex(1);
-            } else {
+        if (!isRemote) {
+            Validator validator = null;
+            try {
+                validator = new Validator(fileName);
+                if (validator.isSigned()) {
+                    extendButton.setEnabled(true);
+                    tabbedPane.setSelectedIndex(1);
+                } else {
+                    extendButton.setEnabled(false);
+                    tabbedPane.setSelectedIndex(0);
+                }
+            } catch (Exception e) {
+                if (mimeType == MimeType.ODG || mimeType == MimeType.ODP
+                    || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
+                    // Workaround for DSS 5.6 not recognizing unsigned ODF
+                } else {
+                    e.printStackTrace();
+                    reportLabel.setText("Error al validar documento. " +
+                        "Agradeceríamos que informara sobre este " +
+                        "inconveniente a los desarrolladores de la " +
+                        "aplicación para repararlo.");
+                }
+                reportLabel.setText("");
                 extendButton.setEnabled(false);
                 tabbedPane.setSelectedIndex(0);
             }
-        } catch (Exception e) {
-            if (mimeType == MimeType.ODG || mimeType == MimeType.ODP
-                || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
-                // Workaround for DSS 5.6 not recognizing unsigned ODF files
+
+            if (validator != null) {
+                try {
+                    Report report = new Report(validator.getReports());
+                    reportLabel.setText(report.getReport());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    reportLabel.setText("Error al generar reporte. " +
+                        "Agradeceríamos que informara sobre este " +
+                        "inconveniente a los desarrolladores de la " +
+                        "aplicación para repararlo.");
+                }
+            }
+        }
+    }
+
+    public void signDocument() {
+        String fileName = getDocumentToSign();
+        if (fileName != null || isRemote) {
+            if (!isRemote) {
+                toSignDocument = new FileDocument(fileName);
+            }
+            signedDocument = null;
+            PasswordProtection pin = getPin();
+            if (pin.getPassword() != null
+                && pin.getPassword().length != 0) {
+                MimeType mimeType = toSignDocument.getMimeType();
+                if (mimeType == MimeType.PDF || isRemote) {
+                    FirmadorPAdES firmador = new FirmadorPAdES(
+                        GUISwing.this);
+                    firmador.selectSlot();
+                    if (firmador.selectedSlot == -1) return;
+                    firmador.setVisible_signature(
+                        !signatureVisibleCheckBox.isSelected());
+                    firmador.addVisibleSignature(
+                        (int)pageSpinner.getValue(),
+                        (int)Math.round(signatureLabel.getX() * 2.5),
+                        (int)Math.round(signatureLabel.getY() * 2.5));
+                    signedDocument = firmador.sign(toSignDocument,
+                        pin);
+                } else if (mimeType == MimeType.ODG
+                    || mimeType == MimeType.ODP
+                    || mimeType == MimeType.ODS
+                    || mimeType == MimeType.ODT) {
+                    FirmadorOpenDocument firmador =
+                        new FirmadorOpenDocument(GUISwing.this);
+                    firmador.selectSlot();
+                    if (firmador.selectedSlot == -1) return;
+                    signedDocument = firmador.sign(toSignDocument,
+                        pin);
+                } else {
+                    FirmadorXAdES firmador = new FirmadorXAdES(
+                        GUISwing.this);
+                    firmador.selectSlot();
+                    if (firmador.selectedSlot == -1) return;
+                    signedDocument = firmador.sign(toSignDocument,
+                        pin);
+                }
+                try {
+                    pin.destroy();
+                } catch (Exception e) {}
+            }
+            if (signedDocument != null && !isRemote) {
+                fileName = getPathToSave();
+                if (fileName != null) {
+                    try {
+                        signedDocument.save(fileName);
+                        showMessage(
+                            "Documento guardado satisfactoriamente " +
+                            "en<br>" + fileName);
+                        loadDocument(fileName);
+                    } catch (IOException e) {
+                        showError(Throwables.getRootCause(e));
+                    }
+                }
+            }
+            if (isRemote) {
+                alreadySignedDocument = true;
+            }
+        }
+    }
+
+    public void extendDocument() {
+        String fileName = getDocumentToSign();
+
+        if (fileName != null) {
+
+            DSSDocument toExtendDocument = new FileDocument(fileName);
+            DSSDocument extendedDocument = null;
+            MimeType mimeType = toExtendDocument.getMimeType();
+            if (mimeType == MimeType.PDF) {
+                FirmadorPAdES firmador = new FirmadorPAdES(
+                    GUISwing.this);
+                extendedDocument = firmador.extend(toExtendDocument);
+            } else if (mimeType == MimeType.ODG
+                || mimeType == MimeType.ODP
+                || mimeType == MimeType.ODS
+                || mimeType == MimeType.ODT) {
+                FirmadorOpenDocument firmador =
+                    new FirmadorOpenDocument(GUISwing.this);
+                extendedDocument = firmador.extend(toExtendDocument);
             } else {
-                e.printStackTrace();
-                reportLabel.setText("Error al validar documento. " +
-                    "Agradeceríamos que informara sobre este inconveniente " +
-                    "a los desarrolladores de la aplicación para repararlo.");
+                FirmadorXAdES firmador = new FirmadorXAdES(
+                    GUISwing.this);
+                extendedDocument = firmador.extend(toExtendDocument);
             }
-            reportLabel.setText("");
-            extendButton.setEnabled(false);
-            tabbedPane.setSelectedIndex(0);
-        }
-
-        if (validator != null) {
-            try {
-                Report report = new Report(validator.getReports());
-                reportLabel.setText(report.getReport());
-            } catch (Exception e) {
-                e.printStackTrace();
-                reportLabel.setText("Error al generar reporte. " +
-                    "Agradeceríamos que informara sobre este inconveniente " +
-                    "a los desarrolladores de la aplicación para repararlo.");
+            if (extendedDocument != null) {
+                fileName = getPathToSaveExtended();
+                if (fileName != null) {
+                    try {
+                        extendedDocument.save(fileName);
+                        showMessage(
+                            "Documento guardado satisfactoriamente" +
+                            " en<br>" + fileName);
+                        loadDocument(fileName);
+                    } catch (IOException e) {
+                        showError(Throwables.getRootCause(e));
+                    }
+                }
             }
         }
+    }
 
+    private void showLoadDialog(JFrame frame) {
+        loadDialog = new FileDialog(frame,
+            "Seleccionar documento a firmar");
+        loadDialog.setFilenameFilter(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.toLowerCase().endsWith(".odg")
+                    || name.toLowerCase().endsWith(".odp")
+                    || name.toLowerCase().endsWith(".ods")
+                    || name.toLowerCase().endsWith(".odt")
+                    || name.toLowerCase().endsWith(".pdf")
+                    || name.toLowerCase().endsWith(".xml");
+            }
+        });
+        loadDialog.setFile("*.odg;*.odp;*.ods;*.odt;*.pdf;*.xml");
+        loadDialog.setLocationRelativeTo(null);
+        loadDialog.setVisible(true);
+        loadDialog.dispose();
+        if (loadDialog.getFile() != null) {
+            loadDocument(loadDialog.getDirectory()
+                + loadDialog.getFile());
+            lastDirectory = loadDialog.getDirectory();
+            lastFile = loadDialog.getFile();
+        }
     }
 
     public String getDocumentToSign() {
@@ -567,6 +663,17 @@ public class GUISwing implements GUIInterface {
             return new PasswordProtection(pinField.getPassword());
         } else {
             return new PasswordProtection(null);
+        }
+    }
+
+    private void openProjectWebsite() {
+        if (Desktop.isDesktopSupported()) {
+            try {
+                Desktop.getDesktop().browse(
+                    new URI("https://firmador.app"));
+            } catch (Exception e) {
+                showError(Throwables.getRootCause(e));
+            }
         }
     }
 
