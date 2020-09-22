@@ -92,6 +92,8 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.bootstrap.HttpServer;
 import org.apache.http.impl.bootstrap.ServerBootstrap;
 import org.apache.http.protocol.HttpContext;
@@ -150,6 +152,7 @@ public class GUISwing implements GUIInterface {
         if (isRemote) {
             SwingWorker<Void, byte[]> remote =
                 new SwingWorker<Void, byte[]>() {
+                private HttpServer server;
                 protected Void doInBackground()
                     throws IOException, InterruptedException {
                     HttpRequestHandler requestHandler =
@@ -158,41 +161,36 @@ public class GUISwing implements GUIInterface {
                             HttpRequest request, HttpResponse response,
                             HttpContext context)
                                 throws HttpException, IOException {
-                            response.setStatusCode(HttpStatus.SC_ACCEPTED);
                             response.setHeader("Access-Control-Allow-Origin",
                                 origin);
                             response.setHeader("Vary", "Origin");
+                            if (request.getRequestLine().getUri()
+                                .equals("/close")) System.exit(0);
+                            response.setStatusCode(HttpStatus.SC_ACCEPTED);
                             if (request instanceof HttpEntityEnclosingRequest)
                             {
                                 HttpEntity entity =
                                     ((HttpEntityEnclosingRequest)request)
                                     .getEntity();
-                                if (entity.getContentLength() > 0) {
-                                    System.out.println("Recibidos " +
-                                        entity.getContentLength() + " bytes");
+                                if (alreadySignedDocument) {
+                                    response.setStatusCode(HttpStatus.SC_OK);
                                     ByteArrayOutputStream os =
                                         new ByteArrayOutputStream();
-                                    int bytes;
-                                    byte[] data = new byte[4096];
-                                    try {
-                                        while ((bytes = entity.getContent()
-                                            .read(data, 0, data.length))
-                                                != -1) {
-                                            os.write(data, 0, bytes);
-                                        }
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                    publish(os.toByteArray());
+                                    signedDocument.writeTo(os);
+                                    response.setEntity(
+                                        new ByteArrayEntity(os.toByteArray(),
+                                            ContentType.DEFAULT_TEXT));
                                 }
-                                if (alreadySignedDocument) {
-                                    // FIXME return signed document
-                                    //response.setEntity();
+                                if (entity.getContentLength() > 0) {
+                                    ByteArrayOutputStream os =
+                                        new ByteArrayOutputStream();
+                                    entity.writeTo(os);
+                                    publish(os.toByteArray());
                                 }
                             }
                         }
                     };
-                    HttpServer server = ServerBootstrap.bootstrap()
+                    server = ServerBootstrap.bootstrap()
                         .setListenerPort(3516)
                         .setLocalAddress(InetAddress.getLoopbackAddress())
                         .registerHandler("*", requestHandler)
