@@ -26,7 +26,6 @@ import java.security.KeyStore.PasswordProtection;
 
 import java.util.List;
 
-
 import app.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;

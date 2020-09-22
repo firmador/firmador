@@ -27,7 +27,6 @@ import app.firmador.gui.GUIInterface;
 import app.firmador.token.Token;
 import app.firmador.token.Utils;
 import com.google.common.base.Throwables;
-import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.KeyUsageBit;
 import eu.europa.esig.dss.model.SerializableSignatureParameters;
 import eu.europa.esig.dss.model.x509.CertificateToken;
