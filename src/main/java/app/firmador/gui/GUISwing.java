@@ -117,6 +117,12 @@ public class GUISwing implements GUIInterface {
     private JLabel imageLabel;
     private JLabel signatureLabel;
     private JCheckBox signatureVisibleCheckBox;
+    private JLabel reasonLabel;
+    private JLabel locationLabel;
+    private JLabel contactInfoLabel;
+    private JTextField reasonField;
+    private JTextField locationField;
+    private JTextField contactInfoField;
     private CopyableJLabel reportLabel;
     private DSSDocument toSignDocument;
     private DSSDocument signedDocument;
@@ -215,9 +221,6 @@ public class GUISwing implements GUIInterface {
             image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
         pageLabel = new JLabel("Página:");
         pageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        signatureVisibleCheckBox = new JCheckBox(" Sin firma visible");
-        signatureVisibleCheckBox.setAlignmentX(Component.CENTER_ALIGNMENT);
-        signatureVisibleCheckBox.setOpaque(false);
         pageSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
         pageSpinner.setMaximumSize(pageSpinner.getPreferredSize());
         pageSpinner.addChangeListener(new ChangeListener() {
@@ -233,6 +236,15 @@ public class GUISwing implements GUIInterface {
                 }
             }
         });
+        signatureVisibleCheckBox = new JCheckBox(" Sin firma visible");
+        signatureVisibleCheckBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+        signatureVisibleCheckBox.setOpaque(false);
+        reasonLabel = new JLabel("Razón:");
+        locationLabel = new JLabel("Lugar:");
+        contactInfoLabel = new JLabel("Información de contacto:");
+        reasonField = new JTextField();
+        locationField = new JTextField();
+        contactInfoField = new JTextField();
         signButton = new JButton("Firmar documento");
         signButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         signButton.addActionListener(new ActionListener() {
@@ -256,9 +268,21 @@ public class GUISwing implements GUIInterface {
         pageLabel.setVisible(false);
         pageSpinner.setEnabled(false);
         pageSpinner.setVisible(false);
-        extendButton.setEnabled(false);
         signatureVisibleCheckBox.setEnabled(false);
         signatureVisibleCheckBox.setVisible(false);
+        reasonLabel.setEnabled(false);
+        reasonLabel.setVisible(false);
+        reasonField.setEnabled(false);
+        reasonField.setVisible(false);
+        locationLabel.setEnabled(false);
+        locationLabel.setVisible(false);
+        locationField.setEnabled(false);
+        locationField.setVisible(false);
+        contactInfoLabel.setEnabled(false);
+        contactInfoLabel.setVisible(false);
+        contactInfoField.setEnabled(false);
+        contactInfoField.setVisible(false);
+        extendButton.setEnabled(false);
         JButton fileButton = new JButton("Elegir...");
         imageLabel = new JLabel();
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -301,6 +325,12 @@ public class GUISwing implements GUIInterface {
         signPanel.add(pageLabel);
         signPanel.add(pageSpinner);
         signPanel.add(signatureVisibleCheckBox);
+        signPanel.add(reasonLabel);
+        signPanel.add(reasonField);
+        signPanel.add(locationLabel);
+        signPanel.add(locationField);
+        signPanel.add(contactInfoLabel);
+        signPanel.add(contactInfoField);
         JPanel validatePanel = new ScrollableJPanel();
         validatePanel.setLayout(new BoxLayout(validatePanel,
             BoxLayout.PAGE_AXIS));
@@ -355,7 +385,7 @@ public class GUISwing implements GUIInterface {
             frame.add(signPanel, BorderLayout.CENTER);
         }
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(480, 576));
+        frame.setMinimumSize(new Dimension(480, 672));
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         if (documenttosign != null) {
@@ -388,6 +418,12 @@ public class GUISwing implements GUIInterface {
                 pageLabel.setVisible(true);
                 pageSpinner.setVisible(true);
                 signatureVisibleCheckBox.setVisible(true);
+                reasonLabel.setVisible(true);
+                reasonField.setVisible(true);
+                locationLabel.setVisible(true);
+                locationField.setVisible(true);
+                contactInfoLabel.setVisible(true);
+                contactInfoField.setVisible(true);
                 if (pages > 0) {
                     pageImage = renderer.renderImage(0, 1 / 2.5f);
                     SpinnerNumberModel model =
@@ -396,8 +432,14 @@ public class GUISwing implements GUIInterface {
                     model.setMaximum(pages);
                     pageLabel.setEnabled(true);
                     pageSpinner.setEnabled(true);
-                    signatureVisibleCheckBox.setEnabled(true);
                     pageSpinner.setValue(1);
+                    signatureVisibleCheckBox.setEnabled(true);
+                    reasonLabel.setEnabled(true);
+                    reasonField.setEnabled(true);
+                    locationLabel.setEnabled(true);
+                    locationField.setEnabled(true);
+                    contactInfoLabel.setEnabled(true);
+                    contactInfoField.setEnabled(true);
                 }
                 imageLabel.setBorder(new LineBorder(Color.BLACK));
                 imageLabel.setIcon(new ImageIcon(pageImage));
@@ -410,6 +452,12 @@ public class GUISwing implements GUIInterface {
                 pageLabel.setVisible(false);
                 pageSpinner.setVisible(false);
                 signatureVisibleCheckBox.setVisible(false);
+                reasonLabel.setVisible(true);
+                reasonField.setVisible(true);
+                locationLabel.setVisible(true);
+                locationField.setVisible(true);
+                contactInfoLabel.setVisible(true);
+                contactInfoField.setVisible(true);
             }
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
@@ -480,7 +528,8 @@ public class GUISwing implements GUIInterface {
                         (int)Math.round(signatureLabel.getX() * 2.5),
                         (int)Math.round(signatureLabel.getY() * 2.5));
                     signedDocument = firmador.sign(toSignDocument,
-                        pin);
+                        pin, reasonField.getText(), locationField.getText(),
+                        contactInfoField.getText());
                 } else if (mimeType == MimeType.ODG
                     || mimeType == MimeType.ODP
                     || mimeType == MimeType.ODS

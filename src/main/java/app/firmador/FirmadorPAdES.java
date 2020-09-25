@@ -74,7 +74,8 @@ public class FirmadorPAdES extends CRSigner {
         this.y = y;
     }
 
-    private void appendVisibleSignature(CertificateToken certificate, Date date) {
+    private void appendVisibleSignature(CertificateToken certificate,
+        Date date, String reason, String location, String contactInfo) {
         SignatureImageParameters imageParameters =
                 new SignatureImageParameters();
             imageParameters.setxAxis(x);
@@ -92,12 +93,34 @@ public class FirmadorPAdES extends CRSigner {
 
           String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
               .format(date);
+
+          String additionalText =
+              "Esta representación visual no es fuente" + "\n" +
+              "de confianza. Valide siempre la firma.";
+
+          Boolean hasReason = false;
+          Boolean hasLocation = false;
+          if (reason != null && !reason.trim().isEmpty()) {
+              hasReason = true;
+              additionalText = "Razón: " + reason + "\n";
+          }
+          if (location != null && !location.trim().isEmpty()) {
+              hasLocation = true;
+              if (hasReason) additionalText += "Lugar: " + location;
+              else additionalText = "Lugar: " + location;
+          }
+          if (contactInfo != null && !contactInfo .trim().isEmpty()) {
+              if (hasReason || hasLocation)
+                  additionalText += "  Contacto: " + contactInfo;
+              else additionalText = "Contacto: " + contactInfo;
+          }
+
           textParameters.setText(
               "Firmado por " + cn + "\n" +
               o + ", " + sn + "." + "\n" + 
               "Fecha declarada: " + fecha + "\n" +
-              "Esta representación visual no es fuente" + "\n" +
-              "de confianza. Valide siempre la firma.");
+              additionalText
+          );
           textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
           imageParameters.setTextParameters(textParameters);
           imageParameters.setPage(page);
@@ -105,7 +128,8 @@ public class FirmadorPAdES extends CRSigner {
     }
 
     public DSSDocument sign(DSSDocument toSignDocument,
-        PasswordProtection pin) {
+        PasswordProtection pin, String reason, String location,
+        String contactInfo) {
 
 
 
@@ -128,6 +152,12 @@ public class FirmadorPAdES extends CRSigner {
             parameters.setContentSize(13312);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
+            if (reason != null && !reason.trim().isEmpty())
+                parameters.setReason(reason);
+            if (location != null && !location.trim().isEmpty())
+                parameters.setLocation(location);
+            if (contactInfo != null && !contactInfo .trim().isEmpty())
+                parameters.setContactInfo(contactInfo);
 
             List<CertificateToken> certificateChain = getCertificateChain(
                 verifier, parameters);
@@ -138,7 +168,8 @@ public class FirmadorPAdES extends CRSigner {
             Date date = new Date();
 
             if (visible_signature) {
-                appendVisibleSignature(certificate, date);
+                appendVisibleSignature(certificate, date, reason, location,
+                    contactInfo);
             }
             parameters.bLevel().setSigningDate(date);
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
