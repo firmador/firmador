@@ -529,7 +529,8 @@ public class GUISwing implements GUIInterface {
                         (int)Math.round(signatureLabel.getY() * 2.5));
                     signedDocument = firmador.sign(toSignDocument,
                         pin, reasonField.getText(), locationField.getText(),
-                        contactInfoField.getText());
+                        contactInfoField.getText(),
+                        System.getProperty("jnlp.signatureImage"));
                 } else if (mimeType == MimeType.ODG
                     || mimeType == MimeType.ODP
                     || mimeType == MimeType.ODS

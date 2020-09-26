@@ -21,6 +21,8 @@ package app.firmador;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.IOException;
+import java.net.URL;
 import java.security.KeyStore.PasswordProtection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,6 +34,7 @@ import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
+import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
@@ -46,6 +49,7 @@ import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
+import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 
@@ -75,7 +79,8 @@ public class FirmadorPAdES extends CRSigner {
     }
 
     private void appendVisibleSignature(CertificateToken certificate,
-        Date date, String reason, String location, String contactInfo) {
+        Date date, String reason, String location, String contactInfo,
+        String image) {
         SignatureImageParameters imageParameters =
                 new SignatureImageParameters();
             imageParameters.setxAxis(x);
@@ -122,14 +127,21 @@ public class FirmadorPAdES extends CRSigner {
               additionalText
           );
           textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
+          //textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
           imageParameters.setTextParameters(textParameters);
+          imageParameters.getWidth();
+          try {
+              if (image != null && !image.trim().isEmpty())
+                  imageParameters.setImage(new InMemoryDocument(
+                      Utils.toByteArray(new URL(image).openStream())));
+          } catch (IOException e) { e.printStackTrace(); }
           imageParameters.setPage(page);
           parameters.setImageParameters(imageParameters);
     }
 
     public DSSDocument sign(DSSDocument toSignDocument,
         PasswordProtection pin, String reason, String location,
-        String contactInfo) {
+        String contactInfo, String image) {
 
 
 
@@ -169,7 +181,7 @@ public class FirmadorPAdES extends CRSigner {
 
             if (visible_signature) {
                 appendVisibleSignature(certificate, date, reason, location,
-                    contactInfo);
+                    contactInfo, image);
             }
             parameters.bLevel().setSigningDate(date);
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument,

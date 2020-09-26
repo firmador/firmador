@@ -50,7 +50,7 @@ public class GUIArgs implements GUIInterface {
             PasswordProtection pin = getPin();
             DSSDocument toSignDocument = new FileDocument(fileName);
             DSSDocument signedDocument = firmador.sign(toSignDocument, pin,
-                null, null, null);
+                null, null, null, null);
             try {
                 pin.destroy();
             } catch (Exception e) {}

@@ -69,7 +69,7 @@ memoria caché el valor.
 Si se quieren probar la propiedad sin crear un JNLP, se puede lanzar por línea
 de comandos mediante:
 
-    java -Djnlp.remoteOrigin=https://example.org -jar target/firmador.jar
+    java -Djnlp.remoteOrigin=https://example.org -jar firmador.jar
 
 Para no sobrecargar el servidor de firmador.app, se recomienda modificar el
 atributo `codebase` y alojar el JAR en un servidor propio, además de que reduce
@@ -89,3 +89,14 @@ y descrito como "Smartcard Port", por lo que por contexto resulta conveniente.
 Algunas herramientas como `netstat` o `ss` muestran este nombre que identifica
 de forma más intuitiva el tipo de servicio que está funcionando en esa
 conexión, facilitando la auditoría de red.
+
+
+## ¿Se puede agregar una imagen personalizada a la hora de firmar ficheros PDF?
+
+Sí, aunque la norma PAdES en su parte 6 recomienda que solo se agreguen
+imágenes que provienen del propio certificado. Firmador lo tiene habilitado
+como parámetro opcional, como en el caso de la firma remota. Puede agregarse
+una propiedad a un fichero JNLP llamada `jnlp.signatureImage` con el valor
+correspondiente a una URL que contenga la imagen. El tamaño sugerido es de 170
+pixeles de alto y aparecerá a la izquierda del texto de la firma. Este
+parámetro también se puede agregar por línea de comandos.
