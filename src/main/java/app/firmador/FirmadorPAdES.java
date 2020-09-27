@@ -32,6 +32,7 @@ import app.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
+import eu.europa.esig.dss.enumerations.SignerTextPosition;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.InMemoryDocument;
@@ -82,61 +83,56 @@ public class FirmadorPAdES extends CRSigner {
         Date date, String reason, String location, String contactInfo,
         String image) {
         SignatureImageParameters imageParameters =
-                new SignatureImageParameters();
-            imageParameters.setxAxis(x);
-            imageParameters.setyAxis(y);
-            SignatureImageTextParameters textParameters =
-                new SignatureImageTextParameters();
-            textParameters.setFont(
-                new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
-          String cn = DSSASN1Utils.getSubjectCommonName(certificate);
-          X500PrincipalHelper subject = certificate.getSubject();
-          String o = DSSASN1Utils.extractAttributeFromX500Principal(
-              BCStyle.O, subject);
-          String sn = DSSASN1Utils.extractAttributeFromX500Principal(
-              BCStyle.SERIALNUMBER, subject);
-
-          String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
-              .format(date);
-
-          String additionalText =
-              "Esta representación visual no es fuente" + "\n" +
-              "de confianza. Valide siempre la firma.";
-
-          Boolean hasReason = false;
-          Boolean hasLocation = false;
-          if (reason != null && !reason.trim().isEmpty()) {
-              hasReason = true;
-              additionalText = "Razón: " + reason + "\n";
-          }
-          if (location != null && !location.trim().isEmpty()) {
-              hasLocation = true;
-              if (hasReason) additionalText += "Lugar: " + location;
-              else additionalText = "Lugar: " + location;
-          }
-          if (contactInfo != null && !contactInfo .trim().isEmpty()) {
-              if (hasReason || hasLocation)
-                  additionalText += "  Contacto: " + contactInfo;
-              else additionalText = "Contacto: " + contactInfo;
-          }
-
-          textParameters.setText(
-              "Firmado por " + cn + "\n" +
-              o + ", " + sn + "." + "\n" + 
-              "Fecha declarada: " + fecha + "\n" +
-              additionalText
-          );
-          textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
-          //textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
-          imageParameters.setTextParameters(textParameters);
-          imageParameters.getWidth();
-          try {
-              if (image != null && !image.trim().isEmpty())
-                  imageParameters.setImage(new InMemoryDocument(
-                      Utils.toByteArray(new URL(image).openStream())));
-          } catch (IOException e) { e.printStackTrace(); }
-          imageParameters.setPage(page);
-          parameters.setImageParameters(imageParameters);
+            new SignatureImageParameters();
+        imageParameters.setxAxis(x);
+        imageParameters.setyAxis(y);
+        SignatureImageTextParameters textParameters =
+            new SignatureImageTextParameters();
+        textParameters.setFont(
+            new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
+        String cn = DSSASN1Utils.getSubjectCommonName(certificate);
+        X500PrincipalHelper subject = certificate.getSubject();
+        String o = DSSASN1Utils.extractAttributeFromX500Principal(
+            BCStyle.O, subject);
+        String sn = DSSASN1Utils.extractAttributeFromX500Principal(
+            BCStyle.SERIALNUMBER, subject);
+        String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+            .format(date);
+        String additionalText =
+            "Esta representación visual no es fuente" + "\n" +
+            "de confianza. Valide siempre la firma.";
+        Boolean hasReason = false;
+        Boolean hasLocation = false;
+        if (reason != null && !reason.trim().isEmpty()) {
+            hasReason = true;
+            additionalText = "Razón: " + reason + "\n";
+        }
+        if (location != null && !location.trim().isEmpty()) {
+            hasLocation = true;
+            if (hasReason) additionalText += "Lugar: " + location;
+            else additionalText = "Lugar: " + location;
+        }
+        if (contactInfo != null && !contactInfo .trim().isEmpty()) {
+            if (hasReason || hasLocation)
+                additionalText += "  Contacto: " + contactInfo;
+            else additionalText = "Contacto: " + contactInfo;
+        }
+        textParameters.setText(
+            "Firmado por " + cn + "\n" +
+            o + ", " + sn + "." + "\n" +
+            "Fecha declarada: " + fecha + "\n" +
+            additionalText);
+        textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
+        textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
+        imageParameters.setTextParameters(textParameters);
+        imageParameters.getWidth();
+        try {
+            if (image != null && !image.trim().isEmpty())
+                imageParameters.setImage(new InMemoryDocument(
+                    Utils.toByteArray(new URL(image).openStream())));
+        } catch (IOException e) { e.printStackTrace(); }
+        imageParameters.setPage(page);
+        parameters.setImageParameters(imageParameters);
     }
 
     public DSSDocument sign(DSSDocument toSignDocument,
