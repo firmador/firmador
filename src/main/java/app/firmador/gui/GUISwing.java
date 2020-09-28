@@ -49,8 +49,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -228,7 +228,7 @@ public class GUISwing implements GUIInterface {
                 try {
                     int page = (int)pageSpinner.getValue();
                     if (page > 0) {
-                        pageImage = renderer.renderImage(page - 1, 1 / 2.5f);
+                        pageImage = renderer.renderImage(page - 1, 1 / 1.5f);
                         imageLabel.setIcon(new ImageIcon(pageImage));
                     }
                 } catch (Exception ex) {
@@ -241,7 +241,7 @@ public class GUISwing implements GUIInterface {
         signatureVisibleCheckBox.setOpaque(false);
         reasonLabel = new JLabel("Razón:");
         locationLabel = new JLabel("Lugar:");
-        contactInfoLabel = new JLabel("Información de contacto:");
+        contactInfoLabel = new JLabel("Contacto:");
         reasonField = new JTextField();
         locationField = new JTextField();
         contactInfoField = new JTextField();
@@ -292,7 +292,7 @@ public class GUISwing implements GUIInterface {
             }
         });
         signatureLabel =
-            new JLabel("<html><span style='font-size: 8pt'>" +
+            new JLabel("<html><span style='font-size: 12pt'>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIRMA<br>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VISIBLE</span></html>");
         signatureLabel.setCursor(
@@ -300,7 +300,7 @@ public class GUISwing implements GUIInterface {
         signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
-        signatureLabel.setBounds(119, 0, 80, 20);
+        signatureLabel.setBounds(198, 0, 133, 33);
         imageLabel.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 signatureLabel.setLocation(
@@ -316,21 +316,62 @@ public class GUISwing implements GUIInterface {
         filePanel.add(fileField, BorderLayout.CENTER);
         filePanel.add(fileButton, BorderLayout.LINE_END);
         JPanel signPanel = new JPanel();
-        signPanel.setLayout(new BoxLayout(signPanel, BoxLayout.PAGE_AXIS));
-        signPanel.add(Box.createVerticalStrut(5));
-        signPanel.add(signButton);
-        signPanel.add(Box.createVerticalStrut(5));
-        signPanel.add(imageLabel);
-        signPanel.add(Box.createVerticalStrut(5));
-        signPanel.add(pageLabel);
-        signPanel.add(pageSpinner);
-        signPanel.add(signatureVisibleCheckBox);
-        signPanel.add(reasonLabel);
-        signPanel.add(reasonField);
-        signPanel.add(locationLabel);
-        signPanel.add(locationField);
-        signPanel.add(contactInfoLabel);
-        signPanel.add(contactInfoField);
+        GroupLayout signLayout = new GroupLayout(signPanel);
+        signLayout.setAutoCreateGaps(true);
+        signLayout.setAutoCreateContainerGaps(true);
+        signLayout.setHorizontalGroup(
+            signLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(signLayout.createSequentialGroup()
+                .addComponent(imageLabel, GroupLayout.PREFERRED_SIZE, 408,
+                    GroupLayout.PREFERRED_SIZE)
+                .addGroup(signLayout.createParallelGroup(
+                    GroupLayout.Alignment.LEADING)
+                    .addComponent(contactInfoLabel,
+                        GroupLayout.Alignment.TRAILING)
+                    .addComponent(locationLabel,
+                        GroupLayout.Alignment.TRAILING)
+                    .addComponent(reasonLabel, GroupLayout.Alignment.TRAILING)
+                    .addComponent(pageLabel, GroupLayout.Alignment.TRAILING))
+                .addGroup(signLayout.createParallelGroup(
+                    GroupLayout.Alignment.LEADING)
+                    .addGroup(signLayout.createSequentialGroup()
+                        .addComponent(pageSpinner)
+                        .addComponent(signatureVisibleCheckBox,
+                            GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE))
+                    .addComponent(reasonField)
+                    .addComponent(locationField)
+                    .addComponent(contactInfoField)
+                    .addGroup(signLayout.createSequentialGroup()
+                        .addComponent(signButton)))));
+        signLayout.setVerticalGroup(
+            signLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addComponent(imageLabel, GroupLayout.PREFERRED_SIZE, 528,
+                GroupLayout.PREFERRED_SIZE)
+            .addGroup(signLayout.createSequentialGroup()
+                .addGroup(signLayout.createParallelGroup(
+                    GroupLayout.Alignment.BASELINE)
+                    .addComponent(pageSpinner, GroupLayout.PREFERRED_SIZE,
+                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(signatureVisibleCheckBox)
+                    .addComponent(pageLabel))
+                .addGroup(signLayout.createParallelGroup(
+                    GroupLayout.Alignment.BASELINE)
+                    .addComponent(reasonField, GroupLayout.PREFERRED_SIZE,
+                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(reasonLabel))
+                .addGroup(signLayout.createParallelGroup(
+                    GroupLayout.Alignment.BASELINE)
+                    .addComponent(locationField, GroupLayout.PREFERRED_SIZE,
+                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(locationLabel))
+                .addGroup(signLayout.createParallelGroup(
+                    GroupLayout.Alignment.BASELINE)
+                    .addComponent(contactInfoField,
+                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                        GroupLayout.PREFERRED_SIZE)
+                    .addComponent(contactInfoLabel))
+                .addComponent(signButton)));
+        signPanel.setLayout(signLayout);
         JPanel validatePanel = new ScrollableJPanel();
         validatePanel.setLayout(new BoxLayout(validatePanel,
             BoxLayout.PAGE_AXIS));
@@ -385,7 +426,7 @@ public class GUISwing implements GUIInterface {
             frame.add(signPanel, BorderLayout.CENTER);
         }
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(480, 672));
+        frame.setMinimumSize(new Dimension(768, 687));
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         if (documenttosign != null) {
@@ -425,7 +466,7 @@ public class GUISwing implements GUIInterface {
                 contactInfoLabel.setVisible(true);
                 contactInfoField.setVisible(true);
                 if (pages > 0) {
-                    pageImage = renderer.renderImage(0, 1 / 2.5f);
+                    pageImage = renderer.renderImage(0, 1 / 1.5f);
                     SpinnerNumberModel model =
                         ((SpinnerNumberModel)pageSpinner.getModel());
                     model.setMinimum(1);
@@ -525,8 +566,8 @@ public class GUISwing implements GUIInterface {
                         !signatureVisibleCheckBox.isSelected());
                     firmador.addVisibleSignature(
                         (int)pageSpinner.getValue(),
-                        (int)Math.round(signatureLabel.getX() * 2.5),
-                        (int)Math.round(signatureLabel.getY() * 2.5));
+                        (int)Math.round(signatureLabel.getX() * 1.5),
+                        (int)Math.round(signatureLabel.getY() * 1.5));
                     signedDocument = firmador.sign(toSignDocument,
                         pin, reasonField.getText(), locationField.getText(),
                         contactInfoField.getText(),
