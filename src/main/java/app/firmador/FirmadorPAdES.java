@@ -194,8 +194,8 @@ public class FirmadorPAdES extends CRSigner {
         String image) {
         SignatureImageParameters imageParameters =
             new SignatureImageParameters();
-        imageParameters.setxAxis(x);
-        imageParameters.setyAxis(y);
+        imageParameters.getFieldParameters().setOriginX(x);
+        imageParameters.getFieldParameters().setOriginY(y);
         SignatureImageTextParameters textParameters =
             new SignatureImageTextParameters();
         textParameters.setFont(
@@ -240,7 +240,7 @@ public class FirmadorPAdES extends CRSigner {
                 imageParameters.setImage(new InMemoryDocument(
                     Utils.toByteArray(new URL(image).openStream())));
         } catch (IOException e) { e.printStackTrace(); }
-        imageParameters.setPage(page);
+        imageParameters.getFieldParameters().setPage(page);
         parameters.setImageParameters(imageParameters);
     }
 
