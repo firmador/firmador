@@ -42,6 +42,7 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.X500PrincipalHelper;
 import eu.europa.esig.dss.pades.DSSJavaFont;
 import eu.europa.esig.dss.pades.PAdESSignatureParameters;
+import eu.europa.esig.dss.pades.PAdESTimestampParameters;
 import eu.europa.esig.dss.pades.SignatureImageParameters;
 import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pades.signature.PAdESService;
@@ -62,6 +63,27 @@ public class FirmadorPAdES extends CRSigner {
 
     public FirmadorPAdES(GUIInterface gui) {
         super(gui);
+    }
+
+    public DSSDocument timestamp(DSSDocument documentToTimestamp) {
+        CertificateVerifier verifier = this.getCertificateVerifier();
+        verifier.setCheckRevocationForUntrustedChains(true);
+        PAdESService service = new PAdESService(verifier);
+        DSSDocument timestampedDocument = null;
+        try {
+            OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
+            service.setTspSource(onlineTSPSource);
+        } catch (DSSException|Error e) {
+            gui.showError(Throwables.getRootCause(e));
+        }
+        try {
+            timestampedDocument = service.timestamp(documentToTimestamp,
+                new PAdESTimestampParameters());
+        } catch (Exception e) {
+            e.printStackTrace();
+            gui.showError(Throwables.getRootCause(e));
+        }
+        return timestampedDocument;
     }
 
     public DSSDocument sign(DSSDocument toSignDocument,

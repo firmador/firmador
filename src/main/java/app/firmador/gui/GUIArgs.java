@@ -38,6 +38,7 @@ public class GUIArgs implements GUIInterface {
     private String documenttosign;
     private String documenttosave;
     private int slot;
+    private Boolean timestamp = false;
 
     public void loadGUI() {
         String fileName = getDocumentToSign();
@@ -47,13 +48,18 @@ public class GUIArgs implements GUIInterface {
             FirmadorPAdES firmador = new FirmadorPAdES(this);
             firmador.selectSlot();
 
-            PasswordProtection pin = getPin();
             DSSDocument toSignDocument = new FileDocument(fileName);
-            DSSDocument signedDocument = firmador.sign(toSignDocument, pin,
+            DSSDocument signedDocument = null;
+            if (!timestamp) {
+                PasswordProtection pin = getPin();
+                signedDocument = firmador.sign(toSignDocument, pin,
                 null, null, null, null);
-            try {
-                pin.destroy();
-            } catch (Exception e) {}
+                try {
+                    pin.destroy();
+                } catch (Exception e) {}
+            } else {
+                signedDocument = firmador.timestamp(toSignDocument);
+            }
 
             if (signedDocument != null) {
                 fileName = getPathToSave();
@@ -77,6 +83,8 @@ public class GUIArgs implements GUIInterface {
                 arguments.add(params);
             } else if (params.startsWith("-slot")) {
                 slot = Integer.parseInt(params.replace("-slot", ""));
+            } else if (params.startsWith("-timestamp")) {
+                timestamp = true;
             }
         }
         documenttosign = Paths.get(arguments.get(0)).toAbsolutePath()
