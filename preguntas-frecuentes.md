@@ -31,6 +31,9 @@ También hay un parámetro `-slot`, en caso de que existiera más de un slot en 
 sistema, al que se le puede proporcionar el número deseado. Este parámetro es
 opcional.
 
+El parámetro -timestamp permite agregar sellos de tiempo a documentos. Cuando
+se define, no firmará, solo sellará, por lo que no requiere suministrar PIN.
+
 
 ## ¿Cómo integrar firmador en un sitio web para que se lance la app, cargue un documento en la app y suba el documento firmado automáticamente?
 
