@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package app.firmador.gui;
+package cr.libre.firmador.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -73,13 +73,13 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import app.firmador.FirmadorPAdES;
-import app.firmador.FirmadorXAdES;
-import app.firmador.FirmadorOpenDocument;
-import app.firmador.Report;
-import app.firmador.Validator;
-import app.firmador.gui.swing.CopyableJLabel;
-import app.firmador.gui.swing.ScrollableJPanel;
+import cr.libre.firmador.FirmadorPAdES;
+import cr.libre.firmador.FirmadorXAdES;
+import cr.libre.firmador.FirmadorOpenDocument;
+import cr.libre.firmador.Report;
+import cr.libre.firmador.Validator;
+import cr.libre.firmador.gui.swing.CopyableJLabel;
+import cr.libre.firmador.gui.swing.ScrollableJPanel;
 import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.model.DSSDocument;

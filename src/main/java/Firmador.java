@@ -19,8 +19,8 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 import javax.swing.SwingUtilities;
 
-import app.firmador.gui.GUIInterface;
-import app.firmador.gui.GUISelector;
+import cr.libre.firmador.gui.GUIInterface;
+import cr.libre.firmador.gui.GUISelector;
 
 public class Firmador {
 

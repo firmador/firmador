@@ -17,24 +17,19 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package app.firmador.token;
+package cr.libre.firmador.gui;
 
-public class Utils {
+import java.security.KeyStore.PasswordProtection;
 
-    public static String getPKCS11Lib() {
-        String pkcs11lib = "";
-        String osName = System.getProperty("os.name").toLowerCase();
+public interface GUIInterface {
 
-        if (osName.contains("mac")) {
-            pkcs11lib = "/Library/Application Support/Athena/libASEP11.dylib";
-        } else if (osName.contains("linux")) {
-            pkcs11lib = "/usr/lib/x64-athena/libASEP11.so";
-        } else if (osName.contains("windows")) {
-            pkcs11lib = System.getenv("SystemRoot")
-                + "\\System32\\asepkcs.dll";
-        }
-
-        return pkcs11lib;
-    }
+    void loadGUI();
+    void setArgs(String[] args);
+    void showError(Throwable error);
+    void showMessage(String message);
+    int getSelection(String[] options);
+    String getDocumentToSign();
+    String getPathToSave();
+    PasswordProtection getPin();
 
 }

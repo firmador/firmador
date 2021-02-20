@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package app.firmador;
+package cr.libre.firmador;
 
 
 
@@ -28,7 +28,7 @@ import java.security.KeyStore.PasswordProtection;
 
 import java.util.List;
 
-import app.firmador.gui.GUIInterface;
+import cr.libre.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
