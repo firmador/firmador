@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package app.firmador.gui;
+package cr.libre.firmador.gui;
 
 import java.io.BufferedReader;
 import java.io.Console;
@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import app.firmador.FirmadorPAdES;
-//import app.firmador.FirmadorXAdES;
+import cr.libre.firmador.FirmadorPAdES;
+//import cr.libre.firmador.FirmadorXAdES;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;

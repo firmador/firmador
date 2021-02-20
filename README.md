@@ -19,7 +19,7 @@ los siguientes artículos para instalar firma digital de Costa Rica en
 
 ## Descarga
 
-- [Descargar firmador](https://firmador.app/firmador.jar) para Windows,
+- [Descargar firmador](https://firmador.libre.cr/firmador.jar) para Windows,
   GNU/Linux y macOS.
 
 

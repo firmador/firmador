@@ -41,8 +41,8 @@ Desde JavaScript deberá crearse una conexión XMLHttpRequest a 127.0.0.1:3516
 por POST que envíe el fichero a firmar. Esperar la respuesta al POST que
 contendrá el documento firmado de regreso. El sitio web además deberá lanzar la
 descarga de un fichero JNLP similar al que existe en
-https://firmador.app/firmador.jnlp y reintentar la conexión (por ejemplo con
-`setTimeout()`) hasta que la aplicación acepte la conexión del sitio web.
+https://firmador.libre.cr/firmador.jnlp y reintentar la conexión (por ejemplo
+con `setTimeout()`) hasta que la aplicación acepte la conexión del sitio web.
 El sitio web tendrá que manejar la respuesta del POST por sus propios medios
 según lo que requieran las particularidades de la integración.
 
@@ -74,14 +74,14 @@ de comandos mediante:
 
     java -Djnlp.remoteOrigin=https://example.org -jar firmador.jar
 
-Para no sobrecargar el servidor de firmador.app, se recomienda modificar el
-atributo `codebase` y alojar el JAR en un servidor propio, además de que reduce
-el riesgo de que en caso de caerse el servidor de firmador.app, afecte a
-integraciones de terceros. Aun así, si se quiere experimentar con una versión
-de Firmador habilitada para CORS en cualquier dominio, existe
-https://firmador.app/firmador-en-pruebas.jnlp que permite recibir peticiones
-desde cualquier origen. Esta versión puede recibir modificaciones inestables y
-caídas al tratarse de una versión para desarrollo y pruebas.
+Para no sobrecargar el servidor de firmador.libre.cr, se recomienda modificar
+el atributo `codebase` y alojar el JAR en un servidor propio, además de que
+reduce el riesgo de que en caso de caerse el servidor de firmador.libre.cr,
+afecte a integraciones de terceros. Aun así, si se quiere experimentar con una
+versión de Firmador habilitada para CORS en cualquier dominio, existe
+https://firmador.libre.cr/firmador-en-pruebas.jnlp que permite recibir
+peticiones desde cualquier origen. Esta versión puede recibir modificaciones
+inestables y caídas al tratarse de una versión para desarrollo y pruebas.
 
 
 ## ¿Por qué Firmador utiliza el puerto 3516 para el mecanismo de firma remota y no otro número en particular?
