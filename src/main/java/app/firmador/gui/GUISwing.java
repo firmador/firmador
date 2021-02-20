@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2020 Firmador authors.
+Copyright (C) 2021 Firmador authors.
 
 This file is part of Firmador.
 
