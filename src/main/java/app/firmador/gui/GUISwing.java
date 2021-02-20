@@ -759,7 +759,7 @@ public class GUISwing implements GUIInterface {
         if (Desktop.isDesktopSupported()) {
             try {
                 Desktop.getDesktop().browse(
-                    new URI("https://firmador.app"));
+                    new URI("https://firmador.libre.cr"));
             } catch (Exception e) {
                 showError(Throwables.getRootCause(e));
             }

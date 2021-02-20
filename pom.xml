@@ -6,7 +6,7 @@
   <packaging>jar</packaging>
   <version>1.7.2</version>
   <name>firmador</name>
-  <url>https://firmador.app</url>
+  <url>https://firmador.libre.cr</url>
   <properties>
     <encoding>UTF-8</encoding>
     <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
