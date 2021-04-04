@@ -295,7 +295,9 @@ public class GUISwing implements GUIInterface {
         });
 
         JPanel signPanel = new JPanel();
-        GroupLayout signLayout = new GroupLayout(signPanel);
+        GroupLayout signLayout;
+        if (isRemote) signLayout = new GroupLayout(frame.getContentPane());
+        else signLayout = new GroupLayout(signPanel);
         signLayout.setAutoCreateGaps(true);
         signLayout.setAutoCreateContainerGaps(true);
             signLayout.setHorizontalGroup(
@@ -332,7 +334,7 @@ public class GUISwing implements GUIInterface {
                         .addComponent(contactInfoField)
                         .addComponent(contactInfoLabel))
                     .addComponent(signButton)));
-        signPanel.setLayout(signLayout);
+        if (!isRemote) signPanel.setLayout(signLayout);
         signPanel.setOpaque(false);
 
         JPanel validatePanel = new ScrollableJPanel();

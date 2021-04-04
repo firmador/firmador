@@ -4,7 +4,7 @@
   <groupId>cr.libre.firmador</groupId>
   <artifactId>firmador</artifactId>
   <packaging>jar</packaging>
-  <version>1.7.3</version>
+  <version>1.7.4</version>
   <name>firmador</name>
   <url>https://firmador.libre.cr</url>
   <properties>
