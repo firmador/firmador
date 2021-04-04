@@ -195,7 +195,6 @@ public class GUISwing implements GUIInterface {
         fileField = new JTextField("(Vacío)");
         fileField.setEditable(false);
         pageLabel = new JLabel("Página:");
-        pageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         pageSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
         pageSpinner.setMaximumSize(pageSpinner.getPreferredSize());
         pageSpinner.addChangeListener(new ChangeListener() {
@@ -205,6 +204,8 @@ public class GUISwing implements GUIInterface {
                     if (page > 0) {
                         pageImage = renderer.renderImage(page - 1, 1 / 1.5f);
                         imageLabel.setIcon(new ImageIcon(pageImage));
+                        frame.pack();
+                        frame.setMinimumSize(frame.getSize());
                     }
                 } catch (Exception ex) {
                     showError(Throwables.getRootCause(ex));
@@ -212,7 +213,6 @@ public class GUISwing implements GUIInterface {
             }
         });
         signatureVisibleCheckBox = new JCheckBox(" Sin firma visible");
-        signatureVisibleCheckBox.setAlignmentX(Component.CENTER_ALIGNMENT);
         signatureVisibleCheckBox.setOpaque(false);
         reasonLabel = new JLabel("Razón:");
         locationLabel = new JLabel("Lugar:");
@@ -221,7 +221,6 @@ public class GUISwing implements GUIInterface {
         locationField = new JTextField();
         contactInfoField = new JTextField();
         signButton = new JButton("Firmar documento");
-        signButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 signDocument();
@@ -229,9 +228,7 @@ public class GUISwing implements GUIInterface {
         });
 
         reportLabel = new CopyableJLabel();
-        reportLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         extendButton = new JButton("Agregar sello de tiempo al documento");
-        extendButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         extendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 extendDocument();
@@ -261,10 +258,11 @@ public class GUISwing implements GUIInterface {
         JButton fileButton = new JButton("Elegir...");
 
         imageLabel = new JLabel();
-        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         fileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 showLoadDialog(frame);
+                frame.pack();
+                frame.setMinimumSize(frame.getSize());
             }
         });
         signatureLabel = new JLabel("<html><span style='font-size: 12pt'>" +
@@ -286,7 +284,9 @@ public class GUISwing implements GUIInterface {
         JLabel descriptionLabel = new JLabel("<html><p align='center'><b>Firmador</b><br><br>" +
             "Versión " + getClass().getPackage().getSpecificationVersion() + "<br><br>" +
             "Herramienta para firmar documentos digitalmente.<br><br>" +
-            "Los documentos firmados con esta herramienta cumplen con la Política de Formatos Oficiales de los Documentos Electrónicos Firmados Digitalmente de Costa Rica.<br><br></p></html>");
+            "Los documentos firmados con esta herramienta cumplen con la<br>" +
+            "Política de Formatos Oficiales de los Documentos Electrónicos<br>" +
+            "Firmados Digitalmente de Costa Rica.<br><br></p></html>", JLabel.CENTER);
         JButton websiteButton = new JButton("Visitar sitio web del proyecto");
         websiteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -298,48 +298,40 @@ public class GUISwing implements GUIInterface {
         GroupLayout signLayout = new GroupLayout(signPanel);
         signLayout.setAutoCreateGaps(true);
         signLayout.setAutoCreateContainerGaps(true);
-        signLayout.setHorizontalGroup(
-            signLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(signLayout.createSequentialGroup()
-                .addComponent(imageLabel, GroupLayout.PREFERRED_SIZE, 408, GroupLayout.PREFERRED_SIZE)
-                .addGroup(signLayout.createParallelGroup(
-                    GroupLayout.Alignment.LEADING)
-                    .addComponent(contactInfoLabel, GroupLayout.Alignment.TRAILING)
-                    .addComponent(locationLabel, GroupLayout.Alignment.TRAILING)
-                    .addComponent(reasonLabel, GroupLayout.Alignment.TRAILING)
-                    .addComponent(pageLabel, GroupLayout.Alignment.TRAILING))
-                .addGroup(signLayout.createParallelGroup(
-                    GroupLayout.Alignment.LEADING)
+            signLayout.setHorizontalGroup(
+            signLayout.createSequentialGroup()
+                .addComponent(imageLabel)
+                .addGroup(signLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                    .addComponent(contactInfoLabel)
+                    .addComponent(locationLabel)
+                    .addComponent(reasonLabel)
+                    .addComponent(pageLabel))
+                .addGroup(signLayout.createParallelGroup()
                     .addGroup(signLayout.createSequentialGroup()
                         .addComponent(pageSpinner)
-                        .addComponent(signatureVisibleCheckBox, GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE))
+                        .addComponent(signatureVisibleCheckBox))
                     .addComponent(reasonField)
                     .addComponent(locationField)
                     .addComponent(contactInfoField)
-                    .addGroup(signLayout.createSequentialGroup()
-                        .addComponent(signButton)))));
+                    .addComponent(signButton)));
         signLayout.setVerticalGroup(
-            signLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addComponent(imageLabel, GroupLayout.PREFERRED_SIZE, 528, GroupLayout.PREFERRED_SIZE)
-            .addGroup(signLayout.createSequentialGroup()
-                .addGroup(signLayout.createParallelGroup(
-                    GroupLayout.Alignment.BASELINE)
-                    .addComponent(pageSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(signatureVisibleCheckBox)
-                    .addComponent(pageLabel))
-                .addGroup(signLayout.createParallelGroup(
-                    GroupLayout.Alignment.BASELINE)
-                    .addComponent(reasonField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(reasonLabel))
-                .addGroup(signLayout.createParallelGroup(
-                    GroupLayout.Alignment.BASELINE)
-                    .addComponent(locationField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(locationLabel))
-                .addGroup(signLayout.createParallelGroup(
-                    GroupLayout.Alignment.BASELINE)
-                    .addComponent(contactInfoField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(contactInfoLabel))
-                .addComponent(signButton)));
+            signLayout.createParallelGroup()
+                .addComponent(imageLabel)
+                .addGroup(signLayout.createSequentialGroup()
+                    .addGroup(signLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(pageSpinner)
+                        .addComponent(signatureVisibleCheckBox)
+                        .addComponent(pageLabel))
+                    .addGroup(signLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(reasonField)
+                        .addComponent(reasonLabel))
+                    .addGroup(signLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(locationField)
+                        .addComponent(locationLabel))
+                    .addGroup(signLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(contactInfoField)
+                        .addComponent(contactInfoLabel))
+                    .addComponent(signButton)));
         signPanel.setLayout(signLayout);
         signPanel.setOpaque(false);
 
@@ -387,7 +379,6 @@ public class GUISwing implements GUIInterface {
         aboutPanel.setOpaque(false);
 
         tabbedPane = new JTabbedPane();
-//        tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
         tabbedPane.addTab("Firmar", signPanel);
         tabbedPane.addTab("Validación", validateScrollPane);
         tabbedPane.addTab("Acerca de", aboutPanel);
@@ -405,7 +396,7 @@ public class GUISwing implements GUIInterface {
         );
         frameLayout.setVerticalGroup(
             frameLayout.createSequentialGroup()
-                .addGroup(frameLayout.createParallelGroup()
+                .addGroup(frameLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                     .addComponent(fileLabel)
                     .addComponent(fileField)
                     .addComponent(fileButton))
@@ -416,8 +407,9 @@ public class GUISwing implements GUIInterface {
         else frame.getContentPane().setLayout(signLayout);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(768, 687));
-        frame.setLocationRelativeTo(null);
+        frame.pack();
+        frame.setMinimumSize(frame.getSize());
+        frame.setLocationByPlatform(true);
         frame.setVisible(true);
         if (documenttosign != null) loadDocument(documenttosign);
     }
@@ -497,7 +489,9 @@ public class GUISwing implements GUIInterface {
                     // Workaround for DSS 5.6 not recognizing unsigned ODF
                 } else {
                     e.printStackTrace();
-                    reportLabel.setText("Error al validar documento. Agradeceríamos que informara sobre este inconveniente a los desarrolladores de la aplicación para repararlo.");
+                    reportLabel.setText("Error al validar documento.<br>" +
+                        "Agradeceríamos que informara sobre este inconveniente<br>" +
+                        "a los desarrolladores de la aplicación para repararlo.");
                 }
                 reportLabel.setText("");
                 extendButton.setEnabled(false);
@@ -510,7 +504,9 @@ public class GUISwing implements GUIInterface {
                     reportLabel.setText(report.getReport());
                 } catch (Exception e) {
                     e.printStackTrace();
-                    reportLabel.setText("Error al generar reporte. Agradeceríamos que informara sobre este inconveniente a los desarrolladores de la aplicación para repararlo.");
+                    reportLabel.setText("Error al generar reporte.<br>" +
+                        "Agradeceríamos que informara sobre este inconveniente<br>" +
+                        "a los desarrolladores de la aplicación para repararlo.");
                 }
             }
         }
