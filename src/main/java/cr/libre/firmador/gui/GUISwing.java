@@ -19,7 +19,6 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Component;
@@ -49,7 +48,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -110,8 +108,7 @@ public class GUISwing implements GUIInterface {
     private String documenttosave = null;
     private String lastDirectory = null;
     private String lastFile = null;
-    private Image image = new ImageIcon(this.getClass().getClassLoader()
-        .getResource("firmador.png")).getImage();
+    private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     private JTextField fileField;
     private JTabbedPane tabbedPane;
     private JLabel imageLabel;
@@ -138,69 +135,46 @@ public class GUISwing implements GUIInterface {
     public void loadGUI() {
         try {
             Application.getApplication().setDockIconImage(image);
-        } catch (RuntimeException e) {
-            // macOS dock icon support specific code.
-        }
+        } catch (RuntimeException e) { /* macOS dock icon support specific code. */ }
         try {
             try {
-                UIManager.setLookAndFeel(
-                    "com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-            } catch (javax.swing.UnsupportedLookAndFeelException |
-                java.lang.ClassNotFoundException e) {
-                UIManager.setLookAndFeel(
-                    UIManager.getSystemLookAndFeelClassName());
+                UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+            } catch (javax.swing.UnsupportedLookAndFeelException | java.lang.ClassNotFoundException e) {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
         }
+
         String origin = System.getProperty("jnlp.remoteOrigin");
         isRemote = (origin != null);
         if (isRemote) {
-            SwingWorker<Void, byte[]> remote =
-                new SwingWorker<Void, byte[]>() {
+            SwingWorker<Void, byte[]> remote = new SwingWorker<Void, byte[]>() {
                 private HttpServer server;
-                protected Void doInBackground()
-                    throws IOException, InterruptedException {
-                    HttpRequestHandler requestHandler =
-                        new HttpRequestHandler() {
-                        public void handle(
-                            HttpRequest request, HttpResponse response,
-                            HttpContext context)
-                                throws HttpException, IOException {
-                            response.setHeader("Access-Control-Allow-Origin",
-                                origin);
+                protected Void doInBackground() throws IOException, InterruptedException {
+                    HttpRequestHandler requestHandler = new HttpRequestHandler() {
+                        public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
+                            response.setHeader("Access-Control-Allow-Origin", origin);
                             response.setHeader("Vary", "Origin");
-                            if (request.getRequestLine().getUri()
-                                .equals("/close")) System.exit(0);
+                            if (request.getRequestLine().getUri().equals("/close")) System.exit(0);
                             response.setStatusCode(HttpStatus.SC_ACCEPTED);
-                            if (request instanceof HttpEntityEnclosingRequest)
-                            {
-                                HttpEntity entity =
-                                    ((HttpEntityEnclosingRequest)request)
-                                    .getEntity();
+                            if (request instanceof HttpEntityEnclosingRequest) {
+                                HttpEntity entity = ((HttpEntityEnclosingRequest)request).getEntity();
                                 if (alreadySignedDocument) {
                                     response.setStatusCode(HttpStatus.SC_OK);
-                                    ByteArrayOutputStream os =
-                                        new ByteArrayOutputStream();
+                                    ByteArrayOutputStream os = new ByteArrayOutputStream();
                                     signedDocument.writeTo(os);
-                                    response.setEntity(
-                                        new ByteArrayEntity(os.toByteArray(),
-                                            ContentType.DEFAULT_TEXT));
+                                    response.setEntity(new ByteArrayEntity(os.toByteArray(), ContentType.DEFAULT_TEXT));
                                 }
                                 if (entity.getContentLength() > 0) {
-                                    ByteArrayOutputStream os =
-                                        new ByteArrayOutputStream();
+                                    ByteArrayOutputStream os = new ByteArrayOutputStream();
                                     entity.writeTo(os);
                                     publish(os.toByteArray());
                                 }
                             }
                         }
                     };
-                    server = ServerBootstrap.bootstrap()
-                        .setListenerPort(3516)
-                        .setLocalAddress(InetAddress.getLoopbackAddress())
-                        .registerHandler("*", requestHandler)
-                        .create();
+                    server = ServerBootstrap.bootstrap().setListenerPort(3516).setLocalAddress(InetAddress.getLoopbackAddress()).registerHandler("*", requestHandler).create();
                     server.start();
                     server.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
                     return null;
@@ -213,12 +187,13 @@ public class GUISwing implements GUIInterface {
             };
             remote.execute();
         }
+
+        final JFrame frame = new JFrame("Firmador");
+        frame.setIconImage(image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
+
         JLabel fileLabel = new JLabel("Documento: ");
         fileField = new JTextField("(Vacío)");
         fileField.setEditable(false);
-        final JFrame frame = new JFrame("Firmador");
-        frame.setIconImage(
-            image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
         pageLabel = new JLabel("Página:");
         pageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         pageSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
@@ -284,6 +259,7 @@ public class GUISwing implements GUIInterface {
         contactInfoField.setVisible(false);
         extendButton.setEnabled(false);
         JButton fileButton = new JButton("Elegir...");
+
         imageLabel = new JLabel();
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         fileButton.addActionListener(new ActionListener() {
@@ -291,30 +267,33 @@ public class GUISwing implements GUIInterface {
                 showLoadDialog(frame);
             }
         });
-        signatureLabel =
-            new JLabel("<html><span style='font-size: 12pt'>" +
+        signatureLabel = new JLabel("<html><span style='font-size: 12pt'>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIRMA<br>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VISIBLE</span></html>");
-        signatureLabel.setCursor(
-            Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+        signatureLabel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
         signatureLabel.setBounds(198, 0, 133, 33);
         imageLabel.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
-                signatureLabel.setLocation(
-                    e.getX() - signatureLabel.getWidth() / 2,
-                    e.getY() - signatureLabel.getHeight() / 2);
+                signatureLabel.setLocation(e.getX() - signatureLabel.getWidth() / 2, e.getY() - signatureLabel.getHeight() / 2);
             }
         });
         imageLabel.add(signatureLabel);
 
-        JPanel filePanel = new JPanel(new BorderLayout());
-        filePanel.setBorder(new EmptyBorder(10, 10, 0, 10));
-        filePanel.add(fileLabel, BorderLayout.LINE_START);
-        filePanel.add(fileField, BorderLayout.CENTER);
-        filePanel.add(fileButton, BorderLayout.LINE_END);
+        JLabel iconLabel = new JLabel(new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
+        JLabel descriptionLabel = new JLabel("<html><p align='center'><b>Firmador</b><br><br>" +
+            "Versión " + getClass().getPackage().getSpecificationVersion() + "<br><br>" +
+            "Herramienta para firmar documentos digitalmente.<br><br>" +
+            "Los documentos firmados con esta herramienta cumplen con la Política de Formatos Oficiales de los Documentos Electrónicos Firmados Digitalmente de Costa Rica.<br><br></p></html>");
+        JButton websiteButton = new JButton("Visitar sitio web del proyecto");
+        websiteButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                openProjectWebsite();
+            }
+        });
+
         JPanel signPanel = new JPanel();
         GroupLayout signLayout = new GroupLayout(signPanel);
         signLayout.setAutoCreateGaps(true);
@@ -322,22 +301,18 @@ public class GUISwing implements GUIInterface {
         signLayout.setHorizontalGroup(
             signLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(signLayout.createSequentialGroup()
-                .addComponent(imageLabel, GroupLayout.PREFERRED_SIZE, 408,
-                    GroupLayout.PREFERRED_SIZE)
+                .addComponent(imageLabel, GroupLayout.PREFERRED_SIZE, 408, GroupLayout.PREFERRED_SIZE)
                 .addGroup(signLayout.createParallelGroup(
                     GroupLayout.Alignment.LEADING)
-                    .addComponent(contactInfoLabel,
-                        GroupLayout.Alignment.TRAILING)
-                    .addComponent(locationLabel,
-                        GroupLayout.Alignment.TRAILING)
+                    .addComponent(contactInfoLabel, GroupLayout.Alignment.TRAILING)
+                    .addComponent(locationLabel, GroupLayout.Alignment.TRAILING)
                     .addComponent(reasonLabel, GroupLayout.Alignment.TRAILING)
                     .addComponent(pageLabel, GroupLayout.Alignment.TRAILING))
                 .addGroup(signLayout.createParallelGroup(
                     GroupLayout.Alignment.LEADING)
                     .addGroup(signLayout.createSequentialGroup()
                         .addComponent(pageSpinner)
-                        .addComponent(signatureVisibleCheckBox,
-                            GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE))
+                        .addComponent(signatureVisibleCheckBox, GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE))
                     .addComponent(reasonField)
                     .addComponent(locationField)
                     .addComponent(contactInfoField)
@@ -345,115 +320,120 @@ public class GUISwing implements GUIInterface {
                         .addComponent(signButton)))));
         signLayout.setVerticalGroup(
             signLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addComponent(imageLabel, GroupLayout.PREFERRED_SIZE, 528,
-                GroupLayout.PREFERRED_SIZE)
+            .addComponent(imageLabel, GroupLayout.PREFERRED_SIZE, 528, GroupLayout.PREFERRED_SIZE)
             .addGroup(signLayout.createSequentialGroup()
                 .addGroup(signLayout.createParallelGroup(
                     GroupLayout.Alignment.BASELINE)
-                    .addComponent(pageSpinner, GroupLayout.PREFERRED_SIZE,
-                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pageSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(signatureVisibleCheckBox)
                     .addComponent(pageLabel))
                 .addGroup(signLayout.createParallelGroup(
                     GroupLayout.Alignment.BASELINE)
-                    .addComponent(reasonField, GroupLayout.PREFERRED_SIZE,
-                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(reasonField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(reasonLabel))
                 .addGroup(signLayout.createParallelGroup(
                     GroupLayout.Alignment.BASELINE)
-                    .addComponent(locationField, GroupLayout.PREFERRED_SIZE,
-                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(locationField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(locationLabel))
                 .addGroup(signLayout.createParallelGroup(
                     GroupLayout.Alignment.BASELINE)
-                    .addComponent(contactInfoField,
-                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                        GroupLayout.PREFERRED_SIZE)
+                    .addComponent(contactInfoField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(contactInfoLabel))
                 .addComponent(signButton)));
         signPanel.setLayout(signLayout);
+        signPanel.setOpaque(false);
+
         JPanel validatePanel = new ScrollableJPanel();
-        validatePanel.setLayout(new BoxLayout(validatePanel,
-            BoxLayout.PAGE_AXIS));
-        validatePanel.add(extendButton);
-        validatePanel.add(reportLabel);
+        GroupLayout validateLayout = new GroupLayout(validatePanel);
+        validateLayout.setAutoCreateGaps(true);
+        validateLayout.setAutoCreateContainerGaps(true);
+        validateLayout.setHorizontalGroup(
+            validateLayout.createParallelGroup()
+                .addComponent(reportLabel)
+                .addComponent(extendButton)
+        );
+        validateLayout.setVerticalGroup(
+            validateLayout.createSequentialGroup()
+                .addComponent(reportLabel)
+                .addComponent(extendButton)
+        );
+        validatePanel.setLayout(validateLayout);
+        validatePanel.setOpaque(false);
+
         JScrollPane validateScrollPane = new JScrollPane();
-        validateScrollPane.setHorizontalScrollBarPolicy(
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        validateScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         validateScrollPane.setBorder(null);
         validateScrollPane.setViewportView(validatePanel);
         validateScrollPane.setOpaque(false);
         validateScrollPane.getViewport().setOpaque(false);
+
         JPanel aboutPanel = new JPanel();
-        aboutPanel.setLayout(new BoxLayout(aboutPanel, BoxLayout.PAGE_AXIS));
-        tabbedPane = new JTabbedPane();
-        signPanel.setOpaque(false);
-        validatePanel.setOpaque(false);
+        GroupLayout aboutLayout = new GroupLayout(aboutPanel);
+        aboutLayout.setAutoCreateGaps(true);
+        aboutLayout.setAutoCreateContainerGaps(true);
+        aboutLayout.setHorizontalGroup(
+            aboutLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                .addComponent(iconLabel)
+                .addComponent(descriptionLabel)
+                .addComponent(websiteButton)
+        );
+        aboutLayout.setVerticalGroup(
+            aboutLayout.createSequentialGroup()
+                .addComponent(iconLabel)
+                .addComponent(descriptionLabel)
+                .addComponent(websiteButton)
+        );
+        aboutPanel.setLayout(aboutLayout);
         aboutPanel.setOpaque(false);
-        JLabel iconLabel = new JLabel(new ImageIcon(
-            image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)),
-            JLabel.CENTER);
-        JLabel descriptionLabel = new JLabel(
-            "<html><p align='center'><b>Firmador</b><br><br>" +
-            "Versión " +
-            getClass().getPackage().getSpecificationVersion() +
-            "<br><br>" +
-            "Herramienta para firmar documentos digitalmente.<br><br>" +
-            "Los documentos firmados con esta herramienta cumplen con la " +
-            "Política de Formatos Oficiales de los Documentos Electrónicos " +
-            "Firmados Digitalmente de Costa Rica.<br><br></p></html>",
-            JLabel.CENTER);
-        JButton websiteButton = new JButton("Visitar sitio web del proyecto");
-        websiteButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                openProjectWebsite();
-            }
-        });
-        iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        websiteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        aboutPanel.add(iconLabel);
-        aboutPanel.add(descriptionLabel);
-        aboutPanel.add(websiteButton);
-        tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
-        if (!isRemote) {
-            tabbedPane.addTab("Firmar", signPanel);
-            tabbedPane.addTab("Validación", validateScrollPane);
-            tabbedPane.addTab("Acerca de", aboutPanel);
-            frame.add(filePanel, BorderLayout.PAGE_START);
-            frame.add(tabbedPane, BorderLayout.CENTER);
-        } else {
-            frame.add(signPanel, BorderLayout.CENTER);
-        }
+
+        tabbedPane = new JTabbedPane();
+//        tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+        tabbedPane.addTab("Firmar", signPanel);
+        tabbedPane.addTab("Validación", validateScrollPane);
+        tabbedPane.addTab("Acerca de", aboutPanel);
+
+        GroupLayout frameLayout = new GroupLayout(frame.getContentPane());
+        frameLayout.setAutoCreateGaps(true);
+        frameLayout.setAutoCreateContainerGaps(true);
+        frameLayout.setHorizontalGroup(
+            frameLayout.createParallelGroup()
+                .addGroup(frameLayout.createSequentialGroup()
+                    .addComponent(fileLabel)
+                    .addComponent(fileField)
+                    .addComponent(fileButton))
+                .addComponent(tabbedPane)
+        );
+        frameLayout.setVerticalGroup(
+            frameLayout.createSequentialGroup()
+                .addGroup(frameLayout.createParallelGroup()
+                    .addComponent(fileLabel)
+                    .addComponent(fileField)
+                    .addComponent(fileButton))
+                .addComponent(tabbedPane)
+        );
+
+        if (!isRemote) frame.getContentPane().setLayout(frameLayout);
+        else frame.getContentPane().setLayout(signLayout);
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(768, 687));
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        if (documenttosign != null) {
-            loadDocument(documenttosign);
-        }
+        if (documenttosign != null) loadDocument(documenttosign);
     }
 
     public void loadDocument(String fileName) {
         fileField.setText(fileName);
         signButton.setEnabled(true);
         DSSDocument mimeDocument;
-        if (isRemote) {
-            mimeDocument = toSignDocument;
-        } else {
-            mimeDocument = new FileDocument(fileName);
-        }
+        if (isRemote) mimeDocument = toSignDocument;
+        else mimeDocument = new FileDocument(fileName);
         MimeType mimeType = mimeDocument.getMimeType();
         try {
-            if (doc != null) {
-                doc.close();
-            }
+            if (doc != null) doc.close();
             if (mimeType == MimeType.PDF || isRemote) {
-                if (isRemote) { // Only supports PDF for remote for now
-                    doc = PDDocument.load(toSignByteArray);
-                } else {
-                    doc = PDDocument.load(new File(fileName));
-                }
+                if (isRemote) doc = PDDocument.load(toSignByteArray); // FIXME Only supports PDF for remote for now
+                else doc = PDDocument.load(new File(fileName));
                 int pages = doc.getNumberOfPages();
                 renderer = new PDFRenderer(doc);
                 pageLabel.setVisible(true);
@@ -467,8 +447,7 @@ public class GUISwing implements GUIInterface {
                 contactInfoField.setVisible(true);
                 if (pages > 0) {
                     pageImage = renderer.renderImage(0, 1 / 1.5f);
-                    SpinnerNumberModel model =
-                        ((SpinnerNumberModel)pageSpinner.getModel());
+                    SpinnerNumberModel model = ((SpinnerNumberModel)pageSpinner.getModel());
                     model.setMinimum(1);
                     model.setMaximum(pages);
                     pageLabel.setEnabled(true);
@@ -486,9 +465,7 @@ public class GUISwing implements GUIInterface {
                 imageLabel.setIcon(new ImageIcon(pageImage));
                 imageLabel.setVisible(true);
             }
-            else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP
-                || mimeType == MimeType.ODS || mimeType == MimeType.ODT
-                || mimeType == MimeType.XML) {
+            else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT || mimeType == MimeType.XML) {
                 imageLabel.setVisible(false);
                 pageLabel.setVisible(false);
                 pageSpinner.setVisible(false);
@@ -516,15 +493,11 @@ public class GUISwing implements GUIInterface {
                     tabbedPane.setSelectedIndex(0);
                 }
             } catch (Exception e) {
-                if (mimeType == MimeType.ODG || mimeType == MimeType.ODP
-                    || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
+                if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
                     // Workaround for DSS 5.6 not recognizing unsigned ODF
                 } else {
                     e.printStackTrace();
-                    reportLabel.setText("Error al validar documento. " +
-                        "Agradeceríamos que informara sobre este " +
-                        "inconveniente a los desarrolladores de la " +
-                        "aplicación para repararlo.");
+                    reportLabel.setText("Error al validar documento. Agradeceríamos que informara sobre este inconveniente a los desarrolladores de la aplicación para repararlo.");
                 }
                 reportLabel.setText("");
                 extendButton.setEnabled(false);
@@ -537,10 +510,7 @@ public class GUISwing implements GUIInterface {
                     reportLabel.setText(report.getReport());
                 } catch (Exception e) {
                     e.printStackTrace();
-                    reportLabel.setText("Error al generar reporte. " +
-                        "Agradeceríamos que informara sobre este " +
-                        "inconveniente a los desarrolladores de la " +
-                        "aplicación para repararlo.");
+                    reportLabel.setText("Error al generar reporte. Agradeceríamos que informara sobre este inconveniente a los desarrolladores de la aplicación para repararlo.");
                 }
             }
         }
@@ -549,46 +519,28 @@ public class GUISwing implements GUIInterface {
     public void signDocument() {
         String fileName = getDocumentToSign();
         if (fileName != null || isRemote) {
-            if (!isRemote) {
-                toSignDocument = new FileDocument(fileName);
-            }
+            if (!isRemote) toSignDocument = new FileDocument(fileName);
             signedDocument = null;
             PasswordProtection pin = getPin();
-            if (pin.getPassword() != null
-                && pin.getPassword().length != 0) {
+            if (pin.getPassword() != null && pin.getPassword().length != 0) {
                 MimeType mimeType = toSignDocument.getMimeType();
                 if (mimeType == MimeType.PDF || isRemote) {
-                    FirmadorPAdES firmador = new FirmadorPAdES(
-                        GUISwing.this);
+                    FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
                     firmador.selectSlot();
                     if (firmador.selectedSlot == -1) return;
-                    firmador.setVisible_signature(
-                        !signatureVisibleCheckBox.isSelected());
-                    firmador.addVisibleSignature(
-                        (int)pageSpinner.getValue(),
-                        (int)Math.round(signatureLabel.getX() * 1.5),
-                        (int)Math.round(signatureLabel.getY() * 1.5));
-                    signedDocument = firmador.sign(toSignDocument,
-                        pin, reasonField.getText(), locationField.getText(),
-                        contactInfoField.getText(),
-                        System.getProperty("jnlp.signatureImage"));
-                } else if (mimeType == MimeType.ODG
-                    || mimeType == MimeType.ODP
-                    || mimeType == MimeType.ODS
-                    || mimeType == MimeType.ODT) {
-                    FirmadorOpenDocument firmador =
-                        new FirmadorOpenDocument(GUISwing.this);
+                    firmador.setVisible_signature(!signatureVisibleCheckBox.isSelected());
+                    firmador.addVisibleSignature((int)pageSpinner.getValue(), (int)Math.round(signatureLabel.getX() * 1.5), (int)Math.round(signatureLabel.getY() * 1.5));
+                    signedDocument = firmador.sign(toSignDocument, pin, reasonField.getText(), locationField.getText(), contactInfoField.getText(), System.getProperty("jnlp.signatureImage"));
+                } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
+                    FirmadorOpenDocument firmador = new FirmadorOpenDocument(GUISwing.this);
                     firmador.selectSlot();
                     if (firmador.selectedSlot == -1) return;
-                    signedDocument = firmador.sign(toSignDocument,
-                        pin);
+                    signedDocument = firmador.sign(toSignDocument, pin);
                 } else {
-                    FirmadorXAdES firmador = new FirmadorXAdES(
-                        GUISwing.this);
+                    FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
                     firmador.selectSlot();
                     if (firmador.selectedSlot == -1) return;
-                    signedDocument = firmador.sign(toSignDocument,
-                        pin);
+                    signedDocument = firmador.sign(toSignDocument, pin);
                 }
                 try {
                     pin.destroy();
@@ -599,9 +551,7 @@ public class GUISwing implements GUIInterface {
                 if (fileName != null) {
                     try {
                         signedDocument.save(fileName);
-                        showMessage(
-                            "Documento guardado satisfactoriamente " +
-                            "en<br>" + fileName);
+                        showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
                         loadDocument(fileName);
                     } catch (IOException e) {
                         showError(Throwables.getRootCause(e));
@@ -623,19 +573,13 @@ public class GUISwing implements GUIInterface {
             DSSDocument extendedDocument = null;
             MimeType mimeType = toExtendDocument.getMimeType();
             if (mimeType == MimeType.PDF) {
-                FirmadorPAdES firmador = new FirmadorPAdES(
-                    GUISwing.this);
+                FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
                 extendedDocument = firmador.extend(toExtendDocument);
-            } else if (mimeType == MimeType.ODG
-                || mimeType == MimeType.ODP
-                || mimeType == MimeType.ODS
-                || mimeType == MimeType.ODT) {
-                FirmadorOpenDocument firmador =
-                    new FirmadorOpenDocument(GUISwing.this);
+            } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
+                FirmadorOpenDocument firmador = new FirmadorOpenDocument(GUISwing.this);
                 extendedDocument = firmador.extend(toExtendDocument);
             } else {
-                FirmadorXAdES firmador = new FirmadorXAdES(
-                    GUISwing.this);
+                FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
                 extendedDocument = firmador.extend(toExtendDocument);
             }
             if (extendedDocument != null) {
@@ -643,9 +587,7 @@ public class GUISwing implements GUIInterface {
                 if (fileName != null) {
                     try {
                         extendedDocument.save(fileName);
-                        showMessage(
-                            "Documento guardado satisfactoriamente" +
-                            " en<br>" + fileName);
+                        showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
                         loadDocument(fileName);
                     } catch (IOException e) {
                         showError(Throwables.getRootCause(e));
@@ -656,25 +598,12 @@ public class GUISwing implements GUIInterface {
     }
 
     private void showLoadDialog(JFrame frame) {
-        loadDialog = new FileDialog(frame,
-            "Seleccionar documento a firmar");
-        loadDialog.setFilenameFilter(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(".odg")
-                    || name.toLowerCase().endsWith(".odp")
-                    || name.toLowerCase().endsWith(".ods")
-                    || name.toLowerCase().endsWith(".odt")
-                    || name.toLowerCase().endsWith(".pdf")
-                    || name.toLowerCase().endsWith(".xml");
-            }
-        });
-        loadDialog.setFile("*.odg;*.odp;*.ods;*.odt;*.pdf;*.xml");
+        loadDialog = new FileDialog(frame, "Seleccionar documento a firmar");
         loadDialog.setLocationRelativeTo(null);
         loadDialog.setVisible(true);
         loadDialog.dispose();
         if (loadDialog.getFile() != null) {
-            loadDocument(loadDialog.getDirectory()
-                + loadDialog.getFile());
+            loadDocument(loadDialog.getDirectory() + loadDialog.getFile());
             lastDirectory = loadDialog.getDirectory();
             lastFile = loadDialog.getFile();
         }
@@ -685,34 +614,26 @@ public class GUISwing implements GUIInterface {
     }
 
     public String getPathToSave() {
-        if (documenttosave != null) {
-            return documenttosave;
-        }
+        if (documenttosave != null) return documenttosave;
         String pathToSave = showSaveDialog("-firmado");
-
         return pathToSave;
     }
 
     public String getPathToSaveExtended() {
         String pathToExtend = showSaveDialog("-sellado");
-
         return pathToExtend;
     }
 
     public String showSaveDialog(String suffix) {
         String fileName = null;
         FileDialog saveDialog = null;
-        saveDialog = new FileDialog(saveDialog,
-            "Guardar documento", FileDialog.SAVE);
+        saveDialog = new FileDialog(saveDialog, "Guardar documento", FileDialog.SAVE);
         saveDialog.setDirectory(lastDirectory);
 
         String dotExtension = "";
         int lastDot = lastFile.lastIndexOf(".");
-        if (lastDot >= 0) {
-            dotExtension = lastFile.substring(lastDot);
-        }
-        saveDialog.setFile(lastFile.substring(0,
-            lastFile.lastIndexOf(".")) + suffix + dotExtension);
+        if (lastDot >= 0) dotExtension = lastFile.substring(lastDot);
+        saveDialog.setFile(lastFile.substring(0, lastFile.lastIndexOf(".")) + suffix + dotExtension);
         saveDialog.setFilenameFilter(loadDialog.getFilenameFilter());
         saveDialog.setLocationRelativeTo(null);
         saveDialog.setVisible(true);
@@ -731,11 +652,8 @@ public class GUISwing implements GUIInterface {
         pinField.addHierarchyListener(new HierarchyListener() {
             public void hierarchyChanged(HierarchyEvent event) {
                 final Component component = event.getComponent();
-                if (component.isShowing() &&
-                    (event.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED)
-                    != 0) {
-                    Window toplevel =
-                        SwingUtilities.getWindowAncestor(component);
+                if (component.isShowing() && (event.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
+                    Window toplevel = SwingUtilities.getWindowAncestor(component);
                     toplevel.addWindowFocusListener(new WindowAdapter() {
                         public void windowGainedFocus(WindowEvent event) {
                             component.requestFocus();
@@ -744,22 +662,16 @@ public class GUISwing implements GUIInterface {
                 }
             }
         });
-        int action = JOptionPane.showConfirmDialog(null, pinField,
-            "Ingresar PIN", JOptionPane.OK_CANCEL_OPTION,
-            JOptionPane.QUESTION_MESSAGE);
+        int action = JOptionPane.showConfirmDialog(null, pinField, "Ingresar PIN", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         pinField.grabFocus();
-        if (action == 0) {
-            return new PasswordProtection(pinField.getPassword());
-        } else {
-            return new PasswordProtection(null);
-        }
+        if (action == 0) return new PasswordProtection(pinField.getPassword());
+        else return new PasswordProtection(null);
     }
 
     private void openProjectWebsite() {
-        if (Desktop.isDesktopSupported()) {
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             try {
-                Desktop.getDesktop().browse(
-                    new URI("https://firmador.libre.cr"));
+                Desktop.getDesktop().browse(new URI("https://firmador.libre.cr"));
             } catch (Exception e) {
                 showError(Throwables.getRootCause(e));
             }
@@ -770,18 +682,10 @@ public class GUISwing implements GUIInterface {
         List<String> arguments = new ArrayList<String>();
 
         for (String params : args) {
-            if (!params.startsWith("-")) {
-                arguments.add(params);
-            }
+            if (!params.startsWith("-")) arguments.add(params);
         }
-        if (arguments.size() > 1) {
-            documenttosign = Paths.get(arguments.get(0)).toAbsolutePath()
-                .toString();
-        }
-        if (arguments.size() > 2) {
-            documenttosave = Paths.get(arguments.get(1)).toAbsolutePath()
-                .toString();
-        }
+        if (arguments.size() > 1) documenttosign = Paths.get(arguments.get(0)).toAbsolutePath().toString();
+        if (arguments.size() > 2) documenttosave = Paths.get(arguments.get(1)).toAbsolutePath().toString();
     }
 
     public void showError(Throwable error) {
@@ -791,43 +695,36 @@ public class GUISwing implements GUIInterface {
 
         switch (className) {
             case "java.lang.NoSuchMethodError":
-                message = "Esta aplicación es actualmente incompatible con " +
-                    "versiones superiores a Java 8.<br>" +
-                    "Este inconveniente se corregirá en próximas versiones. " +
-                    "Disculpe las molestias.";
+                message = "Esta aplicación es actualmente incompatible con versiones superiores a Java 8<br>" +
+                    "cuando se ejecuta desde Java Web Start.<br>" +
+                    "Este inconveniente se corregirá en próximas versiones. Disculpe las molestias.";
                 break;
             case "java.security.ProviderException":
-                message = "No se ha encontrado la librería de Firma Digital " +
-                    "en el sistema.<br>" +
+                message = "No se ha encontrado la librería de Firma Digital en el sistema.<br>" +
                     "¿Están instalados los controladores?";
                 break;
             case "java.security.NoSuchAlgorithmException":
-                message = "No se ha encontrado ninguna tarjeta conectada." +
-                    "<br>Asegúrese de que la tarjeta y el lector están " +
-                    "conectados de forma correcta.";
+                message = "No se ha encontrado ninguna tarjeta conectada.<br>" +
+                    "Asegúrese de que la tarjeta y el lector están conectados de forma correcta.";
                 break;
             case "sun.security.pkcs11.wrapper.PKCS11Exception":
                 switch (message) {
                 case "CKR_GENERAL_ERROR":
-                    message = "No se ha podido contactar con el servicio " +
-                        "del lector de tarjetas.<br>" +
+                    message = "No se ha podido contactar con el servicio del lector de tarjetas.<br>" +
                         "¿Está correctamente instalado o configurado?";
                     break;
                 case "CKR_SLOT_ID_INVALID":
-                    message = "No se ha podido encontrar ningún lector " +
-                    "conectado o el controlador del lector no está instalado.";
+                    message = "No se ha podido encontrar ningún lector conectado o el controlador del lector no está instalado.";
                     break;
                 case "CKR_PIN_INCORRECT":
                     messageType = JOptionPane.WARNING_MESSAGE;
                     message = "¡PIN INCORRECTO!<br><br>" +
-                        "ADVERTENCIA: si se ingresa un PIN incorrecto " +
-                        "varias veces sin acertar,<br>" +
+                        "ADVERTENCIA: si se ingresa un PIN incorrecto varias veces sin acertar,<br>" +
                         "el dispositivo de firma se bloqueará.";
                     break;
                 case "CKR_PIN_LOCKED":
                     message = "PIN BLOQUEADO<br><br>" +
-                        "Lo sentimos, el dispositivo de firma no se puede " +
-                        "utilizar porque está bloqueado.<br>" +
+                        "Lo sentimos, el dispositivo de firma no se puede utilizar porque está bloqueado.<br>" +
                         "Contacte con su proveedor para desbloquearlo.";
                     break;
                 default:
@@ -835,10 +732,8 @@ public class GUISwing implements GUIInterface {
                 }
                 break;
             case "java.io.IOException":
-                if (message.contains("asepkcs") ||
-                    message.contains("libASEP11")) {
-                    message = "No se ha encontrado la librería de Firma " +
-                        "Digital en el sistema.<br>" +
+                if (message.contains("asepkcs") || message.contains("libASEP11")) {
+                    message = "No se ha encontrado la librería de Firma Digital en el sistema.<br>" +
                         "¿Están instalados los controladores?";
                     break;
                 }
@@ -846,52 +741,37 @@ public class GUISwing implements GUIInterface {
                 error.printStackTrace();
                 message = "Error: " + className + "<br>" +
                     "Detalle: " + message + "<br>" +
-                    "Agradecemos que comunique este mensaje de error a los " +
-                    "autores del programa<br>" +
-                    "para detallar mejor el posible motivo de este error " +
-                    "en próximas versiones.";
+                    "Agradecemos que comunique este mensaje de error a los autores del programa<br>" +
+                    "para detallar mejor el posible motivo de este error en próximas versiones.";
                 break;
         }
 
-        JOptionPane.showMessageDialog(null, new CopyableJLabel(message),
-            "Mensaje de Firmador", messageType);
+        JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", messageType);
 
-        if (messageType == JOptionPane.ERROR_MESSAGE) {
-            System.exit(0);
-        }
+        if (messageType == JOptionPane.ERROR_MESSAGE) System.exit(0);
     }
 
     public void showMessage(String message) {
-        JOptionPane.showMessageDialog(null, new CopyableJLabel(message),
-            "Mensaje de Firmador", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public int getSelection(String[] options) {
         int dev = 0;
 
         if (options == null || options.length == 0) {
-            String message = "No se ha encontrado ninguna tarjeta " +
-                "conectada.<br>Asegúrese de que la tarjeta y el lector " +
-                "están conectados de forma correcta.";
-            JOptionPane.showMessageDialog(null, new CopyableJLabel(message),
-                "Error al firmar", JOptionPane.ERROR_MESSAGE);
+            String message = "No se ha encontrado ninguna tarjeta conectada.<br>" +
+                "Asegúrese de que la tarjeta y el lector están conectados de forma correcta.";
+            JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Error al firmar", JOptionPane.ERROR_MESSAGE);
             return -1;
         }
-        String input = JOptionPane.showInputDialog(null, "Propietario: ",
-            "Seleccione el dispositivo para firmar",
-            JOptionPane.QUESTION_MESSAGE, null, options, options[0])
-            .toString();
-
-        if (input == null) {
-            return -1;
-        }
+        String input = JOptionPane.showInputDialog(null, "Propietario: ", "Seleccione el dispositivo para firmar", JOptionPane.QUESTION_MESSAGE, null, options, options[0]).toString();
+        if (input == null) return -1;
         for (int x = 0; x < options.length; x++) {
             if (input.equals(options[x])) {
                 dev = x;
                 x = options.length;
             }
         }
-
         return dev;
     }
 
