@@ -36,23 +36,15 @@ public class Validator {
     private SignedDocumentValidator documentValidator;
 
     public Validator(String fileName) {
-        CertificateSource trustedCertSource =
-            new CommonTrustedCertificateSource();
-        trustedCertSource.addCertificate(DSSUtils.loadCertificate(
-            this.getClass().getClassLoader().getResourceAsStream(
-                "CA RAIZ NACIONAL - COSTA RICA v2.crt")));
-        trustedCertSource.addCertificate(DSSUtils.loadCertificate(
-            this.getClass().getClassLoader().getResourceAsStream(
-                "CA RAIZ NACIONAL COSTA RICA.cer")));
-
+        CertificateSource trustedCertSource = new CommonTrustedCertificateSource();
+        trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA RAIZ NACIONAL - COSTA RICA v2.crt")));
+        trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA RAIZ NACIONAL COSTA RICA.cer")));
         CertificateVerifier cv = new CommonCertificateVerifier();
         cv.setTrustedCertSources(trustedCertSource);
         cv.setDataLoader(new CommonsDataLoader());
         cv.setOcspSource(new OnlineOCSPSource());
         cv.setCrlSource(new OnlineCRLSource());
-
-        documentValidator = SignedDocumentValidator.fromDocument(
-            new FileDocument(fileName));
+        documentValidator = SignedDocumentValidator.fromDocument(new FileDocument(fileName));
         documentValidator.setCertificateVerifier(cv);
     }
 

@@ -32,16 +32,17 @@ import cr.libre.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
+
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
+
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
-
-
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.asic.xades.ASiCWithXAdESSignatureParameters;
+
 
 
 import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
@@ -64,10 +65,7 @@ public class FirmadorOpenDocument extends CRSigner {
         super(gui);
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument,
-        PasswordProtection pin) {
-
-
+    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin) {
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
         ASiCWithXAdESService service = new ASiCWithXAdESService(verifier);
@@ -86,64 +84,44 @@ public class FirmadorOpenDocument extends CRSigner {
             parameters.setPrettyPrint(true);
 
 
-
-
-
-            List<CertificateToken> certificateChain = getCertificateChain(
-                verifier, parameters);
+            List<CertificateToken> certificateChain = getCertificateChain(verifier, parameters);
             parameters.setCertificateChain(certificateChain);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
             parameters.aSiC().setContainerType(ASiCContainerType.ASiC_E);
 
-
-
-
             parameters.setEn319132(false);
-            ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
-                parameters);
-            signatureValue = token.sign(dataToSign,
-                parameters.getDigestAlgorithm(), privateKey);
+            ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
+            signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
         } catch (DSSException|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
 
         try {
-            signedDocument = service.signDocument(toSignDocument, parameters,
-                signatureValue);
+            signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
         } catch (Exception e) {
             e.printStackTrace();
-            gui.showMessage(
-                "Aviso: no se ha podido agregar el sello de tiempo y la " +
-                "información de revocación porque es posible<br>" +
-                "que haya problemas de conexión a Internet o con los " +
-                "servidores del sistema de Firma Digital.<br>" +
+            gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
+                "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
                 "Detalle del error: " + Throwables.getRootCause(e) + "<br>" +
                 "<br>" +
-                "Se ha agregado una firma básica solamente. No obstante, si " +
-                "el sello de tiempo resultara importante<br>" +
-                "para este documento, debería agregarse lo antes posible " +
-                "antes de enviarlo al destinatario.<br>" +
+                "Se ha agregado una firma básica solamente. No obstante, si el sello de tiempo resultara importante<br>" +
+                "para este documento, debería agregarse lo antes posible antes de enviarlo al destinatario.<br>" +
                 "<br>" +
-                "Si lo prefiere, puede cancelar el guardado del documento " +
-                "firmado e intentar firmarlo más tarde.<br>");
-
+                "Si lo prefiere, puede cancelar el guardado del documento firmado e intentar firmarlo más tarde.<br>");
             parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
             try {
-                signedDocument = service.signDocument(toSignDocument,
-                    parameters, signatureValue);
+                signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
             } catch (Exception ex) {
                 e.printStackTrace();
                 gui.showError(Throwables.getRootCause(e));
             }
         }
-
         return signedDocument;
     }
 
     public DSSDocument extend(DSSDocument document) {
-        ASiCWithXAdESSignatureParameters parameters =
-            new ASiCWithXAdESSignatureParameters();
+        ASiCWithXAdESSignatureParameters parameters = new ASiCWithXAdESSignatureParameters();
         parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
         parameters.setPrettyPrint(true);
         parameters.aSiC().setContainerType(ASiCContainerType.ASiC_E);
@@ -154,23 +132,16 @@ public class FirmadorOpenDocument extends CRSigner {
         service.setTspSource(onlineTSPSource);
         DSSDocument extendedDocument = null;
         try {
-            extendedDocument = service.extendDocument(document,
-                parameters);
+            extendedDocument = service.extendDocument(document, parameters);
         } catch (Exception e) {
             e.printStackTrace();
-            gui.showMessage(
-                "Aviso: no se ha podido agregar el sello de tiempo y la " +
-                "información de revocación porque es posible<br>" +
-                "que haya problemas de conexión a Internet o con los " +
-                "servidores del sistema de Firma Digital.<br>" +
+            gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
+                "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
                 "Detalle del error: " + Throwables.getRootCause(e) + "<br>" +
                 "<br>" +
-                "Inténtelo de nuevo más tarde. Si el problema persiste, " +
-                "compruebe su conexión o verifique<br>" +
-                "que no se trata de un problema de los servidores de Firma " +
-                "Digital o de un error de este programa.<br>");
+                "Inténtelo de nuevo más tarde. Si el problema persiste, compruebe su conexión o verifique<br>" +
+                "que no se trata de un problema de los servidores de Firma Digital o de un error de este programa.<br>");
         }
-
         return extendedDocument;
     }
 

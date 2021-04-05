@@ -38,10 +38,7 @@ public class Token {
     private PKCS11 pkcs11 = null;
 
     public PKCS11 getPkcs11Manager(String lib) throws Exception {
-        if (pkcs11 == null) {
-            pkcs11 = PKCS11.getInstance(lib, "C_GetFunctionList", null, false);
-        }
-
+        if (pkcs11 == null) pkcs11 = PKCS11.getInstance(lib, "C_GetFunctionList", null, false);
         return pkcs11;
     }
 
@@ -54,20 +51,15 @@ public class Token {
         attr.type = 0L;
         attr.pValue = Long.valueOf(1L);
         attrs[0] = attr;
-
         pkcs11.C_FindObjectsInit(sessionHandle, attrs);
-
         long[] objectHandles = pkcs11.C_FindObjects(sessionHandle, 2L);
         pkcs11.C_FindObjectsFinal(sessionHandle);
-
         for (long i : objectHandles) {
             CK_ATTRIBUTE attrPriv = new CK_ATTRIBUTE();
             CK_ATTRIBUTE[] attrsP = new CK_ATTRIBUTE[2];
             attrPriv.type = 0L;
             attrPriv.pValue = Long.valueOf(2L);
-
             byte[] p2Value = getAttributes(sessionHandle, i, pkcs11);
-
             if (p2Value != null) {
                 attrsP[0] = attrPriv;
                 attrsP[1] = attr;
@@ -76,45 +68,27 @@ public class Token {
                 pkcs11.C_FindObjectsFinal(sessionHandle);
             }
         }
-
         return certificates;
     }
 
-    private byte[] getAttributes(long session, long oHandle, PKCS11 pkcs11)
-        throws Exception {
-        CK_ATTRIBUTE[] attributes = {
-            new CK_ATTRIBUTE(258L)
-        };
-
+    private byte[] getAttributes(long session, long oHandle, PKCS11 pkcs11) throws Exception {
+        CK_ATTRIBUTE[] attributes = {new CK_ATTRIBUTE(258L)};
         pkcs11.C_GetAttributeValue(session, oHandle, attributes);
-
         return attributes[0].getByteArray();
      }
 
-    private X509Certificate getCertificates(long session, long oHandle,
-        PKCS11 pkcs11) throws Exception {
-        CK_ATTRIBUTE[] attributes = { new CK_ATTRIBUTE(17L) };
+    private X509Certificate getCertificates(long session, long oHandle, PKCS11 pkcs11) throws Exception {
+        CK_ATTRIBUTE[] attributes = {new CK_ATTRIBUTE(17L)};
         pkcs11.C_GetAttributeValue(session, oHandle, attributes);
-
         byte[] bytes = attributes[0].getByteArray();
-
-        if (bytes == null) {
-            throw new Exception("Arreglo de certificados nulo");
-        }
-        CertificateFactory certificateFactory = CertificateFactory
-            .getInstance("X.509");
-
-        X509Certificate certificate = (X509Certificate) certificateFactory
-            .generateCertificate(new ByteArrayInputStream(bytes));
-
+        if (bytes == null) throw new Exception("Arreglo de certificados nulo");
+        CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+        X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(new ByteArrayInputStream(bytes));
         return certificate;
     }
 
     public long[] getSlots(PKCS11 pkcs11) throws Exception {
-        if (pkcs11 == null) {
-            pkcs11 = getPkcs11Manager(Utils.getPKCS11Lib());
-        }
-
+        if (pkcs11 == null) pkcs11 = getPkcs11Manager(Utils.getPKCS11Lib());
         return pkcs11.C_GetSlotList(true);
     }
 
@@ -124,22 +98,18 @@ public class Token {
 
     public String getOwner(long slot) {
         String dev = null;
-
         try {
             List<X509Certificate> certs = getCertificates(slot);
             X509Certificate cert = certs.get(0);
             Principal subjectDN = cert.getSubjectDN();
 
-            Map<String, String> params = Splitter.on(", ")
-                .withKeyValueSeparator("=").split(subjectDN.getName());
-            dev = params.get("GIVENNAME") + " " + params.get("SURNAME")+" (";
-
+            Map<String, String> params = Splitter.on(", ").withKeyValueSeparator("=").split(subjectDN.getName());
+            dev = params.get("GIVENNAME") + " " + params.get("SURNAME") + " (";
             SimpleDateFormat dtformat = new SimpleDateFormat("dd/MM/yyyy");
             dev += "Vence: " + dtformat.format(cert.getNotAfter()) + ")";
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return dev;
     }
 

@@ -61,15 +61,12 @@ public class CRSigner {
          * verify there are no more keys available to allow selecting them.
          */
         DSSPrivateKeyEntry privateKey = null;
-
         for (DSSPrivateKeyEntry candidatePrivateKey : signingToken.getKeys()) {
-            if (candidatePrivateKey.getCertificate().checkKeyUsage(
-                KeyUsageBit.NON_REPUDIATION)) {
+            if (candidatePrivateKey.getCertificate().checkKeyUsage(KeyUsageBit.NON_REPUDIATION)) {
                     privateKey = candidatePrivateKey;
                     break;
             }
         }
-
         return privateKey;
     }
 
@@ -86,14 +83,10 @@ public class CRSigner {
          * some homologated devices already for Sello Electrónico).
          */
         SignatureTokenConnection signingToken = null;
-
-        if (this.selectedSlot != -1) {
-            signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin,
-                (int) selectedSlot);
-        } else {
+        if (this.selectedSlot != -1) signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin, (int)selectedSlot);
+        else {
             Token token = new Token();
             long[] slots = null;
-
             try {
                 slots = token.getSlots();
             } catch (Exception|Error e) {
@@ -101,101 +94,65 @@ public class CRSigner {
             }
             if (slots != null) {
                 if (slots.length > 0) {
-                    if (slots.length == 1) {
-                        signingToken = new Pkcs11SignatureToken(getPkcs11Lib(),
-                            pin);
-                    } else {
+                    if (slots.length == 1) signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin);
+                    else {
                         selectedSlot = getSelectedSlot(token, slots);
-                        signingToken = new Pkcs11SignatureToken(getPkcs11Lib(),
-                            pin, selectedSlot);
+                        signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin, selectedSlot);
                     }
                 }
             }
         }
-
         return signingToken;
     }
 
     public void selectSlot() {
         Token token = new Token();
         long[] slots = null;
-
         try {
             slots = token.getSlots();
         } catch (Exception|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
-        if (slots.length == 1) {
-            selectedSlot = 0;
-        } else {
-            selectedSlot = getSelectedSlot(token, slots);
-        }
+        if (slots.length == 1) selectedSlot = 0;
+        else selectedSlot = getSelectedSlot(token, slots);
     }
 
     private int getSelectedSlot(Token token, long[] slots) {
         String[] owners = new String[slots.length];
-        for (int x = 0; x < slots.length; x++) {
-            owners[x] = token.getOwner(slots[x]);
-        }
-
+        for (int x = 0; x < slots.length; x++) owners[x] = token.getOwner(slots[x]);
         return gui.getSelection(owners);
     }
 
     public CertificateVerifier getCertificateVerifier() {
-        CommonCertificateVerifier commonCertificateVerifier =
-                new CommonCertificateVerifier();
-
+        CommonCertificateVerifier commonCertificateVerifier = new CommonCertificateVerifier();
         // AIA
         CommonsDataLoader commonsHttpDataLoader = new CommonsDataLoader();
-
         // CRLs
         OnlineCRLSource onlineCRLSource = new OnlineCRLSource();
         onlineCRLSource.setDataLoader(commonsHttpDataLoader);
         commonCertificateVerifier.setCrlSource(onlineCRLSource);
-
         // OSCP
         OnlineOCSPSource onlineOCSPSource = new OnlineOCSPSource();
         onlineOCSPSource.setDataLoader(commonsHttpDataLoader);
         commonCertificateVerifier.setOcspSource(onlineOCSPSource);
-
         return commonCertificateVerifier;
     }
 
-    public List<CertificateToken> getCertificateChain(
-        CertificateVerifier commonCertificateVerifier,
-        SerializableSignatureParameters parameters) {
-
-        List<CertificateToken> certificateChain =
-            new ArrayList<CertificateToken>();
-
-        List<CertificateToken> cert = new ArrayList<CertificateToken>(
-            DSSUtils.loadPotentialIssuerCertificates(
-                parameters.getSigningCertificate(),
-                commonCertificateVerifier.getDataLoader()));
-
+    public List<CertificateToken> getCertificateChain(CertificateVerifier commonCertificateVerifier, SerializableSignatureParameters parameters) {
+        List<CertificateToken> certificateChain = new ArrayList<CertificateToken>();
+        List<CertificateToken> cert = new ArrayList<CertificateToken>(DSSUtils.loadPotentialIssuerCertificates(parameters.getSigningCertificate(), commonCertificateVerifier.getDataLoader()));
         if (cert != null && !cert.isEmpty()) {
             certificateChain.add(cert.get(0));
             do {
-                cert = new ArrayList<CertificateToken>(
-                    DSSUtils.loadPotentialIssuerCertificates(cert.get(0),
-                        commonCertificateVerifier.getDataLoader()));
-                if (!cert.isEmpty()) {
-                    certificateChain.add(cert.get(0));
-                }
+                cert = new ArrayList<CertificateToken>(DSSUtils.loadPotentialIssuerCertificates(cert.get(0), commonCertificateVerifier.getDataLoader()));
+                if (!cert.isEmpty()) certificateChain.add(cert.get(0));
             } while (!cert.isEmpty());
         } else {
             // Failed to fetch from AIA (e.g. offline), fallback to resources
-            certificateChain.add(DSSUtils.loadCertificate(
-                this.getClass().getClassLoader().getResourceAsStream(
-                    "CA SINPE - PERSONA FISICA v2.cer")));
-            certificateChain.add(DSSUtils.loadCertificate(
-                this.getClass().getClassLoader().getResourceAsStream(
-                    "CA POLITICA PERSONA FISICA - COSTA RICA v2.crt")));
-            certificateChain.add(DSSUtils.loadCertificate(
-                this.getClass().getClassLoader().getResourceAsStream(
-                    "CA RAIZ NACIONAL - COSTA RICA v2.crt")));
+            certificateChain.add(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA SINPE - PERSONA FISICA v2.cer")));
+            certificateChain.add(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA POLITICA PERSONA FISICA - COSTA RICA v2.crt")));
+            certificateChain.add(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA RAIZ NACIONAL - COSTA RICA v2.crt")));
         }
-
         return certificateChain;
     }
 

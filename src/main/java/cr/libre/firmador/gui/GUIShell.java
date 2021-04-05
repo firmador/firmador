@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+//import cr.libre.firmador.FirmadorCAdES;
+//import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
 //import cr.libre.firmador.FirmadorXAdES;
 import com.google.common.base.Throwables;
@@ -39,27 +41,23 @@ public class GUIShell implements GUIInterface {
 
     public void loadGUI() {
         String fileName = getDocumentToSign();
-
         if (fileName != null) {
-            // FirmadorXAdES firmador = new FirmadorXAdES(this);
+            // FirmadorCAdES firmador = new FirmadorCAdES(this);
+            // FirmadorOpenDocument firmador = new FirmadorOpenDocument(this);
             FirmadorPAdES firmador = new FirmadorPAdES(this);
+            // FirmadorXAdES firmador = new FirmadorXAdES(this);
             firmador.selectSlot();
-
             PasswordProtection pin = getPin();
             DSSDocument toSignDocument = new FileDocument(fileName);
-            DSSDocument signedDocument = firmador.sign(toSignDocument, pin,
-                null, null, null, null);
+            DSSDocument signedDocument = firmador.sign(toSignDocument, pin, null, null, null, null);
             try {
                 pin.destroy();
             } catch (Exception e) {}
-
             if (signedDocument != null) {
                 fileName = getPathToSave();
                 try {
                     signedDocument.save(fileName);
-                    showMessage(
-                        "Documento guardado satisfactoriamente en \n" +
-                        fileName);
+                    showMessage("Documento guardado satisfactoriamente en \n" + fileName);
                 } catch (IOException e) {
                     showError(Throwables.getRootCause(e));
                 }
@@ -70,64 +68,48 @@ public class GUIShell implements GUIInterface {
     public void setArgs(String[] args) {
         List<String> arguments = new ArrayList<String>();
         for (String params : args) {
-            if (!params.startsWith("-")) {
-                arguments.add(params);
-            }
+            if (!params.startsWith("-")) arguments.add(params);
         }
-        if (arguments.size() > 1) {
-            Paths.get(arguments.get(0)).toAbsolutePath().toString();
-        }
-        if (arguments.size() > 2) {
-            Paths.get(arguments.get(1)).toAbsolutePath().toString();
-        }
+        if (arguments.size() > 1) Paths.get(arguments.get(0)).toAbsolutePath().toString();
+        if (arguments.size() > 2) Paths.get(arguments.get(1)).toAbsolutePath().toString();
     }
 
     public void showError(Throwable error) {
-        System.err.println("Exception: " + error.getClass().getName());
-        System.err.println("Message: " + error.getLocalizedMessage());
+        System.err.println("Excepción: " + error.getClass().getName());
+        System.err.println("Mensaje: " + error.getLocalizedMessage());
         System.exit(1);
     }
 
     private String readFromInput(String message) {
         System.out.println(message);
         String plaintext = null;
-        BufferedReader br =
-            new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         try {
             plaintext = br.readLine();
-
         } catch (IOException e) {
-            System.err.println("I can't read in stdin");
+            System.err.println("No se puede leer desde stdin.");
             System.exit(1);
         }
-
         return plaintext;
     }
 
     public String getDocumentToSign() {
-        String docpath = readFromInput("Path del documento a firmar: ");
-
+        String docpath = readFromInput("Ruta del documento a firmar: ");
         return Paths.get(docpath).toAbsolutePath().toString();
     }
 
     public String getPathToSave() {
-        String docpath = readFromInput("Path del documento a guardar: ");
-
+        String docpath = readFromInput("Ruta del documento a guardar: ");
         return Paths.get(docpath).toAbsolutePath().toString();
     }
 
     public PasswordProtection getPin() {
         Console console = System.console();
         char[] password = null;
-
-        if (console != null) {
-            password = console.readPassword("PIN: ");
-        } else {
-            password = readFromInput("PIN: ").toCharArray();
-        }
+        if (console != null) password = console.readPassword("PIN: ");
+        else password = readFromInput("PIN: ").toCharArray();
         PasswordProtection pin = new PasswordProtection(password);
         Arrays.fill(password, (char) 0);
-
         return pin;
     }
 
@@ -140,25 +122,22 @@ public class GUIShell implements GUIInterface {
     public int getSelection(String[] options) {
         int dev = -1;
         String selected;
-
-        while(dev == -1) {
+        while (dev == -1) {
             for(int x = 0; x < options.length; x++) {
                 System.out.println(x + ") " + options[x]);
             }
             selected = readFromInput("Opción a seleccionar: ");
             try {
                 dev = Integer.parseInt(selected);
-                if(dev >= options.length){
-                    System.err.println("Opción invalida debe ser menor a "
-                        + options.length);
+                if (dev >= options.length) {
+                    System.err.println("Opción inválida. Debe ser menor a " + options.length + ".");
                     dev = -1;
                 }
             } catch (Exception e) {
                 dev = -1;
-                System.err.println("Debe ingresar un número");
+                System.err.println("Debe ingresar un número.");
             }
         }
-
         return 0;
     }
 

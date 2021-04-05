@@ -31,13 +31,11 @@ public class ScrollableJPanel extends JPanel implements Scrollable {
         return this.getPreferredSize();
     }
 
-    public int getScrollableUnitIncrement(Rectangle visibleRect,
-        int orientation, int direction) {
+    public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
         return 50;
     }
 
-    public int getScrollableBlockIncrement(Rectangle visibleRect,
-        int orientation, int direction) {
+    public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
         return 80;
     }
 

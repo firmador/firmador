@@ -71,9 +71,10 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+//import cr.libre.firmador.FirmadorCAdES;
+import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
 import cr.libre.firmador.FirmadorXAdES;
-import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.Report;
 import cr.libre.firmador.Validator;
 import cr.libre.firmador.gui.swing.CopyableJLabel;
@@ -526,7 +527,7 @@ public class GUISwing implements GUIInterface {
                     FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
                     firmador.selectSlot();
                     if (firmador.selectedSlot == -1) return;
-                    firmador.setVisible_signature(!signatureVisibleCheckBox.isSelected());
+                    firmador.setVisibleSignature(!signatureVisibleCheckBox.isSelected());
                     firmador.addVisibleSignature((int)pageSpinner.getValue(), (int)Math.round(signatureLabel.getX() * 1.5), (int)Math.round(signatureLabel.getY() * 1.5));
                     signedDocument = firmador.sign(toSignDocument, pin, reasonField.getText(), locationField.getText(), contactInfoField.getText(), System.getProperty("jnlp.signatureImage"));
                 } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
@@ -535,6 +536,7 @@ public class GUISwing implements GUIInterface {
                     if (firmador.selectedSlot == -1) return;
                     signedDocument = firmador.sign(toSignDocument, pin);
                 } else {
+                    //FirmadorCAdES firmador = new FirmadorCAdES(GUISwing.this);
                     FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
                     firmador.selectSlot();
                     if (firmador.selectedSlot == -1) return;
@@ -577,6 +579,7 @@ public class GUISwing implements GUIInterface {
                 FirmadorOpenDocument firmador = new FirmadorOpenDocument(GUISwing.this);
                 extendedDocument = firmador.extend(toExtendDocument);
             } else {
+                //FirmadorCAdES firmador = new FirmadorCAdES(GUISwing.this);
                 FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
                 extendedDocument = firmador.extend(toExtendDocument);
             }

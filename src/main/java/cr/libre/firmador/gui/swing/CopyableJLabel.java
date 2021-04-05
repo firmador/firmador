@@ -44,9 +44,7 @@ public class CopyableJLabel extends JTextPane {
         this.setOpaque(false);
         this.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
         this.setFont(UIManager.getFont("Label.font"));
-        this.setBorder(BorderFactory.createCompoundBorder(
-            this.getBorder(),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        this.setBorder(BorderFactory.createCompoundBorder(this.getBorder(), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         this.setAutoscrolls(true);
     }
 
