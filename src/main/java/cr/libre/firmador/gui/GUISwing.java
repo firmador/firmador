@@ -51,12 +51,14 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
@@ -227,6 +229,15 @@ public class GUISwing implements GUIInterface {
         locationField.setToolTipText("<html>Este campo opcional permite indicar el lugar físico,<br>por ejemplo la ciudad, desde la cual firma.</html>");
         contactInfoField = new JTextField();
         contactInfoField.setToolTipText("<html>Este campo opcional permite indicar una<br>forma de contactar con la persona firmante,<br>por ejemplo una dirección de correo electrónico.</html>");
+
+        JRadioButton CAdESButton = new JRadioButton("CAdES");
+        CAdESButton.setContentAreaFilled(false);
+        JRadioButton XAdESButton = new JRadioButton("XAdES", true);
+        XAdESButton.setContentAreaFilled(false);
+        ButtonGroup AdESButtonGroup = new ButtonGroup();
+        AdESButtonGroup.add(CAdESButton);
+        AdESButtonGroup.add(XAdESButton);
+
         signButton = new JButton("Firmar documento");
         signButton.setToolTipText("<html>Este botón permite firmar el documento seleccionado.<br>Requiere dispositivo de Firma Digital<br>al cual se le solicitará ingresar el PIN.</html>");
         signButton.addActionListener(new ActionListener() {
@@ -431,19 +442,10 @@ public class GUISwing implements GUIInterface {
         try {
             if (doc != null) doc.close();
             if (mimeType == MimeType.PDF) {
-                if (isRemote) doc = PDDocument.load(toSignByteArray); // FIXME Only supports PDF for remote for now
+                if (isRemote) doc = PDDocument.load(toSignByteArray);
                 else doc = PDDocument.load(new File(fileName));
                 int pages = doc.getNumberOfPages();
                 renderer = new PDFRenderer(doc);
-                pageLabel.setVisible(true);
-                pageSpinner.setVisible(true);
-                signatureVisibleCheckBox.setVisible(true);
-                reasonLabel.setVisible(true);
-                reasonField.setVisible(true);
-                locationLabel.setVisible(true);
-                locationField.setVisible(true);
-                contactInfoLabel.setVisible(true);
-                contactInfoField.setVisible(true);
                 if (pages > 0) {
                     pageImage = renderer.renderImage(0, 1 / 1.5f);
                     SpinnerNumberModel model = ((SpinnerNumberModel)pageSpinner.getModel());
@@ -454,18 +456,33 @@ public class GUISwing implements GUIInterface {
                 imageLabel.setBorder(new LineBorder(Color.BLACK));
                 imageLabel.setIcon(new ImageIcon(pageImage));
                 imageLabel.setVisible(true);
-            }
-            else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT || mimeType == MimeType.XML) {
-                imageLabel.setVisible(false);
-                pageLabel.setVisible(false);
-                pageSpinner.setVisible(false);
-                signatureVisibleCheckBox.setVisible(false);
+                pageLabel.setVisible(true);
+                pageSpinner.setVisible(true);
+                signatureVisibleCheckBox.setVisible(true);
                 reasonLabel.setVisible(true);
                 reasonField.setVisible(true);
                 locationLabel.setVisible(true);
                 locationField.setVisible(true);
                 contactInfoLabel.setVisible(true);
                 contactInfoField.setVisible(true);
+            } else {
+                imageLabel.setVisible(false);
+                pageLabel.setVisible(false);
+                pageSpinner.setVisible(false);
+                signatureVisibleCheckBox.setVisible(false);
+                reasonLabel.setVisible(false);
+                reasonField.setVisible(false);
+                locationLabel.setVisible(false);
+                locationField.setVisible(false);
+                contactInfoLabel.setVisible(false);
+                contactInfoField.setVisible(false);
+            }
+            if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
+                // OpenDocument formats, nothing to display/ask yet.
+            } else if (mimeType == MimeType.XML) {
+                // For toggling XML-specific options. Assuming enveloped for now, as in Factura Electrónica (but no default policy for EPES yet).
+            } else {
+                // Other formats, TODO: select if we want CAdES or XAdES.
             }
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
@@ -516,7 +533,7 @@ public class GUISwing implements GUIInterface {
             PasswordProtection pin = getPin();
             if (pin.getPassword() != null && pin.getPassword().length != 0) {
                 MimeType mimeType = toSignDocument.getMimeType();
-                if (mimeType == MimeType.PDF || isRemote) {
+                if (mimeType == MimeType.PDF) {
                     FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
                     firmador.selectSlot();
                     if (firmador.selectedSlot == -1) return;
