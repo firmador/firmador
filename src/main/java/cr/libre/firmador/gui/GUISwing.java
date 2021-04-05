@@ -194,9 +194,11 @@ public class GUISwing implements GUIInterface {
 
         JLabel fileLabel = new JLabel("Documento: ");
         fileField = new JTextField("(Vacío)");
+        fileField.setToolTipText("<html>Este campo indica el nombre del fichero<br>que está seleccionado para firmar o validar.</html>");
         fileField.setEditable(false);
         pageLabel = new JLabel("Página:");
         pageSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
+        pageSpinner.setToolTipText("<html>Este control permite seleccionar el número de página<br>para visualizar y seleccionar en cuál mostrar la firma visible.</html>");
         pageSpinner.setMaximumSize(pageSpinner.getPreferredSize());
         pageSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -214,14 +216,19 @@ public class GUISwing implements GUIInterface {
             }
         });
         signatureVisibleCheckBox = new JCheckBox(" Sin firma visible");
+        signatureVisibleCheckBox.setToolTipText("<html>Marque esta casilla si no desea presentar visualmete una firma<br>en las páginas del documento a la hora de firmarlo.</html>");
         signatureVisibleCheckBox.setOpaque(false);
         reasonLabel = new JLabel("Razón:");
         locationLabel = new JLabel("Lugar:");
         contactInfoLabel = new JLabel("Contacto:");
         reasonField = new JTextField();
+        reasonField.setToolTipText("<html>Este campo opcional permite indicar una razón<br>o motivo por el cual firma el documento.</html>");
         locationField = new JTextField();
+        locationField.setToolTipText("<html>Este campo opcional permite indicar el lugar físico,<br>por ejemplo la ciudad, desde la cual firma.</html>");
         contactInfoField = new JTextField();
+        contactInfoField.setToolTipText("<html>Este campo opcional permite indicar una<br>forma de contactar con la persona firmante,<br>por ejemplo una dirección de correo electrónico.</html>");
         signButton = new JButton("Firmar documento");
+        signButton.setToolTipText("<html>Este botón permite firmar el documento seleccionado.<br>Requiere dispositivo de Firma Digital<br>al cual se le solicitará ingresar el PIN.</html>");
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 signDocument();
@@ -230,6 +237,7 @@ public class GUISwing implements GUIInterface {
 
         reportLabel = new CopyableJLabel();
         extendButton = new JButton("Agregar sello de tiempo al documento");
+        extendButton.setToolTipText("<html>Este botón permite que el documento firmado que está cargado actualmente<br>se le amplíe el nivel de firma a AdES-LTA si no lo está, agregando un sello de<br>tiempo a nivel documento, con el propósito de archivado longevo.</html>");
         extendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 extendDocument();
@@ -237,26 +245,18 @@ public class GUISwing implements GUIInterface {
         });
 
         signButton.setEnabled(false);
-        pageLabel.setEnabled(false);
         pageLabel.setVisible(false);
-        pageSpinner.setEnabled(false);
         pageSpinner.setVisible(false);
-        signatureVisibleCheckBox.setEnabled(false);
         signatureVisibleCheckBox.setVisible(false);
-        reasonLabel.setEnabled(false);
         reasonLabel.setVisible(false);
-        reasonField.setEnabled(false);
         reasonField.setVisible(false);
-        locationLabel.setEnabled(false);
         locationLabel.setVisible(false);
-        locationField.setEnabled(false);
         locationField.setVisible(false);
-        contactInfoLabel.setEnabled(false);
         contactInfoLabel.setVisible(false);
-        contactInfoField.setEnabled(false);
         contactInfoField.setVisible(false);
         extendButton.setEnabled(false);
         JButton fileButton = new JButton("Elegir...");
+        fileButton.setToolTipText("<html>Haga clic en este botón para<br>elegir un fichero a firmar o validar.</html>");
 
         imageLabel = new JLabel();
         fileButton.addActionListener(new ActionListener() {
@@ -269,6 +269,7 @@ public class GUISwing implements GUIInterface {
         signatureLabel = new JLabel("<html><span style='font-size: 12pt'>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIRMA<br>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VISIBLE</span></html>");
+        //signatureLabel.setToolTipText("<html>Esta etiqueta es un recuadro arrastrable que representa<br>la ubicación de la firma visible en la página seleccionada.<br><br>Se puede cambiar su posición haciendo clic sobre el recuadro<br>y moviendo el mouse sin soltar el botón de clic<br>hasta soltarlo en la posición deseada.</html>");
         signatureLabel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
@@ -383,8 +384,11 @@ public class GUISwing implements GUIInterface {
 
         tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Firmar", signPanel);
+        tabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran las opciones<br>para firmar el documento seleccionado.</html>");
         tabbedPane.addTab("Validación", validateScrollPane);
+        tabbedPane.setToolTipTextAt(1, "<html>En esta pestaña se muestra información de validación<br>de las firmas digitales del documento seleccionado.</html>");
         tabbedPane.addTab("Acerca de", aboutPanel);
+        tabbedPane.setToolTipTextAt(2, "<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
 
         GroupLayout frameLayout = new GroupLayout(frame.getContentPane());
         frameLayout.setAutoCreateGaps(true);
@@ -405,7 +409,6 @@ public class GUISwing implements GUIInterface {
                     .addComponent(fileButton))
                 .addComponent(tabbedPane)
         );
-
         if (!isRemote) frame.getContentPane().setLayout(frameLayout);
         else frame.getContentPane().setLayout(signLayout);
 
@@ -414,6 +417,7 @@ public class GUISwing implements GUIInterface {
         frame.setMinimumSize(frame.getSize());
         frame.setLocationByPlatform(true);
         frame.setVisible(true);
+
         if (documenttosign != null) loadDocument(documenttosign);
     }
 
@@ -426,7 +430,7 @@ public class GUISwing implements GUIInterface {
         MimeType mimeType = mimeDocument.getMimeType();
         try {
             if (doc != null) doc.close();
-            if (mimeType == MimeType.PDF || isRemote) {
+            if (mimeType == MimeType.PDF) {
                 if (isRemote) doc = PDDocument.load(toSignByteArray); // FIXME Only supports PDF for remote for now
                 else doc = PDDocument.load(new File(fileName));
                 int pages = doc.getNumberOfPages();
@@ -445,16 +449,7 @@ public class GUISwing implements GUIInterface {
                     SpinnerNumberModel model = ((SpinnerNumberModel)pageSpinner.getModel());
                     model.setMinimum(1);
                     model.setMaximum(pages);
-                    pageLabel.setEnabled(true);
-                    pageSpinner.setEnabled(true);
                     pageSpinner.setValue(1);
-                    signatureVisibleCheckBox.setEnabled(true);
-                    reasonLabel.setEnabled(true);
-                    reasonField.setEnabled(true);
-                    locationLabel.setEnabled(true);
-                    locationField.setEnabled(true);
-                    contactInfoLabel.setEnabled(true);
-                    contactInfoField.setEnabled(true);
                 }
                 imageLabel.setBorder(new LineBorder(Color.BLACK));
                 imageLabel.setIcon(new ImageIcon(pageImage));
@@ -475,7 +470,6 @@ public class GUISwing implements GUIInterface {
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
         }
-
         if (!isRemote) {
             Validator validator = null;
             try {
@@ -500,7 +494,6 @@ public class GUISwing implements GUIInterface {
                 extendButton.setEnabled(false);
                 tabbedPane.setSelectedIndex(0);
             }
-
             if (validator != null) {
                 try {
                     Report report = new Report(validator.getReports());
@@ -558,17 +551,13 @@ public class GUISwing implements GUIInterface {
                     }
                 }
             }
-            if (isRemote) {
-                alreadySignedDocument = true;
-            }
+            if (isRemote) alreadySignedDocument = true;
         }
     }
 
     public void extendDocument() {
         String fileName = getDocumentToSign();
-
         if (fileName != null) {
-
             DSSDocument toExtendDocument = new FileDocument(fileName);
             DSSDocument extendedDocument = null;
             MimeType mimeType = toExtendDocument.getMimeType();
@@ -611,7 +600,7 @@ public class GUISwing implements GUIInterface {
     }
 
     public String getDocumentToSign() {
-        return fileField.getText();
+        return documenttosign;
     }
 
     public String getPathToSave() {
@@ -630,7 +619,6 @@ public class GUISwing implements GUIInterface {
         FileDialog saveDialog = null;
         saveDialog = new FileDialog(saveDialog, "Guardar documento", FileDialog.SAVE);
         saveDialog.setDirectory(lastDirectory);
-
         String dotExtension = "";
         int lastDot = lastFile.lastIndexOf(".");
         if (lastDot >= 0) dotExtension = lastFile.substring(lastDot);
@@ -644,7 +632,6 @@ public class GUISwing implements GUIInterface {
             lastDirectory = saveDialog.getDirectory();
             lastFile = saveDialog.getFile();
         }
-
         return fileName;
     }
 
@@ -681,7 +668,6 @@ public class GUISwing implements GUIInterface {
 
     public void setArgs(String[] args) {
         List<String> arguments = new ArrayList<String>();
-
         for (String params : args) {
             if (!params.startsWith("-")) arguments.add(params);
         }
@@ -693,7 +679,6 @@ public class GUISwing implements GUIInterface {
         String message = error.getLocalizedMessage();
         int messageType = JOptionPane.ERROR_MESSAGE;
         String className = error.getClass().getName();
-
         switch (className) {
             case "java.lang.NoSuchMethodError":
                 message = "Esta aplicación es actualmente incompatible con versiones superiores a Java 8<br>" +
@@ -746,9 +731,7 @@ public class GUISwing implements GUIInterface {
                     "para detallar mejor el posible motivo de este error en próximas versiones.";
                 break;
         }
-
         JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", messageType);
-
         if (messageType == JOptionPane.ERROR_MESSAGE) System.exit(0);
     }
 
@@ -758,7 +741,6 @@ public class GUISwing implements GUIInterface {
 
     public int getSelection(String[] options) {
         int dev = 0;
-
         if (options == null || options.length == 0) {
             String message = "No se ha encontrado ninguna tarjeta conectada.<br>" +
                 "Asegúrese de que la tarjeta y el lector están conectados de forma correcta.";
