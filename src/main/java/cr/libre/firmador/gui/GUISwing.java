@@ -422,7 +422,7 @@ public class GUISwing implements GUIInterface {
     }
 
     public void loadDocument(String fileName) {
-        fileField.setText(fileName);
+        fileField.setText(Paths.get(fileName).getFileName().toString());
         signButton.setEnabled(true);
         DSSDocument mimeDocument;
         if (isRemote) mimeDocument = toSignDocument;
@@ -600,7 +600,7 @@ public class GUISwing implements GUIInterface {
     }
 
     public String getDocumentToSign() {
-        return documenttosign;
+        return lastDirectory + lastFile;
     }
 
     public String getPathToSave() {
