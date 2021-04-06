@@ -29,7 +29,7 @@ public interface GUIInterface {
     void showMessage(String message);
     int getSelection(String[] options);
     String getDocumentToSign();
-    String getPathToSave();
+    String getPathToSave(String extension);
     PasswordProtection getPin();
 
 }

@@ -35,7 +35,7 @@ import eu.europa.esig.dss.enumerations.SignatureLevel;
 
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
-
+import eu.europa.esig.dss.model.MimeType;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
@@ -78,7 +78,8 @@ public class FirmadorXAdES extends CRSigner {
             DSSPrivateKeyEntry privateKey = getPrivateKey(token);
             CertificateToken certificate = privateKey.getCertificate();
             parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
-            parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
+            if (toSignDocument.getMimeType() == MimeType.XML) parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
+            else parameters.setSignaturePackaging(SignaturePackaging.DETACHED);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
             parameters.setPrettyPrint(true);

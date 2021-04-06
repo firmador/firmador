@@ -73,7 +73,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-//import cr.libre.firmador.FirmadorCAdES;
+import cr.libre.firmador.FirmadorCAdES;
 import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
 import cr.libre.firmador.FirmadorXAdES;
@@ -549,6 +549,7 @@ public class GUISwing implements GUIInterface {
             if (!isRemote) toSignDocument = new FileDocument(fileName);
             signedDocument = null;
             PasswordProtection pin = getPin();
+            String extension = "";
             if (pin.getPassword() != null && pin.getPassword().length != 0) {
                 MimeType mimeType = toSignDocument.getMimeType();
                 if (mimeType == MimeType.PDF) {
@@ -563,19 +564,25 @@ public class GUISwing implements GUIInterface {
                     firmador.selectSlot();
                     if (firmador.selectedSlot == -1) return;
                     signedDocument = firmador.sign(toSignDocument, pin);
-                } else {
-                    //FirmadorCAdES firmador = new FirmadorCAdES(GUISwing.this);
+                } else if (mimeType == MimeType.XML || AdESButtonGroup.getSelection().getActionCommand().equals("XAdES")) {
                     FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
                     firmador.selectSlot();
                     if (firmador.selectedSlot == -1) return;
                     signedDocument = firmador.sign(toSignDocument, pin);
+                    extension = ".xml";
+                } else {
+                    FirmadorCAdES firmador = new FirmadorCAdES(GUISwing.this);
+                    firmador.selectSlot();
+                    if (firmador.selectedSlot == -1) return;
+                    signedDocument = firmador.sign(toSignDocument, pin);
+                    extension = ".p7s"; // p7s detached, p7m enveloping
                 }
                 try {
                     pin.destroy();
                 } catch (Exception e) {}
             }
             if (signedDocument != null && !isRemote) {
-                fileName = getPathToSave();
+                fileName = getPathToSave(extension);
                 if (fileName != null) {
                     try {
                         signedDocument.save(fileName);
@@ -602,13 +609,12 @@ public class GUISwing implements GUIInterface {
             } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
                 FirmadorOpenDocument firmador = new FirmadorOpenDocument(GUISwing.this);
                 extendedDocument = firmador.extend(toExtendDocument);
-            } else {
-                //FirmadorCAdES firmador = new FirmadorCAdES(GUISwing.this);
+            } else if (mimeType == MimeType.XML) {
                 FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
                 extendedDocument = firmador.extend(toExtendDocument);
             }
             if (extendedDocument != null) {
-                fileName = getPathToSaveExtended();
+                fileName = getPathToSaveExtended("");
                 if (fileName != null) {
                     try {
                         extendedDocument.save(fileName);
@@ -638,25 +644,29 @@ public class GUISwing implements GUIInterface {
         return lastDirectory + lastFile;
     }
 
-    public String getPathToSave() {
+    public String getPathToSave(String extension) {
         if (documenttosave != null) return documenttosave;
-        String pathToSave = showSaveDialog("-firmado");
+        String pathToSave = showSaveDialog("-firmado", extension);
         return pathToSave;
     }
 
-    public String getPathToSaveExtended() {
-        String pathToExtend = showSaveDialog("-sellado");
+    public String getPathToSaveExtended(String extension) {
+        String pathToExtend = showSaveDialog("-sellado", extension);
         return pathToExtend;
     }
 
-    public String showSaveDialog(String suffix) {
+    public String showSaveDialog(String suffix, String extension) {
         String fileName = null;
         FileDialog saveDialog = null;
         saveDialog = new FileDialog(saveDialog, "Guardar documento", FileDialog.SAVE);
         saveDialog.setDirectory(lastDirectory);
         String dotExtension = "";
         int lastDot = lastFile.lastIndexOf(".");
-        if (lastDot >= 0) dotExtension = lastFile.substring(lastDot);
+        if (extension != "") {
+            suffix = ""; // XMLs could reuse same files, however
+            dotExtension = extension;
+        }
+        else if (lastDot >= 0) dotExtension = lastFile.substring(lastDot);
         saveDialog.setFile(lastFile.substring(0, lastFile.lastIndexOf(".")) + suffix + dotExtension);
         saveDialog.setFilenameFilter(loadDialog.getFilenameFilter());
         saveDialog.setLocationRelativeTo(null);

@@ -54,7 +54,7 @@ public class GUIShell implements GUIInterface {
                 pin.destroy();
             } catch (Exception e) {}
             if (signedDocument != null) {
-                fileName = getPathToSave();
+                fileName = getPathToSave("");
                 try {
                     signedDocument.save(fileName);
                     showMessage("Documento guardado satisfactoriamente en \n" + fileName);
@@ -98,7 +98,7 @@ public class GUIShell implements GUIInterface {
         return Paths.get(docpath).toAbsolutePath().toString();
     }
 
-    public String getPathToSave() {
+    public String getPathToSave(String extension) {
         String docpath = readFromInput("Ruta del documento a guardar: ");
         return Paths.get(docpath).toAbsolutePath().toString();
     }

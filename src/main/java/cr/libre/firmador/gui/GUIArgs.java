@@ -61,7 +61,7 @@ public class GUIArgs implements GUIInterface {
                 } catch (Exception e) {}
             } else signedDocument = firmador.timestamp(toSignDocument);
             if (signedDocument != null) {
-                fileName = getPathToSave();
+                fileName = getPathToSave("");
                 try {
                     signedDocument.save(fileName);
                     showMessage("Documento guardado satisfactoriamente en " + fileName);
@@ -94,7 +94,7 @@ public class GUIArgs implements GUIInterface {
         return documenttosign;
     }
 
-    public String getPathToSave() {
+    public String getPathToSave(String extension) {
         return documenttosave;
     }
 
