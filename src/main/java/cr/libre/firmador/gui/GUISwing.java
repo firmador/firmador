@@ -129,8 +129,12 @@ public class GUISwing implements GUIInterface {
     private byte[] toSignByteArray;
     private JLabel pageLabel;
     private JSpinner pageSpinner;
+    private JLabel AdESLabel;
+    private JRadioButton CAdESButton;
+    private JRadioButton XAdESButton;
     private JButton signButton;
     private JButton extendButton;
+    private ButtonGroup AdESButtonGroup;
     private BufferedImage pageImage;
     private PDDocument doc;
     private PDFRenderer renderer;
@@ -230,11 +234,14 @@ public class GUISwing implements GUIInterface {
         contactInfoField = new JTextField();
         contactInfoField.setToolTipText("<html>Este campo opcional permite indicar una<br>forma de contactar con la persona firmante,<br>por ejemplo una dirección de correo electrónico.</html>");
 
-        JRadioButton CAdESButton = new JRadioButton("CAdES");
+        AdESLabel = new JLabel("Formato de firma AdES:");
+        CAdESButton = new JRadioButton("CAdES");
+        CAdESButton.setActionCommand("CAdES");
         CAdESButton.setContentAreaFilled(false);
-        JRadioButton XAdESButton = new JRadioButton("XAdES", true);
+        XAdESButton = new JRadioButton("XAdES", true);
+        XAdESButton.setActionCommand("XAdES");
         XAdESButton.setContentAreaFilled(false);
-        ButtonGroup AdESButtonGroup = new ButtonGroup();
+        AdESButtonGroup = new ButtonGroup();
         AdESButtonGroup.add(CAdESButton);
         AdESButtonGroup.add(XAdESButton);
 
@@ -265,6 +272,9 @@ public class GUISwing implements GUIInterface {
         locationField.setVisible(false);
         contactInfoLabel.setVisible(false);
         contactInfoField.setVisible(false);
+        AdESLabel.setVisible(false);
+        CAdESButton.setVisible(false);
+        XAdESButton.setVisible(false);
         extendButton.setEnabled(false);
         JButton fileButton = new JButton("Elegir...");
         fileButton.setToolTipText("<html>Haga clic en este botón para<br>elegir un fichero a firmar o validar.</html>");
@@ -320,6 +330,7 @@ public class GUISwing implements GUIInterface {
                     .addComponent(contactInfoLabel)
                     .addComponent(locationLabel)
                     .addComponent(reasonLabel)
+                    .addComponent(AdESLabel)
                     .addComponent(pageLabel))
                 .addGroup(signLayout.createParallelGroup()
                     .addGroup(signLayout.createSequentialGroup()
@@ -328,6 +339,9 @@ public class GUISwing implements GUIInterface {
                     .addComponent(reasonField)
                     .addComponent(locationField)
                     .addComponent(contactInfoField)
+                    .addGroup(signLayout.createSequentialGroup()
+                        .addComponent(CAdESButton)
+                        .addComponent(XAdESButton))
                     .addComponent(signButton)));
         signLayout.setVerticalGroup(
             signLayout.createParallelGroup()
@@ -346,6 +360,10 @@ public class GUISwing implements GUIInterface {
                     .addGroup(signLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                         .addComponent(contactInfoField)
                         .addComponent(contactInfoLabel))
+                    .addGroup(signLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(AdESLabel)
+                        .addComponent(CAdESButton)
+                        .addComponent(XAdESButton))
                     .addComponent(signButton)));
         if (!isRemote) signPanel.setLayout(signLayout);
         signPanel.setOpaque(false);
@@ -441,6 +459,19 @@ public class GUISwing implements GUIInterface {
         MimeType mimeType = mimeDocument.getMimeType();
         try {
             if (doc != null) doc.close();
+            imageLabel.setVisible(false);
+            pageLabel.setVisible(false);
+            pageSpinner.setVisible(false);
+            signatureVisibleCheckBox.setVisible(false);
+            reasonLabel.setVisible(false);
+            reasonField.setVisible(false);
+            locationLabel.setVisible(false);
+            locationField.setVisible(false);
+            contactInfoLabel.setVisible(false);
+            contactInfoField.setVisible(false);
+            AdESLabel.setVisible(false);
+            CAdESButton.setVisible(false);
+            XAdESButton.setVisible(false);
             if (mimeType == MimeType.PDF) {
                 if (isRemote) doc = PDDocument.load(toSignByteArray);
                 else doc = PDDocument.load(new File(fileName));
@@ -465,24 +496,11 @@ public class GUISwing implements GUIInterface {
                 locationField.setVisible(true);
                 contactInfoLabel.setVisible(true);
                 contactInfoField.setVisible(true);
+            } else if (mimeType == MimeType.XML || mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
             } else {
-                imageLabel.setVisible(false);
-                pageLabel.setVisible(false);
-                pageSpinner.setVisible(false);
-                signatureVisibleCheckBox.setVisible(false);
-                reasonLabel.setVisible(false);
-                reasonField.setVisible(false);
-                locationLabel.setVisible(false);
-                locationField.setVisible(false);
-                contactInfoLabel.setVisible(false);
-                contactInfoField.setVisible(false);
-            }
-            if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
-                // OpenDocument formats, nothing to display/ask yet.
-            } else if (mimeType == MimeType.XML) {
-                // For toggling XML-specific options. Assuming enveloped for now, as in Factura Electrónica (but no default policy for EPES yet).
-            } else {
-                // Other formats, TODO: select if we want CAdES or XAdES.
+                AdESLabel.setVisible(true);
+                CAdESButton.setVisible(true);
+                XAdESButton.setVisible(true);
             }
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
