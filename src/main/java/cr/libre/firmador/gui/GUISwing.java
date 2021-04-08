@@ -451,7 +451,7 @@ public class GUISwing implements GUIInterface {
     }
 
     public void loadDocument(String fileName) {
-        fileField.setText(Paths.get(fileName).getFileName().toString());
+        if (!isRemote) fileField.setText(Paths.get(fileName).getFileName().toString());
         signButton.setEnabled(true);
         DSSDocument mimeDocument;
         if (isRemote) mimeDocument = toSignDocument;
