@@ -138,6 +138,7 @@ public class GUISwing implements GUIInterface {
     private BufferedImage pageImage;
     private PDDocument doc;
     private PDFRenderer renderer;
+    private JFrame frame;
 
     public void loadGUI() {
         try {
@@ -195,7 +196,7 @@ public class GUISwing implements GUIInterface {
             remote.execute();
         }
 
-        final JFrame frame = new JFrame("Firmador");
+        frame = new JFrame("Firmador");
         frame.setIconImage(image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
 
         JLabel fileLabel = new JLabel("Documento: ");
@@ -282,7 +283,7 @@ public class GUISwing implements GUIInterface {
         imageLabel = new JLabel();
         fileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                showLoadDialog(frame);
+                showLoadDialog();
                 frame.pack();
                 frame.setMinimumSize(frame.getSize());
             }
@@ -630,7 +631,7 @@ public class GUISwing implements GUIInterface {
         }
     }
 
-    private void showLoadDialog(JFrame frame) {
+    private void showLoadDialog() {
         loadDialog = new FileDialog(frame, "Seleccionar documento a firmar");
         loadDialog.setLocationRelativeTo(null);
         loadDialog.setVisible(true);
