@@ -502,6 +502,8 @@ public class GUISwing implements GUIInterface {
                 CAdESButton.setVisible(true);
                 XAdESButton.setVisible(true);
             }
+            frame.pack();
+            frame.setMinimumSize(frame.getSize());
         } catch (Exception e) {
             showError(Throwables.getRootCause(e));
         }
