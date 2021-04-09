@@ -34,13 +34,9 @@ public class Report {
     private StringWriter writer = new StringWriter();
 
     public Report(Reports reports) throws Exception {
-        Transformer transformer = DomUtils.getSecureTransformerFactory()
-            .newTemplates(new StreamSource(this.getClass().getResourceAsStream(
-                "/xslt/html/simple-report.xslt"))).newTransformer();
+        Transformer transformer = DomUtils.getSecureTransformerFactory().newTemplates(new StreamSource(this.getClass().getResourceAsStream("/xslt/html/simple-report.xslt"))).newTransformer();
         transformer.setErrorListener(new DSSXmlErrorListener());
-        transformer.transform(
-            new StreamSource(new StringReader(reports.getXmlSimpleReport())),
-            new StreamResult(writer));
+        transformer.transform(new StreamSource(new StringReader(reports.getXmlSimpleReport())), new StreamResult(writer));
     }
 
     public String getReport() {

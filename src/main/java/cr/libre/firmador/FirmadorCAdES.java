@@ -39,13 +39,13 @@ import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
-import eu.europa.esig.dss.enumerations.ASiCContainerType;
+
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
-import eu.europa.esig.dss.asic.xades.ASiCWithXAdESSignatureParameters;
+import eu.europa.esig.dss.cades.CAdESSignatureParameters;
 
 
 
-import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
+import eu.europa.esig.dss.cades.signature.CAdESService;
 
 import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 
@@ -55,42 +55,42 @@ import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 
 
-public class FirmadorOpenDocument extends CRSigner {
+public class FirmadorCAdES extends CRSigner {
 
 
-    ASiCWithXAdESSignatureParameters parameters;
+    CAdESSignatureParameters parameters;
 
 
-    public FirmadorOpenDocument(GUIInterface gui) {
+    public FirmadorCAdES(GUIInterface gui) {
         super(gui);
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin) {
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
-        ASiCWithXAdESService service = new ASiCWithXAdESService(verifier);
+        CAdESService service = new CAdESService(verifier);
 
-        parameters = new ASiCWithXAdESSignatureParameters();
+        parameters = new CAdESSignatureParameters();
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
         try {
             SignatureTokenConnection token = getSignatureConnection(pin);
             DSSPrivateKeyEntry privateKey = getPrivateKey(token);
             CertificateToken certificate = privateKey.getCertificate();
-            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
-            parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
+            parameters.setSignatureLevel(SignatureLevel.CAdES_BASELINE_LT);
+            parameters.setSignaturePackaging(SignaturePackaging.DETACHED);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
-            parameters.setPrettyPrint(true);
+
 
 
             List<CertificateToken> certificateChain = getCertificateChain(verifier, parameters);
             parameters.setCertificateChain(certificateChain);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
-            parameters.aSiC().setContainerType(ASiCContainerType.ASiC_E);
 
-            parameters.setEn319132(false);
+
+
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
             signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
         } catch (DSSException|Error e) {
@@ -109,7 +109,7 @@ public class FirmadorOpenDocument extends CRSigner {
                 "para este documento, debería agregarse lo antes posible antes de enviarlo al destinatario.<br>" +
                 "<br>" +
                 "Si lo prefiere, puede cancelar el guardado del documento firmado e intentar firmarlo más tarde.<br>");
-            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
+            parameters.setSignatureLevel(SignatureLevel.CAdES_BASELINE_B);
             try {
                 signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
             } catch (Exception ex) {
@@ -121,13 +121,13 @@ public class FirmadorOpenDocument extends CRSigner {
     }
 
     public DSSDocument extend(DSSDocument document) {
-        ASiCWithXAdESSignatureParameters parameters = new ASiCWithXAdESSignatureParameters();
-        parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
-        parameters.setPrettyPrint(true);
-        parameters.aSiC().setContainerType(ASiCContainerType.ASiC_E);
+        CAdESSignatureParameters parameters = new CAdESSignatureParameters();
+        parameters.setSignatureLevel(SignatureLevel.CAdES_BASELINE_LTA);
+
+
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
-        ASiCWithXAdESService service = new ASiCWithXAdESService(verifier);
+        CAdESService service = new CAdESService(verifier);
         OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
         service.setTspSource(onlineTSPSource);
         DSSDocument extendedDocument = null;

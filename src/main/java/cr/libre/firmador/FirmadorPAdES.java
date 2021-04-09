@@ -59,37 +59,13 @@ public class FirmadorPAdES extends CRSigner {
 
     private int page = 1, x, y;
     PAdESSignatureParameters parameters;
-    private boolean visible_signature = true;
+    private boolean visibleSignature = true;
 
     public FirmadorPAdES(GUIInterface gui) {
         super(gui);
     }
 
-    public DSSDocument timestamp(DSSDocument documentToTimestamp) {
-        CertificateVerifier verifier = this.getCertificateVerifier();
-        verifier.setCheckRevocationForUntrustedChains(true);
-        PAdESService service = new PAdESService(verifier);
-        DSSDocument timestampedDocument = null;
-        try {
-            OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
-            service.setTspSource(onlineTSPSource);
-        } catch (DSSException|Error e) {
-            gui.showError(Throwables.getRootCause(e));
-        }
-        try {
-            timestampedDocument = service.timestamp(documentToTimestamp,
-                new PAdESTimestampParameters());
-        } catch (Exception e) {
-            e.printStackTrace();
-            gui.showError(Throwables.getRootCause(e));
-        }
-        return timestampedDocument;
-    }
-
-    public DSSDocument sign(DSSDocument toSignDocument,
-        PasswordProtection pin, String reason, String location,
-        String contactInfo, String image) {
-
+    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin, String reason, String location, String contactInfo, String image) {
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
         PAdESService service = new PAdESService(verifier);
@@ -105,67 +81,47 @@ public class FirmadorPAdES extends CRSigner {
             parameters.setContentSize(13312);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
-            if (reason != null && !reason.trim().isEmpty())
-                parameters.setReason(reason);
-            if (location != null && !location.trim().isEmpty())
-                parameters.setLocation(location);
-            if (contactInfo != null && !contactInfo .trim().isEmpty())
-                parameters.setContactInfo(contactInfo);
-            List<CertificateToken> certificateChain = getCertificateChain(
-                verifier, parameters);
+            if (reason != null && !reason.trim().isEmpty()) parameters.setReason(reason);
+            if (location != null && !location.trim().isEmpty()) parameters.setLocation(location);
+            if (contactInfo != null && !contactInfo .trim().isEmpty()) parameters.setContactInfo(contactInfo);
+            List<CertificateToken> certificateChain = getCertificateChain(verifier, parameters);
             parameters.setCertificateChain(certificateChain);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
             Date date = new Date();
-            if (visible_signature) {
-                appendVisibleSignature(certificate, date, reason, location,
-                    contactInfo, image);
-            }
+            if (visibleSignature) appendVisibleSignature(certificate, date, reason, location, contactInfo, image);
             parameters.bLevel().setSigningDate(date);
-            ToBeSigned dataToSign = service.getDataToSign(toSignDocument,
-                parameters);
-            signatureValue = token.sign(dataToSign,
-                parameters.getDigestAlgorithm(), privateKey);
+            ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
+            signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
         } catch (DSSException|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
 
         try {
-            signedDocument = service.signDocument(toSignDocument, parameters,
-                signatureValue);
+            signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
         } catch (Exception e) {
             e.printStackTrace();
-            gui.showMessage(
-                "Aviso: no se ha podido agregar el sello de tiempo y la " +
-                "información de revocación porque es posible<br>" +
-                "que haya problemas de conexión a Internet o con los " +
-                "servidores del sistema de Firma Digital.<br>" +
+            gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
+                "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
                 "Detalle del error: " + Throwables.getRootCause(e) + "<br>" +
                 "<br>" +
-                "Se ha agregado una firma básica solamente. No obstante, si " +
-                "el sello de tiempo resultara importante<br>" +
-                "para este documento, debería agregarse lo antes posible " +
-                "antes de enviarlo al destinatario.<br>" +
+                "Se ha agregado una firma básica solamente. No obstante, si el sello de tiempo resultara importante<br>" +
+                "para este documento, debería agregarse lo antes posible antes de enviarlo al destinatario.<br>" +
                 "<br>" +
-                "Si lo prefiere, puede cancelar el guardado del documento " +
-                "firmado e intentar firmarlo más tarde.<br>");
-
+                "Si lo prefiere, puede cancelar el guardado del documento firmado e intentar firmarlo más tarde.<br>");
             parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
             try {
-                signedDocument = service.signDocument(toSignDocument,
-                    parameters, signatureValue);
+                signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
             } catch (Exception ex) {
                 e.printStackTrace();
                 gui.showError(Throwables.getRootCause(e));
             }
         }
-
         return signedDocument;
     }
 
     public DSSDocument extend(DSSDocument document) {
-        PAdESSignatureParameters parameters =
-            new PAdESSignatureParameters();
+        PAdESSignatureParameters parameters = new PAdESSignatureParameters();
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
         parameters.setContentSize(3072);
 
@@ -176,33 +132,41 @@ public class FirmadorPAdES extends CRSigner {
         service.setTspSource(onlineTSPSource);
         DSSDocument extendedDocument = null;
         try {
-            extendedDocument = service.extendDocument(document,
-                parameters);
+            extendedDocument = service.extendDocument(document, parameters);
         } catch (Exception e) {
             e.printStackTrace();
-            gui.showMessage(
-                "Aviso: no se ha podido agregar el sello de tiempo y la " +
-                "información de revocación porque es posible<br>" +
-                "que haya problemas de conexión a Internet o con los " +
-                "servidores del sistema de Firma Digital.<br>" +
+            gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
+                "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
                 "Detalle del error: " + Throwables.getRootCause(e) + "<br>" +
                 "<br>" +
-                "Inténtelo de nuevo más tarde. Si el problema persiste, " +
-                "compruebe su conexión o verifique<br>" +
-                "que no se trata de un problema de los servidores de Firma " +
-                "Digital o de un error de este programa.<br>");
+                "Inténtelo de nuevo más tarde. Si el problema persiste, compruebe su conexión o verifique<br>" +
+                "que no se trata de un problema de los servidores de Firma Digital o de un error de este programa.<br>");
         }
-
         return extendedDocument;
     }
 
-    public boolean isVisible_signature() {
-        return visible_signature;
+    public DSSDocument timestamp(DSSDocument documentToTimestamp) {
+        CertificateVerifier verifier = this.getCertificateVerifier();
+        verifier.setCheckRevocationForUntrustedChains(true);
+        PAdESService service = new PAdESService(verifier);
+        DSSDocument timestampedDocument = null;
+        try {
+            OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
+            service.setTspSource(onlineTSPSource);
+        } catch (DSSException|Error e) {
+            gui.showError(Throwables.getRootCause(e));
+        }
+        try {
+            timestampedDocument = service.timestamp(documentToTimestamp, new PAdESTimestampParameters());
+        } catch (Exception e) {
+            e.printStackTrace();
+            gui.showError(Throwables.getRootCause(e));
+        }
+        return timestampedDocument;
     }
 
-
-    public void setVisible_signature(boolean visible_signature) {
-        this.visible_signature = visible_signature;
+    public void setVisibleSignature(boolean visibleSignature) {
+        this.visibleSignature = visibleSignature;
     }
 
     public void addVisibleSignature(int page, int x, int y) {
@@ -211,27 +175,18 @@ public class FirmadorPAdES extends CRSigner {
         this.y = y;
     }
 
-    private void appendVisibleSignature(CertificateToken certificate,
-        Date date, String reason, String location, String contactInfo,
-        String image) {
-        SignatureImageParameters imageParameters =
-            new SignatureImageParameters();
+    private void appendVisibleSignature(CertificateToken certificate, Date date, String reason, String location, String contactInfo, String image) {
+        SignatureImageParameters imageParameters = new SignatureImageParameters();
         imageParameters.getFieldParameters().setOriginX(x);
         imageParameters.getFieldParameters().setOriginY(y);
-        SignatureImageTextParameters textParameters =
-            new SignatureImageTextParameters();
-        textParameters.setFont(
-            new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
+        SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
+        textParameters.setFont(new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
         String cn = DSSASN1Utils.getSubjectCommonName(certificate);
         X500PrincipalHelper subject = certificate.getSubject();
-        String o = DSSASN1Utils.extractAttributeFromX500Principal(
-            BCStyle.O, subject);
-        String sn = DSSASN1Utils.extractAttributeFromX500Principal(
-            BCStyle.SERIALNUMBER, subject);
-        String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
-            .format(date);
-        String additionalText =
-            "Esta representación visual no es fuente" + "\n" +
+        String o = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.O, subject);
+        String sn = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.SERIALNUMBER, subject);
+        String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a").format(date);
+        String additionalText = "Esta representación visual no es fuente" + "\n" +
             "de confianza. Valide siempre la firma.";
         Boolean hasReason = false;
         Boolean hasLocation = false;
@@ -245,23 +200,20 @@ public class FirmadorPAdES extends CRSigner {
             else additionalText = "Lugar: " + location;
         }
         if (contactInfo != null && !contactInfo .trim().isEmpty()) {
-            if (hasReason || hasLocation)
-                additionalText += "  Contacto: " + contactInfo;
+            if (hasReason || hasLocation) additionalText += "  Contacto: " + contactInfo;
             else additionalText = "Contacto: " + contactInfo;
         }
-        textParameters.setText(
-            "Firmado por " + cn + "\n" +
+        textParameters.setText("Firmado por " + cn + "\n" +
             o + ", " + sn + "." + "\n" +
-            "Fecha declarada: " + fecha + "\n" +
-            additionalText);
+            "Fecha declarada: " + fecha + "\n" + additionalText);
         textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
         textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
         imageParameters.setTextParameters(textParameters);
         try {
-            if (image != null && !image.trim().isEmpty())
-                imageParameters.setImage(new InMemoryDocument(
-                    Utils.toByteArray(new URL(image).openStream())));
-        } catch (IOException e) { e.printStackTrace(); }
+            if (image != null && !image.trim().isEmpty()) imageParameters.setImage(new InMemoryDocument(Utils.toByteArray(new URL(image).openStream())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         imageParameters.getFieldParameters().setPage(page);
         parameters.setImageParameters(imageParameters);
     }
