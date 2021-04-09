@@ -159,12 +159,14 @@ public class GUISwing implements GUIInterface {
         if (isRemote) {
             SwingWorker<Void, byte[]> remote = new SwingWorker<Void, byte[]>() {
                 private HttpServer server;
+                private String requestFileName;
                 protected Void doInBackground() throws IOException, InterruptedException {
                     HttpRequestHandler requestHandler = new HttpRequestHandler() {
                         public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
                             response.setHeader("Access-Control-Allow-Origin", origin);
                             response.setHeader("Vary", "Origin");
                             if (request.getRequestLine().getUri().equals("/close")) System.exit(0);
+                            requestFileName = request.getRequestLine().getUri().substring(1);
                             response.setStatusCode(HttpStatus.SC_ACCEPTED);
                             if (request instanceof HttpEntityEnclosingRequest) {
                                 HttpEntity entity = ((HttpEntityEnclosingRequest)request).getEntity();
@@ -189,7 +191,7 @@ public class GUISwing implements GUIInterface {
                 }
                 protected void process(List<byte[]> chunks) {
                     toSignByteArray = chunks.get(chunks.size() - 1);
-                    toSignDocument = new InMemoryDocument(toSignByteArray);
+                    toSignDocument = new InMemoryDocument(toSignByteArray, requestFileName);
                     loadDocument(null);
                 }
             };
