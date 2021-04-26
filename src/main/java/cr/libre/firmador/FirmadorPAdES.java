@@ -65,7 +65,7 @@ public class FirmadorPAdES extends CRSigner {
         super(gui);
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin, String reason, String location, String contactInfo, String image) {
+    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
         PAdESService service = new PAdESService(verifier);
@@ -89,7 +89,7 @@ public class FirmadorPAdES extends CRSigner {
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
             Date date = new Date();
-            if (visibleSignature) appendVisibleSignature(certificate, date, reason, location, contactInfo, image);
+            if (visibleSignature) appendVisibleSignature(certificate, date, reason, location, contactInfo, image, hideSignatureAdvice);
             parameters.bLevel().setSigningDate(date);
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
             signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
@@ -175,7 +175,7 @@ public class FirmadorPAdES extends CRSigner {
         this.y = y;
     }
 
-    private void appendVisibleSignature(CertificateToken certificate, Date date, String reason, String location, String contactInfo, String image) {
+    private void appendVisibleSignature(CertificateToken certificate, Date date, String reason, String location, String contactInfo, String image, Boolean hideAdvice) {
         SignatureImageParameters imageParameters = new SignatureImageParameters();
         imageParameters.getFieldParameters().setOriginX(x);
         imageParameters.getFieldParameters().setOriginY(y);
@@ -186,8 +186,11 @@ public class FirmadorPAdES extends CRSigner {
         String o = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.O, subject);
         String sn = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.SERIALNUMBER, subject);
         String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a").format(date);
-        String additionalText = "Esta representación visual no es fuente" + "\n" +
-            "de confianza. Valide siempre la firma.";
+        String additionalText = "";
+        if (!hideAdvice) {
+            additionalText = "Esta representación visual no es fuente" + "\n" +
+                "de confianza. Valide siempre la firma.";
+        }
         Boolean hasReason = false;
         Boolean hasLocation = false;
         if (reason != null && !reason.trim().isEmpty()) {

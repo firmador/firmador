@@ -49,7 +49,7 @@ public class GUIShell implements GUIInterface {
             firmador.selectSlot();
             PasswordProtection pin = getPin();
             DSSDocument toSignDocument = new FileDocument(fileName);
-            DSSDocument signedDocument = firmador.sign(toSignDocument, pin, null, null, null, null);
+            DSSDocument signedDocument = firmador.sign(toSignDocument, pin, null, null, null, null, null);
             try {
                 pin.destroy();
             } catch (Exception e) {}
