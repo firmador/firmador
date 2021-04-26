@@ -103,3 +103,15 @@ una propiedad a un fichero JNLP llamada `jnlp.signatureImage` con el valor
 correspondiente a una URL que contenga la imagen. El tamaño sugerido es de 170
 pixeles de alto y aparecerá a la izquierda del texto de la firma. Este
 parámetro también se puede agregar por línea de comandos.
+
+
+## ¿Es posible quitar el mensaje de que la firma visible no es fuente de confianza?
+
+Este mensaje opcional es una recomendación de la norma PAdES parte 6 para
+que las personas no capacitadas en Firma Digital no crean que la representación
+visual de la firma (firma visible) es una firma digital como tal. Firmador
+actualmente en el caso de modificar alguno de los campos de razón, lugar y
+contacto, el mensaje se reemplazará por uno o más de los valores ingresados en
+estos campos. Si aun así se desea eliminar el texto cuando no se rellena
+ninguno de esos campos opcionales, se puede realizar mediante JNLP agregando la
+propiedad `jnlp.hideSignatureAdvice` con el valor `true`.

@@ -55,7 +55,7 @@ public class GUIArgs implements GUIInterface {
             DSSDocument signedDocument = null;
             if (!timestamp) {
                 PasswordProtection pin = getPin();
-                signedDocument = firmador.sign(toSignDocument, pin, null, null, null, null);
+                signedDocument = firmador.sign(toSignDocument, pin, null, null, null, null, null);
                 try {
                     pin.destroy();
                 } catch (Exception e) {}
