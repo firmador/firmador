@@ -27,6 +27,7 @@ import java.security.KeyStore.PasswordProtection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import cr.libre.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
@@ -145,7 +146,7 @@ public class FirmadorPAdES extends CRSigner {
         return extendedDocument;
     }
 
-    public DSSDocument timestamp(DSSDocument documentToTimestamp) {
+    public DSSDocument timestamp(DSSDocument documentToTimestamp, Boolean visibleTimestamp) {
         CertificateVerifier verifier = this.getCertificateVerifier();
         verifier.setCheckRevocationForUntrustedChains(true);
         PAdESService service = new PAdESService(verifier);
@@ -157,7 +158,25 @@ public class FirmadorPAdES extends CRSigner {
             gui.showError(Throwables.getRootCause(e));
         }
         try {
-            timestampedDocument = service.timestamp(documentToTimestamp, new PAdESTimestampParameters());
+            PAdESTimestampParameters timestampParameters = new PAdESTimestampParameters();
+            if (visibleTimestamp) {
+                SignatureImageParameters imageParameters = new SignatureImageParameters();
+                imageParameters.getFieldParameters().setOriginX(0);
+                imageParameters.getFieldParameters().setOriginY(0);
+                SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
+                textParameters.setFont(new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
+                SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+                date.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
+                textParameters.setText("Este documento incluye un sello de tiempo de la" + "\n" +
+                    "Autoridad de Sellado de Tiempo (TSA) del SINPE.\n" +
+                    "Fecha de solicitud a la TSA: " + date.format(new Date()));
+                textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
+                textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
+                imageParameters.setTextParameters(textParameters);
+                imageParameters.getFieldParameters().setPage(1);
+                timestampParameters.setImageParameters(imageParameters);
+            }
+            timestampedDocument = service.timestamp(documentToTimestamp, timestampParameters);
         } catch (Exception e) {
             e.printStackTrace();
             gui.showError(Throwables.getRootCause(e));

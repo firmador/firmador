@@ -34,6 +34,8 @@ opcional.
 El parámetro -timestamp permite agregar sellos de tiempo a documentos. Cuando
 se define, no firmará, solo sellará, por lo que no requiere suministrar PIN.
 
+El parámetro -visible-timestamp es similar a -timestamp pero muestra una
+representación visual dentro de los documentos PDF.
 
 ## ¿Cómo integrar firmador en un sitio web para que se lance la app, cargue un documento en la app y suba el documento firmado automáticamente?
 
