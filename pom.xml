@@ -3,7 +3,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cr.libre.firmador</groupId>
   <artifactId>firmador</artifactId>
-  <packaging>jar</packaging>
   <version>1.8.2</version>
   <name>firmador</name>
   <url>https://firmador.libre.cr</url>
