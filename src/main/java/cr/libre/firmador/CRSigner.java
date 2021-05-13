@@ -51,8 +51,7 @@ public class CRSigner {
         selectedSlot = -1;
     }
 
-    protected DSSPrivateKeyEntry
-        getPrivateKey(SignatureTokenConnection signingToken) {
+    protected DSSPrivateKeyEntry getPrivateKey(SignatureTokenConnection signingToken) {
         /*
          * Uses first non-repudiation key available assuming there are no more,
          * keys with the same purpose with the same token.
@@ -74,8 +73,7 @@ public class CRSigner {
         return Utils.getPKCS11Lib();
     }
 
-    public SignatureTokenConnection
-        getSignatureConnection(PasswordProtection pin) {
+    public SignatureTokenConnection getSignatureConnection(PasswordProtection pin) {
         /*
          * There should be other ways to find alternative PKCS#11 module
          * configuration settings in the future, operating system specific,
