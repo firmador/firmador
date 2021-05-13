@@ -38,6 +38,11 @@ El parámetro `-visible-timestamp` es similar a `-timestamp` pero muestra una
 representación visual dentro de los documentos PDF en la esquina superior
 izquierda de la primera página.
 
+Es posible utilizar un tercer parámetro en la interfaz args para firmar con
+un fichero de almacén de certificados. Se puede utilizar de la siguiente forma:
+
+    echo contraseña | java -jar firmador.jar -dargs original.pdf firmado.pdf almacen.p12
+
 
 ## ¿Cómo integrar firmador en un sitio web para que se lance la app, cargue un documento en la app y suba el documento firmado automáticamente?
 

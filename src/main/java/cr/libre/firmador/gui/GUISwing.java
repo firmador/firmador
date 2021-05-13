@@ -805,4 +805,9 @@ public class GUISwing implements GUIInterface {
         return dev;
     }
 
+    @Override
+    public String getPkcs12file() {
+        return "";
+    }
+
 }
