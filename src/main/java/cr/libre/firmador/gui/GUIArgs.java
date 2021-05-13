@@ -39,6 +39,7 @@ public class GUIArgs implements GUIInterface {
 
     private String documenttosign;
     private String documenttosave;
+    private String pkcs12file = "";
     private int slot;
     private Boolean timestamp = false;
     private Boolean visibleTimestamp = false;
@@ -51,7 +52,8 @@ public class GUIArgs implements GUIInterface {
             // FirmadorOpenDocument firmador = new FirmadorOpenDocument(this);
             FirmadorPAdES firmador = new FirmadorPAdES(this);
             // FirmadorXAdES firmador = new FirmadorXAdES(this);
-            firmador.selectSlot();
+            firmador.selectP12();
+            if (pkcs12file == null || pkcs12file.isEmpty()) firmador.selectSlot();
             DSSDocument toSignDocument = new FileDocument(fileName);
             DSSDocument signedDocument = null;
             if (!timestamp && !visibleTimestamp) {
@@ -84,6 +86,7 @@ public class GUIArgs implements GUIInterface {
         }
         documenttosign = Paths.get(arguments.get(0)).toAbsolutePath().toString();
         documenttosave = Paths.get(arguments.get(1)).toAbsolutePath().toString();
+        if (arguments.size() > 2) pkcs12file = Paths.get(arguments.get(2)).toAbsolutePath().toString();
     }
 
     public void showError(Throwable error) {
@@ -122,4 +125,8 @@ public class GUIArgs implements GUIInterface {
         return slot;
     }
 
+    @Override
+    public String getPkcs12file() {
+        return pkcs12file;
+    }
 }

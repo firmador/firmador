@@ -206,7 +206,7 @@ public class FirmadorPAdES extends CRSigner {
         String sn = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.SERIALNUMBER, subject);
         String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a").format(date);
         String additionalText = "";
-        if (!hideAdvice) {
+        if (hideAdvice != null && !hideAdvice) {
             additionalText = "Esta representación visual no es fuente" + "\n" +
                 "de confianza. Valide siempre la firma.";
         }

@@ -3,8 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cr.libre.firmador</groupId>
   <artifactId>firmador</artifactId>
-  <packaging>jar</packaging>
-  <version>1.8.2</version>
+  <version>1.8.3</version>
   <name>firmador</name>
   <url>https://firmador.libre.cr</url>
   <properties>
@@ -13,6 +12,7 @@
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.fork>true</maven.compiler.fork>
     <dss.version>5.8</dss.version>
     <slf4j.version>1.7.30</slf4j.version>
   </properties>

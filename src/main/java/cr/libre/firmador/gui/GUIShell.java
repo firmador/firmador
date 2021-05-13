@@ -141,4 +141,9 @@ public class GUIShell implements GUIInterface {
         return 0;
     }
 
+    @Override
+    public String getPkcs12file() {
+        return "";
+    }
+
 }

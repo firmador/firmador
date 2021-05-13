@@ -36,6 +36,7 @@ import eu.europa.esig.dss.service.ocsp.OnlineOCSPSource;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.Pkcs11SignatureToken;
+import eu.europa.esig.dss.token.Pkcs12SignatureToken;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
@@ -45,14 +46,15 @@ public class CRSigner {
     public static final String TSA_URL = "http://tsa.sinpe.fi.cr/tsaHttp/";
     protected GUIInterface gui;
     public int selectedSlot;
+    public String selectedP12;
 
     public CRSigner(GUIInterface gui) {
         this.gui = gui;
         selectedSlot = -1;
+        selectedP12 = "";
     }
 
-    protected DSSPrivateKeyEntry
-        getPrivateKey(SignatureTokenConnection signingToken) {
+    protected DSSPrivateKeyEntry getPrivateKey(SignatureTokenConnection signingToken) {
         /*
          * Uses first non-repudiation key available assuming there are no more,
          * keys with the same purpose with the same token.
@@ -74,8 +76,7 @@ public class CRSigner {
         return Utils.getPKCS11Lib();
     }
 
-    public SignatureTokenConnection
-        getSignatureConnection(PasswordProtection pin) {
+    public SignatureTokenConnection getSignatureConnection(PasswordProtection pin) {
         /*
          * There should be other ways to find alternative PKCS#11 module
          * configuration settings in the future, operating system specific,
@@ -83,26 +84,31 @@ public class CRSigner {
          * some homologated devices already for Sello Electrónico).
          */
         SignatureTokenConnection signingToken = null;
-        if (this.selectedSlot != -1) signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin, (int)selectedSlot);
-        else {
-            Token token = new Token();
-            long[] slots = null;
-            try {
+        try {
+            if (!this.selectedP12.isEmpty()) signingToken = new Pkcs12SignatureToken(selectedP12, pin);
+            else if (this.selectedSlot != -1) signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin, (int)selectedSlot);
+            else {
+                Token token = new Token();
+                long[] slots = null;
                 slots = token.getSlots();
-            } catch (Exception|Error e) {
-                gui.showError(Throwables.getRootCause(e));
-            }
-            if (slots != null) {
-                if (slots.length > 0) {
-                    if (slots.length == 1) signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin);
-                    else {
-                        selectedSlot = getSelectedSlot(token, slots);
-                        signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin, selectedSlot);
+                if (slots != null) {
+                    if (slots.length > 0) {
+                        if (slots.length == 1) signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin);
+                        else {
+                            selectedSlot = getSelectedSlot(token, slots);
+                            signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin, selectedSlot);
+                        }
                     }
                 }
             }
+        } catch (Exception|Error e) {
+            gui.showError(Throwables.getRootCause(e));
         }
         return signingToken;
+    }
+
+    public void selectP12() {
+        selectedP12 = gui.getPkcs12file();
     }
 
     public void selectSlot() {
@@ -127,11 +133,11 @@ public class CRSigner {
         CommonCertificateVerifier commonCertificateVerifier = new CommonCertificateVerifier();
         // AIA
         CommonsDataLoader commonsHttpDataLoader = new CommonsDataLoader();
-        // CRLs
+        // CRL
         OnlineCRLSource onlineCRLSource = new OnlineCRLSource();
         onlineCRLSource.setDataLoader(commonsHttpDataLoader);
         commonCertificateVerifier.setCrlSource(onlineCRLSource);
-        // OSCP
+        // OCSP
         OnlineOCSPSource onlineOCSPSource = new OnlineOCSPSource();
         onlineOCSPSource.setDataLoader(commonsHttpDataLoader);
         commonCertificateVerifier.setOcspSource(onlineOCSPSource);
