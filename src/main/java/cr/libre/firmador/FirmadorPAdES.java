@@ -26,7 +26,6 @@ import java.net.URL;
 import java.security.KeyStore.PasswordProtection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 
 import cr.libre.firmador.gui.GUIInterface;
@@ -85,8 +84,6 @@ public class FirmadorPAdES extends CRSigner {
             if (reason != null && !reason.trim().isEmpty()) parameters.setReason(reason);
             if (location != null && !location.trim().isEmpty()) parameters.setLocation(location);
             if (contactInfo != null && !contactInfo .trim().isEmpty()) parameters.setContactInfo(contactInfo);
-            List<CertificateToken> certificateChain = getCertificateChain(verifier, parameters);
-            parameters.setCertificateChain(certificateChain);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
             Date date = new Date();

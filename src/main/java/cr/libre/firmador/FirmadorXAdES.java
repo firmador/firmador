@@ -26,7 +26,7 @@ package cr.libre.firmador;
 import java.security.KeyStore.PasswordProtection;
 
 
-import java.util.List;
+
 
 import cr.libre.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
@@ -84,9 +84,6 @@ public class FirmadorXAdES extends CRSigner {
             parameters.setSigningCertificate(certificate);
             parameters.setPrettyPrint(true);
 
-
-            List<CertificateToken> certificateChain = getCertificateChain(verifier, parameters);
-            parameters.setCertificateChain(certificateChain);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
 

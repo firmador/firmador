@@ -69,7 +69,7 @@ librería implementación de referencia de los formatos AdES.
 La rama de desarrollo de DSS puede obtener desde el repositorio oficial
 descargando solo lo necesario mediante el siguiente comando:
 
-    git clone --branch develop --depth 1 --single-branch https://ec.europa.eu/cefdigital/code/scm/esig/dss.git
+    git clone --branch develop --depth 1 --single-branch https://github.com/esig/dss.git
 
 Para entrar en el directorio del repositorio descargado:
 

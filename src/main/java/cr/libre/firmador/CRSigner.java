@@ -34,6 +34,10 @@ import eu.europa.esig.dss.service.crl.OnlineCRLSource;
 import eu.europa.esig.dss.service.http.commons.CommonsDataLoader;
 import eu.europa.esig.dss.service.ocsp.OnlineOCSPSource;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.x509.aia.DefaultAIASource;
+import eu.europa.esig.dss.spi.x509.CertificateSource;
+import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
+import eu.europa.esig.dss.spi.x509.CommonTrustedCertificateSource;
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.Pkcs11SignatureToken;
 import eu.europa.esig.dss.token.Pkcs12SignatureToken;
@@ -130,36 +134,22 @@ public class CRSigner {
     }
 
     public CertificateVerifier getCertificateVerifier() {
-        CommonCertificateVerifier commonCertificateVerifier = new CommonCertificateVerifier();
-        // AIA
-        CommonsDataLoader commonsHttpDataLoader = new CommonsDataLoader();
-        // CRL
-        OnlineCRLSource onlineCRLSource = new OnlineCRLSource();
-        onlineCRLSource.setDataLoader(commonsHttpDataLoader);
-        commonCertificateVerifier.setCrlSource(onlineCRLSource);
-        // OCSP
-        OnlineOCSPSource onlineOCSPSource = new OnlineOCSPSource();
-        onlineOCSPSource.setDataLoader(commonsHttpDataLoader);
-        commonCertificateVerifier.setOcspSource(onlineOCSPSource);
-        return commonCertificateVerifier;
-    }
-
-    public List<CertificateToken> getCertificateChain(CertificateVerifier commonCertificateVerifier, SerializableSignatureParameters parameters) {
-        List<CertificateToken> certificateChain = new ArrayList<CertificateToken>();
-        List<CertificateToken> cert = new ArrayList<CertificateToken>(DSSUtils.loadPotentialIssuerCertificates(parameters.getSigningCertificate(), commonCertificateVerifier.getDataLoader()));
-        if (cert != null && !cert.isEmpty()) {
-            certificateChain.add(cert.get(0));
-            do {
-                cert = new ArrayList<CertificateToken>(DSSUtils.loadPotentialIssuerCertificates(cert.get(0), commonCertificateVerifier.getDataLoader()));
-                if (!cert.isEmpty()) certificateChain.add(cert.get(0));
-            } while (!cert.isEmpty());
-        } else {
-            // Failed to fetch from AIA (e.g. offline), fallback to resources
-            certificateChain.add(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA SINPE - PERSONA FISICA v2.cer")));
-            certificateChain.add(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA POLITICA PERSONA FISICA - COSTA RICA v2.crt")));
-            certificateChain.add(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA RAIZ NACIONAL - COSTA RICA v2.crt")));
-        }
-        return certificateChain;
+        CertificateSource trustedCertSource = new CommonTrustedCertificateSource();
+        trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA RAIZ NACIONAL - COSTA RICA v2.crt")));
+        trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA RAIZ NACIONAL COSTA RICA.cer")));
+        // For AdES Baseline B signing without Internet connection for fetching intermediates from AIA.
+        // Costa Rica smart card certificate store chip from SINPE don't include intermediate certificates. This has been reported. No feedback received so far.
+        CertificateSource adjunctCertSource = new CommonCertificateSource();
+        adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA SINPE - PERSONA FISICA v2.cer")));
+        adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA POLITICA PERSONA FISICA - COSTA RICA v2.crt")));
+        adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA RAIZ NACIONAL - COSTA RICA v2.crt")));
+        CommonCertificateVerifier cv = new CommonCertificateVerifier();
+        cv.setTrustedCertSources(trustedCertSource);
+        cv.setAdjunctCertSources(adjunctCertSource);
+        cv.setCrlSource(new OnlineCRLSource());
+        cv.setOcspSource(new OnlineOCSPSource());
+        cv.setAIASource(new DefaultAIASource());
+        return cv;
     }
 
     public void setSlot(int slot) {
