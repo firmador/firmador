@@ -1,22 +1,7 @@
-<ConstraintsParameters Name="Lista de control para Costa Rica" xmlns="http://dss.esig.europa.eu/validation/policy">
-	<Description>
-		Valida firmas digitales e indica si las firmas de los
-		documentos son válidas y si tienen el nivel adecuado para
-		considerar si el documento cumple con la Política de Formatos
-		Oficiales de los Documentos Electrónicos Firmados Digitalmente,
-		versión 1.0 (OID: 2.16.188.1.1.1.2.1). Los documentos deben
-		utilizar certificados emitidos a partir de la Autoridad de
-		Certificación Raíz Nacional de Costa Rica en toda la cadena,
-		incluyendo el sellado de tiempo, validados contra listas CRL y
-		OCSP de las autoridades de la jerarquía. Cabe indicar que esta
-		versión de la política no incluye ninguna indicación de la
-		norma sobre el que se basa el proceso, si bien esta lista de
-		control y resultado se basa en el procedimiento de la norma
-		ETSI EN 319 102-1 en su última versión. Las únicas diferencias
-		con el constraint.xml oficial es la desactivación del bloque
-		eIDAS porque no se hace uso de Trusted Lists en Costa Rica y
-		también se cambia una línea de FAIL a WARN por falta de datos
-		de revocación, causando TRY_LATER en el validador días después.
+<ConstraintsParameters Name="QES AdESQC TL based" xmlns="http://dss.esig.europa.eu/validation/policy">
+	<Description>Validate electronic signatures and indicates whether they are Advanced electronic Signatures (AdES), AdES supported by a Qualified Certificate (AdES/QC) or a
+		Qualified electronic Signature (QES). All certificates and their related chains supporting the signatures are validated against the EU Member State Trusted Lists (this includes
+		signer's certificate and certificates used to validate certificate validity status services - CRLs, OCSP, and time-stamps).
 	</Description>
 	<ContainerConstraints>
 		<AcceptableContainerTypes Level="FAIL">
@@ -76,7 +61,7 @@
 				<AuthorityInfoAccessPresent Level="WARN" />
 				<RevocationInfoAccessPresent Level="WARN" />
 				<RevocationDataAvailable Level="FAIL" />
-				<RevocationDataNextUpdatePresent Level="WARN" />
+				<CRLNextUpdatePresent Level="WARN" />
 				<RevocationDataFreshness Level="FAIL" />
 				<KeyUsage Level="WARN">
 					<Id>nonRepudiation</Id>
@@ -87,6 +72,7 @@
 				<NotSelfSigned Level="WARN" />
 <!-- 				<Qualification Level="WARN" /> -->
 <!-- 				<SupportedByQSCD Level="WARN" /> -->
+<!-- 				<QcLegislationCountryCodes Level="WARN" /> -->
 <!-- 				<IssuedToNaturalPerson Level="INFORM" /> -->
 <!-- 				<IssuedToLegalPerson Level="INFORM" /> -->
 				<UsePseudonym Level="INFORM" />
@@ -96,7 +82,7 @@
 				<Signature Level="FAIL" />
 				<NotExpired Level="FAIL" />
 				<RevocationDataAvailable Level="FAIL" />
-				<RevocationDataNextUpdatePresent Level="WARN" />
+				<CRLNextUpdatePresent Level="WARN" />
 				<RevocationDataFreshness Level="FAIL" />
 				<NotRevoked Level="FAIL" />
 				<NotOnHold Level="FAIL" />
@@ -152,7 +138,7 @@
 				<AuthorityInfoAccessPresent Level="WARN" />
 				<RevocationInfoAccessPresent Level="WARN" />
 				<RevocationDataAvailable Level="FAIL" />
-				<RevocationDataNextUpdatePresent Level="WARN" />
+				<CRLNextUpdatePresent Level="WARN" />
 				<RevocationDataFreshness Level="FAIL" />
 				<KeyUsage Level="WARN">
 					<Id>nonRepudiation</Id>
@@ -172,7 +158,7 @@
 				<Signature Level="FAIL" />
 				<NotExpired Level="FAIL" />
 				<RevocationDataAvailable Level="FAIL" />
-				<RevocationDataNextUpdatePresent Level="WARN" />
+				<CRLNextUpdatePresent Level="WARN" />
 				<RevocationDataFreshness Level="FAIL" />
 				<NotRevoked Level="FAIL" />
 				<NotOnHold Level="FAIL" />
@@ -214,7 +200,7 @@
 				<Signature Level="FAIL" />
 				<NotExpired Level="FAIL" />
 				<RevocationDataAvailable Level="FAIL" />
-				<RevocationDataNextUpdatePresent Level="WARN" />
+				<CRLNextUpdatePresent Level="WARN" />
 				<RevocationDataFreshness Level="FAIL" />
 				<ExtendedKeyUsage Level="WARN">
 					<Id>timeStamping</Id>
@@ -228,7 +214,7 @@
 				<Signature Level="FAIL" />
 				<NotExpired Level="FAIL" />
 				<RevocationDataAvailable Level="WARN" />
-				<RevocationDataNextUpdatePresent Level="WARN" />
+				<CRLNextUpdatePresent Level="WARN" />
 				<RevocationDataFreshness Level="FAIL" />
 				<NotRevoked Level="FAIL" />
 				<NotOnHold Level="FAIL" />
@@ -239,10 +225,11 @@
 		<SignedAttributes>
 			<SigningCertificatePresent Level="WARN" />
 			<!-- <UnicitySigningCertificate Level="WARN" /> RFC 5816 -->
+			<SigningCertificateRefersCertificateChain Level="WARN" />
 			<CertDigestPresent Level="WARN" />
-			<AllCertDigestsMatch Level="WARN" />
 			<IssuerSerialMatch Level="WARN" />
 		</SignedAttributes>
+		<TSAGeneralNameContentMatch Level="WARN" />
 	</Timestamp>
 	<Revocation>
         <RevocationFreshness Level="IGNORE" Unit="DAYS" Value="0" />
@@ -257,8 +244,8 @@
 				<Recognition Level="FAIL" />
 				<Signature Level="FAIL" />
 				<NotExpired Level="FAIL" />
-				<RevocationDataAvailable Level="WARN" /><!-- Modificado para Costa Rica -->
-				<RevocationDataNextUpdatePresent Level="WARN" />
+				<RevocationDataAvailable Level="WARN" /><!-- Modificado para Costa Rica o devolverá TRY_LATER -->
+				<CRLNextUpdatePresent Level="WARN" />
 				<RevocationDataFreshness Level="FAIL" />
 				<NotRevoked Level="FAIL" />
 				<NotOnHold Level="FAIL" />
@@ -268,7 +255,7 @@
 				<Signature Level="FAIL" />
 				<NotExpired Level="FAIL" />
 				<RevocationDataAvailable Level="WARN" />
-				<RevocationDataNextUpdatePresent Level="WARN" />
+				<CRLNextUpdatePresent Level="WARN" />
 				<RevocationDataFreshness Level="FAIL" />
 				<NotRevoked Level="FAIL" />
 				<NotOnHold Level="FAIL" />

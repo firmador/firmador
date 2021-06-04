@@ -26,7 +26,6 @@ import java.net.URL;
 import java.security.KeyStore.PasswordProtection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 
 import cr.libre.firmador.gui.GUIInterface;
@@ -34,6 +33,7 @@ import com.google.common.base.Throwables;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignerTextPosition;
+import eu.europa.esig.dss.enumerations.VisualSignatureRotation;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.InMemoryDocument;
@@ -68,7 +68,6 @@ public class FirmadorPAdES extends CRSigner {
 
     public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
         CertificateVerifier verifier = this.getCertificateVerifier();
-        verifier.setCheckRevocationForUntrustedChains(true);
         PAdESService service = new PAdESService(verifier);
         service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
         parameters = new PAdESSignatureParameters();
@@ -85,8 +84,6 @@ public class FirmadorPAdES extends CRSigner {
             if (reason != null && !reason.trim().isEmpty()) parameters.setReason(reason);
             if (location != null && !location.trim().isEmpty()) parameters.setLocation(location);
             if (contactInfo != null && !contactInfo .trim().isEmpty()) parameters.setContactInfo(contactInfo);
-            List<CertificateToken> certificateChain = getCertificateChain(verifier, parameters);
-            parameters.setCertificateChain(certificateChain);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
             Date date = new Date();
@@ -104,11 +101,9 @@ public class FirmadorPAdES extends CRSigner {
             e.printStackTrace();
             gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
                 "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
-                "Detalle del error: " + Throwables.getRootCause(e) + "<br>" +
-                "<br>" +
+                "Detalle del error: " + Throwables.getRootCause(e) + "<br><br>" +
                 "Se ha agregado una firma básica solamente. No obstante, si el sello de tiempo resultara importante<br>" +
-                "para este documento, debería agregarse lo antes posible antes de enviarlo al destinatario.<br>" +
-                "<br>" +
+                "para este documento, debería agregarse lo antes posible antes de enviarlo al destinatario.<br><br>" +
                 "Si lo prefiere, puede cancelar el guardado del documento firmado e intentar firmarlo más tarde.<br>");
             parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
             try {
@@ -124,10 +119,9 @@ public class FirmadorPAdES extends CRSigner {
     public DSSDocument extend(DSSDocument document) {
         PAdESSignatureParameters parameters = new PAdESSignatureParameters();
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
-        parameters.setContentSize(3072);
 
+        parameters.setContentSize(3072);
         CertificateVerifier verifier = this.getCertificateVerifier();
-        verifier.setCheckRevocationForUntrustedChains(true);
         PAdESService service = new PAdESService(verifier);
         OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
         service.setTspSource(onlineTSPSource);
@@ -138,8 +132,7 @@ public class FirmadorPAdES extends CRSigner {
             e.printStackTrace();
             gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
                 "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
-                "Detalle del error: " + Throwables.getRootCause(e) + "<br>" +
-                "<br>" +
+                "Detalle del error: " + Throwables.getRootCause(e) + "<br><br>" +
                 "Inténtelo de nuevo más tarde. Si el problema persiste, compruebe su conexión o verifique<br>" +
                 "que no se trata de un problema de los servidores de Firma Digital o de un error de este programa.<br>");
         }
@@ -148,7 +141,6 @@ public class FirmadorPAdES extends CRSigner {
 
     public DSSDocument timestamp(DSSDocument documentToTimestamp, Boolean visibleTimestamp) {
         CertificateVerifier verifier = this.getCertificateVerifier();
-        verifier.setCheckRevocationForUntrustedChains(true);
         PAdESService service = new PAdESService(verifier);
         DSSDocument timestampedDocument = null;
         try {
@@ -161,11 +153,12 @@ public class FirmadorPAdES extends CRSigner {
             PAdESTimestampParameters timestampParameters = new PAdESTimestampParameters();
             if (visibleTimestamp) {
                 SignatureImageParameters imageParameters = new SignatureImageParameters();
+                imageParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
                 imageParameters.getFieldParameters().setOriginX(0);
                 imageParameters.getFieldParameters().setOriginY(0);
                 SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
                 textParameters.setFont(new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
-                SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+                SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
                 date.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
                 textParameters.setText("Este documento incluye un sello de tiempo de la" + "\n" +
                     "Autoridad de Sellado de Tiempo (TSA) del SINPE.\n" +
@@ -196,6 +189,7 @@ public class FirmadorPAdES extends CRSigner {
 
     private void appendVisibleSignature(CertificateToken certificate, Date date, String reason, String location, String contactInfo, String image, Boolean hideAdvice) {
         SignatureImageParameters imageParameters = new SignatureImageParameters();
+        imageParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
         imageParameters.getFieldParameters().setOriginX(x);
         imageParameters.getFieldParameters().setOriginY(y);
         SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
@@ -204,11 +198,11 @@ public class FirmadorPAdES extends CRSigner {
         X500PrincipalHelper subject = certificate.getSubject();
         String o = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.O, subject);
         String sn = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.SERIALNUMBER, subject);
-        String fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm a").format(date);
+        SimpleDateFormat fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
+        fecha.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
         String additionalText = "";
         if (hideAdvice != null && !hideAdvice) {
-            additionalText = "Esta representación visual no es fuente" + "\n" +
-                "de confianza. Valide siempre la firma.";
+            additionalText = "Esta representación visual no es fuente" + "\nde confianza. Valide siempre la firma.";
         }
         Boolean hasReason = false;
         Boolean hasLocation = false;
@@ -225,9 +219,7 @@ public class FirmadorPAdES extends CRSigner {
             if (hasReason || hasLocation) additionalText += "  Contacto: " + contactInfo;
             else additionalText = "Contacto: " + contactInfo;
         }
-        textParameters.setText("Firmado por " + cn + "\n" +
-            o + ", " + sn + "." + "\n" +
-            "Fecha declarada: " + fecha + "\n" + additionalText);
+        textParameters.setText(cn + "\n" + o + ", " + sn + "." + "\n" + "Fecha declarada: " + fecha.format(date) + "\n" + additionalText);
         textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
         textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
         imageParameters.setTextParameters(textParameters);

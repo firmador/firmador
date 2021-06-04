@@ -519,14 +519,10 @@ public class GUISwing implements GUIInterface {
                     tabbedPane.setSelectedIndex(0);
                 }
             } catch (Exception e) {
-                if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
-                    // Workaround for DSS 5.6 not recognizing unsigned ODF
-                } else {
-                    e.printStackTrace();
-                    reportLabel.setText("Error al validar documento.<br>" +
-                        "Agradeceríamos que informara sobre este inconveniente<br>" +
-                        "a los desarrolladores de la aplicación para repararlo.");
-                }
+                e.printStackTrace();
+                reportLabel.setText("Error al validar documento.<br>" +
+                    "Agradeceríamos que informara sobre este inconveniente<br>" +
+                    "a los desarrolladores de la aplicación para repararlo.");
                 reportLabel.setText("");
                 extendButton.setEnabled(false);
                 tabbedPane.setSelectedIndex(0);

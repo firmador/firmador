@@ -26,6 +26,7 @@ import eu.europa.esig.dss.service.ocsp.OnlineOCSPSource;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonTrustedCertificateSource;
+import eu.europa.esig.dss.spi.x509.aia.DefaultAIASource;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
@@ -41,9 +42,9 @@ public class Validator {
         trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA RAIZ NACIONAL COSTA RICA.cer")));
         CertificateVerifier cv = new CommonCertificateVerifier();
         cv.setTrustedCertSources(trustedCertSource);
-        cv.setDataLoader(new CommonsDataLoader());
         cv.setOcspSource(new OnlineOCSPSource());
         cv.setCrlSource(new OnlineCRLSource());
+        cv.setAIASource(new DefaultAIASource());
         documentValidator = SignedDocumentValidator.fromDocument(new FileDocument(fileName));
         documentValidator.setCertificateVerifier(cv);
     }
