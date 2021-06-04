@@ -244,7 +244,7 @@
 				<Recognition Level="FAIL" />
 				<Signature Level="FAIL" />
 				<NotExpired Level="FAIL" />
-				<RevocationDataAvailable Level="FAIL" />
+				<RevocationDataAvailable Level="WARN" /><!-- Modificado para Costa Rica o devolverá TRY_LATER -->
 				<CRLNextUpdatePresent Level="WARN" />
 				<RevocationDataFreshness Level="FAIL" />
 				<NotRevoked Level="FAIL" />
