@@ -124,3 +124,21 @@ contacto, el mensaje se reemplazará por uno o más de los valores ingresados en
 estos campos. Si aun así se desea eliminar el texto cuando no se rellena
 ninguno de esos campos opcionales, se puede realizar mediante JNLP agregando la
 propiedad `jnlp.hideSignatureAdvice` con el valor `true`.
+
+## ¿Cómo se puede ajustar el nivel de información de depuración mostrada por el firmador mediante línea de comandos?
+
+Se puede utilizar el siguiente comando donde el nivel máximo es `trace`:
+
+    java -jar -Dorg.slf4j.simpleLogger.defaultLogLevel=trace firmador.jar
+
+Los valores posibles son: `off`, `error`, `warn`, `info` (predeterminado),
+`debug` y `trace`.
+
+Si se está probando y no se dispone de salida estándar para ver los mensajes
+(por ejemplo en Windows), puede exportarse esta información de salida hacia un
+fichero de la siguiente manera:
+
+    java -jar -Dorg.slf4j.simpleLogger.defaultLogLevel=trace -Dorg.slf4j.simpleLogger.logFile=firmador.log -jar firmador.jar
+
+De esta forma se creará el fichero `firmador.log` en el mismo directorio para
+poderlo consultar.
