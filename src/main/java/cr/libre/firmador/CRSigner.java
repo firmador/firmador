@@ -20,18 +20,13 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador;
 
 import java.security.KeyStore.PasswordProtection;
-import java.util.ArrayList;
-import java.util.List;
 
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.token.Token;
 import cr.libre.firmador.token.Utils;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.enumerations.KeyUsageBit;
-import eu.europa.esig.dss.model.SerializableSignatureParameters;
-import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.service.crl.OnlineCRLSource;
-import eu.europa.esig.dss.service.http.commons.CommonsDataLoader;
 import eu.europa.esig.dss.service.ocsp.OnlineOCSPSource;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.x509.aia.DefaultAIASource;
