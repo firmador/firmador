@@ -63,25 +63,25 @@ consultar en el fichero [preguntas-frecuentes.md](preguntas-frecuentes.md).
 Para las personas interesadas en el desarrollo de Firmador, para compilar
 Firmador se requiere git, Maven y OpenJDK.
 
-En este momento se requiere una versión en desarrollo (snapshot) de DSS la
+> En este momento se requiere una versión en desarrollo (snapshot) de DSS, la
 librería implementación de referencia de los formatos AdES.
 
-La rama de desarrollo de DSS puede obtener desde el repositorio oficial
+> La rama de desarrollo de DSS puede obtener desde el repositorio oficial
 descargando solo lo necesario mediante el siguiente comando:
 
-    git clone --branch develop --depth 1 --single-branch https://github.com/esig/dss.git
+>    git clone --branch develop --depth 1 --single-branch https://github.com/esig/dss.git
 
-Para entrar en el directorio del repositorio descargado:
+> Para entrar en el directorio del repositorio descargado:
 
-    cd dss
+>    cd dss
 
-Para compilar e instalar mucho más rápido saltando los tests:
+> Para compilar e instalar mucho más rápido saltando los tests:
 
-    mvn install -DskipTests -Dmaven.test.skip.exec
+>    mvn install -DskipTests -Dmaven.test.skip.exec
 
-Para salir del directorio dss:
+> Para salir del directorio dss:
 
-    cd ..
+>    cd ..
 
 Para obtener el código fuente de Firmador, ejecutar:
 
