@@ -40,20 +40,17 @@ public class GUIArgs implements GUIInterface {
     private String documenttosign;
     private String documenttosave;
     private String pkcs12file = "";
-    private int slot;
+    private int slot = 0;
     private Boolean timestamp = false;
     private Boolean visibleTimestamp = false;
 
     public void loadGUI() {
         String fileName = getDocumentToSign();
-
         if (fileName != null) {
             // FirmadorCAdES firmador = new FirmadorCAdES(this);
             // FirmadorOpenDocument firmador = new FirmadorOpenDocument(this);
             FirmadorPAdES firmador = new FirmadorPAdES(this);
             // FirmadorXAdES firmador = new FirmadorXAdES(this);
-            firmador.selectP12();
-            if (pkcs12file == null || pkcs12file.isEmpty()) firmador.selectSlot();
             DSSDocument toSignDocument = new FileDocument(fileName);
             DSSDocument signedDocument = null;
             if (!timestamp && !visibleTimestamp) {
@@ -77,7 +74,6 @@ public class GUIArgs implements GUIInterface {
 
     public void setArgs(String[] args) {
         List<String> arguments = new ArrayList<String>();
-        slot = 0;
         for (String params : args) {
             if (!params.startsWith("-")) arguments.add(params);
             else if (params.startsWith("-slot")) slot = Integer.parseInt(params.replace("-slot", ""));
@@ -121,7 +117,7 @@ public class GUIArgs implements GUIInterface {
     }
 
     @Override
-    public int getSelection(String[] options) {
+    public int getSlot() {
         return slot;
     }
 

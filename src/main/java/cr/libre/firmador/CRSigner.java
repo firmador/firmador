@@ -20,18 +20,11 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador;
 
 import java.security.KeyStore.PasswordProtection;
-import java.util.ArrayList;
-import java.util.List;
 
 import cr.libre.firmador.gui.GUIInterface;
-import cr.libre.firmador.token.Token;
-import cr.libre.firmador.token.Utils;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.enumerations.KeyUsageBit;
-import eu.europa.esig.dss.model.SerializableSignatureParameters;
-import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.service.crl.OnlineCRLSource;
-import eu.europa.esig.dss.service.http.commons.CommonsDataLoader;
 import eu.europa.esig.dss.service.ocsp.OnlineOCSPSource;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.x509.aia.DefaultAIASource;
@@ -49,13 +42,9 @@ public class CRSigner {
 
     public static final String TSA_URL = "http://tsa.sinpe.fi.cr/tsaHttp/";
     protected GUIInterface gui;
-    public int selectedSlot;
-    public String selectedP12;
 
     public CRSigner(GUIInterface gui) {
         this.gui = gui;
-        selectedSlot = -1;
-        selectedP12 = "";
     }
 
     protected DSSPrivateKeyEntry getPrivateKey(SignatureTokenConnection signingToken) {
@@ -77,60 +66,29 @@ public class CRSigner {
     }
 
     private String getPkcs11Lib() {
-        return Utils.getPKCS11Lib();
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("mac")) return "/Library/Application Support/Athena/libASEP11.dylib";
+        else if (osName.contains("linux")) return "/usr/lib/x64-athena/libASEP11.so";
+        else if (osName.contains("windows")) return System.getenv("SystemRoot") + "\\System32\\asepkcs.dll";
+System.out.println("ninguno"); System.exit(1);
+        return "";
     }
 
     public SignatureTokenConnection getSignatureConnection(PasswordProtection pin) {
         /*
          * There should be other ways to find alternative PKCS#11 module
          * configuration settings in the future, operating system specific,
-         * to support other hardware vendors apart of Athena/NXP (there are
-         * some homologated devices already for Sello Electrónico).
+         * to support other hardware vendors apart of Athena/NXP (mainly
+         * hardware devices for Sello Electrónico).
          */
         SignatureTokenConnection signingToken = null;
         try {
-            if (!this.selectedP12.isEmpty()) signingToken = new Pkcs12SignatureToken(selectedP12, pin);
-            else if (this.selectedSlot != -1) signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin, (int)selectedSlot);
-            else {
-                Token token = new Token();
-                long[] slots = null;
-                slots = token.getSlots();
-                if (slots != null) {
-                    if (slots.length > 0) {
-                        if (slots.length == 1) signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin);
-                        else {
-                            selectedSlot = getSelectedSlot(token, slots);
-                            signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin, selectedSlot);
-                        }
-                    }
-                }
-            }
+            if (!gui.getPkcs12file().isEmpty()) signingToken = new Pkcs12SignatureToken(gui.getPkcs12file(), pin);
+            else signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin, gui.getSlot());
         } catch (Exception|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
         return signingToken;
-    }
-
-    public void selectP12() {
-        selectedP12 = gui.getPkcs12file();
-    }
-
-    public void selectSlot() {
-        Token token = new Token();
-        long[] slots = null;
-        try {
-            slots = token.getSlots();
-        } catch (Exception|Error e) {
-            gui.showError(Throwables.getRootCause(e));
-        }
-        if (slots.length == 1) selectedSlot = 0;
-        else selectedSlot = getSelectedSlot(token, slots);
-    }
-
-    private int getSelectedSlot(Token token, long[] slots) {
-        String[] owners = new String[slots.length];
-        for (int x = 0; x < slots.length; x++) owners[x] = token.getOwner(slots[x]);
-        return gui.getSelection(owners);
     }
 
     public CertificateVerifier getCertificateVerifier() {
@@ -150,10 +108,6 @@ public class CRSigner {
         cv.setOcspSource(new OnlineOCSPSource());
         cv.setAIASource(new DefaultAIASource());
         return cv;
-    }
-
-    public void setSlot(int slot) {
-        this.selectedSlot = slot;
     }
 
 }

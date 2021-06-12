@@ -27,7 +27,7 @@ public interface GUIInterface {
     void setArgs(String[] args);
     void showError(Throwable error);
     void showMessage(String message);
-    int getSelection(String[] options);
+    int getSlot();
     String getPkcs12file();
     String getDocumentToSign();
     String getPathToSave(String extension);
