@@ -140,7 +140,7 @@ public class GUISwing implements GUIInterface {
     public void loadGUI() {
         try {
             Application.getApplication().setDockIconImage(image);
-        } catch (RuntimeException e) { /* macOS dock icon support specific code. */ }
+        } catch (Exception e) { /* macOS dock icon support specific code. */ }
         try {
             try {
                 UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
@@ -552,26 +552,18 @@ public class GUISwing implements GUIInterface {
                 MimeType mimeType = toSignDocument.getMimeType();
                 if (mimeType == MimeType.PDF) {
                     FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
-                    firmador.selectSlot();
-                    if (firmador.selectedSlot == -1) return;
                     firmador.setVisibleSignature(!signatureVisibleCheckBox.isSelected());
                     firmador.addVisibleSignature((int)pageSpinner.getValue(), (int)Math.round(signatureLabel.getX() * 1.5), (int)Math.round(signatureLabel.getY() * 1.5));
                     signedDocument = firmador.sign(toSignDocument, pin, reasonField.getText(), locationField.getText(), contactInfoField.getText(), System.getProperty("jnlp.signatureImage"), Boolean.getBoolean("jnlp.hideSignatureAdvice"));
                 } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
                     FirmadorOpenDocument firmador = new FirmadorOpenDocument(GUISwing.this);
-                    firmador.selectSlot();
-                    if (firmador.selectedSlot == -1) return;
                     signedDocument = firmador.sign(toSignDocument, pin);
                 } else if (mimeType == MimeType.XML || AdESButtonGroup.getSelection().getActionCommand().equals("XAdES")) {
                     FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
-                    firmador.selectSlot();
-                    if (firmador.selectedSlot == -1) return;
                     signedDocument = firmador.sign(toSignDocument, pin);
                     extension = ".xml";
                 } else {
                     FirmadorCAdES firmador = new FirmadorCAdES(GUISwing.this);
-                    firmador.selectSlot();
-                    if (firmador.selectedSlot == -1) return;
                     signedDocument = firmador.sign(toSignDocument, pin);
                     extension = ".p7s"; // p7s detached, p7m enveloping
                 }
@@ -782,23 +774,9 @@ public class GUISwing implements GUIInterface {
         JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public int getSelection(String[] options) {
-        int dev = 0;
-        if (options == null || options.length == 0) {
-            String message = "No se ha encontrado ninguna tarjeta conectada.<br>" +
-                "Asegúrese de que la tarjeta y el lector están conectados de forma correcta.";
-            JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Error al firmar", JOptionPane.ERROR_MESSAGE);
-            return -1;
-        }
-        String input = JOptionPane.showInputDialog(null, "Propietario: ", "Seleccione el dispositivo para firmar", JOptionPane.QUESTION_MESSAGE, null, options, options[0]).toString();
-        if (input == null) return -1;
-        for (int x = 0; x < options.length; x++) {
-            if (input.equals(options[x])) {
-                dev = x;
-                x = options.length;
-            }
-        }
-        return dev;
+    @Override
+    public int getSlot() {
+        return 0;
     }
 
     @Override

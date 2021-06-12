@@ -46,7 +46,6 @@ public class GUIShell implements GUIInterface {
             // FirmadorOpenDocument firmador = new FirmadorOpenDocument(this);
             FirmadorPAdES firmador = new FirmadorPAdES(this);
             // FirmadorXAdES firmador = new FirmadorXAdES(this);
-            firmador.selectSlot();
             PasswordProtection pin = getPin();
             DSSDocument toSignDocument = new FileDocument(fileName);
             DSSDocument signedDocument = firmador.sign(toSignDocument, pin, null, null, null, null, null);
@@ -119,25 +118,7 @@ public class GUIShell implements GUIInterface {
     }
 
     @Override
-    public int getSelection(String[] options) {
-        int dev = -1;
-        String selected;
-        while (dev == -1) {
-            for(int x = 0; x < options.length; x++) {
-                System.out.println(x + ") " + options[x]);
-            }
-            selected = readFromInput("Opción a seleccionar: ");
-            try {
-                dev = Integer.parseInt(selected);
-                if (dev >= options.length) {
-                    System.err.println("Opción inválida. Debe ser menor a " + options.length + ".");
-                    dev = -1;
-                }
-            } catch (Exception e) {
-                dev = -1;
-                System.err.println("Debe ingresar un número.");
-            }
-        }
+    public int getSlot() {
         return 0;
     }
 
