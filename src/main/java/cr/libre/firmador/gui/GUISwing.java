@@ -140,7 +140,7 @@ public class GUISwing implements GUIInterface {
     public void loadGUI() {
         try {
             Application.getApplication().setDockIconImage(image);
-        } catch (Exception e) { /* macOS dock icon support specific code. */ }
+        } catch (RuntimeException | IllegalAccessError e) { /* macOS dock icon support specific code. */ }
         try {
             try {
                 UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
