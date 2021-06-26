@@ -620,10 +620,11 @@ public class GUISwing implements GUIInterface {
 
     private void showLoadDialog() {
         loadDialog = new FileDialog(frame, "Seleccionar documento a firmar");
+        loadDialog.setMultipleMode(true);
         loadDialog.setLocationRelativeTo(null);
         loadDialog.setVisible(true);
         loadDialog.dispose();
-        if (loadDialog.getFile() != null) {
+        if (loadDialog.getFiles() != null) {
             loadDocument(loadDialog.getDirectory() + loadDialog.getFile());
             lastDirectory = loadDialog.getDirectory();
             lastFile = loadDialog.getFile();
