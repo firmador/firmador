@@ -77,7 +77,7 @@ descargando solo lo necesario mediante el siguiente comando:
 >
 > Para compilar e instalar mucho más rápido saltando los tests:
 >
-> `mvn install -DskipTests -Dmaven.test.skip.exec`
+> `mvn install -DskipTests -Dmaven.test.skip.exec -Dmaven.javadoc.skip`
 >
 > Para salir del directorio dss:
 >
