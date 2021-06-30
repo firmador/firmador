@@ -40,8 +40,8 @@
 		<xsl:if test="dss:Filename">
 			<p>
 				<xsl:variable name="nodeName" select="name()"/>
-				<xsl:if test="$nodeName = 'Signature'">Nombre del fichero de firma:</xsl:if>
-				<xsl:if test="$nodeName = 'Timestamp'">Nombre del fichero de sello de tiempo:</xsl:if>
+				<xsl:if test="$nodeName = 'Signature'">Nombre del fichero de firma: </xsl:if>
+				<xsl:if test="$nodeName = 'Timestamp'">Nombre del fichero de sello de tiempo: </xsl:if>
 				<xsl:value-of select="dss:Filename"/>
 			</p>
 		</xsl:if>
@@ -86,7 +86,7 @@
 				<xsl:when test="$indicationText='TOTAL_PASSED'"><b>válida</b></xsl:when>
 				<xsl:when test="$indicationText='PASSED'"><b>válida</b></xsl:when>
 				<xsl:when test="$indicationText='INDETERMINATE'"><b>sin determinación</b></xsl:when>
-				<xsl:when test="$indicationText='TOTAL_FAILED'"><b>válida</b></xsl:when>
+				<xsl:when test="$indicationText='FAILED'"><b>NO válida</b></xsl:when>
 				<xsl:when test="$indicationText='TOTAL_FAILED'"><b>NO válida</b></xsl:when>
 			</xsl:choose>
 			<xsl:if test="@SignatureFormat">, formato <xsl:value-of select="@SignatureFormat"/>.</xsl:if>
