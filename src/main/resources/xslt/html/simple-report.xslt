@@ -40,8 +40,8 @@
 		<xsl:if test="dss:Filename">
 			<p>
 				<xsl:variable name="nodeName" select="name()"/>
-				<xsl:if test="$nodeName = 'Signature'">Nombre del fichero de firma:</xsl:if>
-				<xsl:if test="$nodeName = 'Timestamp'">Nombre del fichero de sello de tiempo:</xsl:if>
+				<xsl:if test="$nodeName = 'Signature'">Nombre del fichero de firma: </xsl:if>
+				<xsl:if test="$nodeName = 'Timestamp'">Nombre del fichero de sello de tiempo: </xsl:if>
 				<xsl:value-of select="dss:Filename"/>
 			</p>
 		</xsl:if>
