@@ -92,9 +92,10 @@
 			<xsl:if test="@SignatureFormat">, formato <xsl:value-of select="@SignatureFormat"/>.</xsl:if>
 		</p>
 		<xsl:apply-templates select="dss:SubIndication"/>
-		<xsl:apply-templates select="dss:Errors"/>
-		<xsl:apply-templates select="dss:Warnings"/>
-		<xsl:apply-templates select="dss:Infos"/>
+		<xsl:apply-templates select="dss:AdESValidationDetails"/>
+		<xsl:apply-templates select="dss:Error"/>
+		<xsl:apply-templates select="dss:Warning"/>
+		<xsl:apply-templates select="dss:Info"/>
 		<xsl:if test="dss:SigningTime">
 			<p>
 				Fecha declarada de la firma (hora UTC):
@@ -118,13 +119,33 @@
 	<xsl:template match="dss:SubIndication">
 		<p>Subindicación: <xsl:value-of select="."/></p>
 	</xsl:template>
-	<xsl:template match="dss:Errors">
-		<p><b>ERROR:</b> <xsl:value-of select="."/></p>
+
+	<xsl:template match="dss:AdESValidationDetails|dss:QualificationDetails">
+		<xsl:variable name="header">
+			<xsl:choose>
+				<xsl:when test="name() = 'AdESValidationDetails'">Detalles de validación AdES</xsl:when>
+				<xsl:when test="name() = 'QualificationDetails'">Detalles de calificación</xsl:when>
+			</xsl:choose>
+		</xsl:variable>
+		<dl>
+			<dt>
+				<xsl:value-of select="$header"/>:
+			</dt>
+			<dd>
+				<xsl:apply-templates select="dss:Error"/>
+				<xsl:apply-templates select="dss:Warning"/>
+				<xsl:apply-templates select="dss:Info"/>
+			</dd>
+		</dl>
 	</xsl:template>
-	<xsl:template match="dss:Warnings">
-		<p><b>ADVERTENCIA:</b> <xsl:value-of select="."/></p>
+
+	<xsl:template match="dss:Error">
+		<p><b>ERROR: </b><xsl:value-of select="."/></p>
 	</xsl:template>
-	<xsl:template match="dss:Infos">
-		<p>Información: <xsl:value-of select="."/></p>
+	<xsl:template match="dss:Warning">
+		<p><b>Advertencia: </b><xsl:value-of select="."/></p>
+	</xsl:template>
+	<xsl:template match="dss:Info">
+		<p><br>Información: </b><xsl:value-of select="."/></p>
 	</xsl:template>
 </xsl:stylesheet>
