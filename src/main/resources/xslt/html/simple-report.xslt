@@ -146,6 +146,6 @@
 		<p><b>Advertencia: </b><xsl:value-of select="."/></p>
 	</xsl:template>
 	<xsl:template match="dss:Info">
-		<p><br>Información: </b><xsl:value-of select="."/></p>
+		<p><b>Información: </b><xsl:value-of select="."/></p>
 	</xsl:template>
 </xsl:stylesheet>
