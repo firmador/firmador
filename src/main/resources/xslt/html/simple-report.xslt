@@ -86,7 +86,7 @@
 				<xsl:when test="$indicationText='TOTAL_PASSED'"><b>válida</b></xsl:when>
 				<xsl:when test="$indicationText='PASSED'"><b>válida</b></xsl:when>
 				<xsl:when test="$indicationText='INDETERMINATE'"><b>sin determinación</b></xsl:when>
-				<xsl:when test="$indicationText='TOTAL_FAILED'"><b>válida</b></xsl:when>
+				<xsl:when test="$indicationText='FAILED'"><b>NO válida</b></xsl:when>
 				<xsl:when test="$indicationText='TOTAL_FAILED'"><b>NO válida</b></xsl:when>
 			</xsl:choose>
 			<xsl:if test="@SignatureFormat">, formato <xsl:value-of select="@SignatureFormat"/>.</xsl:if>
