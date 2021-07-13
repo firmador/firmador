@@ -748,10 +748,7 @@ public class GUISwing implements GUIInterface {
                         "Lo sentimos, el dispositivo de firma no se puede utilizar porque está bloqueado.<br>" +
                         "Contacte con su proveedor para desbloquearlo.";
                     break;
-                default:
-                    break;
                 }
-                break;
             case "java.io.IOException":
                 if (message.contains("asepkcs") || message.contains("libASEP11")) {
                     message = "No se ha encontrado la librería de Firma Digital en el sistema.<br>" +
