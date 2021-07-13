@@ -70,7 +70,6 @@ public class CRSigner {
         if (osName.contains("mac")) return "/Library/Application Support/Athena/libASEP11.dylib";
         else if (osName.contains("linux")) return "/usr/lib/x64-athena/libASEP11.so";
         else if (osName.contains("windows")) return System.getenv("SystemRoot") + "\\System32\\asepkcs.dll";
-System.out.println("ninguno"); System.exit(1);
         return "";
     }
 
