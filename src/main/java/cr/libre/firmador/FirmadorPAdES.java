@@ -30,6 +30,7 @@ import java.util.TimeZone;
 
 import cr.libre.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
+import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignerTextPosition;
@@ -91,7 +92,7 @@ public class FirmadorPAdES extends CRSigner {
             parameters.bLevel().setSigningDate(date);
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
             signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
-        } catch (DSSException|Error e) {
+        } catch (DSSException|AlertException|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
 
