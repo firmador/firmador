@@ -749,6 +749,11 @@ public class GUISwing implements GUIInterface {
                         "Contacte con su proveedor para desbloquearlo.";
                     break;
                 default:
+                    error.printStackTrace();
+                    message = "Error: " + className + "<br>" +
+                        "Detalle: " + message + "<br>" +
+                        "Agradecemos que comunique este mensaje de error a los autores del programa<br>" +
+                        "para detallar mejor el posible motivo de este error en próximas versiones.";
                     break;
                 }
                 break;
@@ -776,7 +781,7 @@ public class GUISwing implements GUIInterface {
 
     @Override
     public int getSlot() {
-        return 0;
+        return -1;
     }
 
     @Override

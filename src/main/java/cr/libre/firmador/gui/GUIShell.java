@@ -119,7 +119,7 @@ public class GUIShell implements GUIInterface {
 
     @Override
     public int getSlot() {
-        return 0;
+        return -1;
     }
 
     @Override

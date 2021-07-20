@@ -40,7 +40,7 @@ public class GUIArgs implements GUIInterface {
     private String documenttosign;
     private String documenttosave;
     private String pkcs12file = "";
-    private int slot = 0;
+    private int slot = -1;
     private Boolean timestamp = false;
     private Boolean visibleTimestamp = false;
 

@@ -20,6 +20,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador;
 
 import java.security.KeyStore.PasswordProtection;
+import java.util.List;
 
 import cr.libre.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
@@ -32,6 +33,7 @@ import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonTrustedCertificateSource;
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
+import eu.europa.esig.dss.token.PrefilledPasswordCallback;
 import eu.europa.esig.dss.token.Pkcs11SignatureToken;
 import eu.europa.esig.dss.token.Pkcs12SignatureToken;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
@@ -56,7 +58,17 @@ public class CRSigner {
          * verify there are no more keys available to allow selecting them.
          */
         DSSPrivateKeyEntry privateKey = null;
-        for (DSSPrivateKeyEntry candidatePrivateKey : signingToken.getKeys()) {
+        List<DSSPrivateKeyEntry> keys = null;
+        try {
+            keys = signingToken.getKeys();
+        } catch (Exception|Error e) {
+            if (Throwables.getRootCause(e).getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) {
+                return null;
+            } else {
+                gui.showError(Throwables.getRootCause(e));
+            }
+        }
+        for (DSSPrivateKeyEntry candidatePrivateKey : keys) {
             if (candidatePrivateKey.getCertificate().checkKeyUsage(KeyUsageBit.NON_REPUDIATION)) {
                     privateKey = candidatePrivateKey;
                     break;
@@ -70,11 +82,14 @@ public class CRSigner {
         if (osName.contains("mac")) return "/Library/Application Support/Athena/libASEP11.dylib";
         else if (osName.contains("linux")) return "/usr/lib/x64-athena/libASEP11.so";
         else if (osName.contains("windows")) return System.getenv("SystemRoot") + "\\System32\\asepkcs.dll";
-System.out.println("ninguno"); System.exit(1);
         return "";
     }
 
     public SignatureTokenConnection getSignatureConnection(PasswordProtection pin) {
+        return getSignatureConnection(pin, -1);
+    }
+
+    public SignatureTokenConnection getSignatureConnection(PasswordProtection pin, int slot) {
         /*
          * There should be other ways to find alternative PKCS#11 module
          * configuration settings in the future, operating system specific,
@@ -82,9 +97,13 @@ System.out.println("ninguno"); System.exit(1);
          * hardware devices for Sello Electrónico).
          */
         SignatureTokenConnection signingToken = null;
+        PrefilledPasswordCallback pinCallback = new PrefilledPasswordCallback(pin);
+
         try {
             if (!gui.getPkcs12file().isEmpty()) signingToken = new Pkcs12SignatureToken(gui.getPkcs12file(), pin);
-            else signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pin, gui.getSlot());
+            else {
+                signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pinCallback, gui.getSlot(), slot, null);
+            }
         } catch (Exception|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
