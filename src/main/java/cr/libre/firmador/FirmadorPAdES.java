@@ -76,7 +76,7 @@ public class FirmadorPAdES extends CRSigner {
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
         try {
-            token = getSignatureConnection(pin, -1);
+            token = getSignatureConnection(pin);
         } catch (DSSException|AlertException|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
@@ -84,12 +84,14 @@ public class FirmadorPAdES extends CRSigner {
         try {
             privateKey = getPrivateKey(token);
             if (privateKey == null) {
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0;; i++) {
                     try {
                         token = getSignatureConnection(pin, i);
+                        privateKey = getPrivateKey(token);
+                        if (privateKey != null) break;
                     } catch (Exception ex) {
-                        // FIXME use equals()
-                        if (Throwables.getRootCause(ex).getLocalizedMessage() == "CKR_SLOT_ID_INVALID") {
+                        if (Throwables.getRootCause(ex).getLocalizedMessage().equals("CKR_SLOT_ID_INVALID")) {
+                            break;
                         } else {
                             gui.showError(Throwables.getRootCause(ex));
                         }
