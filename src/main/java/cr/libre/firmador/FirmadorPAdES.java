@@ -90,11 +90,8 @@ public class FirmadorPAdES extends CRSigner {
                         privateKey = getPrivateKey(token);
                         if (privateKey != null) break;
                     } catch (Exception ex) {
-                        if (Throwables.getRootCause(ex).getLocalizedMessage().equals("CKR_SLOT_ID_INVALID")) {
-                            break;
-                        } else {
-                            gui.showError(Throwables.getRootCause(ex));
-                        }
+                        if (Throwables.getRootCause(ex).getLocalizedMessage().equals("CKR_SLOT_ID_INVALID")) break;
+                        else gui.showError(Throwables.getRootCause(ex));
                     }
                 }
             }

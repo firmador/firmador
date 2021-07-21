@@ -62,16 +62,13 @@ public class CRSigner {
         try {
             keys = signingToken.getKeys();
         } catch (Exception|Error e) {
-            if (Throwables.getRootCause(e).getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) {
-                return null;
-            } else {
-                gui.showError(Throwables.getRootCause(e));
-            }
+            if (Throwables.getRootCause(e).getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) return null;
+            else gui.showError(Throwables.getRootCause(e));
         }
         for (DSSPrivateKeyEntry candidatePrivateKey : keys) {
             if (candidatePrivateKey.getCertificate().checkKeyUsage(KeyUsageBit.NON_REPUDIATION)) {
-                    privateKey = candidatePrivateKey;
-                    break;
+                privateKey = candidatePrivateKey;
+                break;
             }
         }
         return privateKey;
@@ -101,9 +98,7 @@ public class CRSigner {
 
         try {
             if (!gui.getPkcs12file().isEmpty()) signingToken = new Pkcs12SignatureToken(gui.getPkcs12file(), pin);
-            else {
-                signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pinCallback, gui.getSlot(), slot, null);
-            }
+            else signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pinCallback, gui.getSlot(), slot, null);
         } catch (Exception|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
