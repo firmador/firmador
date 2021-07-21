@@ -30,6 +30,7 @@ import java.security.KeyStore.PasswordProtection;
 
 import cr.libre.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
+import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 
@@ -73,9 +74,31 @@ public class FirmadorOpenDocument extends CRSigner {
         parameters = new ASiCWithXAdESSignatureParameters();
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
+        SignatureTokenConnection token = null;
         try {
-            SignatureTokenConnection token = getSignatureConnection(pin);
-            DSSPrivateKeyEntry privateKey = getPrivateKey(token);
+            token = getSignatureConnection(pin);
+        } catch (DSSException|AlertException|Error e) {
+            gui.showError(Throwables.getRootCause(e));
+        }
+        DSSPrivateKeyEntry privateKey = null;
+        try {
+            privateKey = getPrivateKey(token);
+            if (privateKey == null) {
+                for (int i = 0;; i++) {
+                    try {
+                        token = getSignatureConnection(pin, i);
+                        privateKey = getPrivateKey(token);
+                        if (privateKey != null) break;
+                    } catch (Exception ex) {
+                        if (Throwables.getRootCause(ex).getLocalizedMessage().equals("CKR_SLOT_ID_INVALID")) break;
+                        else gui.showError(Throwables.getRootCause(ex));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            gui.showError(Throwables.getRootCause(e));
+        }
+        try {
             CertificateToken certificate = privateKey.getCertificate();
             parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
             parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
@@ -94,6 +117,10 @@ public class FirmadorOpenDocument extends CRSigner {
         } catch (DSSException|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
+
+
+
+
 
         try {
             signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
