@@ -386,6 +386,7 @@ public class GUISwing implements GUIInterface {
         validatePanel.setOpaque(false);
 
         JScrollPane validateScrollPane = new JScrollPane();
+        validateScrollPane.setPreferredSize(validateScrollPane.getPreferredSize());
         validateScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         validateScrollPane.setBorder(null);
         validateScrollPane.setViewportView(validatePanel);
