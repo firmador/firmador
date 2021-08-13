@@ -66,6 +66,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -144,7 +145,7 @@ public class GUISwing implements GUIInterface {
         try {
             try {
                 UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-            } catch (javax.swing.UnsupportedLookAndFeelException | java.lang.ClassNotFoundException e) {
+            } catch (UnsupportedLookAndFeelException | ClassNotFoundException e) {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
         } catch (Exception e) {
