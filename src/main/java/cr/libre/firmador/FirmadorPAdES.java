@@ -100,7 +100,7 @@ public class FirmadorPAdES extends CRSigner {
         }
         try {
             CertificateToken certificate = privateKey.getCertificate();
-            parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LT);
+            parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
             parameters.setContentSize(13312);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
