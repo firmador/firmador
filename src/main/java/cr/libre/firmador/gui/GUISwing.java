@@ -26,6 +26,10 @@ import java.awt.Desktop;
 import java.awt.FileDialog;
 import java.awt.Image;
 import java.awt.Window;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.HierarchyListener;
@@ -203,6 +207,20 @@ public class GUISwing implements GUIInterface {
 
         frame = new JFrame("Firmador");
         frame.setIconImage(image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
+        frame.setDropTarget(new DropTarget() {
+            public synchronized void drop(DropTargetDropEvent e) {
+                try {
+                    e.acceptDrop(DnDConstants.ACTION_COPY);
+                    List<File> droppedFiles = (List<File>) e.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    for (File file : droppedFiles) {
+                        // FIXME: handle multiple files on array
+                        loadDocument(file.toString());
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
 
         JLabel fileLabel = new JLabel("Documento: ");
         fileField = new JTextField("(Vacío)");
@@ -662,10 +680,11 @@ public class GUISwing implements GUIInterface {
         loadDialog.setLocationRelativeTo(null);
         loadDialog.setVisible(true);
         loadDialog.dispose();
-        if (loadDialog.getFiles() != null) {
-            loadDocument(loadDialog.getDirectory() + loadDialog.getFile());
+        for (File file : loadDialog.getFiles()) {
+            // FIXME handle multiple files on array
+            loadDocument(file.toString());
             lastDirectory = loadDialog.getDirectory();
-            lastFile = loadDialog.getFile();
+            lastFile = file.toString();
         }
     }
 
