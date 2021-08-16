@@ -128,11 +128,16 @@ public class GUISwing implements GUIInterface {
     private JLabel pageLabel;
     private JSpinner pageSpinner;
     private JLabel AdESFormatLabel;
+    private ButtonGroup AdESFormatButtonGroup;
     private JRadioButton CAdESButton;
     private JRadioButton XAdESButton;
     private JButton signButton;
     private JButton extendButton;
-    private ButtonGroup AdESFormatButtonGroup;
+    private JLabel AdESLevelLabel;
+    private JRadioButton levelTButton;
+    private JRadioButton levelLTButton;
+    private JRadioButton levelLTAButton;
+    private ButtonGroup AdESLevelButtonGroup;
     private BufferedImage pageImage;
     private PDDocument doc;
     private PDFRenderer renderer;
@@ -245,6 +250,20 @@ public class GUISwing implements GUIInterface {
         AdESFormatButtonGroup = new ButtonGroup();
         AdESFormatButtonGroup.add(CAdESButton);
         AdESFormatButtonGroup.add(XAdESButton);
+        AdESLevelLabel = new JLabel("Nivel de firma AdES:");
+        levelTButton = new JRadioButton("T");
+        levelTButton.setActionCommand("T");
+        levelTButton.setContentAreaFilled(false);
+        levelLTButton = new JRadioButton("LT");
+        levelLTButton.setActionCommand("LT");
+        levelLTButton.setContentAreaFilled(false);
+        levelLTAButton = new JRadioButton("LTA", true);
+        levelLTAButton.setActionCommand("LTA");
+        levelLTAButton.setContentAreaFilled(false);
+        AdESLevelButtonGroup = new ButtonGroup();
+        AdESLevelButtonGroup.add(levelTButton);
+        AdESLevelButtonGroup.add(levelLTButton);
+        AdESLevelButtonGroup.add(levelLTAButton);
 
         signButton = new JButton("Firmar documento");
         signButton.setToolTipText("<html>Este botón permite firmar el documento seleccionado.<br>Requiere dispositivo de Firma Digital<br>al cual se le solicitará ingresar el PIN.</html>");
@@ -276,6 +295,10 @@ public class GUISwing implements GUIInterface {
         AdESFormatLabel.setVisible(false);
         CAdESButton.setVisible(false);
         XAdESButton.setVisible(false);
+        AdESLevelLabel.setVisible(false);
+        levelTButton.setVisible(false);
+        levelLTButton.setVisible(false);
+        levelLTAButton.setVisible(false);
         extendButton.setEnabled(false);
         JButton fileButton = new JButton("Elegir...");
         fileButton.setToolTipText("<html>Haga clic en este botón para<br>elegir un fichero a firmar o validar.</html>");
@@ -474,6 +497,10 @@ public class GUISwing implements GUIInterface {
             AdESFormatLabel.setVisible(false);
             CAdESButton.setVisible(false);
             XAdESButton.setVisible(false);
+            AdESLevelLabel.setVisible(false);
+            levelTButton.setVisible(false);
+            levelLTButton.setVisible(false);
+            levelLTAButton.setVisible(false);
             if (mimeType == MimeType.PDF) {
                 if (isRemote) doc = PDDocument.load(toSignByteArray);
                 else doc = PDDocument.load(new File(fileName));
@@ -498,11 +525,19 @@ public class GUISwing implements GUIInterface {
                 locationField.setVisible(true);
                 contactInfoLabel.setVisible(true);
                 contactInfoField.setVisible(true);
+                AdESLevelLabel.setVisible(true);
+                levelTButton.setVisible(true);
+                levelLTButton.setVisible(true);
+                levelLTAButton.setVisible(true);
             } else if (mimeType == MimeType.XML || mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
             } else {
                 AdESFormatLabel.setVisible(true);
                 CAdESButton.setVisible(true);
                 XAdESButton.setVisible(true);
+                AdESLevelLabel.setVisible(false);
+                levelTButton.setVisible(false);
+                levelLTButton.setVisible(false);
+                levelLTAButton.setVisible(false);
             }
             frame.pack();
             frame.setMinimumSize(frame.getSize());
