@@ -127,12 +127,12 @@ public class GUISwing implements GUIInterface {
     private byte[] toSignByteArray;
     private JLabel pageLabel;
     private JSpinner pageSpinner;
-    private JLabel AdESLabel;
+    private JLabel AdESFormatLabel;
     private JRadioButton CAdESButton;
     private JRadioButton XAdESButton;
     private JButton signButton;
     private JButton extendButton;
-    private ButtonGroup AdESButtonGroup;
+    private ButtonGroup AdESFormatButtonGroup;
     private BufferedImage pageImage;
     private PDDocument doc;
     private PDFRenderer renderer;
@@ -235,16 +235,16 @@ public class GUISwing implements GUIInterface {
         contactInfoField = new JTextField();
         contactInfoField.setToolTipText("<html>Este campo opcional permite indicar una<br>forma de contactar con la persona firmante,<br>por ejemplo una dirección de correo electrónico.</html>");
 
-        AdESLabel = new JLabel("Formato de firma AdES:");
+        AdESFormatLabel = new JLabel("Formato de firma AdES:");
         CAdESButton = new JRadioButton("CAdES");
         CAdESButton.setActionCommand("CAdES");
         CAdESButton.setContentAreaFilled(false);
         XAdESButton = new JRadioButton("XAdES", true);
         XAdESButton.setActionCommand("XAdES");
         XAdESButton.setContentAreaFilled(false);
-        AdESButtonGroup = new ButtonGroup();
-        AdESButtonGroup.add(CAdESButton);
-        AdESButtonGroup.add(XAdESButton);
+        AdESFormatButtonGroup = new ButtonGroup();
+        AdESFormatButtonGroup.add(CAdESButton);
+        AdESFormatButtonGroup.add(XAdESButton);
 
         signButton = new JButton("Firmar documento");
         signButton.setToolTipText("<html>Este botón permite firmar el documento seleccionado.<br>Requiere dispositivo de Firma Digital<br>al cual se le solicitará ingresar el PIN.</html>");
@@ -273,7 +273,7 @@ public class GUISwing implements GUIInterface {
         locationField.setVisible(false);
         contactInfoLabel.setVisible(false);
         contactInfoField.setVisible(false);
-        AdESLabel.setVisible(false);
+        AdESFormatLabel.setVisible(false);
         CAdESButton.setVisible(false);
         XAdESButton.setVisible(false);
         extendButton.setEnabled(false);
@@ -332,7 +332,7 @@ public class GUISwing implements GUIInterface {
                     .addComponent(reasonLabel)
                     .addComponent(locationLabel)
                     .addComponent(contactInfoLabel)
-                    .addComponent(AdESLabel))
+                    .addComponent(AdESFormatLabel))
                 .addGroup(signLayout.createParallelGroup()
                     .addGroup(signLayout.createSequentialGroup()
                         .addComponent(pageSpinner)
@@ -362,7 +362,7 @@ public class GUISwing implements GUIInterface {
                         .addComponent(contactInfoField)
                         .addComponent(contactInfoLabel))
                     .addGroup(signLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                        .addComponent(AdESLabel)
+                        .addComponent(AdESFormatLabel)
                         .addComponent(CAdESButton)
                         .addComponent(XAdESButton))
                     .addComponent(signButton)));
@@ -471,7 +471,7 @@ public class GUISwing implements GUIInterface {
             locationField.setVisible(false);
             contactInfoLabel.setVisible(false);
             contactInfoField.setVisible(false);
-            AdESLabel.setVisible(false);
+            AdESFormatLabel.setVisible(false);
             CAdESButton.setVisible(false);
             XAdESButton.setVisible(false);
             if (mimeType == MimeType.PDF) {
@@ -500,7 +500,7 @@ public class GUISwing implements GUIInterface {
                 contactInfoField.setVisible(true);
             } else if (mimeType == MimeType.XML || mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
             } else {
-                AdESLabel.setVisible(true);
+                AdESFormatLabel.setVisible(true);
                 CAdESButton.setVisible(true);
                 XAdESButton.setVisible(true);
             }
@@ -560,7 +560,7 @@ public class GUISwing implements GUIInterface {
                 } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
                     FirmadorOpenDocument firmador = new FirmadorOpenDocument(GUISwing.this);
                     signedDocument = firmador.sign(toSignDocument, pin);
-                } else if (mimeType == MimeType.XML || AdESButtonGroup.getSelection().getActionCommand().equals("XAdES")) {
+                } else if (mimeType == MimeType.XML || AdESFormatButtonGroup.getSelection().getActionCommand().equals("XAdES")) {
                     FirmadorXAdES firmador = new FirmadorXAdES(GUISwing.this);
                     signedDocument = firmador.sign(toSignDocument, pin);
                     extension = ".xml";
