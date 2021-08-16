@@ -315,7 +315,7 @@ public class GUISwing implements GUIInterface {
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIRMA<br>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VISIBLE</span></html>");
         //signatureLabel.setToolTipText("<html>Esta etiqueta es un recuadro arrastrable que representa<br>la ubicación de la firma visible en la página seleccionada.<br><br>Se puede cambiar su posición haciendo clic sobre el recuadro<br>y moviendo el mouse sin soltar el botón de clic<br>hasta soltarlo en la posición deseada.</html>");
-        if (System.getProperty("os.name").startsWith("Mac")) signatureLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        if (System.getProperty("os.name").startsWith("Mac")) signatureLabel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         else signatureLabel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
