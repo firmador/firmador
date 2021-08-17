@@ -115,7 +115,7 @@ public class GUISwing implements GUIInterface {
     private String lastFile = null;
     private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     private JTextField fileField;
-    private JTabbedPane tabbedPane;
+    private JTabbedPane frameTabbedPane;
     private JTabbedPane optionsTabbedPane;
     private JLabel imageLabel;
     private JLabel signatureLabel;
@@ -475,13 +475,13 @@ public class GUISwing implements GUIInterface {
         aboutPanel.setLayout(aboutLayout);
         aboutPanel.setOpaque(false);
 
-        tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Firmar", signPanel);
-        tabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran las opciones<br>para firmar el documento seleccionado.</html>");
-        tabbedPane.addTab("Validación", validateScrollPane);
-        tabbedPane.setToolTipTextAt(1, "<html>En esta pestaña se muestra información de validación<br>de las firmas digitales del documento seleccionado.</html>");
-        tabbedPane.addTab("Acerca de", aboutPanel);
-        tabbedPane.setToolTipTextAt(2, "<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
+        frameTabbedPane = new JTabbedPane();
+        frameTabbedPane.addTab("Firmar", signPanel);
+        frameTabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran las opciones<br>para firmar el documento seleccionado.</html>");
+        frameTabbedPane.addTab("Validación", validateScrollPane);
+        frameTabbedPane.setToolTipTextAt(1, "<html>En esta pestaña se muestra información de validación<br>de las firmas digitales del documento seleccionado.</html>");
+        frameTabbedPane.addTab("Acerca de", aboutPanel);
+        frameTabbedPane.setToolTipTextAt(2, "<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
 
         GroupLayout frameLayout = new GroupLayout(frame.getContentPane());
         frameLayout.setAutoCreateGaps(true);
@@ -492,7 +492,7 @@ public class GUISwing implements GUIInterface {
                     .addComponent(fileLabel)
                     .addComponent(fileField)
                     .addComponent(fileButton))
-                .addComponent(tabbedPane)
+                .addComponent(frameTabbedPane)
         );
         frameLayout.setVerticalGroup(
             frameLayout.createSequentialGroup()
@@ -500,7 +500,7 @@ public class GUISwing implements GUIInterface {
                     .addComponent(fileLabel)
                     .addComponent(fileField)
                     .addComponent(fileButton))
-                .addComponent(tabbedPane)
+                .addComponent(frameTabbedPane)
         );
         if (!isRemote) frame.getContentPane().setLayout(frameLayout);
         else frame.getContentPane().setLayout(signLayout);
@@ -589,10 +589,10 @@ public class GUISwing implements GUIInterface {
                 validator = new Validator(fileName);
                 if (validator.isSigned()) {
                     extendButton.setEnabled(true);
-                    tabbedPane.setSelectedIndex(1);
+                    frameTabbedPane.setSelectedIndex(1);
                 } else {
                     extendButton.setEnabled(false);
-                    tabbedPane.setSelectedIndex(0);
+                    frameTabbedPane.setSelectedIndex(0);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -601,7 +601,7 @@ public class GUISwing implements GUIInterface {
                     "a los desarrolladores de la aplicación para repararlo.");
                 reportLabel.setText("");
                 extendButton.setEnabled(false);
-                tabbedPane.setSelectedIndex(0);
+                frameTabbedPane.setSelectedIndex(0);
             }
             if (validator != null) {
                 try {
