@@ -689,7 +689,7 @@ public class GUISwing implements GUIInterface {
     }
 
     public String getDocumentToSign() {
-        return lastDirectory + lastFile;
+        return lastFile;
     }
 
     public String getPathToSave(String extension) {
