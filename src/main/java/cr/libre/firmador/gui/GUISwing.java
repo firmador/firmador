@@ -116,6 +116,7 @@ public class GUISwing implements GUIInterface {
     private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     private JTextField fileField;
     private JTabbedPane tabbedPane;
+    private JTabbedPane optionsTabbedPane;
     private JLabel imageLabel;
     private JLabel signatureLabel;
     private JCheckBox signatureVisibleCheckBox;
@@ -359,6 +360,15 @@ public class GUISwing implements GUIInterface {
                 openProjectWebsite();
             }
         });
+
+        JPanel pdfOptionsPanel = new JPanel();
+        JPanel advancedOptionsPanel = new JPanel();
+
+        optionsTabbedPane = new JTabbedPane();
+        optionsTabbedPane.addTab("Opciones PDF", pdfOptionsPanel);
+        optionsTabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran opciones específicas<br>para documentos en formato PDF.</html>");
+        optionsTabbedPane.addTab("Opciones avanzadas", advancedOptionsPanel);
+        optionsTabbedPane.setToolTipTextAt(1, "<html>En esta pestaña se muestran opciones avanzadas<br>relacionadas con la creación de la firma.</html>");
 
         JPanel signPanel = new JPanel();
         GroupLayout signLayout;
