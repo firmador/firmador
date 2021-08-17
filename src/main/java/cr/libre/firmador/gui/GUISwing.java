@@ -374,7 +374,8 @@ public class GUISwing implements GUIInterface {
                     .addComponent(reasonLabel)
                     .addComponent(locationLabel)
                     .addComponent(contactInfoLabel)
-                    .addComponent(AdESFormatLabel))
+                    .addComponent(AdESFormatLabel)
+                    .addComponent(AdESLevelLabel))
                 .addGroup(signLayout.createParallelGroup()
                     .addGroup(signLayout.createSequentialGroup()
                         .addComponent(pageSpinner)
@@ -385,6 +386,10 @@ public class GUISwing implements GUIInterface {
                     .addGroup(signLayout.createSequentialGroup()
                         .addComponent(CAdESButton)
                         .addComponent(XAdESButton))
+                    .addGroup(signLayout.createSequentialGroup()
+                        .addComponent(levelTButton)
+                        .addComponent(levelLTButton)
+                        .addComponent(levelLTAButton))
                     .addComponent(signButton)));
         signLayout.setVerticalGroup(
             signLayout.createParallelGroup()
@@ -407,6 +412,11 @@ public class GUISwing implements GUIInterface {
                         .addComponent(AdESFormatLabel)
                         .addComponent(CAdESButton)
                         .addComponent(XAdESButton))
+                    .addGroup(signLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(AdESLevelLabel)
+                        .addComponent(levelTButton)
+                        .addComponent(levelLTButton)
+                        .addComponent(levelLTAButton))
                     .addComponent(signButton)));
         if (!isRemote) signPanel.setLayout(signLayout);
         signPanel.setOpaque(false);
