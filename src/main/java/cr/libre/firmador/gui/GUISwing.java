@@ -247,7 +247,7 @@ public class GUISwing implements GUIInterface {
             }
         });
         signatureVisibleCheckBox = new JCheckBox(" Sin firma visible");
-        signatureVisibleCheckBox.setToolTipText("<html>Marque esta casilla si no desea presentar visualmete una firma<br>en las páginas del documento a la hora de firmarlo.</html>");
+        signatureVisibleCheckBox.setToolTipText("<html>Marque esta casilla si no desea representar visualmente una firma<br>en una página del documento a la hora de firmarlo.</html>");
         signatureVisibleCheckBox.setOpaque(false);
         reasonLabel = new JLabel("Razón:");
         locationLabel = new JLabel("Lugar:");
@@ -255,9 +255,9 @@ public class GUISwing implements GUIInterface {
         reasonField = new JTextField();
         reasonField.setToolTipText("<html>Este campo opcional permite indicar una razón<br>o motivo por el cual firma el documento.</html>");
         locationField = new JTextField();
-        locationField.setToolTipText("<html>Este campo opcional permite indicar el lugar físico,<br>por ejemplo la ciudad, desde la cual firma.</html>");
+        locationField.setToolTipText("<html>Este campo opcional permite indicar el lugar físico,<br>por ejemplo la ciudad, en la cual declara firmar.</html>");
         contactInfoField = new JTextField();
-        contactInfoField.setToolTipText("<html>Este campo opcional permite indicar una<br>forma de contactar con la persona firmante,<br>por ejemplo una dirección de correo electrónico.</html>");
+        contactInfoField.setToolTipText("<html>Este campo opcional permite indicar una<br>manera de contactar con la persona firmante,<br>por ejemplo una dirección de correo electrónico.</html>");
 
         AdESFormatLabel = new JLabel("Formato AdES:");
         CAdESButton = new JRadioButton("CAdES");
@@ -285,7 +285,7 @@ public class GUISwing implements GUIInterface {
         AdESLevelButtonGroup.add(levelLTAButton);
 
         signButton = new JButton("Firmar documento");
-        signButton.setToolTipText("<html>Este botón permite firmar el documento seleccionado.<br>Requiere dispositivo de Firma Digital<br>al cual se le solicitará ingresar el PIN.</html>");
+        signButton.setToolTipText("<html>Este botón permite firmar el documento seleccionado.<br>Requiere dispositivo de Firma Digital al cual se le<br>solicitará ingresar el PIN.</html>");
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 signDocument();
@@ -294,7 +294,7 @@ public class GUISwing implements GUIInterface {
 
         reportLabel = new CopyableJLabel();
         extendButton = new JButton("Agregar sello de tiempo al documento");
-        extendButton.setToolTipText("<html>Este botón permite que el documento firmado que está cargado actualmente<br>se le amplíe el nivel de firma a AdES-LTA si no lo está, agregando un sello de<br>tiempo a nivel documento, con el propósito de archivado longevo.</html>");
+        extendButton.setToolTipText("<html>Este botón permite que el documento firmado que está cargado actualmente<br>agregue un nuevo sello de tiempo a nivel documento, con el propósito de<br>archivado longevo. También permite ampliar el nivel de firma a AdES-LTA<br>si el documento tiene un nivel de firma avanzada inferior.</html>");
         extendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 extendDocument();
@@ -320,7 +320,7 @@ public class GUISwing implements GUIInterface {
         levelLTAButton.setVisible(false);
         extendButton.setEnabled(false);
         JButton fileButton = new JButton("Elegir...");
-        fileButton.setToolTipText("<html>Haga clic en este botón para<br>elegir un fichero a firmar o validar.</html>");
+        fileButton.setToolTipText("<html>Haga clic en este botón para seleccionar uno o<br>varios ficheros a firmar, o un fichero a validar.</html>");
 
         imageLabel = new JLabel();
         fileButton.addActionListener(new ActionListener() {
