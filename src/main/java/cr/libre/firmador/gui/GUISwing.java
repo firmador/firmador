@@ -259,7 +259,7 @@ public class GUISwing implements GUIInterface {
         contactInfoField = new JTextField();
         contactInfoField.setToolTipText("<html>Este campo opcional permite indicar una<br>forma de contactar con la persona firmante,<br>por ejemplo una dirección de correo electrónico.</html>");
 
-        AdESFormatLabel = new JLabel("Formato de firma AdES:");
+        AdESFormatLabel = new JLabel("Formato AdES:");
         CAdESButton = new JRadioButton("CAdES");
         CAdESButton.setActionCommand("CAdES");
         CAdESButton.setContentAreaFilled(false);
@@ -269,7 +269,7 @@ public class GUISwing implements GUIInterface {
         AdESFormatButtonGroup = new ButtonGroup();
         AdESFormatButtonGroup.add(CAdESButton);
         AdESFormatButtonGroup.add(XAdESButton);
-        AdESLevelLabel = new JLabel("Nivel de firma AdES:");
+        AdESLevelLabel = new JLabel("Nivel AdES:");
         levelTButton = new JRadioButton("T");
         levelTButton.setActionCommand("T");
         levelTButton.setContentAreaFilled(false);
