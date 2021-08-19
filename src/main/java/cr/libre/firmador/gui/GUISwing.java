@@ -288,7 +288,7 @@ public class GUISwing implements GUIInterface {
         signButton.setToolTipText("<html>Este botón permite firmar el documento seleccionado.<br>Requiere dispositivo de Firma Digital al cual se le<br>solicitará ingresar el PIN.</html>");
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                signDocument();
+                signDocuments();
             }
         });
 
@@ -617,7 +617,7 @@ public class GUISwing implements GUIInterface {
         }
     }
 
-    public void signDocument() {
+    public void signDocuments() {
         String fileName = getDocumentToSign();
         if (fileName != null || isRemote) {
             if (!isRemote) toSignDocument = new FileDocument(fileName);
