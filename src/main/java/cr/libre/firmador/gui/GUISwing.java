@@ -630,7 +630,7 @@ public class GUISwing implements GUIInterface {
                     FirmadorPAdES firmador = new FirmadorPAdES(GUISwing.this);
                     firmador.setVisibleSignature(!signatureVisibleCheckBox.isSelected());
                     firmador.addVisibleSignature((int)pageSpinner.getValue(), (int)Math.round(signatureLabel.getX() * 1.5), (int)Math.round(signatureLabel.getY() * 1.5));
-                    signedDocument = firmador.sign(toSignDocument, pin, reasonField.getText(), locationField.getText(), contactInfoField.getText(), System.getProperty("jnlp.signatureImage"), Boolean.getBoolean("jnlp.hideSignatureAdvice"));
+                    signedDocument = firmador.sign(toSignDocument, pin, AdESLevelButtonGroup.getSelection().getActionCommand(), reasonField.getText(), locationField.getText(), contactInfoField.getText(), System.getProperty("jnlp.signatureImage"), Boolean.getBoolean("jnlp.hideSignatureAdvice"));
                 } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
                     FirmadorOpenDocument firmador = new FirmadorOpenDocument(GUISwing.this);
                     signedDocument = firmador.sign(toSignDocument, pin);
