@@ -159,6 +159,7 @@ public class GUISwing implements GUIInterface {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
         } catch (Exception e) {
+            e.printStackTrace();
             showError(Throwables.getRootCause(e));
         }
 
@@ -242,6 +243,7 @@ public class GUISwing implements GUIInterface {
                         frame.setMinimumSize(frame.getSize());
                     }
                 } catch (Exception ex) {
+                    ex.printStackTrace();
                     showError(Throwables.getRootCause(ex));
                 }
             }
@@ -581,6 +583,7 @@ public class GUISwing implements GUIInterface {
             frame.pack();
             frame.setMinimumSize(frame.getSize());
         } catch (Exception e) {
+            e.printStackTrace();
             showError(Throwables.getRootCause(e));
         }
         if (!isRemote) {
@@ -655,6 +658,7 @@ public class GUISwing implements GUIInterface {
                         showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
                         loadDocument(fileName);
                     } catch (IOException e) {
+                        e.printStackTrace();
                         showError(Throwables.getRootCause(e));
                     }
                 }
@@ -687,6 +691,7 @@ public class GUISwing implements GUIInterface {
                         showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
                         loadDocument(fileName);
                     } catch (IOException e) {
+                        e.printStackTrace();
                         showError(Throwables.getRootCause(e));
                     }
                 }
@@ -774,6 +779,7 @@ public class GUISwing implements GUIInterface {
             try {
                 Desktop.getDesktop().browse(new URI("https://firmador.libre.cr"));
             } catch (Exception e) {
+                e.printStackTrace();
                 showError(Throwables.getRootCause(e));
             }
         }
@@ -789,6 +795,7 @@ public class GUISwing implements GUIInterface {
     }
 
     public void showError(Throwable error) {
+        error.printStackTrace();
         String message = error.getLocalizedMessage();
         int messageType = JOptionPane.ERROR_MESSAGE;
         String className = error.getClass().getName();
@@ -799,8 +806,9 @@ public class GUISwing implements GUIInterface {
                     "Este inconveniente se corregirá en próximas versiones. Disculpe las molestias.";
                 break;
             case "java.security.ProviderException":
-                message = "No se ha encontrado la librería de Firma Digital en el sistema.<br>" +
-                    "¿Están instalados los controladores?";
+                message = "No se ha encontrado ninguna dispositivo de firma.<br>" +
+                    "Asegúrese de que la tarjeta y el lector están conectados de forma correcta<br>" +
+                    "y de que los controladores están instalados y ha reiniciado el sistema tras su instalación.";
                 break;
             case "java.security.NoSuchAlgorithmException":
                 message = "No se ha encontrado ninguna tarjeta conectada.<br>" +
@@ -827,7 +835,6 @@ public class GUISwing implements GUIInterface {
                         "Contacte con su proveedor para desbloquearlo.";
                     break;
                 default:
-                    error.printStackTrace();
                     message = "Error: " + className + "<br>" +
                         "Detalle: " + message + "<br>" +
                         "Agradecemos que comunique este mensaje de error a los autores del programa<br>" +
@@ -842,7 +849,6 @@ public class GUISwing implements GUIInterface {
                     break;
                 }
             default:
-                error.printStackTrace();
                 message = "Error: " + className + "<br>" +
                     "Detalle: " + message + "<br>" +
                     "Agradecemos que comunique este mensaje de error a los autores del programa<br>" +
