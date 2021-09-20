@@ -235,7 +235,7 @@ public class FirmadorPAdES extends CRSigner {
         fecha.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
         String additionalText = "";
         if (hideAdvice != null && !hideAdvice) {
-            additionalText = "Verifique siempre cualquier firma digital,\neste texto no tiene validez por sí mismo.";
+            additionalText = "Esta es una representación gráfica únicamente,\nverifique la validez de la firma.";
         }
         Boolean hasReason = false;
         Boolean hasLocation = false;
