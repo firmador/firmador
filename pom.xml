@@ -13,7 +13,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.fork>true</maven.compiler.fork>
-    <dss.version>5.9.RC1</dss.version>
+    <dss.version>5.9</dss.version>
     <slf4j.version>1.7.31</slf4j.version>
   </properties>
   <build>
