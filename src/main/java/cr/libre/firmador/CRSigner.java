@@ -109,12 +109,15 @@ public class CRSigner {
         CertificateSource trustedCertSource = new CommonTrustedCertificateSource();
         trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA RAIZ NACIONAL - COSTA RICA v2.crt")));
         trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA RAIZ NACIONAL COSTA RICA.cer")));
+        // Just for testing for now, it should be adviced this Root CA is not trusted and not a part of national official document format policy. It is just for tax office purposes
+        //trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA RAIZ MINISTERIO DE HACIENDA.crt")));
         // For AdES Baseline B signing without Internet connection for fetching intermediates from AIA.
         // Costa Rica smart card certificate store chip from SINPE don't include intermediate certificates. This has been reported. No feedback received so far.
         CertificateSource adjunctCertSource = new CommonCertificateSource();
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA SINPE - PERSONA FISICA v2.cer")));
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA POLITICA PERSONA FISICA - COSTA RICA v2.crt")));
-        adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA RAIZ NACIONAL - COSTA RICA v2.crt")));
+        // TODO Check if root CA makes sense here.
+        //adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("CA RAIZ NACIONAL - COSTA RICA v2.crt")));
         CommonCertificateVerifier cv = new CommonCertificateVerifier();
         cv.setTrustedCertSources(trustedCertSource);
         cv.setAdjunctCertSources(adjunctCertSource);
