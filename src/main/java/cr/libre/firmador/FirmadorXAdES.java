@@ -131,7 +131,6 @@ public class FirmadorXAdES extends CRSigner {
             policy.setDigestValue(Utils.fromBase64("0h7Q3dFHhu0bHbcZEgVc07cEcDlquUeG08HG6Iototo="));
             parameters.bLevel().setSignaturePolicy(policy);
             */
-            //parameters.bLevel().setClaimedSignerRoles(Arrays.asList("Emisor")); // Electronic receipts v4.4 proposal
             //parameters.bLevel().setClaimedSignerRoles(Arrays.asList("Receptor")); // Electronic receipts v4.4 proposal
 
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
