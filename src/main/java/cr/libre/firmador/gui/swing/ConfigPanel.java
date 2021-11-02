@@ -105,7 +105,7 @@ public class ConfigPanel extends JPanel {
 		panel.add(ldefaultsignmessage);
 		
 		defaultsignmessage = new JTextArea();
-		defaultsignmessage.setText(this.settings.defaultsignmessage);
+		defaultsignmessage.setText(this.settings.getDefaultSignMessage());
 		panel.add(defaultsignmessage);
 		
 		JLabel lsignwidth = new JLabel("Ancho de firma");
@@ -143,11 +143,9 @@ public class ConfigPanel extends JPanel {
 		fontsize.setModel(new SpinnerNumberModel(this.settings.fontsize, null, null, 1));
 		panel.add(fontsize);
 		
-		//panel.setPreferredSize(new Dimension(550, 250));
 		
 		JScrollPane configPanel = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		configPanel.setPreferredSize(new Dimension(600, 300));
-		//configPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		configPanel.setPreferredSize(new Dimension(600, 400));
 		configPanel.setBorder(null);
 		
 		//configPanel.setViewportView(panel);
@@ -195,7 +193,7 @@ public class ConfigPanel extends JPanel {
 		settings.signx = Integer.parseInt(signx.getValue().toString());
 		settings.signy = Integer.parseInt(signy.getValue().toString());
 
-		
+		settings.updateConfig();
 	}
 	public void save_settings() {
 		charge_settings();

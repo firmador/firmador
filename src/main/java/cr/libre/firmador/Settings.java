@@ -1,6 +1,12 @@
 package cr.libre.firmador;
 
+import java.util.ArrayList;
+import java.util.List;
+
+ 
 public class Settings {
+	private List<ConfigListener> listeners = new ArrayList<ConfigListener>();
+
 	public boolean withoutvisiblesign=false;
 	public boolean uselta=false;
 	public boolean overwritesourcefile=false;
@@ -16,6 +22,8 @@ public class Settings {
 	public Integer signx=198;
 	public Integer signy=0;
 	
+	
+	
 	public Settings() {}
 	
 	public String getDefaultSignMessage() {
@@ -25,4 +33,15 @@ public class Settings {
 	public String getDateFormat() {
 		return this.dateformat;
 	}
+	
+	
+	public void addListener(ConfigListener toAdd) {
+        listeners.add(toAdd);
+    }
+	
+	public void updateConfig() {
+		for (ConfigListener hl : listeners)
+            hl.updateConfig();
+	}
+	
 }

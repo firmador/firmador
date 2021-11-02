@@ -76,6 +76,9 @@ import cr.libre.firmador.FirmadorPAdES;
 import cr.libre.firmador.FirmadorXAdES;
 import cr.libre.firmador.Report;
 import cr.libre.firmador.Settings;
+import cr.libre.firmador.ConfigListener;
+
+
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.Validator;
 import cr.libre.firmador.gui.swing.AboutLayout;
@@ -103,7 +106,7 @@ import org.apache.http.protocol.HttpRequestHandler;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
-public class GUISwing implements GUIInterface {
+public class GUISwing implements GUIInterface, ConfigListener {
 
     private static FileDialog loadDialog;
     private Boolean isRemote = false;
@@ -144,6 +147,7 @@ public class GUISwing implements GUIInterface {
 
     public void loadGUI() {
 		settings = SettingsManager.getInstance().get_and_create_settings();
+		settings.addListener(this);
         try {
             Application.getApplication().setDockIconImage(image);
         } catch (RuntimeException | IllegalAccessError e) { /* macOS dock icon support specific code. */ }
@@ -259,6 +263,9 @@ public class GUISwing implements GUIInterface {
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 signDocument();
+                if(settings.uselta) {
+                	extendDocument();
+                }
             }
         });
 
@@ -568,7 +575,9 @@ public class GUISwing implements GUIInterface {
                 if (fileName != null) {
                     try {
                         signedDocument.save(fileName);
+                        if(!settings.uselta) {
                         showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
+                        }
                         loadDocument(fileName);
                     } catch (IOException e) {
                         showError(Throwables.getRootCause(e));
@@ -627,12 +636,14 @@ public class GUISwing implements GUIInterface {
     }
 
     public String getPathToSave(String extension) {
+    	if(settings.overwritesourcefile) return getDocumentToSign();
         if (documenttosave != null) return documenttosave;
         String pathToSave = showSaveDialog("-firmado", extension);
         return pathToSave;
     }
 
     public String getPathToSaveExtended(String extension) {
+    	if(settings.overwritesourcefile) return getDocumentToSign();
         String pathToExtend = showSaveDialog("-sellado", extension);
         return pathToExtend;
     }
@@ -771,6 +782,15 @@ public class GUISwing implements GUIInterface {
     @Override
     public String getPkcs12file() {
         return "";
+    }
+    
+    public void updateConfig(){
+    	signatureVisibleCheckBox.setSelected(settings.withoutvisiblesign);
+    	reasonField.setText(settings.reason);
+    	locationField.setText(settings.place);
+    	contactInfoField.setText(settings.contact);
+    	signatureLabel.setBounds(settings.signx, settings.signy, settings.signwith, settings.signheight);
+    	
     }
 
 }

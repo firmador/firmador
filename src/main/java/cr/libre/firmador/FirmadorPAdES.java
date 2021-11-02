@@ -215,21 +215,22 @@ public class FirmadorPAdES extends CRSigner {
     }
 
     private void appendVisibleSignature(CertificateToken certificate, Date date, String reason, String location, String contactInfo, String image, Boolean hideAdvice) {
-        SignatureImageParameters imageParameters = new SignatureImageParameters();
+    	Settings settings = SettingsManager.getInstance().get_and_create_settings();
+    	SignatureImageParameters imageParameters = new SignatureImageParameters();
         imageParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
         imageParameters.getFieldParameters().setOriginX(x);
         imageParameters.getFieldParameters().setOriginY(y);
         SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
-        textParameters.setFont(new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
+        textParameters.setFont(new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, settings.fontsize)));
         String cn = DSSASN1Utils.getSubjectCommonName(certificate);
         X500PrincipalHelper subject = certificate.getSubject();
         String o = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.O, subject);
         String sn = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.SERIALNUMBER, subject);
-        SimpleDateFormat fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
+        SimpleDateFormat fecha = new SimpleDateFormat(settings.getDateFormat());
         fecha.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
         String additionalText = "";
         if (hideAdvice != null && !hideAdvice) {
-            additionalText = "Esta representación visual no es fuente" + "\nde confianza. Valide siempre la firma.";
+            additionalText = settings.getDefaultSignMessage();
         }
         Boolean hasReason = false;
         Boolean hasLocation = false;
@@ -249,6 +250,7 @@ public class FirmadorPAdES extends CRSigner {
         textParameters.setText(cn + "\n" + o + ", " + sn + "." + "\n" + "Fecha declarada: " + fecha.format(date) + "\n" + additionalText);
         textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
         textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
+        
         imageParameters.setTextParameters(textParameters);
         try {
             if (image != null && !image.trim().isEmpty()) imageParameters.setImage(new InMemoryDocument(Utils.toByteArray(new URL(image).openStream())));

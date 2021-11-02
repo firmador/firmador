@@ -1,5 +1,6 @@
 package cr.libre.firmador;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,6 +9,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 /**
@@ -97,7 +100,9 @@ public class SettingsManager {
             configFile = new File(this.get_config_file());
             if(configFile.exists()) {
 	            InputStream inputStream = new FileInputStream(configFile);
-	            props.load(inputStream);
+	            Reader reader = new InputStreamReader(inputStream, "UTF-8");
+	            props.load(reader);
+	            reader.close();
 	            inputStream.close();
 	            loaded=true;
             }
@@ -141,7 +146,7 @@ public class SettingsManager {
 	    	conf.place=props.getProperty("place", conf.place );
 	    	conf.contact=props.getProperty("contact", conf.contact );
 	    	conf.dateformat=props.getProperty("dateformat", conf.dateformat );
-	    	conf.defaultsignmessage=props.getProperty("defaultsignmessage", conf.defaultsignmessage );
+	    	conf.defaultsignmessage=new String( props.getProperty("defaultsignmessage", conf.defaultsignmessage ).getBytes(StandardCharsets.UTF_8));
 	    	conf.signwith=Integer.parseInt(props.getProperty("signwith", conf.signwith.toString() ));
 	    	conf.signheight=Integer.parseInt(props.getProperty("signheight", conf.signheight.toString() ));
 	    	conf.fontsize=Integer.parseInt(props.getProperty("fontsize", conf.fontsize.toString() ));
