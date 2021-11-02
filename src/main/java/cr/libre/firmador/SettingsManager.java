@@ -1,0 +1,208 @@
+package cr.libre.firmador;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+/**
+*
+* @author luisza
+*/
+public class SettingsManager {
+
+	private static SettingsManager cm = new SettingsManager();
+	private Path path;
+	private Properties props;
+	private Settings settings = null;
+	
+    public Path get_config_dir() throws IOException {
+    	String osName = System.getProperty("os.name").toLowerCase();
+        // Se asegura que siempre exista el directorio de configuracion
+        path = FileSystems.getDefault().getPath(System.getProperty("user.home"), ".firmadorlibre");
+        if (!Files.isDirectory(path)) {
+            Files.createDirectories(path);
+            if (osName.contains("windows")) Files.setAttribute(path, "dos:hidden", true);
+        
+    	}
+        return path;
+    }
+    
+    public Path get_path_config_file(String name) throws IOException{
+    	if (path == null){
+    		path = this.get_config_dir();
+    		path = path.getFileSystem().getPath(path.toString(), name);
+    	}
+        return path;
+    }
+    
+    public String get_config_file(String name) throws IOException{
+        return this.get_path_config_file(name).toString();
+    }
+
+	public Path getPath() {
+		return path;
+	}
+
+	public void setPath(Path path) {
+		this.path = path;
+	}
+
+	public void setPath(String path) {
+		this.path = FileSystems.getDefault().getPath(path);
+	}
+
+	private SettingsManager() {
+		super();
+		this.path = null;
+		props = new Properties();
+	}
+	
+    public static SettingsManager getInstance() {
+        // return unique instance 
+        return cm;
+
+    }
+    
+    public String getProperty(String key) {
+        return props.getProperty(key, "");
+    }
+
+    public void setProperty(String key, String value) {
+        props.setProperty(key, value);
+    }
+
+    
+    private String get_config_file() throws IOException {
+        //Retorna el archivo de configuracion
+    	String dev="";
+    	if(this.path == null){
+    		dev = this.get_config_file("config.properties");
+    	}else{
+    		dev = this.path.toString();
+    	}
+    	return dev;
+    }
+
+    public boolean load_config() {
+        // carga las configuraciones desde un archivo de texto
+        File configFile;
+        boolean loaded=false;
+        try {
+            configFile = new File(this.get_config_file());
+            if(configFile.exists()) {
+	            InputStream inputStream = new FileInputStream(configFile);
+	            props.load(inputStream);
+	            inputStream.close();
+	            loaded=true;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return loaded;
+    }
+
+    public void save_config() {
+        // Guarda las configuraciones en un archivo de texto
+        File configFile = null;
+        FileWriter writer = null;
+        //props.setProperty("formato", "json");
+        try {
+            writer = new FileWriter(this.get_config_file());
+            props.store(writer, "Firmador Libre settings");
+
+        } catch (IOException ex) {
+            Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    public Settings getSettings(){
+    	Settings conf = new Settings();
+    	boolean loaded =this.load_config();
+    	    	
+    	if(loaded) {
+	    	conf.withoutvisiblesign=Boolean.parseBoolean(props.getProperty("withoutvisiblesign", String.valueOf(conf.withoutvisiblesign) ));
+	    	conf.uselta=Boolean.parseBoolean(props.getProperty("uselta", String.valueOf(conf.uselta) ));
+	    	conf.overwritesourcefile=Boolean.parseBoolean(props.getProperty("overwritesourcefile", String.valueOf(conf.overwritesourcefile )));
+	    	conf.reason=props.getProperty("reason", conf.reason );
+	    	conf.place=props.getProperty("place", conf.place );
+	    	conf.contact=props.getProperty("contact", conf.contact );
+	    	conf.dateformat=props.getProperty("dateformat", conf.dateformat );
+	    	conf.defaultsignmessage=props.getProperty("defaultsignmessage", conf.defaultsignmessage );
+	    	conf.signwith=Integer.parseInt(props.getProperty("signwith", conf.signwith.toString() ));
+	    	conf.signheight=Integer.parseInt(props.getProperty("signheight", conf.signheight.toString() ));
+	    	conf.fontsize=Integer.parseInt(props.getProperty("fontsize", conf.fontsize.toString() ));
+	    	conf.signx=Integer.parseInt(props.getProperty("singy", conf.signx.toString() ));
+	    	conf.signy=Integer.parseInt(props.getProperty("singy", conf.signy.toString() ));
+	    	conf.extrapkcs11Lib=props.getProperty("extrapkcs11Lib");
+	    	
+    	}
+    	
+    	return conf;
+    }
+    
+    
+    public void setSettings(Settings conf, boolean save){
+  	    	
+    	setProperty("withoutvisiblesign", String.valueOf(conf.withoutvisiblesign));
+    	setProperty("uselta", String.valueOf(conf.uselta));
+    	setProperty("overwritesourcefile", String.valueOf(conf.overwritesourcefile));
+    	setProperty("reason", conf.reason);
+    	setProperty("place", conf.place);
+    	setProperty("contact", conf.contact);
+    	setProperty("dateformat", conf.dateformat);
+    	setProperty("defaultsignmessage", conf.defaultsignmessage);
+    	setProperty("signwith", conf.signwith.toString());
+    	setProperty("signheight", conf.signheight.toString());
+    	setProperty("fontsize", conf.fontsize.toString());
+    	setProperty("singx", conf.signx.toString());
+    	setProperty("singy", conf.signy.toString());
+    	
+    	
+    	if(conf.extrapkcs11Lib!=null) {
+    		setProperty("extrapkcs11Lib", conf.extrapkcs11Lib);
+    	}
+    	if(save)save_config();
+  
+    }
+    
+    public Settings get_and_create_settings(){
+    	if(this.settings != null) {
+    		return this.settings;
+    	}
+    	
+    	Settings dev = new Settings();
+		try {
+			// Check if file exists
+			if(this.path == null){
+				String cpath = get_config_file("config.properties");
+			}else{
+				if(!Files.exists(this.path)){
+					 Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, "Config File does not exists");
+					return dev;
+				}
+			}
+			dev = getSettings();
+		} catch (Exception e) {
+			e.printStackTrace();
+			setSettings(dev, true);
+		}
+		this.settings = dev;
+    	return dev;
+    }
+   
+
+}

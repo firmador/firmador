@@ -75,7 +75,11 @@ import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
 import cr.libre.firmador.FirmadorXAdES;
 import cr.libre.firmador.Report;
+import cr.libre.firmador.Settings;
+import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.Validator;
+import cr.libre.firmador.gui.swing.AboutLayout;
+import cr.libre.firmador.gui.swing.ConfigPanel;
 import cr.libre.firmador.gui.swing.CopyableJLabel;
 import cr.libre.firmador.gui.swing.ScrollableJPanel;
 import com.apple.eawt.Application;
@@ -108,7 +112,6 @@ public class GUISwing implements GUIInterface {
     private String documenttosave = null;
     private String lastDirectory = null;
     private String lastFile = null;
-    private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     private JTextField fileField;
     private JTabbedPane tabbedPane;
     private JLabel imageLabel;
@@ -136,8 +139,11 @@ public class GUISwing implements GUIInterface {
     private PDDocument doc;
     private PDFRenderer renderer;
     private JFrame frame;
+    private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
+    private Settings settings;
 
     public void loadGUI() {
+		settings = SettingsManager.getInstance().get_and_create_settings();
         try {
             Application.getApplication().setDockIconImage(image);
         } catch (RuntimeException | IllegalAccessError e) { /* macOS dock icon support specific code. */ }
@@ -221,17 +227,20 @@ public class GUISwing implements GUIInterface {
                 }
             }
         });
-        signatureVisibleCheckBox = new JCheckBox(" Sin firma visible");
+        signatureVisibleCheckBox = new JCheckBox(" Sin firma visible", settings.withoutvisiblesign);
         signatureVisibleCheckBox.setToolTipText("<html>Marque esta casilla si no desea presentar visualmete una firma<br>en las páginas del documento a la hora de firmarlo.</html>");
         signatureVisibleCheckBox.setOpaque(false);
         reasonLabel = new JLabel("Razón:");
         locationLabel = new JLabel("Lugar:");
         contactInfoLabel = new JLabel("Contacto:");
         reasonField = new JTextField();
+        reasonField.setText(settings.reason);
         reasonField.setToolTipText("<html>Este campo opcional permite indicar una razón<br>o motivo por el cual firma el documento.</html>");
         locationField = new JTextField();
+        locationField.setText(settings.place);
         locationField.setToolTipText("<html>Este campo opcional permite indicar el lugar físico,<br>por ejemplo la ciudad, desde la cual firma.</html>");
         contactInfoField = new JTextField();
+        contactInfoField.setText(settings.contact);
         contactInfoField.setToolTipText("<html>Este campo opcional permite indicar una<br>forma de contactar con la persona firmante,<br>por ejemplo una dirección de correo electrónico.</html>");
 
         AdESLabel = new JLabel("Formato de firma AdES:");
@@ -295,7 +304,7 @@ public class GUISwing implements GUIInterface {
         signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
-        signatureLabel.setBounds(198, 0, 133, 33);
+        signatureLabel.setBounds(settings.signx, settings.signy, settings.signwith, settings.signheight);
         imageLabel.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 signatureLabel.setLocation(e.getX() - signatureLabel.getWidth() / 2, e.getY() - signatureLabel.getHeight() / 2);
@@ -303,19 +312,7 @@ public class GUISwing implements GUIInterface {
         });
         imageLabel.add(signatureLabel);
 
-        JLabel iconLabel = new JLabel(new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
-        JLabel descriptionLabel = new JLabel("<html><p align='center'><b>Firmador</b><br><br>" +
-            "Versión " + getClass().getPackage().getSpecificationVersion() + "<br><br>" +
-            "Herramienta para firmar documentos digitalmente.<br><br>" +
-            "Los documentos firmados con esta herramienta cumplen con la<br>" +
-            "Política de Formatos Oficiales de los Documentos Electrónicos<br>" +
-            "Firmados Digitalmente de Costa Rica.<br><br></p></html>", JLabel.CENTER);
-        JButton websiteButton = new JButton("Visitar sitio web del proyecto");
-        websiteButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                openProjectWebsite();
-            }
-        });
+
 
         JPanel signPanel = new JPanel();
         GroupLayout signLayout;
@@ -393,31 +390,26 @@ public class GUISwing implements GUIInterface {
         validateScrollPane.getViewport().setOpaque(false);
 
         JPanel aboutPanel = new JPanel();
-        GroupLayout aboutLayout = new GroupLayout(aboutPanel);
-        aboutLayout.setAutoCreateGaps(true);
-        aboutLayout.setAutoCreateContainerGaps(true);
-        aboutLayout.setHorizontalGroup(
-            aboutLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                .addComponent(iconLabel)
-                .addComponent(descriptionLabel)
-                .addComponent(websiteButton)
-        );
-        aboutLayout.setVerticalGroup(
-            aboutLayout.createSequentialGroup()
-                .addComponent(iconLabel)
-                .addComponent(descriptionLabel)
-                .addComponent(websiteButton)
-        );
+        GroupLayout aboutLayout = new AboutLayout(aboutPanel);
+        ((AboutLayout) aboutLayout).setInterface(this);
+
         aboutPanel.setLayout(aboutLayout);
         aboutPanel.setOpaque(false);
+        
+        
+        
+        JPanel configPanel = new ConfigPanel();
+        configPanel.setOpaque(false);
 
         tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Firmar", signPanel);
         tabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran las opciones<br>para firmar el documento seleccionado.</html>");
         tabbedPane.addTab("Validación", validateScrollPane);
         tabbedPane.setToolTipTextAt(1, "<html>En esta pestaña se muestra información de validación<br>de las firmas digitales del documento seleccionado.</html>");
+        tabbedPane.addTab("Configuración", configPanel);
+        tabbedPane.setToolTipTextAt(2, "<html>En esta estaña se configura<br>aspectos de este programa.</html>");
         tabbedPane.addTab("Acerca de", aboutPanel);
-        tabbedPane.setToolTipTextAt(2, "<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
+        tabbedPane.setToolTipTextAt(3, "<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
 
         GroupLayout frameLayout = new GroupLayout(frame.getContentPane());
         frameLayout.setAutoCreateGaps(true);
@@ -691,15 +683,7 @@ public class GUISwing implements GUIInterface {
         else return new PasswordProtection(null);
     }
 
-    private void openProjectWebsite() {
-        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-            try {
-                Desktop.getDesktop().browse(new URI("https://firmador.libre.cr"));
-            } catch (Exception e) {
-                showError(Throwables.getRootCause(e));
-            }
-        }
-    }
+
 
     public void setArgs(String[] args) {
         List<String> arguments = new ArrayList<String>();
