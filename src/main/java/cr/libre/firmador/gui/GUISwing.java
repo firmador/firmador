@@ -566,10 +566,12 @@ public class GUISwing implements GUIInterface {
                 locationField.setVisible(true);
                 contactInfoLabel.setVisible(true);
                 contactInfoField.setVisible(true);
+/*
                 AdESLevelLabel.setVisible(true);
                 levelTButton.setVisible(true);
                 levelLTButton.setVisible(true);
                 levelLTAButton.setVisible(true);
+*/
             } else if (mimeType == MimeType.XML || mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
             } else {
                 AdESFormatLabel.setVisible(true);
