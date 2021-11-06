@@ -19,7 +19,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador;
 
-import java.awt.Color;
+
 import java.awt.Font;
 import java.io.IOException;
 import java.net.URL;
@@ -62,9 +62,11 @@ public class FirmadorPAdES extends CRSigner {
     private int page = 1, x, y;
     PAdESSignatureParameters parameters;
     private boolean visibleSignature = true;
+    private Settings settings;
 
     public FirmadorPAdES(GUIInterface gui) {
         super(gui);
+        settings = SettingsManager.getInstance().get_and_create_settings();
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
@@ -184,13 +186,15 @@ public class FirmadorPAdES extends CRSigner {
                 imageParameters.getFieldParameters().setOriginX(0);
                 imageParameters.getFieldParameters().setOriginY(0);
                 SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
-                textParameters.setFont(new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
-                SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
+                textParameters.setFont(new DSSJavaFont(new Font(settings.font, Font.PLAIN, 7)));
+                SimpleDateFormat date = new SimpleDateFormat(settings.getDateFormat());
                 date.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
                 textParameters.setText("Este documento incluye un sello de tiempo de la" + "\n" +
                     "Autoridad de Sellado de Tiempo (TSA) del SINPE.\n" +
                     "Fecha de solicitud a la TSA: " + date.format(new Date()));
-                textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
+                
+                textParameters.setTextColor(settings.getFontColor());
+                textParameters.setBackgroundColor(settings.getBackgroundColor());
                 textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
                 imageParameters.setTextParameters(textParameters);
                 imageParameters.getFieldParameters().setPage(1);
@@ -215,7 +219,6 @@ public class FirmadorPAdES extends CRSigner {
     }
 
     private void appendVisibleSignature(CertificateToken certificate, Date date, String reason, String location, String contactInfo, String image, Boolean hideAdvice) {
-    	Settings settings = SettingsManager.getInstance().get_and_create_settings();
     	SignatureImageParameters imageParameters = new SignatureImageParameters();
         imageParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
         imageParameters.getFieldParameters().setOriginX(x);
@@ -248,7 +251,8 @@ public class FirmadorPAdES extends CRSigner {
             else additionalText = "Contacto: " + contactInfo;
         }
         textParameters.setText(cn + "\n" + o + ", " + sn + "." + "\n" + "Fecha declarada: " + fecha.format(date) + "\n" + additionalText);
-        textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
+        textParameters.setTextColor(settings.getFontColor());
+        textParameters.setBackgroundColor(settings.getBackgroundColor());
         textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
         
         imageParameters.setTextParameters(textParameters);

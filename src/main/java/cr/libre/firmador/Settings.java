@@ -1,14 +1,16 @@
 package cr.libre.firmador;
 
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.Color;
 
- 
+
 public class Settings {
 	private List<ConfigListener> listeners = new ArrayList<ConfigListener>();
 
 	public boolean withoutvisiblesign=false;
-	public boolean uselta=false;
+	public boolean uselta=true;
 	public boolean overwritesourcefile=false;
 	public String reason="";
 	public String place="";
@@ -18,6 +20,9 @@ public class Settings {
 	public Integer signwith=133;
 	public Integer signheight=33;
 	public Integer fontsize=7;
+	public String font=Font.SANS_SERIF;
+	public String fontcolor="#000000";
+	public String backgroundcolor="transparente";
 	public String extrapkcs11Lib=null;
 	public Integer signx=198;
 	public Integer signy=0;
@@ -31,7 +36,11 @@ public class Settings {
 	}
 	
 	public String getDateFormat() {
-		return this.dateformat;
+		try {
+			return this.dateformat;
+		}catch (Exception e) {
+			return "dd/MM/yyyy hh:mm:ss a";
+		}
 	}
 	
 	
@@ -44,4 +53,24 @@ public class Settings {
             hl.updateConfig();
 	}
 	
+	public Color getFontColor() {
+		if(this.fontcolor.toLowerCase() == "transparente") {
+			return new Color(255, 255,255,0);
+		}
+		try {
+			return Color.decode(this.fontcolor);
+		}catch (Exception e) {
+			return new Color(0, 0, 0,255);
+		}
+	}
+	public Color getBackgroundColor() {
+		if(this.backgroundcolor.toLowerCase() == "transparente") {
+			return new Color(255, 255,255,0);
+		}
+		try {
+			return Color.decode(this.backgroundcolor);
+		}catch (Exception e) {
+			return new Color(255, 255,255,0);
+		}
+	}
 }

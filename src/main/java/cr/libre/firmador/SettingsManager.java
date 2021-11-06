@@ -13,6 +13,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.bouncycastle.crypto.agreement.kdf.ConcatenationKDFGenerator;
 /**
 *
 * @author luisza
@@ -150,6 +152,9 @@ public class SettingsManager {
 	    	conf.signwith=Integer.parseInt(props.getProperty("signwith", conf.signwith.toString() ));
 	    	conf.signheight=Integer.parseInt(props.getProperty("signheight", conf.signheight.toString() ));
 	    	conf.fontsize=Integer.parseInt(props.getProperty("fontsize", conf.fontsize.toString() ));
+	    	conf.font = props.getProperty("font", conf.font);
+	    	conf.fontcolor = props.getProperty("fontcolor", conf.fontcolor);
+	    	conf.backgroundcolor = props.getProperty("backgroundcolor", conf.backgroundcolor);
 	    	conf.signx=Integer.parseInt(props.getProperty("singy", conf.signx.toString() ));
 	    	conf.signy=Integer.parseInt(props.getProperty("singy", conf.signy.toString() ));
 	    	conf.extrapkcs11Lib=props.getProperty("extrapkcs11Lib");
@@ -173,6 +178,9 @@ public class SettingsManager {
     	setProperty("signwith", conf.signwith.toString());
     	setProperty("signheight", conf.signheight.toString());
     	setProperty("fontsize", conf.fontsize.toString());
+    	setProperty("font", conf.font);
+    	setProperty("fontcolor", conf.fontcolor);
+    	setProperty("backgroundcolor", conf.backgroundcolor);
     	setProperty("singx", conf.signx.toString());
     	setProperty("singy", conf.signy.toString());
     	

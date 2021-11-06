@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
@@ -12,6 +13,7 @@ import javax.swing.SwingConstants;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.border.EmptyBorder;
@@ -29,6 +31,10 @@ public class ConfigPanel extends JPanel {
 	private JTextField place;
 	private JTextField contact;
 	private JTextField dateformat;
+	private JTextField fontcolor;
+	private JTextField backgroundcolor;
+	
+	
 	private JCheckBox withoutvisiblesign;
 	private JCheckBox uselta;
 	private JCheckBox overwritesourcefile;
@@ -38,6 +44,7 @@ public class ConfigPanel extends JPanel {
 	private JSpinner fontsize;
 	private JSpinner signx;
 	private JSpinner signy;
+	private JComboBox font;
 
 	Settings settings;
 	SettingsManager manager;
@@ -55,7 +62,7 @@ public class ConfigPanel extends JPanel {
 		panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 	    panel.setLayout(new GridLayout(0, 2, 4,4));
 		
-		withoutvisiblesign = new JCheckBox("Firma Visible", this.settings.withoutvisiblesign);
+		withoutvisiblesign = new JCheckBox("Sin Firma Visible", this.settings.withoutvisiblesign);
 	 
 		panel.add(withoutvisiblesign);
 		
@@ -143,9 +150,31 @@ public class ConfigPanel extends JPanel {
 		fontsize.setModel(new SpinnerNumberModel(this.settings.fontsize, null, null, 1));
 		panel.add(fontsize);
 		
+		JLabel lfont = new JLabel("Fuente:");
+		panel.add(lfont);
+		
+		String fonts[] = { Font.SANS_SERIF, Font.DIALOG, Font.DIALOG_INPUT, Font.MONOSPACED, Font.SANS_SERIF, Font.SERIF};
+		font = new JComboBox(fonts);
+		panel.add(font);
+		
+		JLabel lfontcolor = new JLabel("Color de fuente:");
+		panel.add(lfontcolor);
+		
+		fontcolor = new JTextField();
+		fontcolor.setText(this.settings.fontcolor);
+		panel.add(fontcolor);
+		fontcolor.setColumns(10);
+		
+		JLabel lbackgroundcolor = new JLabel("Color de fondo:");
+		panel.add(lbackgroundcolor);
+		
+		backgroundcolor = new JTextField();
+		backgroundcolor.setText(this.settings.backgroundcolor);
+		panel.add(backgroundcolor);
+		backgroundcolor.setColumns(10);
 		
 		JScrollPane configPanel = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		configPanel.setPreferredSize(new Dimension(600, 400));
+		configPanel.setPreferredSize(new Dimension(800, 400));
 		configPanel.setBorder(null);
 		
 		//configPanel.setViewportView(panel);
@@ -157,6 +186,15 @@ public class ConfigPanel extends JPanel {
 		
 		JPanel btns = new JPanel();
 		add(btns, BorderLayout.SOUTH);
+
+		JButton restartbtn = new JButton("Reiniciar");
+		restartbtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				restart_settings();
+			}
+		});
+		btns.add(restartbtn);
+		
 		
 		JButton applywithoutsave = new JButton("Aplicar sin guardar");
 		applywithoutsave.addActionListener(new ActionListener() {
@@ -192,9 +230,35 @@ public class ConfigPanel extends JPanel {
 		settings.fontsize = Integer.parseInt(fontsize.getValue().toString());
 		settings.signx = Integer.parseInt(signx.getValue().toString());
 		settings.signy = Integer.parseInt(signy.getValue().toString());
+		settings.font = font.getSelectedItem().toString();
+		settings.fontcolor = fontcolor.getText();
+		settings.backgroundcolor = backgroundcolor.getText();
 
 		settings.updateConfig();
 	}
+	
+	public void restart_settings() {
+		Settings settings = new Settings();
+		
+		withoutvisiblesign.setSelected(settings.withoutvisiblesign);
+		uselta.setSelected(settings.uselta);
+		overwritesourcefile.setSelected(settings.overwritesourcefile);
+		reason.setText(settings.reason);
+		place.setText(settings.place);
+		contact.setText(settings.contact);
+		dateformat.setText(settings.dateformat);
+		defaultsignmessage.setText(settings.defaultsignmessage);
+		signwith.setValue(settings.signwith);
+		signheight.setValue(settings.signheight);
+		signx.setValue(settings.signx);
+		signy.setValue(settings.signy);
+		fontsize.setValue(settings.fontsize);
+		font.setSelectedItem(settings.font);
+		fontcolor.setText(settings.fontcolor);
+		backgroundcolor.setText(settings.backgroundcolor);
+		
+	}
+	
 	public void save_settings() {
 		charge_settings();
 		this.manager.setSettings(this.settings, true);
