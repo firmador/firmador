@@ -318,9 +318,7 @@ public class GUISwing implements GUIInterface, ConfigListener {
             }
         });
         imageLabel.add(signatureLabel);
-
-
-
+        
         JPanel signPanel = new JPanel();
         GroupLayout signLayout;
         if (isRemote) signLayout = new GroupLayout(frame.getContentPane());
@@ -402,8 +400,6 @@ public class GUISwing implements GUIInterface, ConfigListener {
 
         aboutPanel.setLayout(aboutLayout);
         aboutPanel.setOpaque(false);
-        
-        
         
         JPanel configPanel = new ConfigPanel();
         configPanel.setOpaque(false);
