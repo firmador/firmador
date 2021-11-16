@@ -48,6 +48,9 @@ public class Settings {
 	public Integer signx=198;
 	public Integer signy=0;
 	public String image=null;
+
+	public Integer pagenumber=1;
+	public Integer portnumber=3516;
 	
 	
 	

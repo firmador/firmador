@@ -163,6 +163,7 @@ public class SettingsManager {
 	    	conf.contact=props.getProperty("contact", conf.contact );
 	    	conf.dateformat=props.getProperty("dateformat", conf.dateformat );
 	    	conf.defaultsignmessage=new String( props.getProperty("defaultsignmessage", conf.defaultsignmessage ).getBytes(StandardCharsets.UTF_8));
+	    	conf.pagenumber=Integer.parseInt(props.getProperty("pagenumber", conf.pagenumber.toString() ));
 	    	conf.signwith=Integer.parseInt(props.getProperty("signwith", conf.signwith.toString() ));
 	    	conf.signheight=Integer.parseInt(props.getProperty("signheight", conf.signheight.toString() ));
 	    	conf.fontsize=Integer.parseInt(props.getProperty("fontsize", conf.fontsize.toString() ));
@@ -190,6 +191,7 @@ public class SettingsManager {
     	setProperty("contact", conf.contact);
     	setProperty("dateformat", conf.dateformat);
     	setProperty("defaultsignmessage", conf.defaultsignmessage);
+    	setProperty("pagenumber", conf.pagenumber.toString());
     	setProperty("signwith", conf.signwith.toString());
     	setProperty("signheight", conf.signheight.toString());
     	setProperty("fontsize", conf.fontsize.toString());

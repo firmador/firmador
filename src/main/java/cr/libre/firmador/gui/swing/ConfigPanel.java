@@ -54,6 +54,8 @@ import java.awt.Image;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 
 public class ConfigPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -80,6 +82,8 @@ public class ConfigPanel extends JPanel {
 	private JButton btimage;
 	Settings settings;
 	SettingsManager manager;
+	private JSpinner pagenumber;
+	private Integer iconsize=32;
 
 	public ConfigPanel() {
 		manager = SettingsManager.getInstance();
@@ -121,6 +125,9 @@ public class ConfigPanel extends JPanel {
 		dateformat.setToolTipText("Debe ser compatible con formatos de fecha de java");
 		defaultsignmessage = new JTextArea();
 		defaultsignmessage.setText(this.settings.getDefaultSignMessage());
+		pagenumber = new JSpinner();
+		pagenumber.setModel(new SpinnerNumberModel(this.settings.pagenumber, null, null, 1));
+
 		signwith = new JSpinner();
 		signwith.setModel(new SpinnerNumberModel(this.settings.signwith, null, null, 1));
 		signheight = new JSpinner();
@@ -143,7 +150,8 @@ public class ConfigPanel extends JPanel {
 		fontcolor.setText(this.settings.fontcolor);
 
 		btfontcolor = new JButton("Elegir");
-		btfontcolor.setForeground(this.settings.getFontColor());
+		//btfontcolor.setForeground(this.settings.getFontColor());
+		btfontcolor.setIcon(createImageIcon(this.settings.getFontColor()));
 		fontcolorpanel.add(btfontcolor);
 		fontcolorpanel.add(fontcolor);
 		
@@ -153,7 +161,8 @@ public class ConfigPanel extends JPanel {
 		backgroundcolor = new JTextField();
 		backgroundcolor.setText(this.settings.backgroundcolor);
 		btbackgroundcolor = new JButton("Elegir");
-		btbackgroundcolor.setForeground(this.settings.getBackgroundColor());
+		//btbackgroundcolor.setForeground(this.settings.getBackgroundColor());
+		btbackgroundcolor.setIcon(createImageIcon(this.settings.getBackgroundColor()));
 		backgroundcolorpanel.add(btbackgroundcolor);
 		backgroundcolorpanel.add(backgroundcolor); 
  
@@ -177,6 +186,8 @@ public class ConfigPanel extends JPanel {
 		addSettingsBox(panel, "Contacto:", contact);
 		addSettingsBox(panel, "Formato de fecha:", dateformat);
 		addSettingsBox(panel, "Mensaje de firma:", defaultsignmessage, new Dimension(150,50));
+		
+		addSettingsBox(panel, "Página inicial:", pagenumber);
 		addSettingsBox(panel, "Ancho de firma:", signwith);
 		addSettingsBox(panel, "Largo de firma:", signheight);
 	 
@@ -274,6 +285,7 @@ public class ConfigPanel extends JPanel {
 		settings.withoutvisiblesign = withoutvisiblesign.isSelected();
 		settings.uselta = uselta.isSelected();
 		settings.overwritesourcefile = overwritesourcefile.isSelected();
+		settings.pagenumber = Integer.parseInt(pagenumber.getValue().toString());
 		settings.signwith = Integer.parseInt(signwith.getValue().toString());
 		settings.signheight = Integer.parseInt(signheight.getValue().toString());
 		settings.fontsize = Integer.parseInt(fontsize.getValue().toString());
@@ -283,6 +295,7 @@ public class ConfigPanel extends JPanel {
 		settings.fontcolor = fontcolor.getText();
 		settings.backgroundcolor = backgroundcolor.getText();
 		settings.image = imagetext.getText();
+		
 
 		settings.updateConfig();
 	}
@@ -298,6 +311,7 @@ public class ConfigPanel extends JPanel {
 		contact.setText(settings.contact);
 		dateformat.setText(settings.dateformat);
 		defaultsignmessage.setText(settings.defaultsignmessage);
+		pagenumber.setValue(settings.pagenumber);
 		signwith.setValue(settings.signwith);
 		signheight.setValue(settings.signheight);
 		signx.setValue(settings.signx);
@@ -306,10 +320,17 @@ public class ConfigPanel extends JPanel {
 		font.setSelectedItem(settings.font);
 		fontcolor.setText(settings.fontcolor);
 		backgroundcolor.setText(settings.backgroundcolor);
+		btbackgroundcolor.setIcon(createImageIcon(this.settings.getBackgroundColor()));
+		//btfontcolor.setForeground(settings.getFontColor());
+		btfontcolor.setIcon(createImageIcon(this.settings.getFontColor()));
+		
 		if(settings.image != null ) {
 			imagetext.setText(settings.image);
+			btimage.setIcon(this.getIcon(settings.image));
 		}else {
 			imagetext.setText("");
+			btimage.setIcon(createImageIcon(new Color(255,255,255,0)));
+			
 		}
 
 	}
@@ -321,8 +342,8 @@ public class ConfigPanel extends JPanel {
 	public void show_fontcolor_picker() {
 		Color newColor = JColorChooser.showDialog(this, "Color del texto", this.settings.getFontColor());
 	    if (newColor != null) {
-	    	btfontcolor.setForeground(newColor);
-	
+	    	//btfontcolor.setForeground(newColor);
+	    	btfontcolor.setIcon(createImageIcon(newColor));
 	    	String buf = Integer.toHexString(newColor.getRGB());
 	    	String hex = "#"+buf.substring(buf.length()-6);
 	    	fontcolor.setText(hex);
@@ -332,7 +353,8 @@ public class ConfigPanel extends JPanel {
 	public void show_backgroundcolor_picker() {
 		Color newColor = JColorChooser.showDialog(this, "Color de fondo", this.settings.getBackgroundColor());
 	    if (newColor != null) {
-	    	btbackgroundcolor.setForeground(newColor);
+	    	
+	    	btbackgroundcolor.setIcon(createImageIcon(newColor));
 	    	String buf = Integer.toHexString(newColor.getRGB());
 	    	String hex = "#"+buf.substring(buf.length()-6);
 	    	backgroundcolor.setText(hex);
@@ -355,9 +377,20 @@ public class ConfigPanel extends JPanel {
 		
 	}
 	public Icon getIcon(String path) {
-		Icon  icon = new ImageIcon(new ImageIcon(path).getImage().getScaledInstance(32, 32, Image.SCALE_DEFAULT));
+		Icon  icon = new ImageIcon(new ImageIcon(path).getImage().getScaledInstance(iconsize, iconsize, Image.SCALE_DEFAULT));
 		return icon;	
 	}
+	
+	
+	public ImageIcon createImageIcon(Color color) {
+	    BufferedImage image = new BufferedImage(iconsize, iconsize, BufferedImage.TYPE_INT_RGB);
+	    Graphics2D graphics = image.createGraphics();
+	    graphics.setPaint(color);
+	    graphics.fillRect (0, 0, iconsize, iconsize);
+	    return new ImageIcon(image);
+	}
+	
+	
 }
 
 

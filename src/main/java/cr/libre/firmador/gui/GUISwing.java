@@ -191,7 +191,8 @@ public class GUISwing implements GUIInterface, ConfigListener {
                             }
                         }
                     };
-                    server = ServerBootstrap.bootstrap().setListenerPort(3516).setLocalAddress(InetAddress.getLoopbackAddress()).registerHandler("*", requestHandler).create();
+                    Settings settings = SettingsManager.getInstance().get_and_create_settings();
+                    server = ServerBootstrap.bootstrap().setListenerPort(settings.portnumber).setLocalAddress(InetAddress.getLoopbackAddress()).registerHandler("*", requestHandler).create();
                     server.start();
                     server.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
                     return null;
@@ -477,7 +478,11 @@ public class GUISwing implements GUIInterface, ConfigListener {
                     SpinnerNumberModel model = ((SpinnerNumberModel)pageSpinner.getModel());
                     model.setMinimum(1);
                     model.setMaximum(pages);
-                    pageSpinner.setValue(1);
+                    if(settings.pagenumber <= pages && settings.pagenumber > 0){
+                    	pageSpinner.setValue(settings.pagenumber);
+                    }else {
+                    	pageSpinner.setValue(1);
+                    }
                 }
                 imageLabel.setBorder(new LineBorder(Color.BLACK));
                 imageLabel.setIcon(new ImageIcon(pageImage));
@@ -786,6 +791,19 @@ public class GUISwing implements GUIInterface, ConfigListener {
     	locationField.setText(settings.place);
     	contactInfoField.setText(settings.contact);
     	signatureLabel.setBounds(settings.signx, settings.signy, settings.signwith, settings.signheight);
+    	
+    	try {
+    		 if(doc != null) {
+	    		 int pages = doc.getNumberOfPages();	     
+		        if(settings.pagenumber <= pages && settings.pagenumber > 0){
+		        	pageSpinner.setValue(settings.pagenumber);
+		        }else {
+		        	pageSpinner.setValue(1);
+		        }
+	        }
+    	}catch (Exception e) {
+    		pageSpinner.setValue(0);
+		}
     	
     }
 
