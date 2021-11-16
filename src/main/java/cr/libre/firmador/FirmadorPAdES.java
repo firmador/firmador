@@ -77,6 +77,9 @@ public class FirmadorPAdES extends CRSigner {
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
+        if(image == null) {
+        	image = settings.getImage();
+        }
         try {
             token = getSignatureConnection(pin);
         } catch (DSSException|AlertException|Error e) {

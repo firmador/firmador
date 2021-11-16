@@ -20,6 +20,8 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador;
 
 import java.awt.Font;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.Color;
@@ -45,6 +47,7 @@ public class Settings {
 	public String extrapkcs11Lib=null;
 	public Integer signx=198;
 	public Integer signy=0;
+	public String image=null;
 	
 	
 	
@@ -91,5 +94,13 @@ public class Settings {
 		}catch (Exception e) {
 			return new Color(255, 255,255,0);
 		}
+	}
+	
+	public String getImage() {
+		if(this.image == null) return null;
+		File temp = new File(this.image);  
+		boolean exists = temp.exists();
+		if(exists) return temp.toURI().toString();
+		return null;
 	}
 }

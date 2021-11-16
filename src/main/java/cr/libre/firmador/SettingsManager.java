@@ -172,6 +172,7 @@ public class SettingsManager {
 	    	conf.signx=Integer.parseInt(props.getProperty("singy", conf.signx.toString() ));
 	    	conf.signy=Integer.parseInt(props.getProperty("singy", conf.signy.toString() ));
 	    	conf.extrapkcs11Lib=props.getProperty("extrapkcs11Lib");
+	    	conf.image = props.getProperty("image");
 	    	
     	}
     	
@@ -198,9 +199,11 @@ public class SettingsManager {
     	setProperty("singx", conf.signx.toString());
     	setProperty("singy", conf.signy.toString());
     	
-    	
     	if(conf.extrapkcs11Lib!=null) {
     		setProperty("extrapkcs11Lib", conf.extrapkcs11Lib);
+    	}    	
+    	if(conf.image != null) {
+    		setProperty("image", conf.image);
     	}
     	if(save)save_config();
   

@@ -23,9 +23,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JTextField;
-
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import java.awt.GridLayout;
@@ -33,15 +37,23 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.awt.event.ActionEvent;
 import javax.swing.border.EmptyBorder;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
+import javax.swing.filechooser.FileFilter;
 
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.JTextArea;
+
+import java.awt.Color;
+import java.awt.Image;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 
 public class ConfigPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -62,7 +74,10 @@ public class ConfigPanel extends JPanel {
 	private JSpinner signx;
 	private JSpinner signy;
 	private JComboBox font;
-
+	private JButton btfontcolor;
+	private JButton btbackgroundcolor;
+	private JTextField imagetext;
+	private JButton btimage;
 	Settings settings;
 	SettingsManager manager;
 
@@ -76,124 +91,128 @@ public class ConfigPanel extends JPanel {
 		add(lblValoresPorDefecto, BorderLayout.NORTH);
 
 		JPanel panel = new JPanel();
-		panel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		panel.setLayout(new GridLayout(0, 2, 4, 4));
-
+		panel.setBorder(new EmptyBorder(10, 10, 10, 10)); 
+		panel.setLayout(new BoxLayout(panel, 1));
+		JPanel checkpanel = new JPanel();
+		checkpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+		checkpanel.setLayout(new BoxLayout(checkpanel, 0));
+		
 		withoutvisiblesign = new JCheckBox("Sin Firma Visible", this.settings.withoutvisiblesign);
 
-		panel.add(withoutvisiblesign);
-
+		checkpanel.add(withoutvisiblesign);
+		checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		uselta = new JCheckBox("Usar LTA automático", this.settings.uselta);
-		panel.add(uselta);
-
+		checkpanel.add(uselta);
+		checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		overwritesourcefile = new JCheckBox("Sobreescribir archivo original", this.settings.overwritesourcefile);
-		panel.add(overwritesourcefile);
-
-		JLabel lblNewLabel_8 = new JLabel("");
-		panel.add(lblNewLabel_8);
-
-		JLabel lreason = new JLabel("Razón:");
-		panel.add(lreason);
-
+		checkpanel.add(overwritesourcefile);
+		
+		panel.add(checkpanel);
+		panel.add(Box.createRigidArea(new Dimension(0, 10)));
+		
 		reason = new JTextField();
 		reason.setText(this.settings.reason);
-		panel.add(reason);
-		reason.setColumns(10);
-
-		JLabel lplace = new JLabel("Lugar:");
-		panel.add(lplace);
-
 		place = new JTextField();
 		place.setText(this.settings.place);
-		panel.add(place);
-		place.setColumns(10);
-
-		JLabel lcontact = new JLabel("Contacto:");
-		panel.add(lcontact);
-
 		contact = new JTextField();
 		contact.setText(this.settings.contact);
-		panel.add(contact);
-		contact.setColumns(10);
-
-		JLabel ldateformat = new JLabel("Formato de fecha");
-		ldateformat.setToolTipText("Debe ser compatible con formatos de fecha de java");
-		panel.add(ldateformat);
-
 		dateformat = new JTextField();
 		dateformat.setText(this.settings.dateformat);
-		panel.add(dateformat);
-		dateformat.setColumns(10);
-
-		JLabel ldefaultsignmessage = new JLabel("Mensaje de firma");
-		panel.add(ldefaultsignmessage);
-
+		dateformat.setToolTipText("Debe ser compatible con formatos de fecha de java");
 		defaultsignmessage = new JTextArea();
 		defaultsignmessage.setText(this.settings.getDefaultSignMessage());
-		panel.add(defaultsignmessage);
-
-		JLabel lsignwidth = new JLabel("Ancho de firma");
-		panel.add(lsignwidth);
-
 		signwith = new JSpinner();
 		signwith.setModel(new SpinnerNumberModel(this.settings.signwith, null, null, 1));
-		panel.add(signwith);
-
-		JLabel lsignheight = new JLabel("Largo de firma");
-		panel.add(lsignheight);
-
 		signheight = new JSpinner();
 		signheight.setModel(new SpinnerNumberModel(this.settings.signheight, null, null, 1));
-		panel.add(signheight);
-
-		JLabel lsignx = new JLabel("Posición inicial X");
-		panel.add(lsignx);
-
 		signx = new JSpinner();
 		signx.setModel(new SpinnerNumberModel(this.settings.signx, null, null, 1));
-		panel.add(signx);
-
-		JLabel lsigny = new JLabel("Posición inicial Y");
-		panel.add(lsigny);
-
 		signy = new JSpinner();
 		signy.setModel(new SpinnerNumberModel(this.settings.signy, null, null, 1));
-		panel.add(signy);
-
-		JLabel lfontsize = new JLabel("Tamaño de fuente");
-		panel.add(lfontsize);
-
 		fontsize = new JSpinner();
 		fontsize.setModel(new SpinnerNumberModel(this.settings.fontsize, null, null, 1));
-		panel.add(fontsize);
-
-		JLabel lfont = new JLabel("Fuente:");
-		panel.add(lfont);
-
 		String fonts[] = { Font.SANS_SERIF, Font.DIALOG, Font.DIALOG_INPUT, Font.MONOSPACED, Font.SANS_SERIF,
 				Font.SERIF };
 		font = new JComboBox(fonts);
-		panel.add(font);
-
-		JLabel lfontcolor = new JLabel("Color de fuente:");
-		panel.add(lfontcolor);
-
+		  
+		
+		JPanel fontcolorpanel = new JPanel();
+		fontcolorpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+		fontcolorpanel.setLayout(new BoxLayout(fontcolorpanel, 0));
 		fontcolor = new JTextField();
 		fontcolor.setText(this.settings.fontcolor);
-		panel.add(fontcolor);
-		fontcolor.setColumns(10);
 
-		JLabel lbackgroundcolor = new JLabel("Color de fondo:");
-		panel.add(lbackgroundcolor);
-
+		btfontcolor = new JButton("Elegir");
+		btfontcolor.setForeground(this.settings.getFontColor());
+		fontcolorpanel.add(btfontcolor);
+		fontcolorpanel.add(fontcolor);
+		
+		JPanel backgroundcolorpanel = new JPanel();
+		backgroundcolorpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+		backgroundcolorpanel.setLayout(new BoxLayout(backgroundcolorpanel, 0));
 		backgroundcolor = new JTextField();
 		backgroundcolor.setText(this.settings.backgroundcolor);
-		panel.add(backgroundcolor);
-		backgroundcolor.setColumns(10);
+		btbackgroundcolor = new JButton("Elegir");
+		btbackgroundcolor.setForeground(this.settings.getBackgroundColor());
+		backgroundcolorpanel.add(btbackgroundcolor);
+		backgroundcolorpanel.add(backgroundcolor); 
+ 
+		JPanel imagepanel = new JPanel();
+		imagepanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+		imagepanel.setLayout(new BoxLayout(imagepanel, 0));
+		imagetext = new JTextField();
+		btimage = new JButton("Elegir");
+		//btimage.setForeground(this.settings.getBackgroundColor());
+		if(this.settings.image != null) {
+			imagetext.setText(this.settings.image);
+			btimage.setIcon(this.getIcon(this.settings.image));
+		}
+		imagepanel.add(btimage);
+		imagepanel.add(imagetext); 
+		
+		
+		
+		addSettingsBox(panel, "Razón:", reason);
+		addSettingsBox(panel, "Lugar:", place);
+		addSettingsBox(panel, "Contacto:", contact);
+		addSettingsBox(panel, "Formato de fecha:", dateformat);
+		addSettingsBox(panel, "Mensaje de firma:", defaultsignmessage, new Dimension(150,50));
+		addSettingsBox(panel, "Ancho de firma:", signwith);
+		addSettingsBox(panel, "Largo de firma:", signheight);
+	 
+		addSettingsBox(panel, "Posición inicial X:", signx);
+		addSettingsBox(panel, "Posición inicial Y:", signy);
+		addSettingsBox(panel, "Tamaño de fuente:", fontsize);
+		addSettingsBox(panel, "Fuente:", font);
 
+		addSettingsBox(panel, "Color de fuente:", fontcolorpanel);
+		addSettingsBox(panel, "Color de fondo:", backgroundcolorpanel);
+		addSettingsBox(panel, "Imagen de firma:", imagepanel);
+
+ 
+		
+		btfontcolor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				show_fontcolor_picker();
+			}
+		});
+
+		btbackgroundcolor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				show_backgroundcolor_picker();
+			}
+		});
+		
+
+		btimage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				show_image_picker();
+			}
+		});
+		
 		JScrollPane configPanel = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		configPanel.setPreferredSize(new Dimension(800, 400));
+		configPanel.setPreferredSize(new Dimension(600, 400));
 		configPanel.setBorder(null);
 
 		// configPanel.setViewportView(panel);
@@ -230,7 +249,21 @@ public class ConfigPanel extends JPanel {
 		btns.add(btsave);
 
 	}
-
+	public void addSettingsBox(JPanel panel, String text, JComponent item) {
+		this.addSettingsBox(panel, text, item, new Dimension(150,30));
+	}
+	public void addSettingsBox(JPanel panel, String text, JComponent item, Dimension d) {
+		JLabel label = new JLabel(text);
+		JPanel itempanel = new JPanel();
+		label.setPreferredSize(new Dimension(150,30));
+		itempanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+		itempanel.setLayout(new BoxLayout(itempanel, 0));
+		itempanel.add(label);
+		itempanel.add(item);
+		panel.add(itempanel);
+		panel.add(Box.createRigidArea(new Dimension(0, 10)));
+		item.setPreferredSize(d);
+	}
 	public void charge_settings() {
 		settings.withoutvisiblesign = this.withoutvisiblesign.isSelected();
 		settings.reason = reason.getText();
@@ -249,6 +282,7 @@ public class ConfigPanel extends JPanel {
 		settings.font = font.getSelectedItem().toString();
 		settings.fontcolor = fontcolor.getText();
 		settings.backgroundcolor = backgroundcolor.getText();
+		settings.image = imagetext.getText();
 
 		settings.updateConfig();
 	}
@@ -272,6 +306,11 @@ public class ConfigPanel extends JPanel {
 		font.setSelectedItem(settings.font);
 		fontcolor.setText(settings.fontcolor);
 		backgroundcolor.setText(settings.backgroundcolor);
+		if(settings.image != null ) {
+			imagetext.setText(settings.image);
+		}else {
+			imagetext.setText("");
+		}
 
 	}
 
@@ -279,4 +318,92 @@ public class ConfigPanel extends JPanel {
 		charge_settings();
 		this.manager.setSettings(this.settings, true);
 	}
+	public void show_fontcolor_picker() {
+		Color newColor = JColorChooser.showDialog(this, "Color del texto", this.settings.getFontColor());
+	    if (newColor != null) {
+	    	btfontcolor.setForeground(newColor);
+	
+	    	String buf = Integer.toHexString(newColor.getRGB());
+	    	String hex = "#"+buf.substring(buf.length()-6);
+	    	fontcolor.setText(hex);
+	    	
+		}
+	}
+	public void show_backgroundcolor_picker() {
+		Color newColor = JColorChooser.showDialog(this, "Color de fondo", this.settings.getBackgroundColor());
+	    if (newColor != null) {
+	    	btbackgroundcolor.setForeground(newColor);
+	    	String buf = Integer.toHexString(newColor.getRGB());
+	    	String hex = "#"+buf.substring(buf.length()-6);
+	    	backgroundcolor.setText(hex);
+	    	
+		}
+	}
+	
+	public void show_image_picker() {
+		JFileChooser fileChooser = new JFileChooser();
+        fileChooser.addChoosableFileFilter(new ImageFilter());
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        int option = fileChooser.showOpenDialog(this);
+        if(option == JFileChooser.APPROVE_OPTION){
+           File file = fileChooser.getSelectedFile();
+           String path = file.getAbsolutePath();
+           imagetext.setText(path);
+           btimage.setIcon(this.getIcon(path));
+          
+        }
+		
+	}
+	public Icon getIcon(String path) {
+		Icon  icon = new ImageIcon(new ImageIcon(path).getImage().getScaledInstance(32, 32, Image.SCALE_DEFAULT));
+		return icon;	
+	}
+}
+
+
+class ImageFilter extends FileFilter {
+   public final static String JPEG = "jpeg";
+   public final static String JPG = "jpg";
+   public final static String GIF = "gif";
+   public final static String TIFF = "tiff";
+   public final static String TIF = "tif";
+   public final static String PNG = "png";
+   
+   @Override
+   public boolean accept(File f) {
+      if (f.isDirectory()) {
+         return true;
+      }
+
+      String extension = getExtension(f);
+      if (extension != null) {
+         if (extension.equals(TIFF) ||
+            extension.equals(TIF) ||
+            extension.equals(GIF) ||
+            extension.equals(JPEG) ||
+            extension.equals(JPG) ||
+            extension.equals(PNG)) {
+            return true;
+         } else {
+            return false;
+         }
+      }
+      return false;
+   }
+
+   @Override
+   public String getDescription() {
+      return "Image Only";
+   }
+
+   String getExtension(File f) {
+      String ext = null;
+      String s = f.getName();
+      int i = s.lastIndexOf('.');
+   
+      if (i > 0 &&  i < s.length() - 1) {
+         ext = s.substring(i+1).toLowerCase();
+      }
+      return ext;
+   } 
 }
