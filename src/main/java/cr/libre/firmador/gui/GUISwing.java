@@ -44,11 +44,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -89,18 +89,18 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.MimeType;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.ContentType;
-import org.apache.http.impl.bootstrap.HttpServer;
-import org.apache.http.impl.bootstrap.ServerBootstrap;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpRequestHandler;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.impl.bootstrap.HttpServer;
+import org.apache.hc.core5.http.impl.bootstrap.ServerBootstrap;
+import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
+import org.apache.hc.core5.http.io.HttpRequestHandler;
+import org.apache.hc.core5.http.protocol.HttpContext;
+import org.apache.hc.core5.util.TimeValue;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
@@ -148,6 +148,7 @@ public class GUISwing implements GUIInterface {
     private PDFRenderer renderer;
     private JFrame frame;
 
+    @SuppressWarnings("serial")
     public void loadGUI() {
         try {
             Application.getApplication().setDockIconImage(image);
@@ -170,17 +171,25 @@ public class GUISwing implements GUIInterface {
                 private HttpServer server;
                 private String requestFileName;
                 protected Void doInBackground() throws IOException, InterruptedException {
-                    HttpRequestHandler requestHandler = new HttpRequestHandler() {
-                        public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
+                    class RequestHandler implements HttpRequestHandler {
+                        public RequestHandler() {
+                            super();
+                        }
+                        public void handle(final ClassicHttpRequest request, final ClassicHttpResponse response, final HttpContext context) throws HttpException, IOException {
                             response.setHeader("Access-Control-Allow-Origin", origin);
                             response.setHeader("Vary", "Origin");
-                            if (request.getRequestLine().getUri().equals("/close")) System.exit(0);
-                            requestFileName = request.getRequestLine().getUri().substring(1);
-                            response.setStatusCode(HttpStatus.SC_ACCEPTED);
-                            if (request instanceof HttpEntityEnclosingRequest) {
-                                HttpEntity entity = ((HttpEntityEnclosingRequest)request).getEntity();
+                            try {
+                                if (request.getUri().getPath().equals("/close")) System.exit(0);
+                                requestFileName = request.getUri().getPath().substring(1);
+                            } catch (URISyntaxException e) {
+                                e.printStackTrace();
+                                showError(Throwables.getRootCause(e));
+                            }
+                            response.setCode(HttpStatus.SC_ACCEPTED);
+                            HttpEntity entity = request.getEntity();
+                            if (entity != null) {
                                 if (alreadySignedDocument) {
-                                    response.setStatusCode(HttpStatus.SC_OK);
+                                    response.setCode(HttpStatus.SC_OK);
                                     ByteArrayOutputStream os = new ByteArrayOutputStream();
                                     signedDocument.writeTo(os);
                                     response.setEntity(new ByteArrayEntity(os.toByteArray(), ContentType.DEFAULT_TEXT));
@@ -192,10 +201,11 @@ public class GUISwing implements GUIInterface {
                                 }
                             }
                         }
-                    };
-                    server = ServerBootstrap.bootstrap().setListenerPort(3516).setLocalAddress(InetAddress.getLoopbackAddress()).registerHandler("*", requestHandler).create();
+                    }
+
+                    server = ServerBootstrap.bootstrap().setListenerPort(3516).setLocalAddress(InetAddress.getLoopbackAddress()).register("*", new RequestHandler()).create();
                     server.start();
-                    server.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+                    server.awaitTermination(TimeValue.MAX_VALUE);
                     return null;
                 }
                 protected void process(List<byte[]> chunks) {
@@ -213,6 +223,7 @@ public class GUISwing implements GUIInterface {
             public synchronized void drop(DropTargetDropEvent e) {
                 try {
                     e.acceptDrop(DnDConstants.ACTION_COPY);
+                    @SuppressWarnings("unchecked")
                     List<File> droppedFiles = (List<File>) e.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
                     for (File file : droppedFiles) {
                         // FIXME: handle multiple files on array

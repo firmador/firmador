@@ -38,7 +38,7 @@ import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.MimeType;
-import eu.europa.esig.dss.model.Policy;
+//import eu.europa.esig.dss.model.Policy; // Electronic receipts
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
@@ -52,7 +52,7 @@ import eu.europa.esig.dss.xades.signature.XAdESService;
 
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
-import eu.europa.esig.dss.utils.Utils;
+//import eu.europa.esig.dss.utils.Utils; // Electronic receipts
 import eu.europa.esig.dss.validation.CertificateVerifier;
 //import eu.europa.esig.dss.validation.SignedDocumentValidator; // Electronic receipts v4.4 proposal
 

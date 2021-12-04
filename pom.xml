@@ -13,7 +13,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.fork>true</maven.compiler.fork>
-    <dss.version>5.9</dss.version>
+    <dss.version>5.10-SNAPSHOT</dss.version>
     <slf4j.version>1.7.31</slf4j.version>
   </properties>
   <build>
@@ -94,6 +94,12 @@
       <groupId>eu.europa.ec.joinup.sd-dss</groupId>
       <artifactId>dss-asic-xades</artifactId>
       <version>${dss.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>jakarta.activation-api</artifactId>
+          <groupId>jakarta.activation</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>eu.europa.ec.joinup.sd-dss</groupId>

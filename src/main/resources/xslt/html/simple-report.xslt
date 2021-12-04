@@ -14,6 +14,8 @@
 	<xsl:template match="dss:ValidationTime"/>
 	<xsl:template match="dss:ValidationPolicy"/>
 	<xsl:template name="documentInformation">
+
+
 		<p>
 			El documento <xsl:value-of select="dss:DocumentName"/>
 			<xsl:text> </xsl:text>
@@ -98,20 +100,26 @@
 		<xsl:apply-templates select="dss:Info"/>
 		<xsl:if test="dss:SigningTime">
 			<p>
-				Fecha declarada de la firma (hora UTC):
-				<xsl:value-of select="dss:SigningTime"/>
+				Fecha declarada de la firma:
+				<xsl:call-template name="formatdate">
+					<xsl:with-param name="DateTimeStr" select="dss:SigningTime"/>
+				</xsl:call-template>
 			</p>
 		</xsl:if>
 		<xsl:if test="dss:ProductionTime">
 			<p>
-				Fecha de producción (hora UTC):
-				<xsl:value-of select="dss:ProductionTime"/>
+				Fecha de producción:
+				<xsl:call-template name="formatdate">
+					<xsl:with-param name="DateTimeStr" select="dss:ProductionTime"/>
+				</xsl:call-template>
 			</p>
 		</xsl:if>
 		<xsl:if test="dss:BestSignatureTime">
 			<p>
-				Fecha mínima probada de la existencia de la firma (hora UTC):
-				<xsl:value-of select="dss:BestSignatureTime"/>
+				Fecha mínima probada de la existencia de la firma:
+				<xsl:call-template name="formatdate">
+					<xsl:with-param name="DateTimeStr" select="dss:BestSignatureTime"/>
+				</xsl:call-template>
 			</p>
 		</xsl:if>
 		<p></p>
@@ -147,5 +155,34 @@
 	</xsl:template>
 	<xsl:template match="dss:Info">
 		<p><b>Información: </b><xsl:value-of select="."/></p>
+	</xsl:template>
+
+	<xsl:template name="formatdate">
+		<xsl:param name="DateTimeStr" />
+
+		<xsl:variable name="date">
+			<xsl:value-of select="substring-before($DateTimeStr,'T')" />
+		</xsl:variable>
+
+		<xsl:variable name="after-T">
+			<xsl:value-of select="substring-after($DateTimeStr,'T')" />
+		</xsl:variable>
+
+		<xsl:variable name="time">
+			<xsl:value-of select="substring-before($after-T,'Z')" />
+		</xsl:variable>
+
+		<xsl:choose>
+			<xsl:when test="string-length($date) &gt; 0 and string-length($time) &gt; 0">
+				<xsl:value-of select="concat($date,' ', $time, ' (hora UTC)')" />
+			</xsl:when>
+			<xsl:when test="string-length($date) &gt; 0">
+				<xsl:value-of select="$date" />
+			</xsl:when>
+			<xsl:when test="string-length($time) &gt; 0">
+				<xsl:value-of select="$time" />
+			</xsl:when>
+			<xsl:otherwise>-</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 </xsl:stylesheet>
