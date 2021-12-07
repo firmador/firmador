@@ -37,7 +37,7 @@ public class Settings {
 	public String place="";
 	public String contact="";
 	public String dateformat="dd/MM/yyyy hh:mm:ss a";
-	public String defaultsignmessage="Esta representación visual no es fuente \nde confianza. Valide siempre la firma."; 
+	public String defaultsignmessage="Esta es una representación gráfica únicamente,\nverifique la validez de la firma."; 
 	public Integer signwith=133;
 	public Integer signheight=33;
 	public Integer fontsize=7;

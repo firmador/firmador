@@ -69,7 +69,7 @@ public class FirmadorPAdES extends CRSigner {
         settings = SettingsManager.getInstance().get_and_create_settings();
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
+    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin, String level, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
         CertificateVerifier verifier = this.getCertificateVerifier();
         PAdESService service = new PAdESService(verifier);
         service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
@@ -105,7 +105,13 @@ public class FirmadorPAdES extends CRSigner {
         }
         try {
             CertificateToken certificate = privateKey.getCertificate();
-            parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LT);
+            if (level == null) level = "LTA";
+            switch (level) {
+            case "T": parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_T); break;
+            case "LT": parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LT); break;
+            case "LTA": parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA); break;
+            default: parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA); break;
+            }
             parameters.setContentSize(13312);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
@@ -192,7 +198,7 @@ public class FirmadorPAdES extends CRSigner {
                 textParameters.setFont(new DSSJavaFont(new Font(settings.font, Font.PLAIN, settings.fontsize)));
                 SimpleDateFormat date = new SimpleDateFormat(settings.getDateFormat());
                 date.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
-                textParameters.setText("Este documento incluye un sello de tiempo de la" + "\n" +
+                textParameters.setText("Este documento incluye un sello de tiempo de la\n" +
                     "Autoridad de Sellado de Tiempo (TSA) del SINPE.\n" +
                     "Fecha de solicitud a la TSA: " + date.format(new Date()));
                 
@@ -253,9 +259,10 @@ public class FirmadorPAdES extends CRSigner {
             if (hasReason || hasLocation) additionalText += "  Contacto: " + contactInfo;
             else additionalText = "Contacto: " + contactInfo;
         }
-        textParameters.setText(cn + "\n" + o + ", " + sn + "." + "\n" + "Fecha declarada: " + fecha.format(date) + "\n" + additionalText);
-        textParameters.setTextColor(settings.getFontColor());
-        textParameters.setBackgroundColor(settings.getBackgroundColor());
+        textParameters.setText(cn + "\n" + o + ", " + sn + ".\nFecha declarada: " + fecha.format(date) + "\n" + additionalText);
+		textParameters.setTextColor(settings.getFontColor());
+		textParameters.setBackgroundColor(settings.getBackgroundColor());
+
         textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
         
         imageParameters.setTextParameters(textParameters);
