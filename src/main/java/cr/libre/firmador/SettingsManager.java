@@ -26,9 +26,11 @@ import java.nio.file.Path;
 import java.util.Properties;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -131,10 +133,11 @@ public class SettingsManager {
     public void save_config() {
         // Guarda las configuraciones en un archivo de texto
         File configFile = null;
-        FileWriter writer = null;
+        OutputStreamWriter writer = null;
         //props.setProperty("formato", "json");
         try {
-            writer = new FileWriter(this.get_config_file());
+        	writer = new OutputStreamWriter(new FileOutputStream(this.get_config_file()), StandardCharsets.UTF_8);
+            //writer = new FileWriter(this.get_config_file());
             props.store(writer, "Firmador Libre settings");
 
         } catch (IOException ex) {
