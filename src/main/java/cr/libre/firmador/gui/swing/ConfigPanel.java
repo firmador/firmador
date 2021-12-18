@@ -39,7 +39,10 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.awt.event.ActionEvent;
+
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.DocumentEvent;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
@@ -51,6 +54,9 @@ import javax.swing.JTextArea;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D.Double;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -125,6 +131,7 @@ public class ConfigPanel extends JPanel {
 		dateformat.setToolTipText("Debe ser compatible con formatos de fecha de java");
 		defaultsignmessage = new JTextArea();
 		defaultsignmessage.setText(this.settings.getDefaultSignMessage());
+		defaultsignmessage.setOpaque(false);
 		pagenumber = new JSpinner();
 		pagenumber.setModel(new SpinnerNumberModel(this.settings.pagenumber, null, null, 1));
 
@@ -147,11 +154,48 @@ public class ConfigPanel extends JPanel {
 		fontcolorpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
 		fontcolorpanel.setLayout(new BoxLayout(fontcolorpanel, 0));
 		fontcolor = new JTextField();
+		fontcolor.setToolTipText("Use la palabra 'transparente' si no desea un color");
 		fontcolor.setText(this.settings.fontcolor);
 
+		fontcolor.getDocument().addDocumentListener(new DocumentListener() {
+			public void updateIcon(DocumentEvent edoc){
+				try {
+					String text = fontcolor.getText();
+					if(!text.isEmpty() && ! text.equalsIgnoreCase("transparente")) {
+						Color color = Color.decode(text);
+						btfontcolor.setIcon(createImageIcon(color));
+					}else {
+						btfontcolor.setIcon(getTransparentImageIcon());
+					}
+				}catch (Exception e) {
+					System.err.println(e);
+					// nothing
+				}
+			}
+			
+		    @Override
+		    public void insertUpdate(DocumentEvent e) {
+		    	updateIcon(e);
+		    }
+
+		    @Override
+		    public void removeUpdate(DocumentEvent e) {
+		    	updateIcon(e);
+		    }
+
+		    @Override
+		    public void changedUpdate(DocumentEvent e) {
+		    	updateIcon(e);
+		    }
+		});
+		
 		btfontcolor = new JButton("Elegir");
+		btfontcolor.setOpaque(false);
+		setIcons(btfontcolor, this.settings.fontcolor, this.settings.getFontColor());
+
 		//btfontcolor.setForeground(this.settings.getFontColor());
-		btfontcolor.setIcon(createImageIcon(this.settings.getFontColor()));
+		//btfontcolor.setIcon(createImageIcon(this.settings.getFontColor()));
+		
 		fontcolorpanel.add(btfontcolor);
 		fontcolorpanel.add(fontcolor);
 		
@@ -159,13 +203,51 @@ public class ConfigPanel extends JPanel {
 		backgroundcolorpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
 		backgroundcolorpanel.setLayout(new BoxLayout(backgroundcolorpanel, 0));
 		backgroundcolor = new JTextField();
+		backgroundcolor.setToolTipText("Use la palabra 'transparente' si no desea un color de fondo");
+
 		backgroundcolor.setText(this.settings.backgroundcolor);
 		btbackgroundcolor = new JButton("Elegir");
+		btbackgroundcolor.setOpaque(false);
+		setIcons(btbackgroundcolor, this.settings.backgroundcolor, this.settings.getBackgroundColor());
 		//btbackgroundcolor.setForeground(this.settings.getBackgroundColor());
-		btbackgroundcolor.setIcon(createImageIcon(this.settings.getBackgroundColor()));
+		//btbackgroundcolor.setIcon(createImageIcon(this.settings.getBackgroundColor()));
 		backgroundcolorpanel.add(btbackgroundcolor);
 		backgroundcolorpanel.add(backgroundcolor); 
  
+		
+		backgroundcolor.getDocument().addDocumentListener(new DocumentListener() {
+			public void updateIcon(DocumentEvent edoc){
+				try {
+					String text = backgroundcolor.getText();
+					if(!text.isEmpty() && text != "transparente") {
+						Color color = Color.decode(text);
+						btbackgroundcolor.setIcon(createImageIcon(color));
+					}else {
+						btbackgroundcolor.setIcon(getTransparentImageIcon());
+					}
+				}catch (Exception e) {
+					System.err.println(e);
+					// nothing
+				}
+			}
+			
+		    @Override
+		    public void insertUpdate(DocumentEvent e) {
+		    	updateIcon(e);
+		    }
+
+		    @Override
+		    public void removeUpdate(DocumentEvent e) {
+		    	updateIcon(e);
+		    }
+
+		    @Override
+		    public void changedUpdate(DocumentEvent e) {
+		    	updateIcon(e);
+		    }
+		});
+				
+				
 		JPanel imagepanel = new JPanel();
 		imagepanel.setBorder(new EmptyBorder(0, 0, 0, 0));
 		imagepanel.setLayout(new BoxLayout(imagepanel, 0));
@@ -320,9 +402,13 @@ public class ConfigPanel extends JPanel {
 		font.setSelectedItem(settings.font);
 		fontcolor.setText(settings.fontcolor);
 		backgroundcolor.setText(settings.backgroundcolor);
-		btbackgroundcolor.setIcon(createImageIcon(this.settings.getBackgroundColor()));
+		setIcons(btfontcolor, fontcolor.getText(), this.settings.getFontColor());
+		setIcons(btbackgroundcolor, backgroundcolor.getText(), this.settings.getBackgroundColor());
+		//btbackgroundcolor.setIcon(createImageIcon(this.settings.getBackgroundColor()));
 		//btfontcolor.setForeground(settings.getFontColor());
-		btfontcolor.setIcon(createImageIcon(this.settings.getFontColor()));
+		//btfontcolor.setIcon(createImageIcon(this.settings.getFontColor()));
+
+
 		
 		if(settings.image != null ) {
 			imagetext.setText(settings.image);
@@ -335,6 +421,13 @@ public class ConfigPanel extends JPanel {
 
 	}
 
+	private void setIcons(JButton component, String text, Color color ) {
+		if(text.equalsIgnoreCase("transparente") ) {
+			component.setIcon(getTransparentImageIcon());
+		}else {
+		  component.setIcon(createImageIcon(color));
+		}
+	}
 	public void save_settings() {
 		charge_settings();
 		this.manager.setSettings(this.settings, true);
@@ -343,7 +436,7 @@ public class ConfigPanel extends JPanel {
 		Color newColor = JColorChooser.showDialog(this, "Color del texto", this.settings.getFontColor());
 	    if (newColor != null) {
 	    	//btfontcolor.setForeground(newColor);
-	    	btfontcolor.setIcon(createImageIcon(newColor));
+	    	//btfontcolor.setIcon(createImageIcon(newColor));
 	    	String buf = Integer.toHexString(newColor.getRGB());
 	    	String hex = "#"+buf.substring(buf.length()-6);
 	    	fontcolor.setText(hex);
@@ -354,7 +447,7 @@ public class ConfigPanel extends JPanel {
 		Color newColor = JColorChooser.showDialog(this, "Color de fondo", this.settings.getBackgroundColor());
 	    if (newColor != null) {
 	    	
-	    	btbackgroundcolor.setIcon(createImageIcon(newColor));
+	    	//btbackgroundcolor.setIcon(createImageIcon(newColor));
 	    	String buf = Integer.toHexString(newColor.getRGB());
 	    	String hex = "#"+buf.substring(buf.length()-6);
 	    	backgroundcolor.setText(hex);
@@ -381,14 +474,40 @@ public class ConfigPanel extends JPanel {
 		return icon;	
 	}
 	
-	
+	public Icon getTransparentImageIcon() {
+		BufferedImage image = new BufferedImage(iconsize, iconsize, BufferedImage.TYPE_INT_ARGB);
+		 Graphics2D graphics = image.createGraphics();
+
+		 graphics.setColor(new Color(0, 0, 0, 100));
+		 
+		 for(int x=4; x<28; x+=8)
+			 for(int y=4; y<28; y+=8) graphics.fillRect(x, y, 4, 4);
+		 
+		 graphics.setColor(new Color(130, 130, 130));
+		 	 
+		 for(int x=8; x<28; x+=8)
+			 for(int y=8; y<28; y+=8) graphics.fillRect(x, y, 4, 4);
+		 //graphics.setBackground(new Color(255,255,255, 0));
+		 return new ImageIcon(image);
+	}
+		
 	public ImageIcon createImageIcon(Color color) {
-	    BufferedImage image = new BufferedImage(iconsize, iconsize, BufferedImage.TYPE_INT_RGB);
+	    BufferedImage image = new BufferedImage(iconsize, iconsize, BufferedImage.TYPE_INT_ARGB);
 	    Graphics2D graphics = image.createGraphics();
-	    graphics.setPaint(color);
+	    graphics.setPaint(new Color(255,255,255, 0));
+	    graphics.setBackground(new Color(255,255,255, 0));
 	    graphics.fillRect (0, 0, iconsize, iconsize);
+	    
+	    
+	    graphics.setColor(color);
+	    graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        Ellipse2D.Float circle = new Ellipse2D.Float(4F, 6F, iconsize-15, iconsize-15);
+        graphics.fill(circle);
+	    
 	    return new ImageIcon(image);
 	}
+	
 	
 	
 }
