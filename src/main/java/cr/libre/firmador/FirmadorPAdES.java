@@ -19,7 +19,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador;
 
-import java.awt.Color;
+
 import java.awt.Font;
 import java.io.IOException;
 import java.net.URL;
@@ -62,9 +62,11 @@ public class FirmadorPAdES extends CRSigner {
     private int page = 1, x, y;
     PAdESSignatureParameters parameters;
     private boolean visibleSignature = true;
+    private Settings settings;
 
     public FirmadorPAdES(GUIInterface gui) {
         super(gui);
+        settings = SettingsManager.getInstance().get_and_create_settings();
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin, String level, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
@@ -75,6 +77,9 @@ public class FirmadorPAdES extends CRSigner {
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
+        if(image == null) {
+        	image = settings.getImage();
+        }
         try {
             token = getSignatureConnection(pin);
         } catch (DSSException|AlertException|Error e) {
@@ -190,13 +195,15 @@ public class FirmadorPAdES extends CRSigner {
                 imageParameters.getFieldParameters().setOriginX(0);
                 imageParameters.getFieldParameters().setOriginY(0);
                 SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
-                textParameters.setFont(new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
-                SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
+                textParameters.setFont(new DSSJavaFont(new Font(settings.font, Font.PLAIN, settings.fontsize)));
+                SimpleDateFormat date = new SimpleDateFormat(settings.getDateFormat());
                 date.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
                 textParameters.setText("Este documento incluye un sello de tiempo de la\n" +
                     "Autoridad de Sellado de Tiempo (TSA) del SINPE.\n" +
                     "Fecha de solicitud a la TSA: " + date.format(new Date()));
-                textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
+                
+                textParameters.setTextColor(settings.getFontColor());
+                textParameters.setBackgroundColor(settings.getBackgroundColor());
                 textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
                 imageParameters.setTextParameters(textParameters);
                 imageParameters.getFieldParameters().setPage(1);
@@ -221,21 +228,21 @@ public class FirmadorPAdES extends CRSigner {
     }
 
     private void appendVisibleSignature(CertificateToken certificate, Date date, String reason, String location, String contactInfo, String image, Boolean hideAdvice) {
-        SignatureImageParameters imageParameters = new SignatureImageParameters();
+    	SignatureImageParameters imageParameters = new SignatureImageParameters();
         imageParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
         imageParameters.getFieldParameters().setOriginX(x);
         imageParameters.getFieldParameters().setOriginY(y);
         SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
-        textParameters.setFont(new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, 7)));
+        textParameters.setFont(new DSSJavaFont(new Font(settings.font, Font.PLAIN, settings.fontsize)));
         String cn = DSSASN1Utils.getSubjectCommonName(certificate);
         X500PrincipalHelper subject = certificate.getSubject();
         String o = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.O, subject);
         String sn = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.SERIALNUMBER, subject);
-        SimpleDateFormat fecha = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
+        SimpleDateFormat fecha = new SimpleDateFormat(settings.getDateFormat());
         fecha.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
         String additionalText = "";
         if (hideAdvice != null && !hideAdvice) {
-            additionalText = "Esta es una representación gráfica únicamente,\nverifique la validez de la firma.";
+            additionalText = settings.getDefaultSignMessage();
         }
         Boolean hasReason = false;
         Boolean hasLocation = false;
@@ -253,8 +260,11 @@ public class FirmadorPAdES extends CRSigner {
             else additionalText = "Contacto: " + contactInfo;
         }
         textParameters.setText(cn + "\n" + o + ", " + sn + ".\nFecha declarada: " + fecha.format(date) + "\n" + additionalText);
-        textParameters.setBackgroundColor(new Color(255, 255, 255, 0));
-        textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
+		textParameters.setTextColor(settings.getFontColor());
+		textParameters.setBackgroundColor(settings.getBackgroundColor());
+
+        textParameters.setSignerTextPosition(settings.getFontAlignment());
+        
         imageParameters.setTextParameters(textParameters);
         try {
             if (image != null && !image.trim().isEmpty()) imageParameters.setImage(new InMemoryDocument(Utils.toByteArray(new URL(image).openStream())));
