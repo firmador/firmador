@@ -233,7 +233,7 @@ public class FirmadorPAdES extends CRSigner {
         imageParameters.getFieldParameters().setOriginX(x);
         imageParameters.getFieldParameters().setOriginY(y);
         SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
-        textParameters.setFont(new DSSJavaFont(new Font(Font.SANS_SERIF, Font.PLAIN, settings.fontsize)));
+        textParameters.setFont(new DSSJavaFont(new Font(settings.font, Font.PLAIN, settings.fontsize)));
         String cn = DSSASN1Utils.getSubjectCommonName(certificate);
         X500PrincipalHelper subject = certificate.getSubject();
         String o = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.O, subject);
@@ -263,7 +263,7 @@ public class FirmadorPAdES extends CRSigner {
 		textParameters.setTextColor(settings.getFontColor());
 		textParameters.setBackgroundColor(settings.getBackgroundColor());
 
-        textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
+        textParameters.setSignerTextPosition(SignerTextPosition.LEFT);
         
         imageParameters.setTextParameters(textParameters);
         try {

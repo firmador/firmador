@@ -24,8 +24,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.Color;
 
+import eu.europa.esig.dss.enumerations.SignerTextPosition;
+
+import java.awt.Color;
 
 public class Settings {
 	private List<ConfigListener> listeners = new ArrayList<ConfigListener>();
@@ -48,6 +50,8 @@ public class Settings {
 	public Integer signx=198;
 	public Integer signy=0;
 	public String image=null;
+	public boolean startserver=false;
+	public String fontalignment="RIGHT";
 
 	public Integer pagenumber=1;
 	public Integer portnumber=3516;
@@ -78,6 +82,25 @@ public class Settings {
             hl.updateConfig();
 	}
 	
+	public SignerTextPosition getFontAlignment() {
+		SignerTextPosition position =  SignerTextPosition.RIGHT;
+		switch (this.fontalignment) {
+		case "RIGHT":
+			position = SignerTextPosition.RIGHT;
+			break;
+		case "LEFT":
+			position = SignerTextPosition.LEFT;
+		case "BOTTOM":
+			position = SignerTextPosition.BOTTOM;
+		case "TOP":
+			position = SignerTextPosition.TOP;
+		default:
+			break;
+		}
+		
+		
+		return position;
+	}
 	public Color getFontColor() {
 		if(this.fontcolor.toLowerCase() == "transparente") {
 			return new Color(255, 255,255,0);
@@ -105,5 +128,19 @@ public class Settings {
 		boolean exists = temp.exists();
 		if(exists) return temp.toURI().toString();
 		return null;
+	}
+	public boolean isRemote() {
+		if (this.startserver) return true;
+		String origin = System.getProperty("jnlp.remoteOrigin");
+        boolean isRemote = (origin != null);
+		return isRemote;
+	}
+	public String getOrigin() {
+		String origin = System.getProperty("jnlp.remoteOrigin");
+		if(origin==null) {
+			origin = "localhost";
+		}
+		
+		return origin;
 	}
 }

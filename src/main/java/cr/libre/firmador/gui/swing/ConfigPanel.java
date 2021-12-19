@@ -22,6 +22,7 @@ package cr.libre.firmador.gui.swing;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
@@ -32,7 +33,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
-import java.awt.GridLayout;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -51,13 +51,11 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.JTextArea;
-
+import java.awt.Component;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D.Double;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import java.awt.Graphics2D;
@@ -82,6 +80,7 @@ public class ConfigPanel extends JPanel {
 	private JSpinner signx;
 	private JSpinner signy;
 	private JComboBox font;
+	
 	private JButton btfontcolor;
 	private JButton btbackgroundcolor;
 	private JTextField imagetext;
@@ -90,6 +89,9 @@ public class ConfigPanel extends JPanel {
 	SettingsManager manager;
 	private JSpinner pagenumber;
 	private Integer iconsize=32;
+	private JCheckBox startserver;
+	private JSpinner portnumber;
+	private JComboBox fontposition;
 
 	public ConfigPanel() {
 		manager = SettingsManager.getInstance();
@@ -104,22 +106,38 @@ public class ConfigPanel extends JPanel {
 		panel.setBorder(new EmptyBorder(10, 10, 10, 10)); 
 		panel.setLayout(new BoxLayout(panel, 1));
 		JPanel checkpanel = new JPanel();
+		checkpanel.setAlignmentX(  Component.RIGHT_ALIGNMENT );
 		checkpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
 		checkpanel.setLayout(new BoxLayout(checkpanel, 0));
 		
-		withoutvisiblesign = new JCheckBox("Sin Firma Visible", this.settings.withoutvisiblesign);
+		withoutvisiblesign = new JCheckBox("Sin Firma Visible                              ", this.settings.withoutvisiblesign);
 
 		checkpanel.add(withoutvisiblesign);
-		checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
-		uselta = new JCheckBox("Usar LTA automático", this.settings.uselta);
+		//checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
+		uselta = new JCheckBox("Usar LTA automático         ", this.settings.uselta);
 		checkpanel.add(uselta);
 		checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
-		overwritesourcefile = new JCheckBox("Sobreescribir archivo original", this.settings.overwritesourcefile);
-		checkpanel.add(overwritesourcefile);
+		
 		
 		panel.add(checkpanel);
 		panel.add(Box.createRigidArea(new Dimension(0, 10)));
 		
+		JPanel checkpanelserver = new JPanel();
+		checkpanelserver.setPreferredSize(new Dimension(450,30));
+		checkpanelserver.setAlignmentX(  Component.RIGHT_ALIGNMENT );
+		checkpanelserver.setBorder(new EmptyBorder(0, 0, 0, 0));
+		checkpanelserver.setLayout(new BoxLayout(checkpanelserver, 0));
+
+		overwritesourcefile = new JCheckBox("Sobreescribir archivo original", this.settings.overwritesourcefile);
+		checkpanelserver.add(overwritesourcefile);
+		checkpanelserver.add(Box.createRigidArea(new Dimension(5, 0))); 
+		startserver = new JCheckBox("Inicializar firmado remoto", this.settings.startserver);
+		checkpanelserver.add(startserver);
+		
+		
+		panel.add(checkpanelserver);		
+		panel.add(Box.createRigidArea(new Dimension(0, 10)));
+
 		reason = new JTextField();
 		reason.setText(this.settings.reason);
 		place = new JTextField();
@@ -148,7 +166,10 @@ public class ConfigPanel extends JPanel {
 		String fonts[] = { Font.SANS_SERIF, Font.DIALOG, Font.DIALOG_INPUT, Font.MONOSPACED, Font.SANS_SERIF,
 				Font.SERIF };
 		font = new JComboBox(fonts);
-		  
+		
+		String fontpositions[] = { "RIGHT", "LEFT", "BOTTOM", "TOP" };
+		fontposition = new JComboBox(fontpositions);
+		
 		
 		JPanel fontcolorpanel = new JPanel();
 		fontcolorpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -193,9 +214,6 @@ public class ConfigPanel extends JPanel {
 		btfontcolor.setOpaque(false);
 		setIcons(btfontcolor, this.settings.fontcolor, this.settings.getFontColor());
 
-		//btfontcolor.setForeground(this.settings.getFontColor());
-		//btfontcolor.setIcon(createImageIcon(this.settings.getFontColor()));
-		
 		fontcolorpanel.add(btfontcolor);
 		fontcolorpanel.add(fontcolor);
 		
@@ -209,8 +227,6 @@ public class ConfigPanel extends JPanel {
 		btbackgroundcolor = new JButton("Elegir");
 		btbackgroundcolor.setOpaque(false);
 		setIcons(btbackgroundcolor, this.settings.backgroundcolor, this.settings.getBackgroundColor());
-		//btbackgroundcolor.setForeground(this.settings.getBackgroundColor());
-		//btbackgroundcolor.setIcon(createImageIcon(this.settings.getBackgroundColor()));
 		backgroundcolorpanel.add(btbackgroundcolor);
 		backgroundcolorpanel.add(backgroundcolor); 
  
@@ -262,6 +278,11 @@ public class ConfigPanel extends JPanel {
 		imagepanel.add(imagetext); 
 		
 		
+		portnumber = new JSpinner();
+	 
+		portnumber.setModel(new SpinnerNumberModel(this.settings.portnumber, 2000, null, 1));
+		 
+		portnumber.setEditor(new JSpinner.NumberEditor(portnumber,"0000"));
 		
 		addSettingsBox(panel, "Razón:", reason);
 		addSettingsBox(panel, "Lugar:", place);
@@ -277,11 +298,13 @@ public class ConfigPanel extends JPanel {
 		addSettingsBox(panel, "Posición inicial Y:", signy);
 		addSettingsBox(panel, "Tamaño de fuente:", fontsize);
 		addSettingsBox(panel, "Fuente:", font);
+		addSettingsBox(panel, "Posición de fuente:", fontposition);
+		
 
 		addSettingsBox(panel, "Color de fuente:", fontcolorpanel);
 		addSettingsBox(panel, "Color de fondo:", backgroundcolorpanel);
 		addSettingsBox(panel, "Imagen de firma:", imagepanel);
-
+		addSettingsBox(panel, "Puerto de escucha:", portnumber);
  
 		
 		btfontcolor.addActionListener(new ActionListener() {
@@ -305,7 +328,7 @@ public class ConfigPanel extends JPanel {
 		
 		JScrollPane configPanel = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		configPanel.setPreferredSize(new Dimension(600, 400));
+		configPanel.setPreferredSize(new Dimension(700, 400));
 		configPanel.setBorder(null);
 
 		// configPanel.setViewportView(panel);
@@ -329,6 +352,9 @@ public class ConfigPanel extends JPanel {
 		applywithoutsave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				charge_settings();
+				if(startserver.isSelected()) {
+					showMessage("Modo remoto no se activará, debe guardar y reiniciar la aplicación.");
+				}
 			}
 		});
 		btns.add(applywithoutsave);
@@ -337,6 +363,9 @@ public class ConfigPanel extends JPanel {
 		btsave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				save_settings();
+				if(startserver.isSelected()) {
+					showMessage("El Modo remoto se iniciará al reinicio de la aplicación, puede desactivarlo con el menú contextual obtenido con clic derecho.");
+				}
 			}
 		});
 		btns.add(btsave);
@@ -377,6 +406,9 @@ public class ConfigPanel extends JPanel {
 		settings.fontcolor = fontcolor.getText();
 		settings.backgroundcolor = backgroundcolor.getText();
 		settings.image = imagetext.getText();
+		settings.startserver = this.startserver.isSelected();
+		settings.portnumber = Integer.parseInt(portnumber.getValue().toString());
+			 
 		
 
 		settings.updateConfig();
@@ -404,6 +436,8 @@ public class ConfigPanel extends JPanel {
 		backgroundcolor.setText(settings.backgroundcolor);
 		setIcons(btfontcolor, fontcolor.getText(), this.settings.getFontColor());
 		setIcons(btbackgroundcolor, backgroundcolor.getText(), this.settings.getBackgroundColor());
+		startserver.setSelected(settings.startserver);
+		portnumber.setValue(settings.portnumber);
 		//btbackgroundcolor.setIcon(createImageIcon(this.settings.getBackgroundColor()));
 		//btfontcolor.setForeground(settings.getFontColor());
 		//btfontcolor.setIcon(createImageIcon(this.settings.getFontColor()));
@@ -507,6 +541,9 @@ public class ConfigPanel extends JPanel {
 	    
 	    return new ImageIcon(image);
 	}
+    public void showMessage(String message) {
+        JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", JOptionPane.INFORMATION_MESSAGE);
+    }
 	
 	
 	

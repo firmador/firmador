@@ -177,6 +177,9 @@ public class SettingsManager {
 	    	conf.signy=Integer.parseInt(props.getProperty("singy", conf.signy.toString() ));
 	    	conf.extrapkcs11Lib=props.getProperty("extrapkcs11Lib");
 	    	conf.image = props.getProperty("image");
+	    	conf.startserver = Boolean.parseBoolean(props.getProperty("startserver", String.valueOf(conf.startserver) ));
+	    	conf.fontalignment =  props.getProperty("fontalignment", conf.fontalignment);
+	    	conf.portnumber=Integer.parseInt(props.getProperty("portnumber", conf.portnumber.toString() ));
 	    	
     	}
     	
@@ -203,6 +206,9 @@ public class SettingsManager {
     	setProperty("backgroundcolor", conf.backgroundcolor);
     	setProperty("singx", conf.signx.toString());
     	setProperty("singy", conf.signy.toString());
+    	setProperty("startserver", String.valueOf(conf.startserver));
+    	setProperty("fontalignment", conf.fontalignment.toString());
+    	setProperty("portnumber", conf.portnumber.toString());
     	
     	if(conf.extrapkcs11Lib!=null) {
     		setProperty("extrapkcs11Lib", conf.extrapkcs11Lib);

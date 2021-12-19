@@ -57,8 +57,10 @@ import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JPopupMenu;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
@@ -110,6 +112,11 @@ import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.util.TimeValue;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class GUISwing implements GUIInterface, ConfigListener {
 
@@ -155,6 +162,7 @@ public class GUISwing implements GUIInterface, ConfigListener {
     private JFrame frame;
     private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     private Settings settings;
+	private JPopupMenu menu;
 
     @SuppressWarnings("serial")
     public void loadGUI() {
@@ -174,8 +182,8 @@ public class GUISwing implements GUIInterface, ConfigListener {
             showError(Throwables.getRootCause(e));
         }
 
-        String origin = System.getProperty("jnlp.remoteOrigin");
-        isRemote = (origin != null);
+         
+        isRemote = settings.isRemote();
         if (isRemote) {
             SwingWorker<Void, byte[]> remote = new SwingWorker<Void, byte[]>() {
                 private HttpServer server;
@@ -186,7 +194,7 @@ public class GUISwing implements GUIInterface, ConfigListener {
                             super();
                         }
                         public void handle(final ClassicHttpRequest request, final ClassicHttpResponse response, final HttpContext context) throws HttpException, IOException {
-                            response.setHeader("Access-Control-Allow-Origin", origin);
+                            response.setHeader("Access-Control-Allow-Origin", settings.getOrigin());
                             response.setHeader("Vary", "Origin");
                             try {
                                 if (request.getUri().getPath().equals("/close")) System.exit(0);
@@ -228,6 +236,27 @@ public class GUISwing implements GUIInterface, ConfigListener {
         }
 
         frame = new JFrame("Firmador");
+        
+        menu = new JPopupMenu();
+	    JMenuItem mAll = new JMenuItem ("Deseleccionar modo remoto");
+		menu.add(mAll);
+	    mAll.addActionListener(new ActionListener() {   
+		   public void actionPerformed(ActionEvent e) {
+		     settings.startserver=false;
+		     SettingsManager.getInstance().setSettings(settings, true);
+		     showMessage("Debe reiniciar la aplicación para que los cambios tengan efecto");
+		   }
+		  });
+        frame.addMouseListener(new MouseAdapter() {
+			   public void mouseClicked(MouseEvent e) {
+			    if (e.getButton()==MouseEvent.BUTTON3) {
+			      // Aparece el menú contextual
+			     menu.show(frame, e.getX(), e.getY());
+			    }
+			   }   
+			  });
+        
+        
         frame.setIconImage(image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
         frame.setDropTarget(new DropTarget() {
             public synchronized void drop(DropTargetDropEvent e) {
