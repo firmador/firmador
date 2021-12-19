@@ -90,10 +90,13 @@ public class Settings {
 			break;
 		case "LEFT":
 			position = SignerTextPosition.LEFT;
+			break;
 		case "BOTTOM":
 			position = SignerTextPosition.BOTTOM;
+			break;
 		case "TOP":
 			position = SignerTextPosition.TOP;
+			break;
 		default:
 			break;
 		}

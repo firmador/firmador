@@ -169,7 +169,7 @@ public class ConfigPanel extends JPanel {
 		
 		String fontpositions[] = { "RIGHT", "LEFT", "BOTTOM", "TOP" };
 		fontposition = new JComboBox(fontpositions);
-		
+		fontposition.setSelectedItem(settings.fontalignment);
 		
 		JPanel fontcolorpanel = new JPanel();
 		fontcolorpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -403,11 +403,13 @@ public class ConfigPanel extends JPanel {
 		settings.signx = Integer.parseInt(signx.getValue().toString());
 		settings.signy = Integer.parseInt(signy.getValue().toString());
 		settings.font = font.getSelectedItem().toString();
+		settings.fontalignment = fontposition.getSelectedItem().toString();
 		settings.fontcolor = fontcolor.getText();
 		settings.backgroundcolor = backgroundcolor.getText();
 		settings.image = imagetext.getText();
 		settings.startserver = this.startserver.isSelected();
 		settings.portnumber = Integer.parseInt(portnumber.getValue().toString());
+		
 			 
 		
 
@@ -438,6 +440,7 @@ public class ConfigPanel extends JPanel {
 		setIcons(btbackgroundcolor, backgroundcolor.getText(), this.settings.getBackgroundColor());
 		startserver.setSelected(settings.startserver);
 		portnumber.setValue(settings.portnumber);
+		fontposition.setSelectedItem(settings.fontalignment);
 		//btbackgroundcolor.setIcon(createImageIcon(this.settings.getBackgroundColor()));
 		//btfontcolor.setForeground(settings.getFontColor());
 		//btfontcolor.setIcon(createImageIcon(this.settings.getFontColor()));

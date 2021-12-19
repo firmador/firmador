@@ -263,7 +263,7 @@ public class FirmadorPAdES extends CRSigner {
 		textParameters.setTextColor(settings.getFontColor());
 		textParameters.setBackgroundColor(settings.getBackgroundColor());
 
-        textParameters.setSignerTextPosition(SignerTextPosition.LEFT);
+        textParameters.setSignerTextPosition(settings.getFontAlignment());
         
         imageParameters.setTextParameters(textParameters);
         try {
