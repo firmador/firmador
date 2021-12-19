@@ -57,8 +57,10 @@ import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JPopupMenu;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
@@ -80,7 +82,14 @@ import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
 import cr.libre.firmador.FirmadorXAdES;
 import cr.libre.firmador.Report;
+import cr.libre.firmador.Settings;
+import cr.libre.firmador.ConfigListener;
+
+
+import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.Validator;
+import cr.libre.firmador.gui.swing.AboutLayout;
+import cr.libre.firmador.gui.swing.ConfigPanel;
 import cr.libre.firmador.gui.swing.CopyableJLabel;
 import cr.libre.firmador.gui.swing.ScrollableJPanel;
 import com.apple.eawt.Application;
@@ -103,8 +112,13 @@ import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.util.TimeValue;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-public class GUISwing implements GUIInterface {
+public class GUISwing implements GUIInterface, ConfigListener {
 
     private static FileDialog loadDialog;
     private Boolean isRemote = false;
@@ -113,7 +127,6 @@ public class GUISwing implements GUIInterface {
     private String documenttosave = null;
     private String lastDirectory = null;
     private String lastFile = null;
-    private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     private JTextField fileField;
     private JTabbedPane frameTabbedPane;
     private JTabbedPane optionsTabbedPane;
@@ -147,9 +160,14 @@ public class GUISwing implements GUIInterface {
     private PDDocument doc;
     private PDFRenderer renderer;
     private JFrame frame;
+    private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
+    private Settings settings;
+	private JPopupMenu menu;
 
     @SuppressWarnings("serial")
     public void loadGUI() {
+		settings = SettingsManager.getInstance().get_and_create_settings();
+		settings.addListener(this);
         try {
             Application.getApplication().setDockIconImage(image);
         } catch (RuntimeException | IllegalAccessError e) { /* macOS dock icon support specific code. */ }
@@ -164,8 +182,8 @@ public class GUISwing implements GUIInterface {
             showError(Throwables.getRootCause(e));
         }
 
-        String origin = System.getProperty("jnlp.remoteOrigin");
-        isRemote = (origin != null);
+         
+        isRemote = settings.isRemote();
         if (isRemote) {
             SwingWorker<Void, byte[]> remote = new SwingWorker<Void, byte[]>() {
                 private HttpServer server;
@@ -176,7 +194,7 @@ public class GUISwing implements GUIInterface {
                             super();
                         }
                         public void handle(final ClassicHttpRequest request, final ClassicHttpResponse response, final HttpContext context) throws HttpException, IOException {
-                            response.setHeader("Access-Control-Allow-Origin", origin);
+                            response.setHeader("Access-Control-Allow-Origin", settings.getOrigin());
                             response.setHeader("Vary", "Origin");
                             try {
                                 if (request.getUri().getPath().equals("/close")) System.exit(0);
@@ -201,9 +219,9 @@ public class GUISwing implements GUIInterface {
                                 }
                             }
                         }
-                    }
-
-                    server = ServerBootstrap.bootstrap().setListenerPort(3516).setLocalAddress(InetAddress.getLoopbackAddress()).register("*", new RequestHandler()).create();
+                    };
+                    Settings settings = SettingsManager.getInstance().get_and_create_settings();
+                    server = ServerBootstrap.bootstrap().setListenerPort(settings.portnumber).setLocalAddress(InetAddress.getLoopbackAddress()).register("*", new RequestHandler()).create();
                     server.start();
                     server.awaitTermination(TimeValue.MAX_VALUE);
                     return null;
@@ -218,6 +236,27 @@ public class GUISwing implements GUIInterface {
         }
 
         frame = new JFrame("Firmador");
+        
+        menu = new JPopupMenu();
+	    JMenuItem mAll = new JMenuItem ("Deseleccionar modo remoto");
+		menu.add(mAll);
+	    mAll.addActionListener(new ActionListener() {   
+		   public void actionPerformed(ActionEvent e) {
+		     settings.startserver=false;
+		     SettingsManager.getInstance().setSettings(settings, true);
+		     showMessage("Debe reiniciar la aplicación para que los cambios tengan efecto");
+		   }
+		  });
+        frame.addMouseListener(new MouseAdapter() {
+			   public void mouseClicked(MouseEvent e) {
+			    if (e.getButton()==MouseEvent.BUTTON3) {
+			      // Aparece el menú contextual
+			     menu.show(frame, e.getX(), e.getY());
+			    }
+			   }   
+			  });
+        
+        
         frame.setIconImage(image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
         frame.setDropTarget(new DropTarget() {
             public synchronized void drop(DropTargetDropEvent e) {
@@ -259,17 +298,20 @@ public class GUISwing implements GUIInterface {
                 }
             }
         });
-        signatureVisibleCheckBox = new JCheckBox(" Sin firma visible");
+        signatureVisibleCheckBox = new JCheckBox(" Sin firma visible", settings.withoutvisiblesign);
         signatureVisibleCheckBox.setToolTipText("<html>Marque esta casilla si no desea representar visualmente una firma<br>en una página del documento a la hora de firmarlo.</html>");
         signatureVisibleCheckBox.setOpaque(false);
         reasonLabel = new JLabel("Razón:");
         locationLabel = new JLabel("Lugar:");
         contactInfoLabel = new JLabel("Contacto:");
         reasonField = new JTextField();
+        reasonField.setText(settings.reason);
         reasonField.setToolTipText("<html>Este campo opcional permite indicar una razón<br>o motivo por el cual firma el documento.</html>");
         locationField = new JTextField();
+        locationField.setText(settings.place);
         locationField.setToolTipText("<html>Este campo opcional permite indicar el lugar físico,<br>por ejemplo la ciudad, en la cual declara firmar.</html>");
         contactInfoField = new JTextField();
+        contactInfoField.setText(settings.contact);
         contactInfoField.setToolTipText("<html>Este campo opcional permite indicar una<br>manera de contactar con la persona firmante,<br>por ejemplo una dirección de correo electrónico.</html>");
 
         AdESFormatLabel = new JLabel("Formato AdES:");
@@ -301,7 +343,11 @@ public class GUISwing implements GUIInterface {
         signButton.setToolTipText("<html>Este botón permite firmar el documento seleccionado.<br>Requiere dispositivo de Firma Digital al cual se le<br>solicitará ingresar el PIN.</html>");
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                signDocuments();
+				signDocuments();
+                if(settings.uselta) {
+                	extendDocument();
+                }
+
             }
         });
 
@@ -352,14 +398,13 @@ public class GUISwing implements GUIInterface {
         signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
-        signatureLabel.setBounds(198, 0, 133, 33);
+        signatureLabel.setBounds(settings.signx, settings.signy, settings.signwith, settings.signheight);
         imageLabel.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 signatureLabel.setLocation(e.getX() - signatureLabel.getWidth() / 2, e.getY() - signatureLabel.getHeight() / 2);
             }
         });
         imageLabel.add(signatureLabel);
-
         JLabel iconLabel = new JLabel(new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
         JLabel descriptionLabel = new JLabel("<html><p align='center'><b>Firmador</b><br><br>" +
             "Versión " + getClass().getPackage().getSpecificationVersion() + "<br><br>" +
@@ -382,7 +427,6 @@ public class GUISwing implements GUIInterface {
         optionsTabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran opciones específicas<br>para documentos en formato PDF.</html>");
         optionsTabbedPane.addTab("Opciones avanzadas", advancedOptionsPanel);
         optionsTabbedPane.setToolTipTextAt(1, "<html>En esta pestaña se muestran opciones avanzadas<br>relacionadas con la creación de la firma.</html>");
-
         JPanel signPanel = new JPanel();
         GroupLayout signLayout;
         if (isRemote) signLayout = new GroupLayout(frame.getContentPane());
@@ -470,32 +514,23 @@ public class GUISwing implements GUIInterface {
         validateScrollPane.getViewport().setOpaque(false);
 
         JPanel aboutPanel = new JPanel();
-        GroupLayout aboutLayout = new GroupLayout(aboutPanel);
-        aboutLayout.setAutoCreateGaps(true);
-        aboutLayout.setAutoCreateContainerGaps(true);
-        aboutLayout.setHorizontalGroup(
-            aboutLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                .addComponent(iconLabel)
-                .addComponent(descriptionLabel)
-                .addComponent(websiteButton)
-        );
-        aboutLayout.setVerticalGroup(
-            aboutLayout.createSequentialGroup()
-                .addComponent(iconLabel)
-                .addComponent(descriptionLabel)
-                .addComponent(websiteButton)
-        );
+        GroupLayout aboutLayout = new AboutLayout(aboutPanel);
+        ((AboutLayout) aboutLayout).setInterface(this);
+
         aboutPanel.setLayout(aboutLayout);
         aboutPanel.setOpaque(false);
-
+        
+        JPanel configPanel = new ConfigPanel();
+        configPanel.setOpaque(false);
         frameTabbedPane = new JTabbedPane();
         frameTabbedPane.addTab("Firmar", signPanel);
         frameTabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran las opciones<br>para firmar el documento seleccionado.</html>");
         frameTabbedPane.addTab("Validación", validateScrollPane);
         frameTabbedPane.setToolTipTextAt(1, "<html>En esta pestaña se muestra información de validación<br>de las firmas digitales del documento seleccionado.</html>");
+        frameTabbedPane.addTab("Configuración", configPanel);
+        frameTabbedPane.setToolTipTextAt(2, "<html>En esta estaña se configura<br>aspectos de este programa.</html>");
         frameTabbedPane.addTab("Acerca de", aboutPanel);
-        frameTabbedPane.setToolTipTextAt(2, "<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
-
+        frameTabbedPane.setToolTipTextAt(3, "<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
         GroupLayout frameLayout = new GroupLayout(frame.getContentPane());
         frameLayout.setAutoCreateGaps(true);
         frameLayout.setAutoCreateContainerGaps(true);
@@ -563,7 +598,11 @@ public class GUISwing implements GUIInterface {
                     SpinnerNumberModel model = ((SpinnerNumberModel)pageSpinner.getModel());
                     model.setMinimum(1);
                     model.setMaximum(pages);
-                    pageSpinner.setValue(1);
+                    if(settings.pagenumber <= pages && settings.pagenumber > 0){
+                    	pageSpinner.setValue(settings.pagenumber);
+                    }else {
+                    	pageSpinner.setValue(1);
+                    }
                 }
                 imageLabel.setBorder(new LineBorder(Color.BLACK));
                 imageLabel.setIcon(new ImageIcon(pageImage));
@@ -668,7 +707,9 @@ public class GUISwing implements GUIInterface {
                 if (fileName != null) {
                     try {
                         signedDocument.save(fileName);
+                        if(!settings.uselta) {
                         showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
+                        }
                         loadDocument(fileName);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -731,12 +772,14 @@ public class GUISwing implements GUIInterface {
     }
 
     public String getPathToSave(String extension) {
+    	if(settings.overwritesourcefile) return getDocumentToSign();
         if (documenttosave != null) return documenttosave;
         String pathToSave = showSaveDialog("-firmado", extension);
         return pathToSave;
     }
 
     public String getPathToSaveExtended(String extension) {
+    	if(settings.overwritesourcefile) return getDocumentToSign();
         String pathToExtend = showSaveDialog("-sellado", extension);
         return pathToExtend;
     }
@@ -797,6 +840,7 @@ public class GUISwing implements GUIInterface {
             }
         }
     }
+
 
     public void setArgs(String[] args) {
         List<String> arguments = new ArrayList<String>();
@@ -884,6 +928,28 @@ public class GUISwing implements GUIInterface {
     @Override
     public String getPkcs12file() {
         return "";
+    }
+    
+    public void updateConfig(){
+    	signatureVisibleCheckBox.setSelected(settings.withoutvisiblesign);
+    	reasonField.setText(settings.reason);
+    	locationField.setText(settings.place);
+    	contactInfoField.setText(settings.contact);
+    	signatureLabel.setBounds(settings.signx, settings.signy, settings.signwith, settings.signheight);
+    	
+    	try {
+    		 if(doc != null) {
+	    		 int pages = doc.getNumberOfPages();	     
+		        if(settings.pagenumber <= pages && settings.pagenumber > 0){
+		        	pageSpinner.setValue(settings.pagenumber);
+		        }else {
+		        	pageSpinner.setValue(1);
+		        }
+	        }
+    	}catch (Exception e) {
+    		pageSpinner.setValue(0);
+		}
+    	
     }
 
 }
