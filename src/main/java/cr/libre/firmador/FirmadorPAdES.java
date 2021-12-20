@@ -78,7 +78,7 @@ public class FirmadorPAdES extends CRSigner {
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
         if(image == null) {
-        	image = settings.getImage();
+            image = settings.getImage();
         }
         try {
             token = getSignatureConnection(pin);
@@ -201,7 +201,6 @@ public class FirmadorPAdES extends CRSigner {
                 textParameters.setText("Este documento incluye un sello de tiempo de la\n" +
                     "Autoridad de Sellado de Tiempo (TSA) del SINPE.\n" +
                     "Fecha de solicitud a la TSA: " + date.format(new Date()));
-                
                 textParameters.setTextColor(settings.getFontColor());
                 textParameters.setBackgroundColor(settings.getBackgroundColor());
                 textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
@@ -228,7 +227,7 @@ public class FirmadorPAdES extends CRSigner {
     }
 
     private void appendVisibleSignature(CertificateToken certificate, Date date, String reason, String location, String contactInfo, String image, Boolean hideAdvice) {
-    	SignatureImageParameters imageParameters = new SignatureImageParameters();
+        SignatureImageParameters imageParameters = new SignatureImageParameters();
         imageParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
         imageParameters.getFieldParameters().setOriginX(x);
         imageParameters.getFieldParameters().setOriginY(y);
@@ -260,8 +259,8 @@ public class FirmadorPAdES extends CRSigner {
             else additionalText = "Contacto: " + contactInfo;
         }
         textParameters.setText(cn + "\n" + o + ", " + sn + ".\nFecha declarada: " + fecha.format(date) + "\n" + additionalText);
-		textParameters.setTextColor(settings.getFontColor());
-		textParameters.setBackgroundColor(settings.getBackgroundColor());
+        textParameters.setTextColor(settings.getFontColor());
+        textParameters.setBackgroundColor(settings.getBackgroundColor());
 
         textParameters.setSignerTextPosition(settings.getFontAlignment());
         

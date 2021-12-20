@@ -18,11 +18,11 @@ import cr.libre.firmador.gui.GUIInterface;
 
 public class AboutLayout extends GroupLayout {
 
-	private GUIInterface swinginterface;
+    private GUIInterface swinginterface;
     private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
 
-	public AboutLayout(Container host) {
-		super(host); 
+    public AboutLayout(Container host) {
+        super(host);
         JLabel iconLabel = new JLabel(new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
         JLabel descriptionLabel = new JLabel("<html><p align='center'><b>Firmador</b><br><br>" +
             "Versión " + getClass().getPackage().getSpecificationVersion() + "<br><br>" +
@@ -36,8 +36,7 @@ public class AboutLayout extends GroupLayout {
                 openProjectWebsite();
             }
         });
-				
-		
+
         this.setAutoCreateGaps(true);
         this.setAutoCreateContainerGaps(true);
         this.setHorizontalGroup(
@@ -52,16 +51,16 @@ public class AboutLayout extends GroupLayout {
                 .addComponent(descriptionLabel)
                 .addComponent(websiteButton)
         );
-	}
-	public void setInterface(GUIInterface swinginterface){
-		this.swinginterface = swinginterface;
-	}
+    }
+    public void setInterface(GUIInterface swinginterface){
+        this.swinginterface = swinginterface;
+    }
     private void openProjectWebsite() {
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             try {
                 Desktop.getDesktop().browse(new URI("https://firmador.libre.cr"));
             } catch (Exception e) {
-            	this.swinginterface.showError(Throwables.getRootCause(e));
+                this.swinginterface.showError(Throwables.getRootCause(e));
             }
         }
     }

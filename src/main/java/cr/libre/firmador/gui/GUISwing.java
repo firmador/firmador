@@ -82,8 +82,6 @@ import cr.libre.firmador.FirmadorXAdES;
 import cr.libre.firmador.Report;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.ConfigListener;
-
-
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.Validator;
 import cr.libre.firmador.gui.swing.AboutLayout;
@@ -156,12 +154,12 @@ public class GUISwing implements GUIInterface, ConfigListener {
     private JFrame frame;
     private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     private Settings settings;
-	private JPopupMenu menu;
+    private JPopupMenu menu;
 
     @SuppressWarnings("serial")
     public void loadGUI() {
-		settings = SettingsManager.getInstance().get_and_create_settings();
-		settings.addListener(this);
+        settings = SettingsManager.getInstance().get_and_create_settings();
+        settings.addListener(this);
         try {
             Application.getApplication().setDockIconImage(image);
         } catch (RuntimeException | IllegalAccessError e) { /* macOS dock icon support specific code. */ }
@@ -176,7 +174,6 @@ public class GUISwing implements GUIInterface, ConfigListener {
             showError(Throwables.getRootCause(e));
         }
 
-         
         isRemote = settings.isRemote();
         if (isRemote) {
             SwingWorker<Void, byte[]> remote = new SwingWorker<Void, byte[]>() {
@@ -230,27 +227,26 @@ public class GUISwing implements GUIInterface, ConfigListener {
         }
 
         frame = new JFrame("Firmador");
-        
+
         menu = new JPopupMenu();
-	    JMenuItem mAll = new JMenuItem ("Deseleccionar modo remoto");
-		menu.add(mAll);
-	    mAll.addActionListener(new ActionListener() {   
-		   public void actionPerformed(ActionEvent e) {
-		     settings.startserver=false;
-		     SettingsManager.getInstance().setSettings(settings, true);
-		     showMessage("Debe reiniciar la aplicación para que los cambios tengan efecto");
-		   }
-		  });
+        JMenuItem mAll = new JMenuItem ("Deseleccionar modo remoto");
+        menu.add(mAll);
+        mAll.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                settings.startserver=false;
+                SettingsManager.getInstance().setSettings(settings, true);
+                showMessage("Debe reiniciar la aplicación para que los cambios tengan efecto");
+            }
+        });
         frame.addMouseListener(new MouseAdapter() {
-			   public void mouseClicked(MouseEvent e) {
-			    if (e.getButton()==MouseEvent.BUTTON3) {
-			      // Aparece el menú contextual
-			     menu.show(frame, e.getX(), e.getY());
-			    }
-			   }   
-			  });
-        
-        
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton()==MouseEvent.BUTTON3) {
+                    // Aparece el menú contextual
+                    menu.show(frame, e.getX(), e.getY());
+                }
+            }
+        });
+
         frame.setIconImage(image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
         frame.setDropTarget(new DropTarget() {
             public synchronized void drop(DropTargetDropEvent e) {
@@ -337,9 +333,9 @@ public class GUISwing implements GUIInterface, ConfigListener {
         signButton.setToolTipText("<html>Este botón permite firmar el documento seleccionado.<br>Requiere dispositivo de Firma Digital al cual se le<br>solicitará ingresar el PIN.</html>");
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-				signDocuments();
-                if(settings.uselta) {
-                	extendDocument();
+                signDocuments();
+                if (settings.uselta) {
+                    extendDocument();
                 }
 
             }
@@ -500,7 +496,7 @@ public class GUISwing implements GUIInterface, ConfigListener {
 
         aboutPanel.setLayout(aboutLayout);
         aboutPanel.setOpaque(false);
-        
+
         JPanel configPanel = new ConfigPanel();
         configPanel.setOpaque(false);
         frameTabbedPane = new JTabbedPane();
@@ -579,10 +575,10 @@ public class GUISwing implements GUIInterface, ConfigListener {
                     SpinnerNumberModel model = ((SpinnerNumberModel)pageSpinner.getModel());
                     model.setMinimum(1);
                     model.setMaximum(pages);
-                    if(settings.pagenumber <= pages && settings.pagenumber > 0){
-                    	pageSpinner.setValue(settings.pagenumber);
-                    }else {
-                    	pageSpinner.setValue(1);
+                    if (settings.pagenumber <= pages && settings.pagenumber > 0) {
+                        pageSpinner.setValue(settings.pagenumber);
+                    } else {
+                        pageSpinner.setValue(1);
                     }
                 }
                 imageLabel.setBorder(new LineBorder(Color.BLACK));
@@ -688,7 +684,7 @@ public class GUISwing implements GUIInterface, ConfigListener {
                 if (fileName != null) {
                     try {
                         signedDocument.save(fileName);
-                        if(!settings.uselta) {
+                        if (!settings.uselta) {
                         showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
                         }
                         loadDocument(fileName);
@@ -753,14 +749,14 @@ public class GUISwing implements GUIInterface, ConfigListener {
     }
 
     public String getPathToSave(String extension) {
-    	if(settings.overwritesourcefile) return getDocumentToSign();
+        if (settings.overwritesourcefile) return getDocumentToSign();
         if (documenttosave != null) return documenttosave;
         String pathToSave = showSaveDialog("-firmado", extension);
         return pathToSave;
     }
 
     public String getPathToSaveExtended(String extension) {
-    	if(settings.overwritesourcefile) return getDocumentToSign();
+        if (settings.overwritesourcefile) return getDocumentToSign();
         String pathToExtend = showSaveDialog("-sellado", extension);
         return pathToExtend;
     }
@@ -898,27 +894,26 @@ public class GUISwing implements GUIInterface, ConfigListener {
     public String getPkcs12file() {
         return "";
     }
-    
-    public void updateConfig(){
-    	signatureVisibleCheckBox.setSelected(settings.withoutvisiblesign);
-    	reasonField.setText(settings.reason);
-    	locationField.setText(settings.place);
-    	contactInfoField.setText(settings.contact);
-    	signatureLabel.setBounds(settings.signx, settings.signy, settings.signwith, settings.signheight);
-    	
-    	try {
-    		 if(doc != null) {
-	    		 int pages = doc.getNumberOfPages();	     
-		        if(settings.pagenumber <= pages && settings.pagenumber > 0){
-		        	pageSpinner.setValue(settings.pagenumber);
-		        }else {
-		        	pageSpinner.setValue(1);
-		        }
-	        }
-    	}catch (Exception e) {
-    		pageSpinner.setValue(0);
-		}
-    	
+
+    public void updateConfig() {
+        signatureVisibleCheckBox.setSelected(settings.withoutvisiblesign);
+        reasonField.setText(settings.reason);
+        locationField.setText(settings.place);
+        contactInfoField.setText(settings.contact);
+        signatureLabel.setBounds(settings.signx, settings.signy, settings.signwith, settings.signheight);
+
+        try {
+             if (doc != null) {
+                 int pages = doc.getNumberOfPages();
+                if (settings.pagenumber <= pages && settings.pagenumber > 0) {
+                    pageSpinner.setValue(settings.pagenumber);
+                } else {
+                    pageSpinner.setValue(1);
+                }
+            }
+        } catch (Exception e) {
+            pageSpinner.setValue(0);
+        }
     }
 
 }

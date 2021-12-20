@@ -29,120 +29,116 @@ import eu.europa.esig.dss.enumerations.SignerTextPosition;
 import java.awt.Color;
 
 public class Settings {
-	private List<ConfigListener> listeners = new ArrayList<ConfigListener>();
+    private List<ConfigListener> listeners = new ArrayList<ConfigListener>();
 
-	public boolean withoutvisiblesign=false;
-	public boolean uselta=true;
-	public boolean overwritesourcefile=false;
-	public String reason="";
-	public String place="";
-	public String contact="";
-	public String dateformat="dd/MM/yyyy hh:mm:ss a";
-	public String defaultsignmessage="Esta es una representación gráfica únicamente,\nverifique la validez de la firma."; 
-	public Integer signwith=133;
-	public Integer signheight=33;
-	public Integer fontsize=7;
-	public String font=Font.SANS_SERIF;
-	public String fontcolor="#000000";
-	public String backgroundcolor="transparente";
-	public String extrapkcs11Lib=null;
-	public Integer signx=198;
-	public Integer signy=0;
-	public String image=null;
-	public boolean startserver=false;
-	public String fontalignment="RIGHT";
+    public boolean withoutvisiblesign = false;
+    public boolean uselta = true;
+    public boolean overwritesourcefile = false;
+    public String reason = "";
+    public String place = "";
+    public String contact = "";
+    public String dateformat = "dd/MM/yyyy hh:mm:ss a";
+    public String defaultsignmessage = "Esta es una representación gráfica únicamente,\nverifique la validez de la firma.";
+    public Integer signwith = 133;
+    public Integer signheight = 33;
+    public Integer fontsize = 7;
+    public String font = Font.SANS_SERIF;
+    public String fontcolor = "#000000";
+    public String backgroundcolor = "transparente";
+    public String extrapkcs11Lib = null;
+    public Integer signx = 198;
+    public Integer signy = 0;
+    public String image = null;
+    public boolean startserver = false;
+    public String fontalignment = "RIGHT";
 
-	public Integer pagenumber=1;
-	public Integer portnumber=3516;
-	
-	
-	
-	public Settings() {}
-	
-	public String getDefaultSignMessage() {
-		return this.defaultsignmessage;
-	}
-	
-	public String getDateFormat() {
-		try {
-			return this.dateformat;
-		}catch (Exception e) {
-			return "dd/MM/yyyy hh:mm:ss a";
-		}
-	}
-	
-	
-	public void addListener(ConfigListener toAdd) {
+    public Integer pagenumber = 1;
+    public Integer portnumber = 3516;
+
+    public Settings() {}
+
+    public String getDefaultSignMessage() {
+        return this.defaultsignmessage;
+    }
+
+    public String getDateFormat() {
+        try {
+            return this.dateformat;
+        } catch (Exception e) {
+            return "dd/MM/yyyy hh:mm:ss a";
+        }
+    }
+
+    public void addListener(ConfigListener toAdd) {
         listeners.add(toAdd);
     }
-	
-	public void updateConfig() {
-		for (ConfigListener hl : listeners)
+
+    public void updateConfig() {
+        for (ConfigListener hl : listeners)
             hl.updateConfig();
-	}
-	
-	public SignerTextPosition getFontAlignment() {
-		SignerTextPosition position =  SignerTextPosition.RIGHT;
-		switch (this.fontalignment) {
-		case "RIGHT":
-			position = SignerTextPosition.RIGHT;
-			break;
-		case "LEFT":
-			position = SignerTextPosition.LEFT;
-			break;
-		case "BOTTOM":
-			position = SignerTextPosition.BOTTOM;
-			break;
-		case "TOP":
-			position = SignerTextPosition.TOP;
-			break;
-		default:
-			break;
-		}
-		
-		
-		return position;
-	}
-	public Color getFontColor() {
-		if(this.fontcolor.toLowerCase() == "transparente") {
-			return new Color(255, 255,255,0);
-		}
-		try {
-			return Color.decode(this.fontcolor);
-		}catch (Exception e) {
-			return new Color(0, 0, 0,255);
-		}
-	}
-	public Color getBackgroundColor() {
-		if(this.backgroundcolor.toLowerCase() == "transparente") {
-			return new Color(255, 255,255,0);
-		}
-		try {
-			return Color.decode(this.backgroundcolor);
-		}catch (Exception e) {
-			return new Color(255, 255,255,0);
-		}
-	}
-	
-	public String getImage() {
-		if(this.image == null) return null;
-		File temp = new File(this.image);  
-		boolean exists = temp.exists();
-		if(exists) return temp.toURI().toString();
-		return null;
-	}
-	public boolean isRemote() {
-		if (this.startserver) return true;
-		String origin = System.getProperty("jnlp.remoteOrigin");
+    }
+
+    public SignerTextPosition getFontAlignment() {
+        SignerTextPosition position = SignerTextPosition.RIGHT;
+        switch (this.fontalignment) {
+        case "RIGHT":
+            position = SignerTextPosition.RIGHT;
+            break;
+        case "LEFT":
+            position = SignerTextPosition.LEFT;
+            break;
+        case "BOTTOM":
+            position = SignerTextPosition.BOTTOM;
+            break;
+        case "TOP":
+            position = SignerTextPosition.TOP;
+            break;
+        default:
+            break;
+        }
+
+        return position;
+    }
+    public Color getFontColor() {
+        if (this.fontcolor.toLowerCase() == "transparente") {
+            return new Color(255, 255, 255, 0);
+        }
+        try {
+            return Color.decode(this.fontcolor);
+        } catch (Exception e) {
+            return new Color(0, 0, 0, 255);
+        }
+    }
+    public Color getBackgroundColor() {
+        if (this.backgroundcolor.toLowerCase() == "transparente") {
+            return new Color(255, 255,255, 0);
+        }
+        try {
+            return Color.decode(this.backgroundcolor);
+        } catch (Exception e) {
+            return new Color(255, 255,255, 0);
+        }
+    }
+
+    public String getImage() {
+        if (this.image == null) return null;
+        File temp = new File(this.image);
+        boolean exists = temp.exists();
+        if (exists) return temp.toURI().toString();
+        return null;
+    }
+    public boolean isRemote() {
+        if (this.startserver) return true;
+        String origin = System.getProperty("jnlp.remoteOrigin");
         boolean isRemote = (origin != null);
-		return isRemote;
-	}
-	public String getOrigin() {
-		String origin = System.getProperty("jnlp.remoteOrigin");
-		if(origin==null) {
-			origin = "*";
-		}
-		
-		return origin;
-	}
+        return isRemote;
+    }
+    public String getOrigin() {
+        String origin = System.getProperty("jnlp.remoteOrigin");
+        if (origin == null) {
+            origin = "*";
+        }
+
+        return origin;
+    }
 }
