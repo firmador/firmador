@@ -36,59 +36,58 @@ import java.util.logging.Logger;
 
 public class SettingsManager {
 
-	private static SettingsManager cm = new SettingsManager();
-	private Path path;
-	private Properties props;
-	private Settings settings = null;
-	
+    private static SettingsManager cm = new SettingsManager();
+    private Path path;
+    private Properties props;
+    private Settings settings = null;
+
     public Path get_config_dir() throws IOException {
-    	String osName = System.getProperty("os.name").toLowerCase();
+        String osName = System.getProperty("os.name").toLowerCase();
         // Se asegura que siempre exista el directorio de configuracion
         path = FileSystems.getDefault().getPath(System.getProperty("user.home"), ".firmadorlibre");
         if (!Files.isDirectory(path)) {
             Files.createDirectories(path);
             if (osName.contains("windows")) Files.setAttribute(path, "dos:hidden", true);
-        
-    	}
+        }
         return path;
     }
-    
+
     public Path get_path_config_file(String name) throws IOException{
-    	if (path == null){
-    		path = this.get_config_dir();
-    		path = path.getFileSystem().getPath(path.toString(), name);
-    	}
+        if (path == null) {
+            path = this.get_config_dir();
+            path = path.getFileSystem().getPath(path.toString(), name);
+        }
         return path;
     }
-    
+
     public String get_config_file(String name) throws IOException{
         return this.get_path_config_file(name).toString();
     }
 
-	public Path getPath() {
-		return path;
-	}
+    public Path getPath() {
+        return path;
+    }
 
-	public void setPath(Path path) {
-		this.path = path;
-	}
+    public void setPath(Path path) {
+        this.path = path;
+    }
 
-	public void setPath(String path) {
-		this.path = FileSystems.getDefault().getPath(path);
-	}
+    public void setPath(String path) {
+        this.path = FileSystems.getDefault().getPath(path);
+    }
 
-	private SettingsManager() {
-		super();
-		this.path = null;
-		props = new Properties();
-	}
-	
+    private SettingsManager() {
+        super();
+        this.path = null;
+        props = new Properties();
+    }
+
     public static SettingsManager getInstance() {
-        // return unique instance 
+        // return unique instance
         return cm;
 
     }
-    
+
     public String getProperty(String key) {
         return props.getProperty(key, "");
     }
@@ -97,16 +96,15 @@ public class SettingsManager {
         props.setProperty(key, value);
     }
 
-    
     private String get_config_file() throws IOException {
         //Retorna el archivo de configuracion
-    	String dev="";
-    	if(this.path == null){
-    		dev = this.get_config_file("config.properties");
-    	}else{
-    		dev = this.path.toString();
-    	}
-    	return dev;
+        String dev="";
+        if (this.path == null) {
+            dev = this.get_config_file("config.properties");
+        }else{
+            dev = this.path.toString();
+        }
+        return dev;
     }
 
     public boolean load_config() {
@@ -115,13 +113,13 @@ public class SettingsManager {
         boolean loaded=false;
         try {
             configFile = new File(this.get_config_file());
-            if(configFile.exists()) {
-	            InputStream inputStream = new FileInputStream(configFile);
-	            Reader reader = new InputStreamReader(inputStream, "UTF-8");
-	            props.load(reader);
-	            reader.close();
-	            inputStream.close();
-	            loaded=true;
+            if (configFile.exists()) {
+                InputStream inputStream = new FileInputStream(configFile);
+                Reader reader = new InputStreamReader(inputStream, "UTF-8");
+                props.load(reader);
+                reader.close();
+                inputStream.close();
+                loaded=true;
             }
         } catch (IOException ex) {
             Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -135,7 +133,7 @@ public class SettingsManager {
         OutputStreamWriter writer = null;
         //props.setProperty("formato", "json");
         try {
-        	writer = new OutputStreamWriter(new FileOutputStream(this.get_config_file()), StandardCharsets.UTF_8);
+            writer = new OutputStreamWriter(new FileOutputStream(this.get_config_file()), StandardCharsets.UTF_8);
             //writer = new FileWriter(this.get_config_file());
             props.store(writer, "Firmador Libre settings");
 
@@ -151,98 +149,93 @@ public class SettingsManager {
             }
         }
     }
-    
-    public Settings getSettings(){
-    	Settings conf = new Settings();
-    	boolean loaded =this.load_config();
-    	    	
-    	if(loaded) {
-	    	conf.withoutvisiblesign=Boolean.parseBoolean(props.getProperty("withoutvisiblesign", String.valueOf(conf.withoutvisiblesign) ));
-	    	conf.uselta=Boolean.parseBoolean(props.getProperty("uselta", String.valueOf(conf.uselta) ));
-	    	conf.overwritesourcefile=Boolean.parseBoolean(props.getProperty("overwritesourcefile", String.valueOf(conf.overwritesourcefile )));
-	    	conf.reason=props.getProperty("reason", conf.reason );
-	    	conf.place=props.getProperty("place", conf.place );
-	    	conf.contact=props.getProperty("contact", conf.contact );
-	    	conf.dateformat=props.getProperty("dateformat", conf.dateformat );
-	    	conf.defaultsignmessage=new String( props.getProperty("defaultsignmessage", conf.defaultsignmessage ).getBytes(StandardCharsets.UTF_8));
-	    	conf.pagenumber=Integer.parseInt(props.getProperty("pagenumber", conf.pagenumber.toString() ));
-	    	conf.signwith=Integer.parseInt(props.getProperty("signwith", conf.signwith.toString() ));
-	    	conf.signheight=Integer.parseInt(props.getProperty("signheight", conf.signheight.toString() ));
-	    	conf.fontsize=Integer.parseInt(props.getProperty("fontsize", conf.fontsize.toString() ));
-	    	conf.font = props.getProperty("font", conf.font);
-	    	conf.fontcolor = props.getProperty("fontcolor", conf.fontcolor);
-	    	conf.backgroundcolor = props.getProperty("backgroundcolor", conf.backgroundcolor);
-	    	conf.signx=Integer.parseInt(props.getProperty("singy", conf.signx.toString() ));
-	    	conf.signy=Integer.parseInt(props.getProperty("singy", conf.signy.toString() ));
-	    	conf.extrapkcs11Lib=props.getProperty("extrapkcs11Lib");
-	    	conf.image = props.getProperty("image");
-	    	conf.startserver = Boolean.parseBoolean(props.getProperty("startserver", String.valueOf(conf.startserver) ));
-	    	conf.fontalignment =  props.getProperty("fontalignment", conf.fontalignment);
-	    	conf.portnumber=Integer.parseInt(props.getProperty("portnumber", conf.portnumber.toString() ));
-	    	
-    	}
-    	
-    	return conf;
+
+    public Settings getSettings() {
+        Settings conf = new Settings();
+        boolean loaded =this.load_config();
+
+        if (loaded) {
+            conf.withoutvisiblesign=Boolean.parseBoolean(props.getProperty("withoutvisiblesign", String.valueOf(conf.withoutvisiblesign)));
+            conf.uselta=Boolean.parseBoolean(props.getProperty("uselta", String.valueOf(conf.uselta)));
+            conf.overwritesourcefile=Boolean.parseBoolean(props.getProperty("overwritesourcefile", String.valueOf(conf.overwritesourcefile)));
+            conf.reason=props.getProperty("reason", conf.reason);
+            conf.place=props.getProperty("place", conf.place);
+            conf.contact=props.getProperty("contact", conf.contact);
+            conf.dateformat=props.getProperty("dateformat", conf.dateformat);
+            conf.defaultsignmessage=new String(props.getProperty("defaultsignmessage", conf.defaultsignmessage).getBytes(StandardCharsets.UTF_8));
+            conf.pagenumber=Integer.parseInt(props.getProperty("pagenumber", conf.pagenumber.toString()));
+            conf.signwith=Integer.parseInt(props.getProperty("signwith", conf.signwith.toString()));
+            conf.signheight=Integer.parseInt(props.getProperty("signheight", conf.signheight.toString()));
+            conf.fontsize=Integer.parseInt(props.getProperty("fontsize", conf.fontsize.toString()));
+            conf.font = props.getProperty("font", conf.font);
+            conf.fontcolor = props.getProperty("fontcolor", conf.fontcolor);
+            conf.backgroundcolor = props.getProperty("backgroundcolor", conf.backgroundcolor);
+            conf.signx=Integer.parseInt(props.getProperty("singy", conf.signx.toString()));
+            conf.signy=Integer.parseInt(props.getProperty("singy", conf.signy.toString()));
+            conf.extrapkcs11Lib=props.getProperty("extrapkcs11Lib");
+            conf.image = props.getProperty("image");
+            conf.startserver = Boolean.parseBoolean(props.getProperty("startserver", String.valueOf(conf.startserver)));
+            conf.fontalignment =  props.getProperty("fontalignment", conf.fontalignment);
+            conf.portnumber=Integer.parseInt(props.getProperty("portnumber", conf.portnumber.toString()));
+        }
+
+        return conf;
     }
-    
-    
-    public void setSettings(Settings conf, boolean save){
-  	    	
-    	setProperty("withoutvisiblesign", String.valueOf(conf.withoutvisiblesign));
-    	setProperty("uselta", String.valueOf(conf.uselta));
-    	setProperty("overwritesourcefile", String.valueOf(conf.overwritesourcefile));
-    	setProperty("reason", conf.reason);
-    	setProperty("place", conf.place);
-    	setProperty("contact", conf.contact);
-    	setProperty("dateformat", conf.dateformat);
-    	setProperty("defaultsignmessage", conf.defaultsignmessage);
-    	setProperty("pagenumber", conf.pagenumber.toString());
-    	setProperty("signwith", conf.signwith.toString());
-    	setProperty("signheight", conf.signheight.toString());
-    	setProperty("fontsize", conf.fontsize.toString());
-    	setProperty("font", conf.font);
-    	setProperty("fontcolor", conf.fontcolor);
-    	setProperty("backgroundcolor", conf.backgroundcolor);
-    	setProperty("singx", conf.signx.toString());
-    	setProperty("singy", conf.signy.toString());
-    	setProperty("startserver", String.valueOf(conf.startserver));
-    	setProperty("fontalignment", conf.fontalignment.toString());
-    	setProperty("portnumber", conf.portnumber.toString());
-    	
-    	if(conf.extrapkcs11Lib!=null) {
-    		setProperty("extrapkcs11Lib", conf.extrapkcs11Lib);
-    	}    	
-    	if(conf.image != null) {
-    		setProperty("image", conf.image);
-    	}
-    	if(save)save_config();
-  
+
+    public void setSettings(Settings conf, boolean save) {
+        setProperty("withoutvisiblesign", String.valueOf(conf.withoutvisiblesign));
+        setProperty("uselta", String.valueOf(conf.uselta));
+        setProperty("overwritesourcefile", String.valueOf(conf.overwritesourcefile));
+        setProperty("reason", conf.reason);
+        setProperty("place", conf.place);
+        setProperty("contact", conf.contact);
+        setProperty("dateformat", conf.dateformat);
+        setProperty("defaultsignmessage", conf.defaultsignmessage);
+        setProperty("pagenumber", conf.pagenumber.toString());
+        setProperty("signwith", conf.signwith.toString());
+        setProperty("signheight", conf.signheight.toString());
+        setProperty("fontsize", conf.fontsize.toString());
+        setProperty("font", conf.font);
+        setProperty("fontcolor", conf.fontcolor);
+        setProperty("backgroundcolor", conf.backgroundcolor);
+        setProperty("singx", conf.signx.toString());
+        setProperty("singy", conf.signy.toString());
+        setProperty("startserver", String.valueOf(conf.startserver));
+        setProperty("fontalignment", conf.fontalignment.toString());
+        setProperty("portnumber", conf.portnumber.toString());
+
+        if (conf.extrapkcs11Lib != null) {
+            setProperty("extrapkcs11Lib", conf.extrapkcs11Lib);
+        }
+        if (conf.image != null) {
+            setProperty("image", conf.image);
+        }
+        if (save) save_config();
     }
-    
-    public Settings get_and_create_settings(){
-    	if(this.settings != null) {
-    		return this.settings;
-    	}
-    	
-    	Settings dev = new Settings();
-		try {
-			// Check if file exists
-			if(this.path == null){
-				//String cpath = get_config_file("config.properties");
-			}else{
-				if(!Files.exists(this.path)){
-					 Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, "Config File does not exists");
-					return dev;
-				}
-			}
-			dev = getSettings();
-		} catch (Exception e) {
-			e.printStackTrace();
-			setSettings(dev, true);
-		}
-		this.settings = dev;
-    	return dev;
+
+    public Settings get_and_create_settings() {
+        if (this.settings != null) {
+            return this.settings;
+        }
+
+        Settings dev = new Settings();
+        try {
+            // Check if file exists
+            if (this.path == null) {
+                //String cpath = get_config_file("config.properties");
+            } else {
+                if (!Files.exists(this.path)) {
+                     Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, "Config File does not exists");
+                    return dev;
+                }
+            }
+            dev = getSettings();
+        } catch (Exception e) {
+            e.printStackTrace();
+            setSettings(dev, true);
+        }
+        this.settings = dev;
+        return dev;
     }
-   
 
 }

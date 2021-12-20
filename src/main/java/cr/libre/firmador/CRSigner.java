@@ -78,7 +78,7 @@ public class CRSigner {
         String osName = System.getProperty("os.name").toLowerCase();
         Settings settings = SettingsManager.getInstance().get_and_create_settings();
         if(settings.extrapkcs11Lib != null) {
-        	return settings.extrapkcs11Lib;
+            return settings.extrapkcs11Lib;
         }
         if (osName.contains("mac")) return "/Library/Application Support/Athena/libASEP11.dylib";
         else if (osName.contains("linux")) return "/usr/lib/x64-athena/libASEP11.so";
