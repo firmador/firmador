@@ -27,7 +27,6 @@ import java.util.Properties;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -132,7 +131,7 @@ public class SettingsManager {
 
     public void save_config() {
         // Guarda las configuraciones en un archivo de texto
-        File configFile = null;
+        //File configFile = null;
         OutputStreamWriter writer = null;
         //props.setProperty("formato", "json");
         try {
@@ -229,7 +228,7 @@ public class SettingsManager {
 		try {
 			// Check if file exists
 			if(this.path == null){
-				String cpath = get_config_file("config.properties");
+				//String cpath = get_config_file("config.properties");
 			}else{
 				if(!Files.exists(this.path)){
 					 Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, "Config File does not exists");
