@@ -22,7 +22,6 @@ package cr.libre.firmador.gui;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Component;
-import java.awt.Desktop;
 import java.awt.FileDialog;
 import java.awt.Image;
 import java.awt.Window;
@@ -43,7 +42,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
@@ -112,11 +110,7 @@ import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.util.TimeValue;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class GUISwing implements GUIInterface, ConfigListener {
 
@@ -405,19 +399,6 @@ public class GUISwing implements GUIInterface, ConfigListener {
             }
         });
         imageLabel.add(signatureLabel);
-        JLabel iconLabel = new JLabel(new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
-        JLabel descriptionLabel = new JLabel("<html><p align='center'><b>Firmador</b><br><br>" +
-            "Versión " + getClass().getPackage().getSpecificationVersion() + "<br><br>" +
-            "Herramienta para firmar documentos digitalmente.<br><br>" +
-            "Los documentos firmados con esta herramienta cumplen con la<br>" +
-            "Política de Formatos Oficiales de los Documentos Electrónicos<br>" +
-            "Firmados Digitalmente de Costa Rica.<br><br></p></html>", JLabel.CENTER);
-        JButton websiteButton = new JButton("Visitar sitio web del proyecto");
-        websiteButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                openProjectWebsite();
-            }
-        });
 
         JPanel pdfOptionsPanel = new JPanel();
         JPanel advancedOptionsPanel = new JPanel();
@@ -829,18 +810,6 @@ public class GUISwing implements GUIInterface, ConfigListener {
         if (action == 0) return new PasswordProtection(pinField.getPassword());
         else return new PasswordProtection(null);
     }
-
-    private void openProjectWebsite() {
-        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-            try {
-                Desktop.getDesktop().browse(new URI("https://firmador.libre.cr"));
-            } catch (Exception e) {
-                e.printStackTrace();
-                showError(Throwables.getRootCause(e));
-            }
-        }
-    }
-
 
     public void setArgs(String[] args) {
         List<String> arguments = new ArrayList<String>();

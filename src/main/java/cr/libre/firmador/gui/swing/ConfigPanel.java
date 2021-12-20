@@ -79,7 +79,7 @@ public class ConfigPanel extends JPanel {
 	private JSpinner fontsize;
 	private JSpinner signx;
 	private JSpinner signy;
-	private JComboBox font;
+	private JComboBox<String> font;
 	
 	private JButton btfontcolor;
 	private JButton btbackgroundcolor;
@@ -91,7 +91,7 @@ public class ConfigPanel extends JPanel {
 	private Integer iconsize=32;
 	private JCheckBox startserver;
 	private JSpinner portnumber;
-	private JComboBox fontposition;
+	private JComboBox<String> fontposition;
 
 	public ConfigPanel() {
 		manager = SettingsManager.getInstance();
@@ -165,10 +165,10 @@ public class ConfigPanel extends JPanel {
 		fontsize.setModel(new SpinnerNumberModel(this.settings.fontsize, null, null, 1));
 		String fonts[] = { Font.SANS_SERIF, Font.DIALOG, Font.DIALOG_INPUT, Font.MONOSPACED, Font.SANS_SERIF,
 				Font.SERIF };
-		font = new JComboBox(fonts);
+		font = new JComboBox<String>(fonts);
 		
 		String fontpositions[] = { "RIGHT", "LEFT", "BOTTOM", "TOP" };
-		fontposition = new JComboBox(fontpositions);
+		fontposition = new JComboBox<String>(fontpositions);
 		fontposition.setSelectedItem(settings.fontalignment);
 		
 		JPanel fontcolorpanel = new JPanel();
