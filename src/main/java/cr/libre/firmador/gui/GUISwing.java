@@ -181,7 +181,7 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 		fileName = getDocumentToSign();
 		toSignDocument = new FileDocument(fileName);
 		PasswordProtection pin = getPin();
-		this.signDocument(pin, !signPanel.signatureVisibleCheckBox.isSelected());
+		this.signDocument(pin, !signPanel.signatureVisibleCheckBox.isSelected(), true);
 
 		if (signedDocument != null) {
 			fileName = getPathToSave(getExtension());
@@ -207,7 +207,7 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 		fileName = getDocumentToSign();
 		if (fileName != null) {
 			DSSDocument toExtendDocument = new FileDocument(fileName);
-			extendDocument(toExtendDocument, false);
+			extendDocument(toExtendDocument, false, null);
 		}
 	}
 
@@ -270,6 +270,47 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 			documenttosave = Paths.get(arguments.get(1)).toAbsolutePath().toString();
 	}
 
+	
+	private String addSuffixToFilePath(String name, String suffix) {
+		String dotExtension = "";
+		String newname=name+suffix;
+		int lastDot = name.lastIndexOf(".");
+		if(lastDot >= 0) {
+			dotExtension = name.substring(lastDot);
+			newname=name.substring(0, name.lastIndexOf(".")) + suffix + dotExtension;
+		}
+		return newname;
+	}
+	
+	public void signMultipleDocuments(File[] files, String lastDirectory) {
+		PasswordProtection pin = getPin();
+		//signPanel.showSignButtons();
+		for (File file : files) {
+			
+			documenttosign = file.toString();
+			loadDocument(documenttosign);
+			toSignDocument = new FileDocument(documenttosign);
+
+			this.signDocument(pin, !signPanel.signatureVisibleCheckBox.isSelected(), false);
+			
+			fileName = addSuffixToFilePath(documenttosign, "-firmado");
+			try {
+				if (settings.uselta) {
+					extendDocument(signedDocument, false, fileName);
+				} else {
+					signedDocument.save(fileName);
+				}
+				
+			} catch (IOException e) {
+				gui.showError(Throwables.getRootCause(e));
+				e.printStackTrace();
+			}
+
+			
+			 
+		}
+	}
+	
 	@Override
 	public int getSlot() {
 		return -1;

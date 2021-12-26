@@ -57,7 +57,7 @@ public class BaseSwing {
     
     
     
-    public ByteArrayOutputStream extendDocument(DSSDocument toExtendDocument, boolean asbytes ) {
+    public ByteArrayOutputStream extendDocument(DSSDocument toExtendDocument, boolean asbytes, String fileName ) {
             DSSDocument extendedDocument = null;
             ByteArrayOutputStream outdoc = null;
             MimeType mimeType = toExtendDocument.getMimeType();
@@ -81,8 +81,9 @@ public class BaseSwing {
 						showError(Throwables.getRootCause(e));
 					}
             	}else {
-            		           	
-	                String fileName = gui.getPathToSaveExtended("");
+            		if(fileName==null) {        	
+            			fileName = gui.getPathToSaveExtended("");
+            		}
 	                if (fileName != null) {
 	                    try {
 	                        extendedDocument.save(fileName);
@@ -227,7 +228,6 @@ public class BaseSwing {
         	signDocument(pin,  visibleSignature);
             if(destroyPin) {
 	            try {
-	            	
 	                pin.destroy();
 	            } catch (Exception e) {}
             }

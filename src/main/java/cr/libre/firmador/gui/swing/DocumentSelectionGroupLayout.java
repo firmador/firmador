@@ -13,6 +13,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
 import cr.libre.firmador.gui.GUIInterface;
+import cr.libre.firmador.gui.GUISwing;
 
 public class DocumentSelectionGroupLayout extends GroupLayout {
 	private JLabel fileLabel;
@@ -69,11 +70,15 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
 		loadDialog.setLocationRelativeTo(null);
 		loadDialog.setVisible(true);
 		loadDialog.dispose();
-		for (File file : loadDialog.getFiles()) {
-			// FIXME handle multiple files on array
-			gui.loadDocument(file.toString());
-			lastDirectory = loadDialog.getDirectory();
-			lastFile = file.toString();
+
+		File[] files = loadDialog.getFiles();
+		if(files.length>1) {
+			GUISwing ggui = (GUISwing) gui;
+			ggui.signMultipleDocuments(files, loadDialog.getDirectory());
+		}else if( files.length==1) {
+			gui.loadDocument(files[0].toString());
+            lastDirectory = loadDialog.getDirectory();
+            lastFile = files[0].toString();
 		}
 	}
 
