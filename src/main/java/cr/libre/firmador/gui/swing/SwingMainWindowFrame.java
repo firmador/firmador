@@ -129,5 +129,6 @@ public class SwingMainWindowFrame extends JFrame {
 	public SwingMainWindowFrame(String name) throws HeadlessException {
 		super(name);
 	}
+	
 
 }

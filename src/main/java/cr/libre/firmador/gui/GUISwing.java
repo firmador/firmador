@@ -20,6 +20,9 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador.gui;
 
 import java.awt.FileDialog;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -33,6 +36,9 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
@@ -334,7 +340,13 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 
 	@Override
 	public void setPluginManager(PluginManager pluginManager) {
-		// TODO Auto-generated method stub
+		mainFrame.addWindowListener(new WindowAdapter() {				
+				@Override
+				public void windowClosing(WindowEvent arg0) {
+					pluginManager.stop();
+					
+				}			 
+	        });
 
 	}
 

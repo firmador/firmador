@@ -36,10 +36,12 @@ public class Firmador {
         GUIInterface gui = guiselector.getInterface(args);
         gui.setArgs(args);
         PluginManager pluginManager = new PluginManager(gui);
+       
         SwingUtilities.invokeLater(pluginManager);
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 gui.loadGUI();
+                gui.setPluginManager(pluginManager);
                 
             }
         });
