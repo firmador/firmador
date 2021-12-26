@@ -131,6 +131,11 @@ public class FirmadorPAdES extends CRSigner {
                     "Debe mover la firma para ubicarla en otra posición que no tape las existentes.");
                 return null;
             } else gui.showError(Throwables.getRootCause(e));
+        } catch (IllegalArgumentException e) {
+        	 if(Throwables.getRootCause(e).getMessage().contains("is expired")) {
+        		 gui.showMessage("Certificado vencido, no se puede realizar la firma");
+        		 return null;
+        	 }
         }
 
         try {

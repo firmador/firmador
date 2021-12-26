@@ -21,6 +21,11 @@ package cr.libre.firmador.gui;
 
 import java.security.KeyStore.PasswordProtection;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+
+import cr.libre.firmador.plugins.PluginManager;
+import eu.europa.esig.dss.model.DSSDocument;
+
 public interface GUIInterface {
 
     void loadGUI();
@@ -32,5 +37,11 @@ public interface GUIInterface {
     String getDocumentToSign();
     String getPathToSave(String extension);
     PasswordProtection getPin();
-
+    void setPluginManager(PluginManager pluginManager);
+    public void loadDocument(String fileName);
+    public void loadDocument(DSSDocument mimeDocument, PDDocument doc);
+    public void extendDocument();
+    String getPathToSaveExtended(String extension);
+    public boolean signDocuments();
+    public void displayFunctionality(String functionality);
 }
