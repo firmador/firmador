@@ -80,6 +80,7 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 		}
 
 		mainFrame = new SwingMainWindowFrame("Firmador");
+		mainFrame.setGUIInterface(this);
 		mainFrame.loadGUI();
 
 		signPanel = new SignPanel();
@@ -184,27 +185,29 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 		this.signDocument(pin, !signPanel.signatureVisibleCheckBox.isSelected(), true);
 
 		if (signedDocument != null) {
-			fileName = getPathToSave(getExtension());
-			if (fileName != null) {
-				try {
-					signedDocument.save(fileName);
-
-					if (!settings.uselta) {
+			try {
+				if (settings.uselta) {
+					extendDocument(signedDocument, false, null);
+				}else{
+					fileName = getPathToSave(getExtension());
+					if (fileName != null) {
+						signedDocument.save(fileName);
 						showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
+						loadDocument(fileName);
 					}
-					loadDocument(fileName);
-					ok = true;
-				} catch (IOException e) {
-					e.printStackTrace();
-					showError(Throwables.getRootCause(e));
 				}
+				ok = true;
+			} catch (IOException e) {
+				e.printStackTrace();
+				showError(Throwables.getRootCause(e));
 			}
+			
 		}
 		return ok;
 	}
 
 	public void extendDocument() {
-		fileName = getDocumentToSign();
+		if(fileName == null)fileName = getDocumentToSign();
 		if (fileName != null) {
 			DSSDocument toExtendDocument = new FileDocument(fileName);
 			extendDocument(toExtendDocument, false, null);
@@ -282,7 +285,7 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 		return newname;
 	}
 	
-	public void signMultipleDocuments(File[] files, String lastDirectory) {
+	public void signMultipleDocuments(File[] files) {
 		PasswordProtection pin = getPin();
 		//signPanel.showSignButtons();
 		for (File file : files) {

@@ -42,6 +42,7 @@ import javax.swing.JTabbedPane;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
+import cr.libre.firmador.gui.GUISwing;
 
 public class SwingMainWindowFrame extends JFrame {
 
@@ -102,10 +103,19 @@ public class SwingMainWindowFrame extends JFrame {
 					@SuppressWarnings("unchecked")
 					List<File> droppedFiles = (List<File>) e.getTransferable()
 							.getTransferData(DataFlavor.javaFileListFlavor);
-					for (File file : droppedFiles) {
-						// FIXME: handle multiple files on array
-						gui.loadDocument(file.toString());
+				 				
+					File[] files = new File[droppedFiles.size()];
+					droppedFiles.toArray(files);
+					if(files.length>1) {
+						GUISwing ggui = (GUISwing) gui;
+						ggui.signMultipleDocuments(files);
+					}else if( files.length==1) {
+						
+						gui.loadDocument(files[0].toString());
+			            
 					}
+					
+					
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}

@@ -92,11 +92,12 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
 		File[] files = loadDialog.getFiles();
 		if(files.length>1) {
 			GUISwing ggui = (GUISwing) gui;
-			ggui.signMultipleDocuments(files, loadDialog.getDirectory());
+			ggui.signMultipleDocuments(files);
 		}else if( files.length==1) {
-			gui.loadDocument(files[0].toString());
-            lastDirectory = loadDialog.getDirectory();
+			lastDirectory = loadDialog.getDirectory();
             lastFile = files[0].toString();
+			gui.loadDocument(files[0].toString());
+            
 		}
 	}
 

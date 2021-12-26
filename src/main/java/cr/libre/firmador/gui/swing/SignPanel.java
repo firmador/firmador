@@ -197,10 +197,6 @@ public class SignPanel extends JPanel implements ConfigListener{
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
 				boolean ok = gui.signDocuments();
-                if (settings.uselta && ok) {
-                    gui.extendDocument();
-                }
-
             }
         });
         
