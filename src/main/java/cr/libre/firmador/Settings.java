@@ -55,7 +55,11 @@ public class Settings {
     public Integer pagenumber = 1;
     public Integer portnumber = 3516;
 
-    public Settings() {}
+    public List<String> active_plugins = new ArrayList<String>();
+    
+    public Settings() {
+    	active_plugins.add("cr.libre.firmador.plugins.DummyPlugin");
+    }
 
     public String getDefaultSignMessage() {
         return this.defaultsignmessage;

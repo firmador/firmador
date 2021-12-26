@@ -23,6 +23,7 @@ import org.apache.pdfbox.pdmodel.font.FontMappers;
 
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISelector;
+import cr.libre.firmador.plugins.PluginManager;
 
 public class Firmador {
 
@@ -34,9 +35,12 @@ public class Firmador {
         GUISelector guiselector = new GUISelector();
         GUIInterface gui = guiselector.getInterface(args);
         gui.setArgs(args);
+        PluginManager pluginManager = new PluginManager(gui);
+        SwingUtilities.invokeLater(pluginManager);
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 gui.loadGUI();
+                
             }
         });
     }

@@ -27,9 +27,13 @@ import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+
 //import cr.libre.firmador.FirmadorCAdES;
 //import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
+import cr.libre.firmador.plugins.PluginManager;
+
 //import cr.libre.firmador.FirmadorXAdES;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -125,4 +129,46 @@ public class GUIArgs implements GUIInterface {
     public String getPkcs12file() {
         return pkcs12file;
     }
+
+	@Override
+	public void setPluginManager(PluginManager pluginManager) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void loadDocument(String fileName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void loadDocument(DSSDocument mimeDocument, PDDocument doc) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void extendDocument() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getPathToSaveExtended(String extension) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean signDocuments() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public void displayFunctionality(String functionality) {
+		// TODO Auto-generated method stub
+		
+	}
 }
