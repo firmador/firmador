@@ -25,6 +25,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 
 import cr.libre.firmador.plugins.PluginManager;
 import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.MimeType;
 
 public interface GUIInterface {
 
@@ -39,7 +40,7 @@ public interface GUIInterface {
     PasswordProtection getPin();
     void setPluginManager(PluginManager pluginManager);
     public void loadDocument(String fileName);
-    public void loadDocument(DSSDocument mimeDocument, PDDocument doc);
+    public void loadDocument(MimeType mimeType, PDDocument doc);
     public void extendDocument();
     String getPathToSaveExtended(String extension);
     public boolean signDocuments();

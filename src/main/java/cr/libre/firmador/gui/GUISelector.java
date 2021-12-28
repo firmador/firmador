@@ -36,8 +36,11 @@ public class GUISelector {
 
     public GUIInterface getInterface(String name) {
         GUIInterface gui = null;
-        if (name.equals("args")) gui = new GUIArgs();
+        String origin = System.getProperty("jnlp.remoteOrigin");
+        if(origin != null) gui = new GUIRemote();
+        else if (name.equals("args")) gui = new GUIArgs();
         else if (name.equals("shell")) gui = new GUIShell();
+        else if (name.equals("remote")) gui = new GUIRemote();
         else gui = new GUISwing();
         return gui;
     }

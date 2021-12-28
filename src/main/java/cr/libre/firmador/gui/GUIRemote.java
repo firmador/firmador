@@ -1,137 +1,117 @@
 package cr.libre.firmador.gui;
 
-import java.io.ByteArrayOutputStream;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.URISyntaxException;
 import java.security.KeyStore.PasswordProtection;
-import java.util.List;
+import java.util.HashMap;
 
 import javax.swing.GroupLayout;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingWorker;
+import javax.swing.JTabbedPane;
 
-import org.apache.hc.core5.http.ClassicHttpRequest;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.HttpException;
 import org.apache.hc.core5.http.HttpStatus;
-import org.apache.hc.core5.http.impl.bootstrap.HttpServer;
-import org.apache.hc.core5.http.impl.bootstrap.ServerBootstrap;
-import org.apache.hc.core5.http.io.HttpRequestHandler;
-import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
-import org.apache.hc.core5.http.protocol.HttpContext;
-import org.apache.hc.core5.util.TimeValue;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
-import com.google.common.base.Throwables;
-
-import cr.libre.firmador.Settings;
-import cr.libre.firmador.SettingsManager;
-import cr.libre.firmador.plugins.PluginManager;
+import cr.libre.firmador.gui.swing.AboutLayout;
+import cr.libre.firmador.gui.swing.ConfigPanel;
+import cr.libre.firmador.gui.swing.RemoteDocInformation;
+import cr.libre.firmador.gui.swing.RemoteHttpWorker;
+import cr.libre.firmador.gui.swing.SignPanel;
+import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import eu.europa.esig.dss.model.InMemoryDocument;
+import eu.europa.esig.dss.model.MimeType;
 
-public class GUIRemote extends BaseSwing  implements GUIInterface  {
+public class GUIRemote extends BaseSwing implements GUIInterface {
+	public JTabbedPane frameTabbedPane;
+	private byte[] toSignByteArray;
+	private RemoteHttpWorker<Void, byte[]> remote;
+	private RemoteDocInformation docinfo;
 
-    private Boolean alreadySignedDocument = false;
-    private byte[] toSignByteArray;
-    
- 
-    private void createInterface() {
-    	JPanel signPanel = new JPanel();
-        GroupLayout signLayout = new GroupLayout(mainFrame.getContentPane());;
-    	
-    }
-    
-    @SuppressWarnings("serial")
+	@SuppressWarnings("serial")
 	public void loadGUI() {
-    	super.loadGUI();
-            SwingWorker<Void, byte[]> remote = new SwingWorker<Void, byte[]>() {
-                private HttpServer server;
-                private String requestFileName;
-                protected Void doInBackground() throws IOException, InterruptedException {
-                    class RequestHandler implements HttpRequestHandler {
-                        public RequestHandler() {
-                            super();
-                        }
-                        public void handle(final ClassicHttpRequest request, final ClassicHttpResponse response, final HttpContext context) throws HttpException, IOException {
-                            response.setHeader("Access-Control-Allow-Origin", settings.getOrigin());
-                            response.setHeader("Vary", "Origin");
-                            try {
-                                if (request.getUri().getPath().equals("/close")) System.exit(0);
-                                requestFileName = request.getUri().getPath().substring(1);
-                            } catch (URISyntaxException e) {
-                                e.printStackTrace();
-                                showError(Throwables.getRootCause(e));
-                            }
-                            response.setCode(HttpStatus.SC_ACCEPTED);
-                            HttpEntity entity = request.getEntity();
-                            if (entity != null) {
-                                if (alreadySignedDocument) {
-                                    response.setCode(HttpStatus.SC_OK);
-                                    ByteArrayOutputStream os = new ByteArrayOutputStream();
-                                    signedDocument.writeTo(os);
-                                    response.setEntity(new ByteArrayEntity(os.toByteArray(), ContentType.DEFAULT_TEXT));
-                                }
-                                if (entity.getContentLength() > 0) {
-                                    ByteArrayOutputStream os = new ByteArrayOutputStream();
-                                    entity.writeTo(os);
-                                    publish(os.toByteArray());
-                                }
-                            }
-                        }
-                    };
-                    Settings settings = SettingsManager.getInstance().get_and_create_settings();
-                    server = ServerBootstrap.bootstrap().setListenerPort(settings.portnumber).setLocalAddress(InetAddress.getLoopbackAddress()).register("*", new RequestHandler()).create();
-                    server.start();
-                    server.awaitTermination(TimeValue.MAX_VALUE);
-                    return null;
-                }
-                protected void process(List<byte[]> chunks) {
-                    toSignByteArray = chunks.get(chunks.size() - 1);
-                    toSignDocument = new InMemoryDocument(toSignByteArray, requestFileName);
-                    loadDocument(null);
-                }
-            };
-            remote.execute();
-        
-		
+		super.loadGUI();
+
+		gui = this;
+
+		mainFrame = new SwingMainWindowFrame("Firmador Remoto");
+		mainFrame.setGUIInterface(this);
+		mainFrame.loadGUI();
+
+		remote = new RemoteHttpWorker<Void, byte[]>(gui);
+		remote.execute();
+
+		signPanel = new SignPanel();
+		signPanel.setGUI(this);
+		signPanel.initializeActions();
+		signPanel.hideButtons();
+
+		GroupLayout signLayout = new GroupLayout(signPanel);
+		signPanel.signLayout(signLayout, signPanel);
+		settings.addListener(signPanel);
+
+		JPanel aboutPanel = new JPanel();
+		GroupLayout aboutLayout = new AboutLayout(aboutPanel);
+		((AboutLayout) aboutLayout).setInterface(this);
+
+		aboutPanel.setLayout(aboutLayout);
+		aboutPanel.setOpaque(false);
+
+		JPanel configPanel = new ConfigPanel();
+		configPanel.setOpaque(false);
+		frameTabbedPane = new JTabbedPane();
+		frameTabbedPane.addTab("Firmar", signPanel);
+		frameTabbedPane.setToolTipTextAt(0,
+				"<html>En esta pestaña se muestran las opciones<br>para firmar el documento seleccionado.</html>");
+		frameTabbedPane.addTab("Configuración", configPanel);
+		frameTabbedPane.setToolTipTextAt(1, "<html>En esta estaña se configura<br>aspectos de este programa.</html>");
+		frameTabbedPane.addTab("Acerca de", aboutPanel);
+		frameTabbedPane.setToolTipTextAt(2,
+				"<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
+
+		mainFrame.add(frameTabbedPane);
+		// mainFrame.getContentPane().getLayout().addComponent(frameTabbedPane);
+		// mainFrame.getContentPane().setLayout(signLayout);
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.pack();
+		mainFrame.setMinimumSize(mainFrame.getSize());
+		mainFrame.setLocationByPlatform(true);
+		mainFrame.setVisible(true);
 	}
 
-    public boolean signDocuments() {
-    	PasswordProtection pin = getPin();
-    	super.signDocument(pin, true);
-    	alreadySignedDocument = true;
-    	return signedDocument != null;
-    }
+	public boolean signDocuments() {
+		PasswordProtection pin = getPin();
+		super.signDocument(pin, true);
+
+		if (settings.uselta) {
+			docinfo.setData(extendDocument(signedDocument, true, null));
+			docinfo.setStatus(HttpStatus.SC_SUCCESS);
+		} else {
+			try {
+				signedDocument.writeTo(docinfo.getData());
+				docinfo.setStatus(HttpStatus.SC_SUCCESS);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return signedDocument != null;
+	}
+
 	@Override
 	public void setArgs(String[] args) {
 		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public void showError(Throwable error) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void showMessage(String message) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public int getSlot() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public String getPkcs12file() {
-		// TODO Auto-generated method stub
-		return null;
+		return "";
 	}
 
 	@Override
@@ -147,27 +127,26 @@ public class GUIRemote extends BaseSwing  implements GUIInterface  {
 	}
 
 	@Override
-	public PasswordProtection getPin() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setPluginManager(PluginManager pluginManager) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void loadDocument(String fileName) {
-		// TODO Auto-generated method stub
-		
+		HashMap<String, RemoteDocInformation> docmap = remote.getDocInformation();
+		docinfo = docmap.get(fileName);
+		PDDocument doc;
+		try {
+			byte[] data = docinfo.getInputdata().readAllBytes();
+			toSignDocument = new InMemoryDocument(data, fileName);
+			doc = PDDocument.load(data);
+
+			loadDocument(MimeType.PDF, doc);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
 	public void extendDocument() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -179,7 +158,15 @@ public class GUIRemote extends BaseSwing  implements GUIInterface  {
 	@Override
 	public void displayFunctionality(String functionality) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	public void close() {
+
+		// if(!remote.isCancelled())remote.cancel(true);
+		mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
+		// mainFrame.dispose();
+
 	}
 
 }
