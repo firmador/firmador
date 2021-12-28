@@ -36,11 +36,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.LineBorder;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
+import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 
 import cr.libre.firmador.FirmadorCAdES;
@@ -55,6 +58,7 @@ import cr.libre.firmador.gui.swing.CopyableJLabel;
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import cr.libre.firmador.gui.swing.ValidatePanel;
+import cr.libre.firmador.plugins.PluginManager;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.MimeType;
 
@@ -70,13 +74,41 @@ public class BaseSwing {
     protected ValidatePanel validatePanel;
     protected GUIInterface gui;
     
-    public void loadGUI() {
+    
+    
+    public SwingMainWindowFrame getMainFrame() {
+		return mainFrame;
+	}
+
+
+
+	public void setMainFrame(SwingMainWindowFrame mainFrame) {
+		this.mainFrame = mainFrame;
+	}
+
+
+
+	public void loadGUI() {
+		try {
+			Application.getApplication().setDockIconImage(image);
+		} catch (RuntimeException | IllegalAccessError e) {
+			/* macOS dock icon support specific code. */ }
+		try {
+			try {
+				UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+			} catch (UnsupportedLookAndFeelException | ClassNotFoundException e) {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.showError(Throwables.getRootCause(e));
+		}
     	settings = SettingsManager.getInstance().get_and_create_settings();
     }
     
     
     
-    public ByteArrayOutputStream extendDocument(DSSDocument toExtendDocument, boolean asbytes, String fileName ) {
+	public ByteArrayOutputStream extendDocument(DSSDocument toExtendDocument, boolean asbytes, String fileName ) {
             DSSDocument extendedDocument = null;
             ByteArrayOutputStream outdoc = null;
             MimeType mimeType = toExtendDocument.getMimeType();
@@ -191,10 +223,10 @@ public class BaseSwing {
     	
     }
     
-    public void loadDocument(DSSDocument mimeDocument, PDDocument doc) {
+    public void loadDocument(MimeType mimeType, PDDocument doc) {
     	signPanel.setDoc(doc);
     	signPanel.signButton.setEnabled(true);
-        MimeType mimeType = mimeDocument.getMimeType();
+       
         try {
             
             signPanel.docHideButtons();
@@ -343,5 +375,14 @@ public class BaseSwing {
         else return new PasswordProtection(null);
     }
     
+	public void setPluginManager(PluginManager pluginManager) {
+		mainFrame.addWindowListener(new WindowAdapter() {				
+				@Override
+				public void windowClosing(WindowEvent arg0) {
+					pluginManager.stop();
+					
+				}			 
+	        });
 
+	}
 }

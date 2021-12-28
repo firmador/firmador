@@ -38,6 +38,7 @@ import cr.libre.firmador.plugins.PluginManager;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
+import eu.europa.esig.dss.model.MimeType;
 
 public class GUIArgs implements GUIInterface {
 
@@ -143,7 +144,7 @@ public class GUIArgs implements GUIInterface {
 	}
 
 	@Override
-	public void loadDocument(DSSDocument mimeDocument, PDDocument doc) {
+	public void loadDocument(MimeType mimeType, PDDocument doc) {
 		// TODO Auto-generated method stub
 		
 	}

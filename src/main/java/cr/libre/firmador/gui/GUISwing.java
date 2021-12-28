@@ -70,22 +70,7 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 	public void loadGUI() {
 		super.loadGUI();
 		gui = this;
-		try {
-			Application.getApplication().setDockIconImage(image);
-		} catch (RuntimeException | IllegalAccessError e) {
-			/* macOS dock icon support specific code. */ }
-		try {
-			try {
-				UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-			} catch (UnsupportedLookAndFeelException | ClassNotFoundException e) {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.showError(Throwables.getRootCause(e));
-		}
-
-		mainFrame = new SwingMainWindowFrame("Firmador");
+ 		mainFrame = new SwingMainWindowFrame("Firmador");
 		mainFrame.setGUIInterface(this);
 		mainFrame.loadGUI();
 
@@ -159,7 +144,7 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 			if (mimeDocument.getMimeType() == MimeType.PDF) {
 				doc = PDDocument.load(new File(fileName));
 			}
-			loadDocument(mimeDocument, doc);
+			loadDocument(mimeDocument.getMimeType(), doc);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -336,18 +321,6 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 		} else if (functionality.equalsIgnoreCase("validator")) {
 			frameTabbedPane.setSelectedIndex(1);
 		}
-	}
-
-	@Override
-	public void setPluginManager(PluginManager pluginManager) {
-		mainFrame.addWindowListener(new WindowAdapter() {				
-				@Override
-				public void windowClosing(WindowEvent arg0) {
-					pluginManager.stop();
-					
-				}			 
-	        });
-
 	}
 
 }
