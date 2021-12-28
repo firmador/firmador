@@ -309,6 +309,7 @@ public class SignPanel extends JPanel implements ConfigListener{
          levelTButton.setVisible(false);
          levelLTButton.setVisible(false);
          levelLTAButton.setVisible(false);
+         signButton.setEnabled(true);
 	}
 	
 	public void docHideButtons() {
