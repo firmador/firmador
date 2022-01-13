@@ -25,6 +25,7 @@ import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.io.CloseMode;
 import org.apache.hc.core5.util.TimeValue;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 
@@ -32,8 +33,11 @@ import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUIRemote;
+import cr.libre.firmador.gui.GUISwing;
 
 public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
+		private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(RemoteHttpWorker.class);
+
 		protected GUIInterface gui;
         private HttpServer server;
         private String requestFileName;
@@ -95,7 +99,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                                 	 try {
 										Thread.sleep(1000);
 									} catch (InterruptedException e) {
-										// TODO Auto-generated catch block
+										LOG.error("Interrupción al correr servidoro", e);
 										e.printStackTrace();
 									}
                                      ((GUIRemote) gui).close();
@@ -118,9 +122,11 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                         }  
        
                     } catch (URISyntaxException e) {
+                    	LOG.error("Error URISyntaxException", e);
                         e.printStackTrace();
                         gui.showError(Throwables.getRootCause(e));
                     } catch (Exception e) {
+                    	LOG.error("Error procesando petición", e);
                     	 e.printStackTrace();
 					}
                     HttpEntity entity = request.getEntity();

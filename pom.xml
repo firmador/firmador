@@ -117,14 +117,16 @@
       <version>5.2.0</version>
     </dependency>
 -->
+<!--
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
+    -->
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
+      <artifactId>slf4j-jcl</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
     <dependency>

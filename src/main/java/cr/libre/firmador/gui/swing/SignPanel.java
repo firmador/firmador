@@ -43,6 +43,7 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 
@@ -50,9 +51,11 @@ import cr.libre.firmador.ConfigListener;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
+import cr.libre.firmador.gui.GUISwing;
 
 public class SignPanel extends JPanel implements ConfigListener{
 	private static final long serialVersionUID = 945116850482545687L;
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SignPanel.class);
 
 
 	public JLabel imageLabel;
@@ -188,6 +191,7 @@ public class SignPanel extends JPanel implements ConfigListener{
                     	setMinimumSize(getSize());
                     }
                 } catch (Exception ex) {
+                	LOG.error("Error cambiando cambiando página", ex);
                     ex.printStackTrace();
                     gui.showError(Throwables.getRootCause(ex));
                 }
@@ -349,6 +353,7 @@ public class SignPanel extends JPanel implements ConfigListener{
                 }
             }
         } catch (Exception e) {
+        	LOG.error("Error actualizando configuración", e);
             pageSpinner.setValue(0);
         }
     }

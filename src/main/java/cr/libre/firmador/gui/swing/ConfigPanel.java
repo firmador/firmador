@@ -46,7 +46,11 @@ import javax.swing.event.DocumentEvent;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
+import cr.libre.firmador.gui.GUISwing;
+
 import javax.swing.filechooser.FileFilter;
+
+import org.slf4j.LoggerFactory;
 
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -63,6 +67,8 @@ import java.awt.image.BufferedImage;
 
 public class ConfigPanel extends JPanel {
     private static final long serialVersionUID = 1L;
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ConfigPanel.class);
+
     private JTextField reason;
     private JTextField place;
     private JTextField contact;
@@ -92,6 +98,7 @@ public class ConfigPanel extends JPanel {
     private JCheckBox startserver;
     private JSpinner portnumber;
     private JComboBox<String> fontposition;
+	private JCheckBox showlogs;
 
     public ConfigPanel() {
         manager = SettingsManager.getInstance();
@@ -110,14 +117,19 @@ public class ConfigPanel extends JPanel {
         checkpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         checkpanel.setLayout(new BoxLayout(checkpanel, 0));
 
-        withoutvisiblesign = new JCheckBox("Sin Firma Visible                              ", this.settings.withoutvisiblesign);
+        withoutvisiblesign = new JCheckBox("Sin Firma Visible             ", this.settings.withoutvisiblesign);
 
         checkpanel.add(withoutvisiblesign);
         //checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        uselta = new JCheckBox("Usar LTA automático         ", this.settings.uselta);
+        uselta = new JCheckBox("Usar LTA automático", this.settings.uselta);
         checkpanel.add(uselta);
         checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
+        showlogs = new JCheckBox("Ver bitácoras", this.settings.showlogs);
+        checkpanel.add(showlogs);
+        checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
+
+        
         panel.add(checkpanel);
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
 
@@ -127,7 +139,7 @@ public class ConfigPanel extends JPanel {
         checkpanelserver.setBorder(new EmptyBorder(0, 0, 0, 0));
         checkpanelserver.setLayout(new BoxLayout(checkpanelserver, 0));
 
-        overwritesourcefile = new JCheckBox("Sobreescribir archivo original", this.settings.overwritesourcefile);
+        overwritesourcefile = new JCheckBox("Sobreescribir archivo original               ", this.settings.overwritesourcefile);
         checkpanelserver.add(overwritesourcefile);
         checkpanelserver.add(Box.createRigidArea(new Dimension(5, 0)));
         startserver = new JCheckBox("Inicializar firmado remoto", this.settings.startserver);
@@ -186,8 +198,7 @@ public class ConfigPanel extends JPanel {
                         btfontcolor.setIcon(getTransparentImageIcon());
                     }
                 } catch (Exception e) {
-                    System.err.println(e);
-                    // nothing
+                	LOG.error("Error cambiando color de fuente", e);
                 }
             }
 
@@ -238,8 +249,8 @@ public class ConfigPanel extends JPanel {
                         btbackgroundcolor.setIcon(getTransparentImageIcon());
                     }
                 } catch (Exception e) {
-                    System.err.println(e);
-                    // nothing
+                	LOG.error("Error cambiando color de fondo", e);
+                 
                 }
             }
 
@@ -385,6 +396,7 @@ public class ConfigPanel extends JPanel {
         settings.defaultsignmessage = defaultsignmessage.getText();
         settings.withoutvisiblesign = withoutvisiblesign.isSelected();
         settings.uselta = uselta.isSelected();
+        settings.showlogs = this.showlogs.isSelected();
         settings.overwritesourcefile = overwritesourcefile.isSelected();
         settings.pagenumber = Integer.parseInt(pagenumber.getValue().toString());
         settings.signwith = Integer.parseInt(signwith.getValue().toString());
@@ -400,6 +412,7 @@ public class ConfigPanel extends JPanel {
         settings.startserver = this.startserver.isSelected();
         settings.portnumber = Integer.parseInt(portnumber.getValue().toString());
 
+
         settings.updateConfig();
     }
 
@@ -408,6 +421,7 @@ public class ConfigPanel extends JPanel {
 
         withoutvisiblesign.setSelected(settings.withoutvisiblesign);
         uselta.setSelected(settings.uselta);
+        showlogs.setSelected(settings.showlogs);
         overwritesourcefile.setSelected(settings.overwritesourcefile);
         reason.setText(settings.reason);
         place.setText(settings.place);
