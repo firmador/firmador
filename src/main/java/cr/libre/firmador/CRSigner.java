@@ -22,7 +22,11 @@ package cr.libre.firmador;
 import java.security.KeyStore.PasswordProtection;
 import java.util.List;
 
+import org.slf4j.LoggerFactory;
+
 import cr.libre.firmador.gui.GUIInterface;
+import cr.libre.firmador.gui.GUISwing;
+
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.enumerations.KeyUsageBit;
 import eu.europa.esig.dss.service.crl.OnlineCRLSource;
@@ -41,6 +45,7 @@ import eu.europa.esig.dss.validation.CertificateVerifier;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 
 public class CRSigner {
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GUISwing.class);
 
     public static final String TSA_URL = "http://tsa.sinpe.fi.cr/tsaHttp/";
     protected GUIInterface gui;
@@ -62,6 +67,7 @@ public class CRSigner {
         try {
             keys = signingToken.getKeys();
         } catch (Exception|Error e) {
+        	LOG.error("Error obteniendo manejador de llaves privadas de la tarjeta", e);
             if (Throwables.getRootCause(e).getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) return null;
             else gui.showError(Throwables.getRootCause(e));
         }
@@ -104,6 +110,7 @@ public class CRSigner {
             if (!gui.getPkcs12file().isEmpty()) signingToken = new Pkcs12SignatureToken(gui.getPkcs12file(), pin);
             else signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pinCallback, gui.getSlot(), slot, null);
         } catch (Exception|Error e) {
+			LOG.error("Error al obtener la conexión de firma", e);
             gui.showError(Throwables.getRootCause(e));
         }
         return signingToken;

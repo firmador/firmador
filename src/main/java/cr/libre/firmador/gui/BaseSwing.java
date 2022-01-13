@@ -42,6 +42,7 @@ import javax.swing.border.LineBorder;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.slf4j.LoggerFactory;
 
 import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
@@ -55,6 +56,8 @@ import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.Validator;
 import cr.libre.firmador.gui.swing.CopyableJLabel;
+import cr.libre.firmador.gui.swing.LogHandler;
+import cr.libre.firmador.gui.swing.LogginFrame;
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import cr.libre.firmador.gui.swing.ValidatePanel;
@@ -64,7 +67,7 @@ import eu.europa.esig.dss.model.MimeType;
 
 public class BaseSwing {
     protected Settings settings;
-
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(BaseSwing.class);
     protected Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     protected DSSDocument toSignDocument;
     protected DSSDocument signedDocument;
@@ -89,6 +92,7 @@ public class BaseSwing {
 
 
 	public void loadGUI() {
+
 		try {
 			Application.getApplication().setDockIconImage(image);
 		} catch (RuntimeException | IllegalAccessError e) {
@@ -100,6 +104,7 @@ public class BaseSwing {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			}
 		} catch (Exception e) {
+			LOG.error("Error cargando GUI", e);
 			e.printStackTrace();
 			this.showError(Throwables.getRootCause(e));
 		}
@@ -128,6 +133,7 @@ public class BaseSwing {
             		try {
 						extendedDocument.writeTo(outdoc);
 					} catch (IOException e) {
+						LOG.error("Error extendiendo documento", e);
 						e.printStackTrace();
 						showError(Throwables.getRootCause(e));
 					}
@@ -140,7 +146,9 @@ public class BaseSwing {
 	                        extendedDocument.save(fileName);
 	                        showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
 	                        gui.loadDocument(fileName);
+	                        
 	                    } catch (IOException e) {
+	            			LOG.error("Error guardando extendido", e);
 	                        e.printStackTrace();
 	                        showError(Throwables.getRootCause(e));
 	                    }
@@ -168,6 +176,7 @@ public class BaseSwing {
             Report report = new Report(validator.getReports());
             validatePanel.reportLabel.setText(report.getReport());
         } catch (Exception e) {
+			LOG.error("Validando documento", e);
             e.printStackTrace();
             validatePanel.reportLabel.setText("Error al generar reporte.<br>" +
                 "Agradeceríamos que informara sobre este inconveniente<br>" +
@@ -187,6 +196,7 @@ public class BaseSwing {
             	validateDocument(validator);
             }
         } catch (Exception e) {
+			LOG.error("Error validando documento desde archivo "+fileName, e);
             e.printStackTrace();
             validatePanel.reportLabel.setText("Error al validar documento.<br>" +
                 "Agradeceríamos que informara sobre este inconveniente<br>" +
@@ -241,6 +251,7 @@ public class BaseSwing {
             mainFrame.pack();
             mainFrame.setMinimumSize(mainFrame.getSize());
         } catch (Exception e) {
+			LOG.error("Error cargando Documento con mimeType", e);
             e.printStackTrace();
             gui.showError(Throwables.getRootCause(e));
         }
@@ -351,7 +362,7 @@ public class BaseSwing {
                 break;
         }
         JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", messageType);
-        if (messageType == JOptionPane.ERROR_MESSAGE) System.exit(0);
+      //  if (messageType == JOptionPane.ERROR_MESSAGE) System.exit(0);
     }
 
     public PasswordProtection getPin() {

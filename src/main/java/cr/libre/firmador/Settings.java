@@ -51,6 +51,7 @@ public class Settings {
     public String image = null;
     public boolean startserver = false;
     public String fontalignment = "RIGHT";
+    public boolean showlogs = false;
 
     public Integer pagenumber = 1;
     public Integer portnumber = 3516;

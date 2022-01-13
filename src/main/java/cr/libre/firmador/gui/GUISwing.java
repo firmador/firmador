@@ -29,10 +29,13 @@ import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Logger;
 
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -41,13 +44,16 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.slf4j.LoggerFactory;
 
 import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 
+import cr.libre.firmador.ConfigListener;
 import cr.libre.firmador.gui.swing.AboutLayout;
 import cr.libre.firmador.gui.swing.ConfigPanel;
 import cr.libre.firmador.gui.swing.DocumentSelectionGroupLayout;
+import cr.libre.firmador.gui.swing.LogginFrame;
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import cr.libre.firmador.gui.swing.ValidatePanel;
@@ -55,9 +61,11 @@ import cr.libre.firmador.plugins.PluginManager;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.MimeType;
+import eu.europa.esig.dss.token.Pkcs11SignatureToken;
+import cr.libre.firmador.gui.swing.LogHandler;
 
-public class GUISwing extends BaseSwing implements GUIInterface {
-
+public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener {
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GUISwing.class);
 	private Boolean isRemote = false;
 	public JTabbedPane frameTabbedPane;
 	private String documenttosign = null;
@@ -65,11 +73,18 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 	private DocumentSelectionGroupLayout docSelector;
 	private PDDocument doc;
 	private String fileName;
+	private JScrollPane logginPane;
 
 	@SuppressWarnings("serial")
 	public void loadGUI() {
 		super.loadGUI();
+		LogginFrame loggingFrame = new LogginFrame();
+		LogHandler handler = LogHandler.getInstance();
+		handler.setWritter(loggingFrame);
+		handler.register();	
+		
 		gui = this;
+		settings.addListener(this);
  		mainFrame = new SwingMainWindowFrame("Firmador");
 		mainFrame.setGUIInterface(this);
 		mainFrame.loadGUI();
@@ -95,6 +110,9 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 		aboutPanel.setLayout(aboutLayout);
 		aboutPanel.setOpaque(false);
 
+		logginPane = loggingFrame.getLogScrollPane();
+
+
 		JPanel configPanel = new ConfigPanel();
 		configPanel.setOpaque(false);
 		frameTabbedPane = new JTabbedPane();
@@ -109,6 +127,9 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 		frameTabbedPane.addTab("Acerca de", aboutPanel);
 		frameTabbedPane.setToolTipTextAt(3,
 				"<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
+		if(settings.showlogs) {
+			showLogs();
+		}
 		docSelector = new DocumentSelectionGroupLayout(mainFrame.getContentPane(), frameTabbedPane, mainFrame);
 		docSelector.setGUI(this);
 		docSelector.initializeActions();
@@ -117,6 +138,8 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 			mainFrame.getContentPane().setLayout(docSelector);
 		else
 			mainFrame.getContentPane().setLayout(signLayout);
+ 
+		
 
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.pack();
@@ -128,6 +151,16 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 			loadDocument(documenttosign);
 	}
 
+	private void showLogs() {
+		frameTabbedPane.addTab("Bitácoras", logginPane);
+		frameTabbedPane.setToolTipTextAt(4,
+				"<html>En esta estaña se muestra las bitácoras de ejecución<br> de este programa.</html>");
+	}
+	private void hideLogs() {
+		frameTabbedPane.remove(logginPane);
+
+		
+	}
 	public void loadDocument(String fileName) {
 		docSelector.fileField.setText(Paths.get(fileName).getFileName().toString());
 		FileDocument mimeDocument = new FileDocument(fileName);
@@ -135,7 +168,7 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 			try {
 				doc.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				LOG.error("Error cerrando archivo", e);
 				e.printStackTrace();
 			}
 		}
@@ -146,7 +179,7 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 			}
 			loadDocument(mimeDocument.getMimeType(), doc);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			LOG.error("Error Leyendo el archivo", e);
 			e.printStackTrace();
 		}
 		validateDocument(fileName);
@@ -189,6 +222,7 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 				}
 				ok = true;
 			} catch (IOException e) {
+				LOG.error("Error Firmando documento", e);
 				e.printStackTrace();
 				showError(Throwables.getRootCause(e));
 			}
@@ -296,6 +330,7 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 				}
 				
 			} catch (IOException e) {
+				LOG.error("Error Firmando Multiples documentos", e);
 				gui.showError(Throwables.getRootCause(e));
 				e.printStackTrace();
 			}
@@ -321,6 +356,16 @@ public class GUISwing extends BaseSwing implements GUIInterface {
 		} else if (functionality.equalsIgnoreCase("validator")) {
 			frameTabbedPane.setSelectedIndex(1);
 		}
+	}
+
+	@Override
+	public void updateConfig() {
+		if(this.settings.showlogs) {
+			showLogs();
+		}else {
+			hideLogs();
+		}
+		
 	}
 
 }

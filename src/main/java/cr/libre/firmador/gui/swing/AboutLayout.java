@@ -12,11 +12,15 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Throwables;
 
 import cr.libre.firmador.gui.GUIInterface;
+import cr.libre.firmador.gui.GUISwing;
 
 public class AboutLayout extends GroupLayout {
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(AboutLayout.class);
 
     private GUIInterface swinginterface;
     private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
@@ -60,6 +64,7 @@ public class AboutLayout extends GroupLayout {
             try {
                 Desktop.getDesktop().browse(new URI("https://firmador.libre.cr"));
             } catch (Exception e) {
+            	LOG.error("Error abriendo url", e);
                 this.swinginterface.showError(Throwables.getRootCause(e));
             }
         }

@@ -39,12 +39,15 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 
+import org.slf4j.LoggerFactory;
+
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
 
 public class SwingMainWindowFrame extends JFrame {
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SwingMainWindowFrame.class);
 
 	public static final long serialVersionUID = -7495851994719690589L;
 
@@ -117,6 +120,7 @@ public class SwingMainWindowFrame extends JFrame {
 					
 					
 				} catch (Exception ex) {
+					LOG.error("Error cerrando archivo", ex);
 					ex.printStackTrace();
 				}
 			}

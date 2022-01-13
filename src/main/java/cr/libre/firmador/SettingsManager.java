@@ -157,6 +157,7 @@ public class SettingsManager {
         if (loaded) {
             conf.withoutvisiblesign=Boolean.parseBoolean(props.getProperty("withoutvisiblesign", String.valueOf(conf.withoutvisiblesign)));
             conf.uselta=Boolean.parseBoolean(props.getProperty("uselta", String.valueOf(conf.uselta)));
+            conf.showlogs = Boolean.parseBoolean(props.getProperty("showlogs", String.valueOf(conf.showlogs)));
             conf.overwritesourcefile=Boolean.parseBoolean(props.getProperty("overwritesourcefile", String.valueOf(conf.overwritesourcefile)));
             conf.reason=props.getProperty("reason", conf.reason);
             conf.place=props.getProperty("place", conf.place);
@@ -175,6 +176,7 @@ public class SettingsManager {
             conf.extrapkcs11Lib=props.getProperty("extrapkcs11Lib");
             conf.image = props.getProperty("image");
             conf.startserver = Boolean.parseBoolean(props.getProperty("startserver", String.valueOf(conf.startserver)));
+            
             conf.fontalignment =  props.getProperty("fontalignment", conf.fontalignment);
             conf.portnumber=Integer.parseInt(props.getProperty("portnumber", conf.portnumber.toString()));
         }
@@ -203,6 +205,8 @@ public class SettingsManager {
         setProperty("startserver", String.valueOf(conf.startserver));
         setProperty("fontalignment", conf.fontalignment.toString());
         setProperty("portnumber", conf.portnumber.toString());
+        setProperty("showlogs", String.valueOf(conf.showlogs));
+        
 
         if (conf.extrapkcs11Lib != null) {
             setProperty("extrapkcs11Lib", conf.extrapkcs11Lib);
