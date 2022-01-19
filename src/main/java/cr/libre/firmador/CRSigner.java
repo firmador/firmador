@@ -45,7 +45,7 @@ import eu.europa.esig.dss.validation.CertificateVerifier;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 
 public class CRSigner {
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GUISwing.class);
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(CRSigner.class);
 
     public static final String TSA_URL = "http://tsa.sinpe.fi.cr/tsaHttp/";
     protected GUIInterface gui;
@@ -71,11 +71,13 @@ public class CRSigner {
             if (Throwables.getRootCause(e).getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) return null;
             else gui.showError(Throwables.getRootCause(e));
         }
-        for (DSSPrivateKeyEntry candidatePrivateKey : keys) {
-            if (candidatePrivateKey.getCertificate().checkKeyUsage(KeyUsageBit.NON_REPUDIATION)) {
-                privateKey = candidatePrivateKey;
-                break;
-            }
+        if(keys!=null) {
+	        for (DSSPrivateKeyEntry candidatePrivateKey : keys) {
+	            if (candidatePrivateKey.getCertificate().checkKeyUsage(KeyUsageBit.NON_REPUDIATION)) {
+	                privateKey = candidatePrivateKey;
+	                break;
+	            }
+	        }
         }
         return privateKey;
     }

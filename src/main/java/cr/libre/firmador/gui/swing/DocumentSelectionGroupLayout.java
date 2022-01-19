@@ -100,6 +100,11 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
             
 		}
 	}
+	public void clean() {
+		lastFile="";
+		lastDirectory="";
+		loadDialog = null;
+	}
 
 	public String getLastDirectory() {
 		return lastDirectory;
