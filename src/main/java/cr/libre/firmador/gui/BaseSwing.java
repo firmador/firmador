@@ -114,7 +114,8 @@ public class BaseSwing {
     
     
 	public ByteArrayOutputStream extendDocument(DSSDocument toExtendDocument, boolean asbytes, String fileName ) {
-            DSSDocument extendedDocument = null;
+            if(toExtendDocument == null) return null;
+			DSSDocument extendedDocument = null;
             ByteArrayOutputStream outdoc = null;
             MimeType mimeType = toExtendDocument.getMimeType();
             if (mimeType == MimeType.PDF) {
@@ -205,45 +206,36 @@ public class BaseSwing {
             validatePanel.extendButton.setEnabled(false);
             gui.displayFunctionality("sign");
         }
-        
-    
     }
     
     public void loadDocumentPDF(PDDocument doc) throws IOException {
-    	
-    	signPanel.signButton.setEnabled(true);
+    	signPanel.getSignButton().setEnabled(true);
     	signPanel.docHideButtons();
     	int pages = doc.getNumberOfPages();
         renderer = signPanel.getRender(doc);
         if (pages > 0) {
         	signPanel.pageImage = renderer.renderImage(0, 1 / 1.5f);
-            SpinnerNumberModel model = ((SpinnerNumberModel)signPanel.pageSpinner.getModel());
+            SpinnerNumberModel model = ((SpinnerNumberModel)signPanel.getPageSpinner().getModel());
             model.setMinimum(1);
             model.setMaximum(pages);
             if (settings.pagenumber <= pages && settings.pagenumber > 0) {
-            	signPanel.pageSpinner.setValue(settings.pagenumber);
+            	signPanel.getPageSpinner().setValue(settings.pagenumber);
             } else {
-            	signPanel.pageSpinner.setValue(1);
+            	signPanel.getPageSpinner().setValue(1);
             }
         }
-        signPanel.imageLabel.setBorder(new LineBorder(Color.BLACK));
-        signPanel.imageLabel.setIcon(new ImageIcon(signPanel.pageImage));
+        signPanel.getImageLabel().setBorder(new LineBorder(Color.BLACK));
+        signPanel.getImageLabel().setIcon(new ImageIcon(signPanel.pageImage));
         signPanel.showSignButtons();
-    	
-    	
     }
     
     public void loadDocument(MimeType mimeType, PDDocument doc) {
     	signPanel.setDoc(doc);
-    	signPanel.signButton.setEnabled(true);
-       
+    	signPanel.getSignButton().setEnabled(true);
         try {
-            
             signPanel.docHideButtons();
-           
             if (mimeType == MimeType.PDF) {
             	loadDocumentPDF(doc);
-                
             } else if (mimeType == MimeType.XML || mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
             } else {
             	signPanel.shownonPDFButtons();
@@ -266,15 +258,15 @@ public class BaseSwing {
         if (mimeType == MimeType.PDF) {
             FirmadorPAdES firmador = new FirmadorPAdES(gui);
             firmador.setVisibleSignature(visibleSignature);
-            firmador.addVisibleSignature((int)signPanel.pageSpinner.getValue(), 
-            		(int)Math.round(signPanel.signatureLabel.getX() * 1.5), 
-            		(int)Math.round(signPanel.signatureLabel.getY() * 1.5));
-            signedDocument = firmador.sign(toSignDocument, pin, signPanel.AdESLevelButtonGroup.getSelection().getActionCommand(), signPanel.reasonField.getText(), signPanel.locationField.getText(), 
-            		signPanel.contactInfoField.getText(), System.getProperty("jnlp.signatureImage"), Boolean.getBoolean("jnlp.hideSignatureAdvice"));
+            firmador.addVisibleSignature((int)signPanel.getPageSpinner().getValue(), 
+            		(int)Math.round(signPanel.getSignatureLabel().getX() * 1.5), 
+            		(int)Math.round(signPanel.getSignatureLabel().getY() * 1.5));
+            signedDocument = firmador.sign(toSignDocument, pin, signPanel.getAdESLevelButtonGroup().getSelection().getActionCommand(), signPanel.getReasonField().getText(), signPanel.getLocationField().getText(), 
+            		signPanel.getContactInfoField().getText(), System.getProperty("jnlp.signatureImage"), Boolean.getBoolean("jnlp.hideSignatureAdvice"));
         } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
             FirmadorOpenDocument firmador = new FirmadorOpenDocument(gui);
             signedDocument = firmador.sign(toSignDocument, pin);
-        } else if (mimeType == MimeType.XML || signPanel.AdESFormatButtonGroup.getSelection().getActionCommand().equals("XAdES")) {
+        } else if (mimeType == MimeType.XML || signPanel.getAdESFormatButtonGroup().getSelection().getActionCommand().equals("XAdES")) {
             FirmadorXAdES firmador = new FirmadorXAdES(gui);
             signedDocument = firmador.sign(toSignDocument, pin);
          
@@ -291,7 +283,9 @@ public class BaseSwing {
             if(destroyPin) {
 	            try {
 	                pin.destroy();
-	            } catch (Exception e) {}
+	            } catch (Exception e) {
+	            	LOG.error("Error destruyendo el pin", e);
+	            }
             }
         }
     }
@@ -299,8 +293,11 @@ public class BaseSwing {
     public void showMessage(String message) {
         JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", JOptionPane.INFORMATION_MESSAGE);
     }
-
     public void showError(Throwable error) {
+    	showError(error, false);
+    }
+
+    public void showError(Throwable error, boolean closed) {
         error.printStackTrace();
         String message = error.getLocalizedMessage();
         int messageType = JOptionPane.ERROR_MESSAGE;
@@ -361,8 +358,9 @@ public class BaseSwing {
                     "para detallar mejor el posible motivo de este error en próximas versiones.";
                 break;
         }
+        
         JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", messageType);
-      //  if (messageType == JOptionPane.ERROR_MESSAGE) System.exit(0);
+        if(closed) if (messageType == JOptionPane.ERROR_MESSAGE) System.exit(0);
     }
 
     public PasswordProtection getPin() {

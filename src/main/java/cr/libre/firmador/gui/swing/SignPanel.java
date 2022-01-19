@@ -58,27 +58,27 @@ public class SignPanel extends JPanel implements ConfigListener{
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SignPanel.class);
 
 
-	public JLabel imageLabel;
-    public JLabel signatureLabel;
-    public JCheckBox signatureVisibleCheckBox;
-    public JLabel reasonLabel;
-    public JLabel locationLabel;
-    public JLabel contactInfoLabel;
-    public JTextField reasonField;
-    public JTextField locationField;
-    public JTextField contactInfoField;
-    public JLabel pageLabel;
-    public JSpinner pageSpinner;
-    public JLabel AdESFormatLabel;
-    public ButtonGroup AdESFormatButtonGroup;
-    public JRadioButton CAdESButton;
-    public JRadioButton XAdESButton;
-    public JButton signButton;
-    public JLabel AdESLevelLabel;
-    public JRadioButton levelTButton;
-    public JRadioButton levelLTButton;
-    public JRadioButton levelLTAButton;
-    public ButtonGroup AdESLevelButtonGroup;
+	private JLabel imageLabel;
+	private JLabel signatureLabel;
+	private JCheckBox signatureVisibleCheckBox;
+	private JLabel reasonLabel;
+	private JLabel locationLabel;
+	private JLabel contactInfoLabel;
+	private JTextField reasonField;
+	private JTextField locationField;
+	private JTextField contactInfoField;
+	private JLabel pageLabel;
+	private JSpinner pageSpinner;
+	private JLabel AdESFormatLabel;
+	private ButtonGroup AdESFormatButtonGroup;
+	private JRadioButton CAdESButton;
+	private JRadioButton XAdESButton;
+	private JButton signButton;
+	private JLabel AdESLevelLabel;
+	private JRadioButton levelTButton;
+	private JRadioButton levelLTButton;
+	private JRadioButton levelLTAButton;
+	private ButtonGroup AdESLevelButtonGroup;
     protected Settings settings;
     private PDDocument doc;
     public BufferedImage pageImage;
@@ -357,5 +357,143 @@ public class SignPanel extends JPanel implements ConfigListener{
             pageSpinner.setValue(0);
         }
     }
+
+	public JCheckBox getSignatureVisibleCheckBox() {
+		return signatureVisibleCheckBox;
+	}
+
+	public void setSignatureVisibleCheckBox(JCheckBox signatureVisibleCheckBox) {
+		this.signatureVisibleCheckBox = signatureVisibleCheckBox;
+	}
+
+	public JTextField getReasonField() {
+		return reasonField;
+	}
+
+	public void setReasonField(JTextField reasonField) {
+		this.reasonField = reasonField;
+	}
+
+	public JTextField getLocationField() {
+		return locationField;
+	}
+
+	public void setLocationField(JTextField locationField) {
+		this.locationField = locationField;
+	}
+
+	public JTextField getContactInfoField() {
+		return contactInfoField;
+	}
+
+	public void setContactInfoField(JTextField contactInfoField) {
+		this.contactInfoField = contactInfoField;
+	}
+
+	public JSpinner getPageSpinner() {
+		return pageSpinner;
+	}
+
+	public void setPageSpinner(JSpinner pageSpinner) {
+		this.pageSpinner = pageSpinner;
+	}
+
+	public JRadioButton getXAdESButton() {
+		return XAdESButton;
+	}
+
+	public void setXAdESButton(JRadioButton xAdESButton) {
+		XAdESButton = xAdESButton;
+	}
+
+	public JButton getSignButton() {
+		return signButton;
+	}
+
+	public void setSignButton(JButton signButton) {
+		this.signButton = signButton;
+	}
+
+	public JRadioButton getLevelTButton() {
+		return levelTButton;
+	}
+
+	public void setLevelTButton(JRadioButton levelTButton) {
+		this.levelTButton = levelTButton;
+	}
+
+	public JRadioButton getLevelLTButton() {
+		return levelLTButton;
+	}
+
+	public void setLevelLTButton(JRadioButton levelLTButton) {
+		this.levelLTButton = levelLTButton;
+	}
+
+	public JRadioButton getLevelLTAButton() {
+		return levelLTAButton;
+	}
+
+	public void setLevelLTAButton(JRadioButton levelLTAButton) {
+		this.levelLTAButton = levelLTAButton;
+	}
+
+	public BufferedImage getPageImage() {
+		return pageImage;
+	}
+
+	public void setPageImage(BufferedImage pageImage) {
+		this.pageImage = pageImage;
+	}
+
+	public PDFRenderer getRenderer() {
+		return renderer;
+	}
+
+	public void setRenderer(PDFRenderer renderer) {
+		this.renderer = renderer;
+	}
+
+	public JLabel getImageLabel() {
+		return imageLabel;
+	}
+
+	public void setImageLabel(JLabel imageLabel) {
+		this.imageLabel = imageLabel;
+	}
+
+	public JLabel getSignatureLabel() {
+		return signatureLabel;
+	}
+
+	public void setSignatureLabel(JLabel signatureLabel) {
+		this.signatureLabel = signatureLabel;
+	}
+
+	public ButtonGroup getAdESLevelButtonGroup() {
+		return AdESLevelButtonGroup;
+	}
+
+	public void setAdESLevelButtonGroup(ButtonGroup adESLevelButtonGroup) {
+		AdESLevelButtonGroup = adESLevelButtonGroup;
+	}
+
+	public JLabel getAdESFormatLabel() {
+		return AdESFormatLabel;
+	}
+
+	public void setAdESFormatLabel(JLabel adESFormatLabel) {
+		AdESFormatLabel = adESFormatLabel;
+	}
+
+	public ButtonGroup getAdESFormatButtonGroup() {
+		return AdESFormatButtonGroup;
+	}
+
+	public void setAdESFormatButtonGroup(ButtonGroup adESFormatButtonGroup) {
+		AdESFormatButtonGroup = adESFormatButtonGroup;
+	}
+	
+	
 	
 }

@@ -141,7 +141,7 @@ public class GUIRemote extends BaseSwing implements GUIInterface {
 			
 			} else if (mimeType == MimeType.XML || mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
 				showMessage("Está intentando firmar un documento XML o un openDocument que no posee visualización");
-				signPanel.signButton.setEnabled(true);
+				signPanel.getSignButton().setEnabled(true);
 			} else {
 	           signPanel.shownonPDFButtons();
 	           

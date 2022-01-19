@@ -181,9 +181,18 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener 
 		} catch (IOException e) {
 			LOG.error("Error Leyendo el archivo", e);
 			e.printStackTrace();
+			clean_elements();
 		}
 		validateDocument(fileName);
 	}
+	
+	public void clean_elements() {
+		docSelector.fileField.setText("");
+		doc=null;
+		// Muchas cosas mas acá
+    }
+	
+
 
 	public String getExtension() {
 		String extension = "";
@@ -206,7 +215,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener 
 		fileName = getDocumentToSign();
 		toSignDocument = new FileDocument(fileName);
 		PasswordProtection pin = getPin();
-		this.signDocument(pin, !signPanel.signatureVisibleCheckBox.isSelected(), true);
+		this.signDocument(pin, !signPanel.getSignatureVisibleCheckBox().isSelected(), true);
 
 		if (signedDocument != null) {
 			try {
@@ -319,24 +328,23 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener 
 			loadDocument(documenttosign);
 			toSignDocument = new FileDocument(documenttosign);
 
-			this.signDocument(pin, !signPanel.signatureVisibleCheckBox.isSelected(), false);
-			
-			fileName = addSuffixToFilePath(documenttosign, "-firmado");
-			try {
-				if (settings.uselta) {
-					extendDocument(signedDocument, false, fileName);
-				} else {
-					signedDocument.save(fileName);
-				}
+			this.signDocument(pin, !signPanel.getSignatureVisibleCheckBox().isSelected(), false);
+			if(signedDocument != null) {
+				fileName = addSuffixToFilePath(documenttosign, "-firmado");
 				
-			} catch (IOException e) {
-				LOG.error("Error Firmando Multiples documentos", e);
-				gui.showError(Throwables.getRootCause(e));
-				e.printStackTrace();
-			}
-
-			
-			 
+				try {
+					if (settings.uselta) {
+						extendDocument(signedDocument, false, fileName);
+					} else {
+						signedDocument.save(fileName);
+					}
+					
+				} catch (IOException e) {
+					LOG.error("Error Firmando Multiples documentos", e);
+					gui.showError(Throwables.getRootCause(e));
+					e.printStackTrace();
+				}
+			} 
 		}
 	}
 	

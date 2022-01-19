@@ -84,12 +84,7 @@ public class LogHandler extends Handler {
 	  public void register() {
 		Logger rootlog = Logger.getGlobal();
 		rootlog.addHandler(this);	
-		Logger.getLogger("").addHandler(this);
-	 
-		System.setProperty(LogFactory.FACTORY_PROPERTY,
-			      "cr.libre.firmador.gui.swing.");
-		rootlog.info("BINGOOOOOOOOOOOOOOOOOOOOOO");
-		 
+		Logger.getLogger("").addHandler(this);		 
 		
 	  }
 	}

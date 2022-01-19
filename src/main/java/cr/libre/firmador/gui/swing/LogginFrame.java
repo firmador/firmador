@@ -11,9 +11,6 @@ public class LogginFrame extends ScrollableJPanel {
 	public LogginFrame() {
 		super();
 		logtext = new JTextArea();
-	 
-		
-
 		GroupLayout validateLayout = new GroupLayout(this);
 		validateLayout.setAutoCreateGaps(true);
 		validateLayout.setAutoCreateContainerGaps(true);
@@ -23,11 +20,7 @@ public class LogginFrame extends ScrollableJPanel {
 				validateLayout.createSequentialGroup().addComponent(logtext));
 		this.setLayout(validateLayout);
 		this.setOpaque(false);
-
 		logtext.setOpaque(false);
-
-		
-		
 	}
 	public void showInfo(String message) {
 		this.logtext.append("\n"+message);
