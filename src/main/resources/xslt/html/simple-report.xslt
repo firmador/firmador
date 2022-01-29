@@ -47,26 +47,6 @@
 				<xsl:value-of select="dss:Filename"/>
 			</p>
 		</xsl:if>
-		<xsl:if test="dss:SignatureLevel | dss:TimestampLevel">
-			<p>
-				Calificación:
-				<xsl:if test="dss:SignatureLevel">
-					<xsl:value-of select="dss:SignatureLevel"/>
-				</xsl:if>
-				<xsl:if test="dss:TimestampLevel">
-					<xsl:value-of select="dss:TimestampLevel"/>
-				</xsl:if>
-			</p>
-			<p>
-				Descripción:
-				<xsl:if test="dss:SignatureLevel">
-					<xsl:value-of select="dss:SignatureLevel/@description"/>
-				</xsl:if>
-				<xsl:if test="dss:TimestampLevel">
-					<xsl:value-of select="dss:TimestampLevel/@description"/>
-				</xsl:if>
-			</p>
-		</xsl:if>
 		<p>Firmado por <b>
 			<xsl:choose>
 				<xsl:when test="dss:CertificateChain">
