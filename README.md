@@ -102,7 +102,7 @@ Para ejecutar el JAR:
 
 ## Licencia
 
-Copyright © 2021 de los autores de Firmador.
+Copyright © 2018, 2022 de los autores de Firmador.
 
 La lista de autores de Firmador se encuentra en el fichero
 [AUTHORS.md](AUTHORS.md).
