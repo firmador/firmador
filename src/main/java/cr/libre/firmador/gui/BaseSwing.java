@@ -127,6 +127,9 @@ public class BaseSwing {
             } else if (mimeType == MimeType.XML) {
                 FirmadorXAdES firmador = new FirmadorXAdES(gui);
                 extendedDocument = firmador.extend(toExtendDocument);
+            }else {
+            	FirmadorCAdES firmador = new FirmadorCAdES(gui);
+            	extendedDocument = firmador.extend(toExtendDocument);
             }
             if (extendedDocument != null) {
             	if(asbytes) {
