@@ -61,10 +61,12 @@ public class FirmadorCAdES extends CRSigner {
 
 
     CAdESSignatureParameters parameters;
+	private Settings settings;
 
 
     public FirmadorCAdES(GUIInterface gui) {
         super(gui);
+        settings = SettingsManager.getInstance().get_and_create_settings();
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin) {
@@ -100,7 +102,7 @@ public class FirmadorCAdES extends CRSigner {
         }
         try {
             CertificateToken certificate = privateKey.getCertificate();
-            parameters.setSignatureLevel(SignatureLevel.CAdES_BASELINE_LT);
+            parameters.setSignatureLevel(settings.getCAdESLevel());
             parameters.setSignaturePackaging(SignaturePackaging.DETACHED);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);

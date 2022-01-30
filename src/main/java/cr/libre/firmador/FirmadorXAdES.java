@@ -60,10 +60,12 @@ public class FirmadorXAdES extends CRSigner {
 
     //XAdESCounterSignatureParameters parameters; // Electronic receipts v4.4 proposal
     XAdESSignatureParameters parameters;
+	private Settings settings;
 
 
     public FirmadorXAdES(GUIInterface gui) {
         super(gui);
+        settings = SettingsManager.getInstance().get_and_create_settings();
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin) {
@@ -101,7 +103,7 @@ public class FirmadorXAdES extends CRSigner {
             CertificateToken certificate = privateKey.getCertificate();
 
             //parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
-            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
+            parameters.setSignatureLevel(settings.getXAdESLevel());
 
             // This couple don't apply for counter-signature (Electronic receipts v4.4 proposal)
             if (toSignDocument.getMimeType() == MimeType.XML) parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);

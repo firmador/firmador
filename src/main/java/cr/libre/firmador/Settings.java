@@ -24,6 +24,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignerTextPosition;
 
 import java.awt.Color;
@@ -55,6 +56,12 @@ public class Settings {
 
     public Integer pagenumber = 1;
     public Integer portnumber = 3516;
+    public String padesLevel = "LTA";
+    public String xadesLevel = "LTA";
+    public String cadesLevel = "LTA";
+    public String pkcs12file = null;
+    public boolean usepkcs12file = false;
+    
 
     public List<String> active_plugins = new ArrayList<String>();
     
@@ -146,4 +153,36 @@ public class Settings {
 
         return origin;
     }
+    
+    public SignatureLevel getPAdESLevel() {
+    	SignatureLevel level = SignatureLevel.PAdES_BASELINE_LTA;
+        switch (padesLevel) {
+	        case "T": level=SignatureLevel.PAdES_BASELINE_T; break;
+	        case "LT": level=SignatureLevel.PAdES_BASELINE_LT; break;
+	        case "LTA": level=SignatureLevel.PAdES_BASELINE_LTA; break;
+	        default: level=SignatureLevel.PAdES_BASELINE_LTA; break;
+        }
+        return level;
+    }
+    
+    public SignatureLevel getXAdESLevel() {
+    	SignatureLevel level = SignatureLevel.XAdES_BASELINE_LTA;
+        switch (xadesLevel) {
+	        case "T": level=SignatureLevel.XAdES_BASELINE_T; break;
+	        case "LT": level=SignatureLevel.XAdES_BASELINE_LT; break;
+	        case "LTA": level=SignatureLevel.XAdES_BASELINE_LTA; break;
+	        default: level=SignatureLevel.XAdES_BASELINE_LTA; break;
+        }
+        return level;
+    }  
+    public SignatureLevel getCAdESLevel() {
+    	SignatureLevel level = SignatureLevel.CAdES_BASELINE_LTA;
+        switch (cadesLevel) {
+	        case "T": level=SignatureLevel.CAdES_BASELINE_T; break;
+	        case "LT": level=SignatureLevel.CAdES_BASELINE_LT; break;
+	        case "LTA": level=SignatureLevel.CAdES_BASELINE_LTA; break;
+	        default: level=SignatureLevel.CAdES_BASELINE_LTA; break;
+        }
+        return level;
+    } 
 }

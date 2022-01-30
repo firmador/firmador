@@ -264,7 +264,7 @@ public class BaseSwing {
             firmador.addVisibleSignature((int)signPanel.getPageSpinner().getValue(), 
             		(int)Math.round(signPanel.getSignatureLabel().getX() * 1.5), 
             		(int)Math.round(signPanel.getSignatureLabel().getY() * 1.5));
-            signedDocument = firmador.sign(toSignDocument, pin, signPanel.getAdESLevelButtonGroup().getSelection().getActionCommand(), signPanel.getReasonField().getText(), signPanel.getLocationField().getText(), 
+            signedDocument = firmador.sign(toSignDocument, pin, signPanel.getReasonField().getText(), signPanel.getLocationField().getText(), 
             		signPanel.getContactInfoField().getText(), System.getProperty("jnlp.signatureImage"), Boolean.getBoolean("jnlp.hideSignatureAdvice"));
         } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
             FirmadorOpenDocument firmador = new FirmadorOpenDocument(gui);
