@@ -173,12 +173,16 @@ public class SettingsManager {
             conf.backgroundcolor = props.getProperty("backgroundcolor", conf.backgroundcolor);
             conf.signx=Integer.parseInt(props.getProperty("singy", conf.signx.toString()));
             conf.signy=Integer.parseInt(props.getProperty("singy", conf.signy.toString()));
-            conf.extrapkcs11Lib=props.getProperty("extrapkcs11Lib");
             conf.image = props.getProperty("image");
             conf.startserver = Boolean.parseBoolean(props.getProperty("startserver", String.valueOf(conf.startserver)));
-            
             conf.fontalignment =  props.getProperty("fontalignment", conf.fontalignment);
             conf.portnumber=Integer.parseInt(props.getProperty("portnumber", conf.portnumber.toString()));
+            conf.padesLevel = props.getProperty("padesLevel", conf.padesLevel);
+            conf.xadesLevel = props.getProperty("xadesLevel", conf.xadesLevel);
+            conf.cadesLevel = props.getProperty("cadesLevel", conf.cadesLevel);
+            conf.extrapkcs11Lib=props.getProperty("extrapkcs11Lib");
+            conf.pkcs12file=props.getProperty("pkcs12file");
+            conf.usepkcs12file=Boolean.parseBoolean(props.getProperty("usepkcs12file", String.valueOf(conf.usepkcs12file)));
         }
 
         return conf;
@@ -206,11 +210,21 @@ public class SettingsManager {
         setProperty("fontalignment", conf.fontalignment.toString());
         setProperty("portnumber", conf.portnumber.toString());
         setProperty("showlogs", String.valueOf(conf.showlogs));
-        
-
-        if (conf.extrapkcs11Lib != null) {
+                
+        setProperty("padesLevel", conf.padesLevel);
+        setProperty("xadesLevel", conf.xadesLevel);
+        setProperty("cadesLevel", conf.cadesLevel);
+                
+        if (conf.extrapkcs11Lib != null && conf.extrapkcs11Lib != "") {
             setProperty("extrapkcs11Lib", conf.extrapkcs11Lib);
         }
+        
+        if (conf.pkcs12file != null && conf.pkcs12file != "") {
+            setProperty("pkcs12file", conf.pkcs12file);
+        }
+        setProperty("usepkcs12file", String.valueOf(conf.usepkcs12file));
+        
+        
         if (conf.image != null) {
             setProperty("image", conf.image);
         }

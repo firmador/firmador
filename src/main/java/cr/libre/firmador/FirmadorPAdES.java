@@ -69,7 +69,7 @@ public class FirmadorPAdES extends CRSigner {
         settings = SettingsManager.getInstance().get_and_create_settings();
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin, String level, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
+    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
         CertificateVerifier verifier = this.getCertificateVerifier();
         PAdESService service = new PAdESService(verifier);
         service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
@@ -105,13 +105,10 @@ public class FirmadorPAdES extends CRSigner {
         }
         try {
             CertificateToken certificate = privateKey.getCertificate();
-            if (level == null) level = "LTA";
-            switch (level) {
-            case "T": parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_T); break;
-            case "LT": parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LT); break;
-            case "LTA": parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA); break;
-            default: parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA); break;
-            }
+            
+            parameters.setSignatureLevel(settings.getPAdESLevel());
+            
+          
             parameters.setContentSize(13312);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
