@@ -452,7 +452,7 @@ public class ConfigPanel extends JPanel {
         pkcs11moduletext = new JTextField();
         btpkcs11module = new JButton("Elegir");
         //btimage.setForeground(this.settings.getBackgroundColor());
-        if(this.settings.extrapkcs11Lib != null) {
+        if(this.settings.extrapkcs11Lib != null ) {
         	pkcs11moduletext.setText(this.settings.extrapkcs11Lib);
              
         }
@@ -596,8 +596,8 @@ public class ConfigPanel extends JPanel {
         settings.usepkcs12file = usepkcs12file.isSelected();
         settings.pkcs12file = pkcs12text.getText();
         settings.extrapkcs11Lib = pkcs11moduletext.getText();
-        if(settings.pkcs12file == "") settings.pkcs12file = null;
-        if(settings.extrapkcs11Lib == "") settings.extrapkcs11Lib = null;
+        if(settings.pkcs12file.isEmpty()) settings.pkcs12file = null;
+        if(settings.extrapkcs11Lib.isEmpty()) settings.extrapkcs11Lib = null;
         
         settings.updateConfig();
     }
