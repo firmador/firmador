@@ -219,15 +219,11 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener 
 
 		if (signedDocument != null) {
 			try {
-				if (settings.uselta) {
-					extendDocument(signedDocument, false, null);
-				}else{
-					fileName = getPathToSave(getExtension());
-					if (fileName != null) {
-						signedDocument.save(fileName);
-						showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
-						loadDocument(fileName);
-					}
+				fileName = getPathToSave(getExtension());
+				if (fileName != null) {
+					signedDocument.save(fileName);
+					showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
+					loadDocument(fileName);
 				}
 				ok = true;
 			} catch (IOException e) {
@@ -331,14 +327,8 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener 
 			this.signDocument(pin, !signPanel.getSignatureVisibleCheckBox().isSelected(), false);
 			if(signedDocument != null) {
 				fileName = addSuffixToFilePath(documenttosign, "-firmado");
-				
 				try {
-					if (settings.uselta) {
-						extendDocument(signedDocument, false, fileName);
-					} else {
-						signedDocument.save(fileName);
-					}
-					
+					signedDocument.save(fileName);	
 				} catch (IOException e) {
 					LOG.error("Error Firmando Multiples documentos", e);
 					gui.showError(Throwables.getRootCause(e));
