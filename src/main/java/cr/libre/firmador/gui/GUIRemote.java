@@ -83,18 +83,14 @@ public class GUIRemote extends BaseSwing implements GUIInterface {
 		PasswordProtection pin = getPin();
 		super.signDocument(pin, true);
 
-		if (settings.uselta) {
-			docinfo.setData(extendDocument(signedDocument, true, null));
+		try {
+			signedDocument.writeTo(docinfo.getData());
 			docinfo.setStatus(HttpStatus.SC_SUCCESS);
-		} else {
-			try {
-				signedDocument.writeTo(docinfo.getData());
-				docinfo.setStatus(HttpStatus.SC_SUCCESS);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
 		return signedDocument != null;
 	}
 
