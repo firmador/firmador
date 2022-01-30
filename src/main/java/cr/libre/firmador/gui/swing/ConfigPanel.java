@@ -651,9 +651,6 @@ public class ConfigPanel extends JPanel {
         }else{ pkcs11moduletext.setText(""); };
         
         usepkcs12file.setSelected(settings.usepkcs12file);
-        
-        
-
 
     }
 
