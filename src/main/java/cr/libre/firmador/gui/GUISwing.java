@@ -20,51 +20,41 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador.gui;
 
 import java.awt.FileDialog;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Handler;
-import java.util.logging.Logger;
 
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import javax.swing.SwingUtilities;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.LoggerFactory;
 
-import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 
 import cr.libre.firmador.ConfigListener;
 import cr.libre.firmador.gui.swing.AboutLayout;
 import cr.libre.firmador.gui.swing.ConfigPanel;
 import cr.libre.firmador.gui.swing.DocumentSelectionGroupLayout;
+import cr.libre.firmador.gui.swing.ExecutorWorker;
+import cr.libre.firmador.gui.swing.ExecutorWorkerMultipleFiles;
+import cr.libre.firmador.gui.swing.LogHandler;
 import cr.libre.firmador.gui.swing.LogginFrame;
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import cr.libre.firmador.gui.swing.ValidatePanel;
-import cr.libre.firmador.plugins.PluginManager;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.MimeType;
-import eu.europa.esig.dss.token.Pkcs11SignatureToken;
-import cr.libre.firmador.gui.swing.LogHandler;
 
-public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener {
+public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GUISwing.class);
 	private Boolean isRemote = false;
 	public JTabbedPane frameTabbedPane;
@@ -74,6 +64,8 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener 
 	private PDDocument doc;
 	private String fileName;
 	private JScrollPane logginPane;
+
+
 
 	@SuppressWarnings("serial")
 	public void loadGUI() {
@@ -162,6 +154,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener 
 		
 	}
 	public void loadDocument(String fileName) {
+		gui.nextStep("Cargando el documento");
 		docSelector.fileField.setText(Paths.get(fileName).getFileName().toString());
 		FileDocument mimeDocument = new FileDocument(fileName);
 		if (doc != null) {
@@ -183,6 +176,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener 
 			e.printStackTrace();
 			clean_elements();
 		}
+		gui.nextStep("Validando formas dentro del documento");
 		validateDocument(fileName);
 	}
 	
@@ -209,8 +203,21 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener 
 		return extension;
 
 	}
+	
+	/**
+     * Invoked when task's progress property changes.
+     */
 
+	
 	public boolean signDocuments() {
+		worker = new ExecutorWorker(this);
+		SwingUtilities.invokeLater((Runnable) worker);
+		Thread.yield();
+		
+		return true;
+	}
+
+	public boolean dosignDocuments() {
 		boolean ok = false;
 		fileName = getDocumentToSign();
 		toSignDocument = new FileDocument(fileName);
@@ -265,6 +272,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener 
 	}
 
 	public String showSaveDialog(String suffix, String extension) {
+		gui.nextStep("Obteniendo ruta de guardado");
 		String lastDirectory = docSelector.getLastDirectory();
 		String lastFile = docSelector.getLastFile();
 		String fileName = null;
@@ -315,27 +323,28 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener 
 		return newname;
 	}
 	
-	public void signMultipleDocuments(File[] files) {
-		PasswordProtection pin = getPin();
-		//signPanel.showSignButtons();
-		for (File file : files) {
-			
-			documenttosign = file.toString();
-			loadDocument(documenttosign);
-			toSignDocument = new FileDocument(documenttosign);
+	public void signDocumentByPath(File file, PasswordProtection pin) {
+		documenttosign = file.toString();
+		loadDocument(documenttosign);
+		toSignDocument = new FileDocument(documenttosign);
 
-			this.signDocument(pin, !signPanel.getSignatureVisibleCheckBox().isSelected(), false);
-			if(signedDocument != null) {
-				fileName = addSuffixToFilePath(documenttosign, "-firmado");
-				try {
-					signedDocument.save(fileName);	
-				} catch (IOException e) {
-					LOG.error("Error Firmando Multiples documentos", e);
-					gui.showError(Throwables.getRootCause(e));
-					e.printStackTrace();
-				}
-			} 
-		}
+		this.signDocument(pin, !signPanel.getSignatureVisibleCheckBox().isSelected(), false);
+		if(signedDocument != null) {
+			fileName = addSuffixToFilePath(documenttosign, "-firmado");
+			try {
+				signedDocument.save(fileName);	
+			} catch (IOException e) {
+				LOG.error("Error Firmando Multiples documentos", e);
+				gui.showError(Throwables.getRootCause(e));
+				e.printStackTrace();
+			}
+		} 
+	}
+	
+	public void signMultipleDocuments(File[] files) {
+		worker = new ExecutorWorkerMultipleFiles(this, files);
+		SwingUtilities.invokeLater((Runnable) worker);
+		Thread.yield();
 	}
 	
 	@Override
@@ -365,5 +374,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener 
 		}
 		
 	}
+	
+
 
 }

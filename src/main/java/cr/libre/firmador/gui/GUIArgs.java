@@ -172,4 +172,10 @@ public class GUIArgs implements GUIInterface {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void nextStep(String msg) {
+		// TODO Auto-generated method stub
+		
+	}
 }

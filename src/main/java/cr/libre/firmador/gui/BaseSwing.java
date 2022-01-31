@@ -56,8 +56,7 @@ import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.Validator;
 import cr.libre.firmador.gui.swing.CopyableJLabel;
-import cr.libre.firmador.gui.swing.LogHandler;
-import cr.libre.firmador.gui.swing.LogginFrame;
+import cr.libre.firmador.gui.swing.ExecutorWorkerInterface;
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import cr.libre.firmador.gui.swing.ValidatePanel;
@@ -76,7 +75,7 @@ public class BaseSwing {
     protected SignPanel signPanel;
     protected ValidatePanel validatePanel;
     protected GUIInterface gui;
-    
+	protected ExecutorWorkerInterface worker = null;
     
     
     public SwingMainWindowFrame getMainFrame() {
@@ -282,8 +281,10 @@ public class BaseSwing {
     
     protected void signDocument(PasswordProtection pin, Boolean visibleSignature, Boolean destroyPin){
         if (pin.getPassword() != null && pin.getPassword().length != 0) {
+        	gui.nextStep("Inicio del proceso de firmado");
         	signDocument(pin,  visibleSignature);
             if(destroyPin) {
+            	gui.nextStep("Destroyendo el pin");
 	            try {
 	                pin.destroy();
 	            } catch (Exception e) {
@@ -396,5 +397,8 @@ public class BaseSwing {
 				}			 
 	        });
 
+	}
+	public void nextStep(String msg) {
+		if(worker != null) worker.nextStep(msg);
 	}
 }
