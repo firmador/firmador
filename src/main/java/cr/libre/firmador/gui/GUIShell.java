@@ -174,4 +174,10 @@ public class GUIShell implements GUIInterface {
 		
 	}
 
+	@Override
+	public void nextStep(String msg) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

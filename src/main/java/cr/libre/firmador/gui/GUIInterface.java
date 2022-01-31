@@ -45,4 +45,5 @@ public interface GUIInterface {
     String getPathToSaveExtended(String extension);
     public boolean signDocuments();
     public void displayFunctionality(String functionality);
+    public void nextStep(String msg);
 }

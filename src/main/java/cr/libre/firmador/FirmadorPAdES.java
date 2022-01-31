@@ -77,6 +77,7 @@ public class FirmadorPAdES extends CRSigner {
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
+        gui.nextStep("Obteniendo servicios de verificación de certificados");
         if(image == null) {
             image = settings.getImage();
         }
@@ -85,9 +86,11 @@ public class FirmadorPAdES extends CRSigner {
         } catch (DSSException|AlertException|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
+
         DSSPrivateKeyEntry privateKey = null;
         try {
             privateKey = getPrivateKey(token);
+            gui.nextStep("Obteniendo manejador de llaves privadas");
             if (privateKey == null) {
                 for (int i = 0;; i++) {
                     try {
@@ -104,6 +107,7 @@ public class FirmadorPAdES extends CRSigner {
             gui.showError(Throwables.getRootCause(e));
         }
         try {
+        	gui.nextStep("Obteniendo certificados de la tarjeta");
             CertificateToken certificate = privateKey.getCertificate();
             
             parameters.setSignatureLevel(settings.getPAdESLevel());
@@ -116,11 +120,14 @@ public class FirmadorPAdES extends CRSigner {
             if (location != null && !location.trim().isEmpty()) parameters.setLocation(location);
             if (contactInfo != null && !contactInfo .trim().isEmpty()) parameters.setContactInfo(contactInfo);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
+            gui.nextStep("Obteniendo servicios TSP");
             service.setTspSource(onlineTSPSource);
             Date date = new Date();
             if (visibleSignature) appendVisibleSignature(certificate, date, reason, location, contactInfo, image, hideSignatureAdvice);
+            gui.nextStep("Agregando representación gráfica de la firma");
             parameters.bLevel().setSigningDate(date);
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
+            gui.nextStep("Obteniendo estructura de datos a firmar");
             signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
         } catch (DSSException|AlertException|Error e) {
             if (Throwables.getRootCause(e).getLocalizedMessage().equals("The new signature field position overlaps with an existing annotation!")) {
@@ -136,7 +143,9 @@ public class FirmadorPAdES extends CRSigner {
         }
 
         try {
+        	gui.nextStep("Firmando estructura de datos");
             signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
+            gui.nextStep("Firmado del documento completo");
         } catch (Exception e) {
             e.printStackTrace();
             gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
