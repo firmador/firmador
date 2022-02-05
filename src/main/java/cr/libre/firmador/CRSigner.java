@@ -19,6 +19,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador;
 
+import java.io.IOException;
 import java.security.KeyStore.PasswordProtection;
 import java.util.List;
 
@@ -63,14 +64,7 @@ public class CRSigner {
          * verify there are no more keys available to allow selecting them.
          */
         DSSPrivateKeyEntry privateKey = null;
-        List<DSSPrivateKeyEntry> keys = null;
-        try {
-            keys = signingToken.getKeys();
-        } catch (Exception|Error e) {
-        	LOG.error("Error obteniendo manejador de llaves privadas de la tarjeta", e);
-            if (Throwables.getRootCause(e).getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) return null;
-            else gui.showError(Throwables.getRootCause(e));
-        }
+        List<DSSPrivateKeyEntry> keys = signingToken.getKeys();
         if(keys!=null) {
 	        for (DSSPrivateKeyEntry candidatePrivateKey : keys) {
 	            if (candidatePrivateKey.getCertificate().checkKeyUsage(KeyUsageBit.NON_REPUDIATION)) {
@@ -94,11 +88,11 @@ public class CRSigner {
         return "";
     }
 
-    public SignatureTokenConnection getSignatureConnection(PasswordProtection pin) {
+    public SignatureTokenConnection getSignatureConnection(PasswordProtection pin) throws IOException {
         return getSignatureConnection(pin, -1);
     }
 
-    public SignatureTokenConnection getSignatureConnection(PasswordProtection pin, int slot) {
+    public SignatureTokenConnection getSignatureConnection(PasswordProtection pin, int slot) throws IOException {
         /*
          * There should be other ways to find alternative PKCS#11 module
          * configuration settings in the future, operating system specific,
@@ -107,14 +101,9 @@ public class CRSigner {
          */
         SignatureTokenConnection signingToken = null;
         PrefilledPasswordCallback pinCallback = new PrefilledPasswordCallback(pin);
+       if (!gui.getPkcs12file().isEmpty()) signingToken = new Pkcs12SignatureToken(gui.getPkcs12file(), pin);
+       else signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pinCallback, gui.getSlot(), slot, null);
 
-        try {
-            if (!gui.getPkcs12file().isEmpty()) signingToken = new Pkcs12SignatureToken(gui.getPkcs12file(), pin);
-            else signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pinCallback, gui.getSlot(), slot, null);
-        } catch (Exception|Error e) {
-			LOG.error("Error al obtener la conexión de firma", e);
-            gui.showError(Throwables.getRootCause(e));
-        }
         return signingToken;
     }
 

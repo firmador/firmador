@@ -30,6 +30,8 @@ import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
+import com.google.common.base.Throwables;
+
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
 
@@ -96,7 +98,11 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
 		}else if( files.length==1) {
 			lastDirectory = loadDialog.getDirectory();
             lastFile = files[0].toString();
-			gui.loadDocument(files[0].toString());
+			try {
+				gui.loadDocument(files[0].toString());
+			} catch (Exception e) {
+				gui.showError(Throwables.getRootCause(e));
+			}
             
 		}
 	}

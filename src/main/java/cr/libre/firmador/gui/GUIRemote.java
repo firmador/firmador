@@ -79,7 +79,7 @@ public class GUIRemote extends BaseSwing implements GUIInterface {
 		mainFrame.setVisible(true);
 	}
 
-	public boolean signDocuments() {
+	public boolean signDocuments() throws Exception {
 		PasswordProtection pin = getPin();
 		super.signDocument(pin, true);
 

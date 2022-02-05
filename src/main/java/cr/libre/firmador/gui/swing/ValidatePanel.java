@@ -20,11 +20,14 @@ package cr.libre.firmador.gui.swing;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+
+import com.google.common.base.Throwables;
 
 import cr.libre.firmador.gui.GUIInterface;
 
@@ -61,7 +64,14 @@ public class ValidatePanel extends ScrollableJPanel {
 
 		extendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				gui.extendDocument();
+				try {
+					gui.extendDocument();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					gui.showError(Throwables.getRootCause(e));
+				}
 			}
 		});
 	}

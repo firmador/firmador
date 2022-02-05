@@ -27,6 +27,7 @@ import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.security.auth.DestroyFailedException;
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -139,8 +140,14 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		mainFrame.setLocationByPlatform(true);
 		mainFrame.setVisible(true);
 
-		if (documenttosign != null)
-			loadDocument(documenttosign);
+		try {
+			if (documenttosign != null)
+				loadDocument(documenttosign);
+		} catch (Exception e) {
+			LOG.error("Error Leyendo el archivo", e);
+			e.printStackTrace();
+			clean_elements();
+		}
 	}
 
 	private void showLogs() {
@@ -153,7 +160,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 
 		
 	}
-	public void loadDocument(String fileName) {
+	public void loadDocument(String fileName) throws Exception {
 		gui.nextStep("Cargando el documento");
 		docSelector.fileField.setText(Paths.get(fileName).getFileName().toString());
 		FileDocument mimeDocument = new FileDocument(fileName);
@@ -166,16 +173,11 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 			}
 		}
 
-		try {
-			if (mimeDocument.getMimeType() == MimeType.PDF) {
-				doc = PDDocument.load(new File(fileName));
-			}
-			loadDocument(mimeDocument.getMimeType(), doc);
-		} catch (IOException e) {
-			LOG.error("Error Leyendo el archivo", e);
-			e.printStackTrace();
-			clean_elements();
+		if (mimeDocument.getMimeType() == MimeType.PDF) {
+			doc = PDDocument.load(new File(fileName));
 		}
+		loadDocument(mimeDocument.getMimeType(), doc);
+	
 		gui.nextStep("Validando formas dentro del documento");
 		validateDocument(fileName);
 	}
@@ -217,7 +219,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		return true;
 	}
 
-	public boolean dosignDocuments() {
+	public boolean dosignDocuments() throws Exception {
 		boolean ok = false;
 		fileName = getDocumentToSign();
 		toSignDocument = new FileDocument(fileName);
@@ -225,25 +227,19 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		this.signDocument(pin, !signPanel.getSignatureVisibleCheckBox().isSelected(), true);
 
 		if (signedDocument != null) {
-			try {
-				fileName = getPathToSave(getExtension());
-				if (fileName != null) {
-					signedDocument.save(fileName);
-					showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
-					loadDocument(fileName);
-				}
-				ok = true;
-			} catch (IOException e) {
-				LOG.error("Error Firmando documento", e);
-				e.printStackTrace();
-				showError(Throwables.getRootCause(e));
+ 
+			fileName = getPathToSave(getExtension());
+			if (fileName != null) {
+				signedDocument.save(fileName);
+				showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
+				loadDocument(fileName);
 			}
-			
+			ok = true;
 		}
 		return ok;
 	}
 
-	public void extendDocument() {
+	public void extendDocument() throws Exception {
 		if(fileName == null)fileName = getDocumentToSign();
 		if (fileName != null) {
 			DSSDocument toExtendDocument = new FileDocument(fileName);
@@ -323,7 +319,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		return newname;
 	}
 	
-	public void signDocumentByPath(File file, PasswordProtection pin) {
+	public void signDocumentByPath(File file, PasswordProtection pin) throws Exception {
 		documenttosign = file.toString();
 		loadDocument(documenttosign);
 		toSignDocument = new FileDocument(documenttosign);
@@ -331,13 +327,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		this.signDocument(pin, !signPanel.getSignatureVisibleCheckBox().isSelected(), false);
 		if(signedDocument != null) {
 			fileName = addSuffixToFilePath(documenttosign, "-firmado");
-			try {
-				signedDocument.save(fileName);	
-			} catch (IOException e) {
-				LOG.error("Error Firmando Multiples documentos", e);
-				gui.showError(Throwables.getRootCause(e));
-				e.printStackTrace();
-			}
+			signedDocument.save(fileName);	
 		} 
 	}
 	

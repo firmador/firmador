@@ -82,7 +82,11 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
               
                 
                 public void processSign(String name, RemoteDocInformation data) {
-                	gui.loadDocument(name);
+                	try {
+						gui.loadDocument(name);
+					} catch (Exception e) {
+						gui.showError(Throwables.getRootCause(e));
+					}
                 }
                 
                 public void handle(final ClassicHttpRequest request, final ClassicHttpResponse response, final HttpContext context) throws HttpException, IOException {

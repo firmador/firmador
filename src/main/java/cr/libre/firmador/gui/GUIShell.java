@@ -53,7 +53,13 @@ public class GUIShell implements GUIInterface {
             // FirmadorXAdES firmador = new FirmadorXAdES(this);
             PasswordProtection pin = getPin();
             DSSDocument toSignDocument = new FileDocument(fileName);
-            DSSDocument signedDocument = firmador.sign(toSignDocument, pin, null, null, null, null, null);
+            DSSDocument signedDocument=null;
+			try {
+				signedDocument = firmador.sign(toSignDocument, pin, null, null, null, null, null);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
             try {
                 pin.destroy();
             } catch (Exception e) {}

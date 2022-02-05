@@ -200,7 +200,11 @@ public class SignPanel extends JPanel implements ConfigListener{
         
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-				boolean ok = gui.signDocuments();
+				try {
+					boolean ok = gui.signDocuments();
+				} catch (Exception e) {
+					LOG.error("Error no identificado firmando documento", e);
+				}
             }
         });
         

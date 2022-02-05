@@ -56,8 +56,10 @@ import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.slf4j.LoggerFactory;
 
 public class FirmadorPAdES extends CRSigner {
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(FirmadorPAdES.class);
 
     private int page = 1, x, y;
     PAdESSignatureParameters parameters;
@@ -69,7 +71,7 @@ public class FirmadorPAdES extends CRSigner {
         settings = SettingsManager.getInstance().get_and_create_settings();
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
+    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) throws Exception {
         CertificateVerifier verifier = this.getCertificateVerifier();
         PAdESService service = new PAdESService(verifier);
         service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
@@ -81,32 +83,27 @@ public class FirmadorPAdES extends CRSigner {
         if(image == null) {
             image = settings.getImage();
         }
-        try {
-            token = getSignatureConnection(pin);
-        } catch (DSSException|AlertException|Error e) {
-            gui.showError(Throwables.getRootCause(e));
-        }
+        token = getSignatureConnection(pin);
+  
 
         DSSPrivateKeyEntry privateKey = null;
-        try {
-            privateKey = getPrivateKey(token);
-            gui.nextStep("Obteniendo manejador de llaves privadas");
-            if (privateKey == null) {
-                for (int i = 0;; i++) {
-                    try {
-                        token = getSignatureConnection(pin, i);
-                        privateKey = getPrivateKey(token);
-                        if (privateKey != null) break;
-                    } catch (Exception ex) {
-                        if (Throwables.getRootCause(ex).getLocalizedMessage().equals("CKR_SLOT_ID_INVALID")) break;
-                        else gui.showError(Throwables.getRootCause(ex));
-                    }
-                }
-            }
-        } catch (Exception e) {
-            gui.showError(Throwables.getRootCause(e));
-        }
-        try {
+       
+	        privateKey = getPrivateKey(token);
+	        gui.nextStep("Obteniendo manejador de llaves privadas");
+	        if (privateKey == null) {
+	            for (int i = 0;i<20; i++) {
+	                try {
+	                    token = getSignatureConnection(pin, i);
+	                    privateKey = getPrivateKey(token);
+	                    if (privateKey != null) break;
+	                } catch (Exception ex) {
+	                    if (Throwables.getRootCause(ex).getLocalizedMessage().equals("CKR_SLOT_ID_INVALID")) break;
+	                    else gui.showError(Throwables.getRootCause(ex));
+	                }
+	            }
+	        }
+ 
+ 
         	gui.nextStep("Obteniendo certificados de la tarjeta");
             CertificateToken certificate = privateKey.getCertificate();
             
@@ -129,25 +126,14 @@ public class FirmadorPAdES extends CRSigner {
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
             gui.nextStep("Obteniendo estructura de datos a firmar");
             signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
-        } catch (DSSException|AlertException|Error e) {
-            if (Throwables.getRootCause(e).getLocalizedMessage().equals("The new signature field position overlaps with an existing annotation!")) {
-                gui.showMessage("No se puede firmar: el campo de firma está solapándose sobre otra firma o anotación existente.<br>" +
-                    "Debe mover la firma para ubicarla en otra posición que no tape las existentes.");
-                return null;
-            } else gui.showError(Throwables.getRootCause(e));
-        } catch (IllegalArgumentException e) {
-        	 if(Throwables.getRootCause(e).getMessage().contains("is expired")) {
-        		 gui.showMessage("Certificado vencido, no se puede realizar la firma");
-        		 return null;
-        	 }
-        }
+   
 
         try {
         	gui.nextStep("Firmando estructura de datos");
             signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
             gui.nextStep("Firmado del documento completo");
         } catch (Exception e) {
-            e.printStackTrace();
+        	LOG.error("Error no se ha podido agregar el sello de tiempo y la información de revocación", e);
             gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
                 "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
                 "Detalle del error: " + Throwables.getRootCause(e) + "<br><br>" +
@@ -155,12 +141,8 @@ public class FirmadorPAdES extends CRSigner {
                 "para este documento, debería agregarse lo antes posible antes de enviarlo al destinatario.<br><br>" +
                 "Si lo prefiere, puede cancelar el guardado del documento firmado e intentar firmarlo más tarde.<br>");
             parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
-            try {
-                signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
-            } catch (Exception ex) {
-                e.printStackTrace();
-                gui.showError(Throwables.getRootCause(e));
-            }
+            signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
+           
         }
         return signedDocument;
     }
@@ -174,17 +156,8 @@ public class FirmadorPAdES extends CRSigner {
         PAdESService service = new PAdESService(verifier);
         OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
         service.setTspSource(onlineTSPSource);
-        DSSDocument extendedDocument = null;
-        try {
-            extendedDocument = service.extendDocument(document, parameters);
-        } catch (Exception e) {
-            e.printStackTrace();
-            gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
-                "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
-                "Detalle del error: " + Throwables.getRootCause(e) + "<br><br>" +
-                "Inténtelo de nuevo más tarde. Si el problema persiste, compruebe su conexión o verifique<br>" +
-                "que no se trata de un problema de los servidores de Firma Digital o de un error de este programa.<br>");
-        }
+        DSSDocument extendedDocument = service.extendDocument(document, parameters);
+       
         return extendedDocument;
     }
 
@@ -192,13 +165,10 @@ public class FirmadorPAdES extends CRSigner {
         CertificateVerifier verifier = this.getCertificateVerifier();
         PAdESService service = new PAdESService(verifier);
         DSSDocument timestampedDocument = null;
-        try {
-            OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
-            service.setTspSource(onlineTSPSource);
-        } catch (DSSException|Error e) {
-            gui.showError(Throwables.getRootCause(e));
-        }
-        try {
+ 
+        OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
+        service.setTspSource(onlineTSPSource);
+ 
             PAdESTimestampParameters timestampParameters = new PAdESTimestampParameters();
             if (visibleTimestamp) {
                 SignatureImageParameters imageParameters = new SignatureImageParameters();
@@ -220,10 +190,7 @@ public class FirmadorPAdES extends CRSigner {
                 timestampParameters.setImageParameters(imageParameters);
             }
             timestampedDocument = service.timestamp(documentToTimestamp, timestampParameters);
-        } catch (Exception e) {
-            e.printStackTrace();
-            gui.showError(Throwables.getRootCause(e));
-        }
+ 
         return timestampedDocument;
     }
 
@@ -279,7 +246,8 @@ public class FirmadorPAdES extends CRSigner {
         try {
             if (image != null && !image.trim().isEmpty()) imageParameters.setImage(new InMemoryDocument(Utils.toByteArray(new URL(image).openStream())));
         } catch (IOException e) {
-            e.printStackTrace();
+        	LOG.error("Error manejando imagen", e);
+
         }
         imageParameters.getFieldParameters().setPage(page);
         parameters.setImageParameters(imageParameters);

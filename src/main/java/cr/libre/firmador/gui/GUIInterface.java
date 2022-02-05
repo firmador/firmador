@@ -19,6 +19,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui;
 
+import java.io.IOException;
 import java.security.KeyStore.PasswordProtection;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -39,11 +40,11 @@ public interface GUIInterface {
     String getPathToSave(String extension);
     PasswordProtection getPin();
     void setPluginManager(PluginManager pluginManager);
-    public void loadDocument(String fileName);
-    public void loadDocument(MimeType mimeType, PDDocument doc);
-    public void extendDocument();
+    public void loadDocument(String fileName) throws Exception;
+    public void loadDocument(MimeType mimeType, PDDocument doc) throws IOException;
+    public void extendDocument() throws IOException, Exception;
     String getPathToSaveExtended(String extension);
-    public boolean signDocuments();
+    public boolean signDocuments() throws Exception;
     public void displayFunctionality(String functionality);
     public void nextStep(String msg);
 }

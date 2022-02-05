@@ -23,10 +23,10 @@ package cr.libre.firmador;
 
 
 
+import java.io.IOException;
 import java.security.KeyStore.PasswordProtection;
 
-
-
+import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
@@ -58,6 +58,7 @@ import eu.europa.esig.dss.validation.CertificateVerifier;
 
 
 public class FirmadorCAdES extends CRSigner {
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(FirmadorCAdES.class);
 
 
     CAdESSignatureParameters parameters;
@@ -69,78 +70,52 @@ public class FirmadorCAdES extends CRSigner {
         settings = SettingsManager.getInstance().get_and_create_settings();
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin) {
+    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin) throws Exception {
         CertificateVerifier verifier = this.getCertificateVerifier();
         CAdESService service = new CAdESService(verifier);
 
         parameters = new CAdESSignatureParameters();
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
-        SignatureTokenConnection token = null;
-        try {
-            token = getSignatureConnection(pin);
-        } catch (DSSException|AlertException|Error e) {
-            gui.showError(Throwables.getRootCause(e));
-        }
-        DSSPrivateKeyEntry privateKey = null;
-        try {
-            privateKey = getPrivateKey(token);
-            if (privateKey == null) {
-                for (int i = 0;; i++) {
-                    try {
-                        token = getSignatureConnection(pin, i);
-                        privateKey = getPrivateKey(token);
-                        if (privateKey != null) break;
-                    } catch (Exception ex) {
-                        if (Throwables.getRootCause(ex).getLocalizedMessage().equals("CKR_SLOT_ID_INVALID")) break;
-                        else gui.showError(Throwables.getRootCause(ex));
-                    }
+        SignatureTokenConnection token = getSignatureConnection(pin);
+ 
+        DSSPrivateKeyEntry privateKey = getPrivateKey(token);
+        if (privateKey == null) {
+            for (int i = 0;; i++) {
+                try {
+                    token = getSignatureConnection(pin, i);
+                    privateKey = getPrivateKey(token);
+                    if (privateKey != null) break;
+                } catch (Exception ex) {
+                    if (Throwables.getRootCause(ex).getLocalizedMessage().equals("CKR_SLOT_ID_INVALID")) break;
+                    else gui.showError(Throwables.getRootCause(ex));
                 }
             }
-        } catch (Exception e) {
-            gui.showError(Throwables.getRootCause(e));
         }
-        try {
+ 
             CertificateToken certificate = privateKey.getCertificate();
             parameters.setSignatureLevel(settings.getCAdESLevel());
             parameters.setSignaturePackaging(SignaturePackaging.DETACHED);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
-
-
-
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
-
-
-
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
             signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
-        } catch (DSSException|Error e) {
-            gui.showError(Throwables.getRootCause(e));
-        }
-
-
-
-
-
+ 
         try {
             signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
         } catch (Exception e) {
-            e.printStackTrace();
-            gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
+        	LOG.error("Error no se ha podido agregar el sello de tiempo y la información de revocación", e);           
+        	gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
                 "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
                 "Detalle del error: " + Throwables.getRootCause(e) + "<br><br>" +
                 "Se ha agregado una firma básica solamente. No obstante, si el sello de tiempo resultara importante<br>" +
                 "para este documento, debería agregarse lo antes posible antes de enviarlo al destinatario.<br><br>" +
                 "Si lo prefiere, puede cancelar el guardado del documento firmado e intentar firmarlo más tarde.<br>");
             parameters.setSignatureLevel(SignatureLevel.CAdES_BASELINE_B);
-            try {
-                signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
-            } catch (Exception ex) {
-                e.printStackTrace();
-                gui.showError(Throwables.getRootCause(e));
-            }
+            signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
+         
         }
         return signedDocument;
     }
@@ -148,23 +123,12 @@ public class FirmadorCAdES extends CRSigner {
     public DSSDocument extend(DSSDocument document) {
         CAdESSignatureParameters parameters = new CAdESSignatureParameters();
         parameters.setSignatureLevel(SignatureLevel.CAdES_BASELINE_LTA);
-
-
         CertificateVerifier verifier = this.getCertificateVerifier();
         CAdESService service = new CAdESService(verifier);
         OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
         service.setTspSource(onlineTSPSource);
-        DSSDocument extendedDocument = null;
-        try {
-            extendedDocument = service.extendDocument(document, parameters);
-        } catch (Exception e) {
-            e.printStackTrace();
-            gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
-                "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
-                "Detalle del error: " + Throwables.getRootCause(e) + "<br><br>" +
-                "Inténtelo de nuevo más tarde. Si el problema persiste, compruebe su conexión o verifique<br>" +
-                "que no se trata de un problema de los servidores de Firma Digital o de un error de este programa.<br>");
-        }
+        DSSDocument extendedDocument = service.extendDocument(document, parameters);
+ 
         return extendedDocument;
     }
 

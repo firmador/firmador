@@ -23,6 +23,7 @@ package cr.libre.firmador;
 
 
 
+import java.io.IOException;
 import java.security.KeyStore.PasswordProtection;
 
 
@@ -67,7 +68,7 @@ public class FirmadorOpenDocument extends CRSigner {
         super(gui);
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin) {
+    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin) throws Exception {
         CertificateVerifier verifier = this.getCertificateVerifier();
         ASiCWithXAdESService service = new ASiCWithXAdESService(verifier);
 
@@ -75,16 +76,14 @@ public class FirmadorOpenDocument extends CRSigner {
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
-        try {
-            token = getSignatureConnection(pin);
-        } catch (DSSException|AlertException|Error e) {
-            gui.showError(Throwables.getRootCause(e));
-        }
+ 
+        token = getSignatureConnection(pin);
+   
         DSSPrivateKeyEntry privateKey = null;
-        try {
+ 
             privateKey = getPrivateKey(token);
             if (privateKey == null) {
-                for (int i = 0;; i++) {
+                for (int i = 0;i<20; i++) {
                     try {
                         token = getSignatureConnection(pin, i);
                         privateKey = getPrivateKey(token);
@@ -94,19 +93,14 @@ public class FirmadorOpenDocument extends CRSigner {
                         else gui.showError(Throwables.getRootCause(ex));
                     }
                 }
-            }
-        } catch (Exception e) {
-            gui.showError(Throwables.getRootCause(e));
-        }
-        try {
+            }      
+        
             CertificateToken certificate = privateKey.getCertificate();
             parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
             parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
             parameters.setPrettyPrint(true);
-
-
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             service.setTspSource(onlineTSPSource);
             parameters.aSiC().setContainerType(ASiCContainerType.ASiC_E);
@@ -114,14 +108,8 @@ public class FirmadorOpenDocument extends CRSigner {
             parameters.setEn319132(false);
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
             signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
-        } catch (DSSException|Error e) {
-            gui.showError(Throwables.getRootCause(e));
-        }
-
-
-
-
-
+     
+ 
         try {
             signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
         } catch (Exception e) {

@@ -23,10 +23,12 @@ package cr.libre.firmador;
 
 
 
+import java.io.IOException;
 import java.security.KeyStore.PasswordProtection;
 
 import java.util.Arrays;
 
+import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
@@ -57,6 +59,7 @@ import eu.europa.esig.dss.validation.CertificateVerifier;
 //import eu.europa.esig.dss.validation.SignedDocumentValidator; // Electronic receipts v4.4 proposal
 
 public class FirmadorXAdES extends CRSigner {
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(FirmadorXAdES.class);
 
     //XAdESCounterSignatureParameters parameters; // Electronic receipts v4.4 proposal
     XAdESSignatureParameters parameters;
@@ -68,22 +71,16 @@ public class FirmadorXAdES extends CRSigner {
         settings = SettingsManager.getInstance().get_and_create_settings();
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin) {
+    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin) throws Exception {
         CertificateVerifier verifier = this.getCertificateVerifier();
         XAdESService service = new XAdESService(verifier);
         //parameters = new XAdESCounterSignatureParameters(); // Electronic receipts v4.4 proposal
         parameters = new XAdESSignatureParameters();
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
-        SignatureTokenConnection token = null;
-        try {
-            token = getSignatureConnection(pin);
-        } catch (DSSException|AlertException|Error e) {
-            gui.showError(Throwables.getRootCause(e));
-        }
-        DSSPrivateKeyEntry privateKey = null;
-        try {
-            privateKey = getPrivateKey(token);
+        SignatureTokenConnection token = getSignatureConnection(pin);
+  
+        DSSPrivateKeyEntry privateKey = getPrivateKey(token);
             if (privateKey == null) {
                 for (int i = 0;; i++) {
                     try {
@@ -96,10 +93,7 @@ public class FirmadorXAdES extends CRSigner {
                     }
                 }
             }
-        } catch (Exception e) {
-            gui.showError(Throwables.getRootCause(e));
-        }
-        try {
+ 
             CertificateToken certificate = privateKey.getCertificate();
 
             //parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
@@ -139,19 +133,12 @@ public class FirmadorXAdES extends CRSigner {
             //ToBeSigned dataToSign = service.getDataToBeCounterSigned(toSignDocument, parameters); // Electronic receipts v4.4 proposal
 
             signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
-        } catch (DSSException|Error e) {
-            gui.showError(Throwables.getRootCause(e));
-        }
-
-
-
-
-
+ 
         try {
             signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
             //signedDocument = service.counterSignSignature(toSignDocument, parameters, signatureValue); // Electronic receipts v4.4 proposal
         } catch (Exception e) {
-            e.printStackTrace();
+        	LOG.error("Error no se ha podido agregar el sello de tiempo y la información de revocación", e);
             gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
                 "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
                 "Detalle del error: " + Throwables.getRootCause(e) + "<br><br>" +
@@ -159,13 +146,9 @@ public class FirmadorXAdES extends CRSigner {
                 "para este documento, debería agregarse lo antes posible antes de enviarlo al destinatario.<br><br>" +
                 "Si lo prefiere, puede cancelar el guardado del documento firmado e intentar firmarlo más tarde.<br>");
             parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
-            try {
-                signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
-                //signedDocument = service.counterSignSignature(toSignDocument, parameters, signatureValue); // Electronic receipts v4.4 proposal
-            } catch (Exception ex) {
-                e.printStackTrace();
-                gui.showError(Throwables.getRootCause(e));
-            }
+             
+            signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
+         
         }
         return signedDocument;
     }
@@ -179,17 +162,8 @@ public class FirmadorXAdES extends CRSigner {
         XAdESService service = new XAdESService(verifier);
         OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
         service.setTspSource(onlineTSPSource);
-        DSSDocument extendedDocument = null;
-        try {
-            extendedDocument = service.extendDocument(document, parameters);
-        } catch (Exception e) {
-            e.printStackTrace();
-            gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
-                "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
-                "Detalle del error: " + Throwables.getRootCause(e) + "<br><br>" +
-                "Inténtelo de nuevo más tarde. Si el problema persiste, compruebe su conexión o verifique<br>" +
-                "que no se trata de un problema de los servidores de Firma Digital o de un error de este programa.<br>");
-        }
+        DSSDocument extendedDocument = service.extendDocument(document, parameters);
+     
         return extendedDocument;
     }
 

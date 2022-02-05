@@ -31,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.KeyStore.PasswordProtection;
 
+import javax.security.auth.DestroyFailedException;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -112,7 +113,7 @@ public class BaseSwing {
     
     
     
-	public ByteArrayOutputStream extendDocument(DSSDocument toExtendDocument, boolean asbytes, String fileName ) {
+	public ByteArrayOutputStream extendDocument(DSSDocument toExtendDocument, boolean asbytes, String fileName ) throws Exception {
             if(toExtendDocument == null) return null;
 			DSSDocument extendedDocument = null;
             ByteArrayOutputStream outdoc = null;
@@ -133,35 +134,23 @@ public class BaseSwing {
             if (extendedDocument != null) {
             	if(asbytes) {
             		outdoc = new ByteArrayOutputStream();
-            		try {
-						extendedDocument.writeTo(outdoc);
-					} catch (IOException e) {
-						LOG.error("Error extendiendo documento", e);
-						e.printStackTrace();
-						showError(Throwables.getRootCause(e));
-					}
+            		extendedDocument.writeTo(outdoc);
+		 
             	}else {
             		if(fileName==null) {        	
             			fileName = gui.getPathToSaveExtended("");
             		}
 	                if (fileName != null) {
-	                    try {
 	                        extendedDocument.save(fileName);
 	                        showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
 	                        gui.loadDocument(fileName);
-	                        
-	                    } catch (IOException e) {
-	            			LOG.error("Error guardando extendido", e);
-	                        e.printStackTrace();
-	                        showError(Throwables.getRootCause(e));
-	                    }
 	                }
             	}
             }
             return outdoc;
         }
     
-    public Boolean validateDocument(Validator validator){
+    public Boolean validateDocument(Validator validator) throws Exception{
     	Boolean ok=false;
     	if (validator.isSigned()) {
             validatePanel.extendButton.setEnabled(true);
@@ -175,39 +164,17 @@ public class BaseSwing {
         	return false;
         }
     	
-    	try {
-            Report report = new Report(validator.getReports());
-            validatePanel.reportLabel.setText(report.getReport());
-        } catch (Exception e) {
-			LOG.error("Validando documento", e);
-            e.printStackTrace();
-            validatePanel.reportLabel.setText("Error al generar reporte.<br>" +
-                "Agradeceríamos que informara sobre este inconveniente<br>" +
-                "a los desarrolladores de la aplicación para repararlo.");
-            ok=false;
-        }
+        Report report = new Report(validator.getReports());
+        validatePanel.reportLabel.setText(report.getReport());
+
     	return ok;
     }
     
     
     
-    public void validateDocument(String fileName) {
-        Validator validator = null;
-        try {
-            validator = new Validator(fileName);
-            if (validator != null) {
-            	validateDocument(validator);
-            }
-        } catch (Exception e) {
-			LOG.error("Error validando documento desde archivo "+fileName, e);
-            e.printStackTrace();
-            validatePanel.reportLabel.setText("Error al validar documento.<br>" +
-                "Agradeceríamos que informara sobre este inconveniente<br>" +
-                "a los desarrolladores de la aplicación para repararlo.");
-            validatePanel.reportLabel.setText("");
-            validatePanel.extendButton.setEnabled(false);
-            gui.displayFunctionality("sign");
-        }
+    public void validateDocument(String fileName) throws Exception {
+        Validator validator =  new Validator(fileName);
+       	validateDocument(validator);    
     }
     
     public void loadDocumentPDF(PDDocument doc) throws IOException {
@@ -231,29 +198,22 @@ public class BaseSwing {
         signPanel.showSignButtons();
     }
     
-    public void loadDocument(MimeType mimeType, PDDocument doc) {
+    public void loadDocument(MimeType mimeType, PDDocument doc) throws IOException {
     	signPanel.setDoc(doc);
     	signPanel.getSignButton().setEnabled(true);
-        try {
-            signPanel.docHideButtons();
-            if (mimeType == MimeType.PDF) {
-            	loadDocumentPDF(doc);
-            } else if (mimeType == MimeType.XML || mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
-            } else {
-            	signPanel.shownonPDFButtons();
-            }
-            mainFrame.pack();
-            mainFrame.setMinimumSize(mainFrame.getSize());
-        } catch (Exception e) {
-			LOG.error("Error cargando Documento con mimeType", e);
-            e.printStackTrace();
-            gui.showError(Throwables.getRootCause(e));
+        signPanel.docHideButtons();
+        if (mimeType == MimeType.PDF) {
+        	loadDocumentPDF(doc);
+        } else if (mimeType == MimeType.XML || mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
+        } else {
+        	signPanel.shownonPDFButtons();
         }
-    
+        mainFrame.pack();
+        mainFrame.setMinimumSize(mainFrame.getSize());
     }
 
     
-    protected void signDocument(PasswordProtection pin, Boolean visibleSignature) {
+    protected void signDocument(PasswordProtection pin, Boolean visibleSignature) throws Exception {
    	
     	signedDocument = null;
     	MimeType mimeType = toSignDocument.getMimeType();
@@ -271,7 +231,6 @@ public class BaseSwing {
         } else if (mimeType == MimeType.XML || signPanel.getAdESFormatButtonGroup().getSelection().getActionCommand().equals("XAdES")) {
             FirmadorXAdES firmador = new FirmadorXAdES(gui);
             signedDocument = firmador.sign(toSignDocument, pin);
-         
         } else {
             FirmadorCAdES firmador = new FirmadorCAdES(gui);
             signedDocument = firmador.sign(toSignDocument, pin);
@@ -279,17 +238,13 @@ public class BaseSwing {
         }
     }
     
-    protected void signDocument(PasswordProtection pin, Boolean visibleSignature, Boolean destroyPin){
+    protected void signDocument(PasswordProtection pin, Boolean visibleSignature, Boolean destroyPin) throws Exception{
         if (pin.getPassword() != null && pin.getPassword().length != 0) {
         	gui.nextStep("Inicio del proceso de firmado");
         	signDocument(pin,  visibleSignature);
             if(destroyPin) {
             	gui.nextStep("Destroyendo el pin");
-	            try {
-	                pin.destroy();
-	            } catch (Exception e) {
-	            	LOG.error("Error destruyendo el pin", e);
-	            }
+	            pin.destroy();
             }
         }
     }
