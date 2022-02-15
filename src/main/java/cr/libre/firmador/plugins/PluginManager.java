@@ -45,7 +45,7 @@ public class PluginManager implements Runnable {
 
 			try {
 				Class pluginClass = Class.forName(name, true, Plugin.class.getClassLoader());
-				Plugin plugin = (Plugin) pluginClass.newInstance();
+				Plugin plugin = (Plugin) pluginClass.getDeclaredConstructor().newInstance();
 
 				if (plugin.isrunnable) {
 					SwingUtilities.invokeLater((Runnable) plugin);
