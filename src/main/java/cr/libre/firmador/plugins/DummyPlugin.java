@@ -49,6 +49,11 @@ public class DummyPlugin implements Plugin {
 		for (Object propertyKeyName: informationkey){
 			info+=propertyKeyName+" - "+System.getProperty(propertyKeyName.toString())+"\n";
         }
+		
+        String versionstr = getClass().getPackage().getSpecificationVersion();
+        if(versionstr == null) versionstr = "Desarrollo";
+        info +="firmador.libre.version - "+ versionstr+"\n";
+		
 		LOG.info(info);
 	}
 

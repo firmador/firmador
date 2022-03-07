@@ -27,9 +27,11 @@ public class AboutLayout extends GroupLayout {
 
     public AboutLayout(Container host) {
         super(host);
+        String versionstr = getClass().getPackage().getSpecificationVersion();
+        if(versionstr == null) versionstr = "Desarrollo";
         JLabel iconLabel = new JLabel(new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
         JLabel descriptionLabel = new JLabel("<html><p align='center'><b>Firmador</b><br><br>" +
-            "Versión " + getClass().getPackage().getSpecificationVersion() + "<br><br>" +
+            "Versión " + versionstr  + "<br><br>" +
             "Herramienta para firmar documentos digitalmente.<br><br>" +
             "Los documentos firmados con esta herramienta cumplen con la<br>" +
             "Política de Formatos Oficiales de los Documentos Electrónicos<br>" +
