@@ -19,6 +19,9 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui;
 
+import cr.libre.firmador.Settings;
+import cr.libre.firmador.SettingsManager;
+
 public class GUISelector {
 
     public String getGUIClassName(String[] args) {
@@ -36,8 +39,8 @@ public class GUISelector {
 
     public GUIInterface getInterface(String name) {
         GUIInterface gui = null;
-        String origin = System.getProperty("jnlp.remoteOrigin");
-        if(origin != null) gui = new GUIRemote();
+        Settings settings = SettingsManager.getInstance().get_and_create_settings();
+        if(settings.isRemote()) gui = new GUIRemote();
         else if (name.equals("args")) gui = new GUIArgs();
         else if (name.equals("shell")) gui = new GUIShell();
         else if (name.equals("remote")) gui = new GUIRemote();

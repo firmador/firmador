@@ -45,8 +45,6 @@ import cr.libre.firmador.gui.swing.ConfigPanel;
 import cr.libre.firmador.gui.swing.DocumentSelectionGroupLayout;
 import cr.libre.firmador.gui.swing.ExecutorWorker;
 import cr.libre.firmador.gui.swing.ExecutorWorkerMultipleFiles;
-import cr.libre.firmador.gui.swing.LogHandler;
-import cr.libre.firmador.gui.swing.LogginFrame;
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import cr.libre.firmador.gui.swing.ValidatePanel;
@@ -63,18 +61,11 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 	private DocumentSelectionGroupLayout docSelector;
 	private PDDocument doc;
 	private String fileName;
-	private JScrollPane logginPane;
-
-
+	private static Integer tabnumber=3;
 
 	@SuppressWarnings("serial")
 	public void loadGUI() {
 		super.loadGUI();
-		LogginFrame loggingFrame = new LogginFrame();
-		LogHandler handler = LogHandler.getInstance();
-		handler.setWritter(loggingFrame);
-		handler.register();	
-		
 		gui = this;
 		settings.addListener(this);
  		mainFrame = new SwingMainWindowFrame("Firmador");
@@ -102,9 +93,6 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		aboutPanel.setLayout(aboutLayout);
 		aboutPanel.setOpaque(false);
 
-		logginPane = loggingFrame.getLogScrollPane();
-
-
 		JPanel configPanel = new ConfigPanel();
 		configPanel.setOpaque(false);
 		frameTabbedPane = new JTabbedPane();
@@ -120,7 +108,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		frameTabbedPane.setToolTipTextAt(3,
 				"<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
 		if(settings.showlogs) {
-			showLogs();
+			this.showLogs(frameTabbedPane);
 		}
 		docSelector = new DocumentSelectionGroupLayout(mainFrame.getContentPane(), frameTabbedPane, mainFrame);
 		docSelector.setGUI(this);
@@ -131,8 +119,6 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		else
 			mainFrame.getContentPane().setLayout(signLayout);
  
-		
-
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.pack();
 		mainFrame.setMinimumSize(mainFrame.getSize());
@@ -143,16 +129,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 			loadDocument(documenttosign);
 	}
 
-	private void showLogs() {
-		frameTabbedPane.addTab("Bitácoras", logginPane);
-		frameTabbedPane.setToolTipTextAt(4,
-				"<html>En esta estaña se muestra las bitácoras de ejecución<br> de este programa.</html>");
-	}
-	private void hideLogs() {
-		frameTabbedPane.remove(logginPane);
 
-		
-	}
 	public void loadDocument(String fileName) {
 		gui.nextStep("Cargando el documento");
 		docSelector.fileField.setText(Paths.get(fileName).getFileName().toString());
@@ -368,9 +345,9 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 	@Override
 	public void updateConfig() {
 		if(this.settings.showlogs) {
-			showLogs();
+			showLogs(this.frameTabbedPane);
 		}else {
-			hideLogs();
+			hideLogs(this.frameTabbedPane);
 		}
 		
 	}

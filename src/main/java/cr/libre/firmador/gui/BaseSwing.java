@@ -34,6 +34,8 @@ import java.security.KeyStore.PasswordProtection;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -57,6 +59,8 @@ import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.Validator;
 import cr.libre.firmador.gui.swing.CopyableJLabel;
 import cr.libre.firmador.gui.swing.ExecutorWorkerInterface;
+import cr.libre.firmador.gui.swing.LogHandler;
+import cr.libre.firmador.gui.swing.LogginFrame;
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import cr.libre.firmador.gui.swing.ValidatePanel;
@@ -76,19 +80,27 @@ public class BaseSwing {
     protected ValidatePanel validatePanel;
     protected GUIInterface gui;
 	protected ExecutorWorkerInterface worker = null;
+	private JScrollPane logginPane;
+	private  Integer tabnumber=4;
     
-    
-    public SwingMainWindowFrame getMainFrame() {
-		return mainFrame;
+	
+	
+	
+    public Integer getTabnumber() {
+		return tabnumber;
 	}
 
+	public void setTabnumber(Integer tabnumber) {
+		this.tabnumber = tabnumber;
+	}
 
+	public SwingMainWindowFrame getMainFrame() {
+		return mainFrame;
+	}
 
 	public void setMainFrame(SwingMainWindowFrame mainFrame) {
 		this.mainFrame = mainFrame;
 	}
-
-
 
 	public void loadGUI() {
 
@@ -108,9 +120,21 @@ public class BaseSwing {
 			this.showError(Throwables.getRootCause(e));
 		}
     	settings = SettingsManager.getInstance().get_and_create_settings();
-    }
+		LogginFrame loggingFrame = new LogginFrame();
+		LogHandler handler = LogHandler.getInstance();
+		handler.setWritter(loggingFrame);
+		handler.register();	
+		logginPane = loggingFrame.getLogScrollPane();
+	}
     
-    
+	protected void showLogs(JTabbedPane frameTabbedPane) {
+		frameTabbedPane.addTab("Bitácoras", logginPane);
+		frameTabbedPane.setToolTipTextAt(this.tabnumber,
+				"<html>En esta estaña se muestra las bitácoras de ejecución<br> de este programa.</html>");
+	}
+	protected void hideLogs(JTabbedPane frameTabbedPane) {
+		frameTabbedPane.remove(logginPane);
+	}    
     
 	public ByteArrayOutputStream extendDocument(DSSDocument toExtendDocument, boolean asbytes, String fileName ) {
             if(toExtendDocument == null) return null;

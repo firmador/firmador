@@ -13,6 +13,7 @@ import javax.swing.JTabbedPane;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
+import cr.libre.firmador.ConfigListener;
 import cr.libre.firmador.gui.swing.AboutLayout;
 import cr.libre.firmador.gui.swing.ConfigPanel;
 import cr.libre.firmador.gui.swing.RemoteDocInformation;
@@ -22,7 +23,7 @@ import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.MimeType;
 
-public class GUIRemote extends BaseSwing implements GUIInterface {
+public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener {
 	public JTabbedPane frameTabbedPane;
 	private byte[] toSignByteArray;
 	private RemoteHttpWorker<Void, byte[]> remote;
@@ -31,9 +32,9 @@ public class GUIRemote extends BaseSwing implements GUIInterface {
 	@SuppressWarnings("serial")
 	public void loadGUI() {
 		super.loadGUI();
-
+	
 		gui = this;
-
+		settings.addListener(this);
 		mainFrame = new SwingMainWindowFrame("Firmador Remoto");
 		mainFrame.setGUIInterface(this);
 		mainFrame.loadGUI();
@@ -69,6 +70,9 @@ public class GUIRemote extends BaseSwing implements GUIInterface {
 		frameTabbedPane.setToolTipTextAt(2,
 				"<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
 
+		if(settings.showlogs) {
+			this.showLogs(frameTabbedPane);
+		}
 		mainFrame.add(frameTabbedPane);
 		// mainFrame.getContentPane().getLayout().addComponent(frameTabbedPane);
 		// mainFrame.getContentPane().setLayout(signLayout);
@@ -79,6 +83,12 @@ public class GUIRemote extends BaseSwing implements GUIInterface {
 		mainFrame.setVisible(true);
 	}
 
+	
+	GUIRemote(){
+		super();
+		setTabnumber(3);
+	}
+	
 	public boolean signDocuments() {
 		PasswordProtection pin = getPin();
 		super.signDocument(pin, true);
@@ -173,6 +183,15 @@ public class GUIRemote extends BaseSwing implements GUIInterface {
 		mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
 		// mainFrame.dispose();
 
+	}
+	@Override
+	public void updateConfig() {
+		if(this.settings.showlogs) {
+			showLogs(this.frameTabbedPane);
+		}else {
+			hideLogs(this.frameTabbedPane);
+		}
+		
 	}
 
 }
