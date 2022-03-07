@@ -117,6 +117,9 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
 
 	@Override
 	public String getPkcs12file() {
+		if(this.settings.usepkcs12file) {
+			return this.settings.pkcs12file;
+		}
 		return "";
 	}
 
@@ -184,6 +187,7 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
 		// mainFrame.dispose();
 
 	}
+
 	@Override
 	public void updateConfig() {
 		if(this.settings.showlogs) {
