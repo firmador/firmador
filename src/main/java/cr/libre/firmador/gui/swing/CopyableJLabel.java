@@ -32,27 +32,10 @@ public class CopyableJLabel extends JTextPane {
         setDefault();
     }
     
-    private String wrapString(String s, String deliminator, int length) {
-        String result = "";
-        int lastdelimPos = 0;
-        for (String token : s.split(" ", -1)) {
-        	if (lastdelimPos == length) {
-        		lastdelimPos=0;
-        		result += deliminator+" ";
-        	}
-        	
-        	result+=token+" ";
-        	lastdelimPos+=1;
-            
-        }
-        return result;
-    }
-
     public CopyableJLabel(String text) {
         super();
         setDefault();
-        String toshow=wrapString(text, "<br>", 15) ;
-        setText("<html>" +toshow + "</html>");
+        setText("<html><p style=\"word-wrap: break-word; width: 400px;\">" +text + "<p></html>");
     }
 
     private void setDefault() {

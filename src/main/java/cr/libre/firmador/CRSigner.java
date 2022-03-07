@@ -68,8 +68,14 @@ public class CRSigner {
             keys = signingToken.getKeys();
         } catch (Exception|Error e) {
         	LOG.error("Error obteniendo manejador de llaves privadas de la tarjeta", e);
-            if (Throwables.getRootCause(e).getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) return null;
-            else gui.showError(Throwables.getRootCause(e));
+        	if(Throwables.getRootCause(e).getLocalizedMessage().equals("CKR_PIN_INCORRECT")) throw e;
+        	if (Throwables.getRootCause(e).getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) return null;
+            else {
+            	String msg = Throwables.getRootCause(e).toString();
+            	if(msg.contains("but token only has 0 slots")) throw e;
+            	gui.showError(Throwables.getRootCause(e));
+            
+            }
         }
         if(keys!=null) {
 	        for (DSSPrivateKeyEntry candidatePrivateKey : keys) {

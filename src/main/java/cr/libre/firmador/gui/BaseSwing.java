@@ -198,7 +198,11 @@ public class BaseSwing {
             if (validator != null) {
             	validateDocument(validator);
             }
-        } catch (Exception e) {
+        
+        } catch (UnsupportedOperationException e) {
+			LOG.error("Error documento inválido "+fileName, e);
+			showError(e);
+		} catch (Exception e) {
 			LOG.error("Error validando documento desde archivo "+fileName, e);
             e.printStackTrace();
             validatePanel.reportLabel.setText("Error al validar documento.<br>" +
