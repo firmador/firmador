@@ -389,6 +389,7 @@ public class BaseSwing {
     }
     
 	public void setPluginManager(PluginManager pluginManager) {
+		pluginManager.start_loggin();
 		mainFrame.addWindowListener(new WindowAdapter() {				
 				@Override
 				public void windowClosing(WindowEvent arg0) {

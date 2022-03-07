@@ -24,6 +24,9 @@ public interface Plugin {
 
 	// Es el primer método que se llama en el plugin.
 	public void start();
+	
+	// Permite iniciar el bitacoreo
+	public void start_loggin();
 
 	// Es el último método que se llama al cerrar la aplicación
 	public void stop();
