@@ -31,11 +31,28 @@ public class CopyableJLabel extends JTextPane {
         super();
         setDefault();
     }
+    
+    private String wrapString(String s, String deliminator, int length) {
+        String result = "";
+        int lastdelimPos = 0;
+        for (String token : s.split(" ", -1)) {
+        	if (lastdelimPos == length) {
+        		lastdelimPos=0;
+        		result += deliminator+" ";
+        	}
+        	
+        	result+=token+" ";
+        	lastdelimPos+=1;
+            
+        }
+        return result;
+    }
 
     public CopyableJLabel(String text) {
         super();
         setDefault();
-        setText("<html>" + text + "</html>");
+        String toshow=wrapString(text, "<br>", 15) ;
+        setText("<html>" +toshow + "</html>");
     }
 
     private void setDefault() {
