@@ -34,6 +34,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 //import cr.libre.firmador.FirmadorCAdES;
 //import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
+import cr.libre.firmador.Settings;
+import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.plugins.PluginManager;
 
 //import cr.libre.firmador.FirmadorXAdES;
@@ -44,7 +46,10 @@ import eu.europa.esig.dss.model.MimeType;
 
 public class GUIShell implements GUIInterface {
 
-    public void loadGUI() {
+    private Settings settings;
+
+	public void loadGUI() {
+    	settings = SettingsManager.getInstance().get_and_create_settings();
         String fileName = getDocumentToSign();
         if (fileName != null) {
             // FirmadorCAdES firmador = new FirmadorCAdES(this);
@@ -127,14 +132,18 @@ public class GUIShell implements GUIInterface {
         return -1;
     }
 
-    @Override
-    public String getPkcs12file() {
-        return "";
-    }
+	@Override
+	public String getPkcs12file() {
+		if(this.settings.usepkcs12file) {
+			return this.settings.pkcs12file;
+		}
+		return "";
+	}
+
 
 	@Override
 	public void setPluginManager(PluginManager pluginManager) {
-		// TODO Auto-generated method stub
+		pluginManager.start_loggin();
 		
 	}
 
@@ -170,13 +179,13 @@ public class GUIShell implements GUIInterface {
 
 	@Override
 	public void displayFunctionality(String functionality) {
-		// TODO Auto-generated method stub
+		System.out.println(functionality);
 		
 	}
 
 	@Override
 	public void nextStep(String msg) {
-		// TODO Auto-generated method stub
+		System.out.println(msg);
 		
 	}
 

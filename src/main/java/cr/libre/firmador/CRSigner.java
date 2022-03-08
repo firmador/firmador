@@ -67,11 +67,18 @@ public class CRSigner {
         try {
             keys = signingToken.getKeys();
         } catch (Exception|Error e) {
-        	LOG.error("Error obteniendo manejador de llaves privadas de la tarjeta", e);
-        	if(Throwables.getRootCause(e).getLocalizedMessage().equals("CKR_PIN_INCORRECT")) throw e;
-        	if (Throwables.getRootCause(e).getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) return null;
+        	Throwable te = Throwables.getRootCause(e);
+        	String msg = e.getCause().toString();
+        	LOG.error("Error "+te.getLocalizedMessage()+" obteniendo manejador de llaves privadas de la tarjeta", e);
+        	if(te.getLocalizedMessage().equals("CKR_PIN_INCORRECT")) throw e;
+        	if(te.getLocalizedMessage().equals("CKR_GENERAL_ERROR")
+        			&& e.getCause().toString().contains("Unable to instantiate PKCS11")) throw e;
+        	
+        	
+        	if (te.getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) return null;
+        	
             else {
-            	String msg = Throwables.getRootCause(e).toString();
+            	
             	if(msg.contains("but token only has 0 slots")) throw e;
             	gui.showError(Throwables.getRootCause(e));
             

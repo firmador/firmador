@@ -92,7 +92,7 @@ public class FirmadorPAdES extends CRSigner {
             privateKey = getPrivateKey(token);
             gui.nextStep("Obteniendo manejador de llaves privadas");
             if (privateKey == null) {
-                for (int i = 0;; i++) {
+                for (int i = 0; i<10; i++) {
                     try {
                         token = getSignatureConnection(pin, i);
                         privateKey = getPrivateKey(token);
