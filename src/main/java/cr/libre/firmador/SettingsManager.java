@@ -43,8 +43,15 @@ public class SettingsManager {
 
     public Path get_config_dir() throws IOException {
         String osName = System.getProperty("os.name").toLowerCase();
+        String homepath = System.getProperty("user.home");
+        String suffixpath=".config/firmadorlibre";
+        if(osName.contains("windows")) { 
+        	homepath = System.getenv("APPDATA");
+        	suffixpath="firmadorlibre";
+        }
+        
         // Se asegura que siempre exista el directorio de configuracion
-        path = FileSystems.getDefault().getPath(System.getProperty("user.home"), ".firmadorlibre");
+        path = FileSystems.getDefault().getPath(homepath, suffixpath);
         if (!Files.isDirectory(path)) {
             Files.createDirectories(path);
             if (osName.contains("windows")) Files.setAttribute(path, "dos:hidden", true);
