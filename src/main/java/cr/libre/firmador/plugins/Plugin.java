@@ -30,5 +30,7 @@ public interface Plugin {
 
 	// Es el último método que se llama al cerrar la aplicación
 	public void stop();
+	
+	public boolean get_isrunnable();
 
 }

@@ -120,6 +120,7 @@ public class ConfigPanel extends JPanel {
 	private JPanel pkcs12panel;
 	private JLabel pkcs12label;
 	private JPanel advancedbottomspace;
+	private PluginManagerPlugin pluginsactive;
 	
 	private void createSimpleConfigPanel() {
 		simplePanel = new JPanel();
@@ -386,7 +387,10 @@ public class ConfigPanel extends JPanel {
 		advancedPanel.setLayout(new BoxLayout(advancedPanel, 1)); 
 		
 
-		
+        
+        pluginsactive = new PluginManagerPlugin();
+        pluginsactive.setPreferredSize(new Dimension(450, 130));
+        advancedPanel.add(pluginsactive);
         String padesLeveloptions[] = { "T", "LT", "LTA" };
         padesLevel = new JComboBox<String>(padesLeveloptions);
         padesLevel.setSelectedItem(settings.padesLevel);
@@ -476,6 +480,7 @@ public class ConfigPanel extends JPanel {
         advancedPanel.add(advancedbottomspace);
         statePKCS12CheckChange();
         changeLTA();
+
 	}
     public ConfigPanel() {
         manager = SettingsManager.getInstance();
@@ -599,6 +604,7 @@ public class ConfigPanel extends JPanel {
         if(settings.pkcs12file.isEmpty()) settings.pkcs12file = null;
         if(settings.extrapkcs11Lib.isEmpty()) settings.extrapkcs11Lib = null;
         
+        settings.active_plugins = pluginsactive.getActivePlugin();
         settings.updateConfig();
     }
 
@@ -651,6 +657,7 @@ public class ConfigPanel extends JPanel {
         }else{ pkcs11moduletext.setText(""); };
         
         usepkcs12file.setSelected(settings.usepkcs12file);
+        pluginsactive.load_plugins(settings);
 
     }
 
@@ -718,8 +725,8 @@ public class ConfigPanel extends JPanel {
            imagetext.setText(path);
            btimage.setIcon(this.getIcon(path));
         }
-
     }
+    
     public Icon getIcon(String path) {
         Icon  icon = new ImageIcon(new ImageIcon(path).getImage().getScaledInstance(iconsize, iconsize, Image.SCALE_DEFAULT));
         return icon;

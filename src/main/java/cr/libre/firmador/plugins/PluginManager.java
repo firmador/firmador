@@ -48,7 +48,7 @@ public class PluginManager implements Runnable {
 				Plugin plugin = (Plugin) pluginClass.getDeclaredConstructor().newInstance();
 
 
-				if (plugin.isrunnable) {
+				if (plugin.get_isrunnable()) {
 					SwingUtilities.invokeLater((Runnable) plugin);
 					runnables_plugins.add(plugin);
 				}
@@ -71,6 +71,7 @@ public class PluginManager implements Runnable {
 		for (Plugin plugin : plugins) {
 			plugin.stop();
 		}
+		 
 	}
 	
 	public void start_loggin() {

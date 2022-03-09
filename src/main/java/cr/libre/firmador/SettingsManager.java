@@ -23,6 +23,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.io.File;
 import java.io.FileInputStream;
@@ -156,6 +159,16 @@ public class SettingsManager {
             }
         }
     }
+    private List<String> getListFromString(String data, List<String> defaultdata){
+    	// Si no se tienen settings activados se ponen los que se definan por defecto en el código
+    	if(data.isEmpty() && defaultdata != null && defaultdata.size()>0 ) return defaultdata;  
+    	
+    	List<String> plugins = new ArrayList<String>();
+    	for(String item: Arrays.asList(data.split("\\|"))){
+    		if(!item.isEmpty())plugins.add(item);
+    	}
+    	return plugins;
+    }
 
     public Settings getSettings() {
         Settings conf = new Settings();
@@ -190,11 +203,15 @@ public class SettingsManager {
             conf.extrapkcs11Lib=props.getProperty("extrapkcs11Lib");
             conf.pkcs12file=props.getProperty("pkcs12file");
             conf.usepkcs12file=Boolean.parseBoolean(props.getProperty("usepkcs12file", String.valueOf(conf.usepkcs12file)));
+            conf.active_plugins=getListFromString(props.getProperty("plugins", ""), conf.active_plugins);
         }
 
         return conf;
     }
 
+    private String getListRepr(List<String> items) {
+    	return String.join("|", items);
+    }
     public void setSettings(Settings conf, boolean save) {
         setProperty("withoutvisiblesign", String.valueOf(conf.withoutvisiblesign));
         setProperty("uselta", String.valueOf(conf.uselta));
@@ -221,6 +238,7 @@ public class SettingsManager {
         setProperty("padesLevel", conf.padesLevel);
         setProperty("xadesLevel", conf.xadesLevel);
         setProperty("cadesLevel", conf.cadesLevel);
+        setProperty("plugins", getListRepr(conf.active_plugins));
                 
         if (conf.extrapkcs11Lib != null && conf.extrapkcs11Lib != "") {
             setProperty("extrapkcs11Lib", conf.extrapkcs11Lib);

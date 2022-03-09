@@ -20,12 +20,14 @@ package cr.libre.firmador.plugins;
 
 import org.slf4j.LoggerFactory;
 
+import cr.libre.firmador.Settings;
+import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUISwing;
 
 public class DummyPlugin implements Plugin {
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GUISwing.class);
 	public void start() {
-		System.out.println("Stating DummyPlugin");
+		LOG.info("Stating DummyPlugin");
 	}
 	
 	public void start_loggin() {
@@ -50,14 +52,20 @@ public class DummyPlugin implements Plugin {
 			info+=propertyKeyName+" - "+System.getProperty(propertyKeyName.toString())+"\n";
         }
 		
-        String versionstr = getClass().getPackage().getSpecificationVersion();
-        if(versionstr == null) versionstr = "Desarrollo";
-        info +="firmador.libre.version - "+ versionstr+"\n";
+		Settings settings = SettingsManager.getInstance().get_and_create_settings();
+		String version=settings.getVersion();
+        info +="firmador.libre.version - "+ version+"\n";
 		
 		LOG.info(info);
 	}
 
 	public void stop() {
-		System.out.println("Stop DummyPlugin");
+		LOG.info("Stop DummyPlugin");
 	}
+
+	@Override
+	public boolean get_isrunnable() {
+		return false;
+	}
+	
 }

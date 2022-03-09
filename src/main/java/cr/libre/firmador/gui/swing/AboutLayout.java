@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 
+import cr.libre.firmador.Settings;
+import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
 
@@ -25,13 +27,15 @@ public class AboutLayout extends GroupLayout {
     private GUIInterface swinginterface;
     private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
 
+	private Settings settings;
+
     public AboutLayout(Container host) {
         super(host);
-        String versionstr = getClass().getPackage().getSpecificationVersion();
-        if(versionstr == null) versionstr = "Desarrollo";
+        settings = SettingsManager.getInstance().get_and_create_settings();
+       
         JLabel iconLabel = new JLabel(new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
         JLabel descriptionLabel = new JLabel("<html><p align='center'><b>Firmador</b><br><br>" +
-            "Versión " + versionstr  + "<br><br>" +
+            "Versión " + settings.getVersion()  + "<br><br>" +
             "Herramienta para firmar documentos digitalmente.<br><br>" +
             "Los documentos firmados con esta herramienta cumplen con la<br>" +
             "Política de Formatos Oficiales de los Documentos Electrónicos<br>" +
@@ -64,7 +68,7 @@ public class AboutLayout extends GroupLayout {
     private void openProjectWebsite() {
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             try {
-                Desktop.getDesktop().browse(new URI("https://firmador.libre.cr"));
+                Desktop.getDesktop().browse(new URI(settings.base_url));
             } catch (Exception e) {
             	LOG.error("Error abriendo url", e);
                 this.swinginterface.showError(Throwables.getRootCause(e));

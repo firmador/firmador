@@ -32,6 +32,9 @@ import java.awt.Color;
 public class Settings {
     private List<ConfigListener> listeners = new ArrayList<ConfigListener>();
 
+    public String release_url_check = "https://firmador.libre.cr/version.txt";
+    public String base_url = "https://firmador.libre.cr";
+    public String defaultdevelopmentversion = "Desarrollo";
     public boolean withoutvisiblesign = false;
     public boolean uselta = true;
     public boolean overwritesourcefile = false;
@@ -64,9 +67,13 @@ public class Settings {
     
 
     public List<String> active_plugins = new ArrayList<String>();
+    public List<String> available_plugins = new ArrayList<String>();
     
     public Settings() {
     	active_plugins.add("cr.libre.firmador.plugins.DummyPlugin");
+    	active_plugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
+    	available_plugins.add("cr.libre.firmador.plugins.DummyPlugin");
+    	available_plugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
     }
 
     public String getDefaultSignMessage() {
@@ -184,5 +191,13 @@ public class Settings {
 	        default: level=SignatureLevel.CAdES_BASELINE_LTA; break;
         }
         return level;
-    } 
+    }
+    
+    public String getVersion() {
+    	
+    	String versionstr = getClass().getPackage().getSpecificationVersion();
+    	if(versionstr == null) versionstr=this.defaultdevelopmentversion;
+    	return versionstr;
+    	 
+    }
 }
