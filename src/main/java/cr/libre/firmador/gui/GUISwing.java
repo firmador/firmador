@@ -132,16 +132,11 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 
 	public void loadDocument(String fileName) {
 		gui.nextStep("Cargando el documento");
+		clean_elements();
+		docSelector.setLastFile(fileName);
 		docSelector.fileField.setText(Paths.get(fileName).getFileName().toString());
 		FileDocument mimeDocument = new FileDocument(fileName);
-		if (doc != null) {
-			try {
-				doc.close();
-			} catch (IOException e) {
-				LOG.error("Error cerrando archivo", e);
-				e.printStackTrace();
-			}
-		}
+
 
 		try {
 			if (mimeDocument.getMimeType() == MimeType.PDF) {
@@ -159,7 +154,14 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 	
 	public void clean_elements() {
 		docSelector.fileField.setText("");
-		doc=null;
+		if (doc != null) {
+			try {
+				doc.close();
+			} catch (IOException e) {
+				LOG.error("Error cerrando archivo", e);
+				e.printStackTrace();
+			}
+		}
 		// Muchas cosas mas acá
     }
 	
@@ -229,7 +231,11 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 	}
 
 	public String getDocumentToSign() {
+		
+		
 		return docSelector.getLastFile();
+		
+		
 	}
 
 	public String getPathToSave(String extension) {
