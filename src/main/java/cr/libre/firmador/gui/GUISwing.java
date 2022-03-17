@@ -22,6 +22,7 @@ package cr.libre.firmador.gui;
 import java.awt.FileDialog;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
@@ -269,6 +270,9 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 			dotExtension = extension;
 		} else if (lastDot >= 0)
 			dotExtension = lastFile.substring(lastDot);
+		
+		Path path = Paths.get(lastFile);
+		lastFile=path.getFileName().toString();
 		saveDialog.setFile(lastFile.substring(0, lastFile.lastIndexOf(".")) + suffix + dotExtension);
 		saveDialog.setFilenameFilter(docSelector.getLoadDialog().getFilenameFilter());
 		saveDialog.setLocationRelativeTo(null);
