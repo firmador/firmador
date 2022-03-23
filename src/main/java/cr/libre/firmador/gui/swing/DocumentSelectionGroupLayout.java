@@ -23,6 +23,8 @@ import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -120,9 +122,20 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
 
 	public void setLastFile(String lastFile) {
 		this.lastFile = lastFile;
+		Path path= FileSystems.getDefault().getPath(this.lastFile);
+		this.lastDirectory = path.getParent().toString();
 	}
 
+ 
+	
 	public FileDialog getLoadDialog() {
+		
+		if(loadDialog == null) {
+			loadDialog = new FileDialog(frame, "Seleccionar documento a firmar");
+			loadDialog.setMultipleMode(true);
+			loadDialog.setLocationRelativeTo(null);
+		}
+		
 		return loadDialog;
 	}
 
