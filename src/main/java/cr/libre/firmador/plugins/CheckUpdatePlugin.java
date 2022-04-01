@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -39,7 +40,8 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 	private class ExecutorWorker extends SwingWorker<Void, Void> {
 		
 		
-		protected String getFileDigest(Path jarfile) throws IOException {			
+		protected String getFileDigest(Path jarfile) throws IOException {	
+			LOG.info("Reading file for sha digest: "+jarfile.toString());
 			Digest digest = new Digest(DigestAlgorithm.SHA256, 
 					DSSUtils.digest(DigestAlgorithm.SHA256, Files.readAllBytes(jarfile)));
 
@@ -62,7 +64,7 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 						try {
 							update_jar();
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
+							LOG.error(e.getMessage());
 							e.printStackTrace();
 						}
 					}
@@ -96,7 +98,7 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 						try {
 							update_jar();
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
+							LOG.error(e.getMessage());
 							e.printStackTrace();
 						}
 					}
@@ -126,10 +128,10 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 				}
 			
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				LOG.error(e.getMessage());
 				e.printStackTrace();
 			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
+				LOG.error(e.getMessage());
 				e.printStackTrace();
 			}
 			return null;
@@ -158,16 +160,12 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 			return checksum.toUpperCase();
 		}
 		
-		public Path get_jar_path() throws URISyntaxException{
-			String jarPath = getClass()
+		public Path get_jar_path() throws URISyntaxException{		 
+			return Paths.get(getClass()
 	          .getProtectionDomain()
 	          .getCodeSource()
 	          .getLocation()
-	          .toURI()
-	          .getPath();
-			
-			return FileSystems.getDefault().getPath(jarPath);
-			
+	          .toURI()); 			
 		}
 		
 		public boolean can_write_path()  {
@@ -177,6 +175,7 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 				path = get_jar_path();
 				dev= Files.isWritable(path) && !Files.isDirectory(path);
 			} catch (URISyntaxException e) {
+				LOG.error(e.getMessage());
 				dev=false;
 			}
 			return dev;
@@ -188,7 +187,13 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 			String remotecheck=get_remote_checksum();
 			LOG.info("Sha256 of Remote: "+remotecheck);
 			return remotecheck.contains(hexsha);
-			//return true;
+			 
+		}
+		
+		public void copy_file(Path source, Path dest) throws IOException {
+			byte[] data = Files.readAllBytes(source);
+			Files.write(dest, data);
+		
 		}
 		
 		public void update_jar() throws Exception {
@@ -212,7 +217,9 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 		    if(check_md5sum(tempFile)) {
 				Path jarfile = get_jar_path();
 				LOG.info("Copying downloader file to "+jarfile.toString());
-				Files.copy(tempFile, jarfile, StandardCopyOption.REPLACE_EXISTING);
+				
+				copy_file(tempFile, jarfile);
+				//Files.copy(tempFile, jarfile, StandardCopyOption.REPLACE_EXISTING);
 				File file = new File(jarfile.toString());
 				file.setExecutable(true);
 				file.setWritable(true);
