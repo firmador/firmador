@@ -33,12 +33,11 @@ public class Settings {
     private List<ConfigListener> listeners = new ArrayList<ConfigListener>();
 
     public String release_url_check = "https://firmador.libre.cr/version.txt";
-    public String release_url_snapshot_check = "https://firmador.libre.cr/version-dev.txt";
     public String base_url = "https://firmador.libre.cr";
     public String release_url = "https://firmador.libre.cr/firmador.jar";
     public String release_snapshot_url = "https://firmador.libre.cr/firmador-en-pruebas.jar";
-    public String checksum_url = "https://firmador.libre.cr/checksum.txt";
-    public String checksum_snapshot_url = "https://firmador.libre.cr/checksum-dev.txt";
+    public String checksum_url = "https://firmador.libre.cr/firmador.jar.sha256";
+    public String checksum_snapshot_url = "https://firmador.libre.cr/firmador-en-pruebas.jar.sha256";
 
     
     public String defaultdevelopmentversion = "Desarrollo";
@@ -200,12 +199,11 @@ public class Settings {
         return level;
     }
     
-    public String getVersion() {
-    	
+    public String getVersion() {     
     	String versionstr = getClass().getPackage().getSpecificationVersion();
     	if(versionstr == null) versionstr=this.defaultdevelopmentversion;
     	return versionstr;
-    	 
+    	  
     }
     
     public String getReleaseUrl() {
@@ -218,7 +216,7 @@ public class Settings {
     public String getReleaseCheckUrl() {
     	String version = getVersion();
     	if(version.contains("SNAPSHOT")) {
-    		return this.release_url_snapshot_check;
+    		return "";
     	}
     	return this.release_url_check;
     }
