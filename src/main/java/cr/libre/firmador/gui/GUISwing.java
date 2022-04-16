@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 
+import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.ConfigListener;
 import cr.libre.firmador.gui.swing.AboutLayout;
 import cr.libre.firmador.gui.swing.ConfigPanel;
@@ -201,8 +202,8 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		boolean ok = false;
 		fileName = getDocumentToSign();
 		toSignDocument = new FileDocument(fileName);
-		PasswordProtection pin = getPin();
-		this.signDocument(pin, !signPanel.getSignatureVisibleCheckBox().isSelected(), true);
+		CardSignInfo card = getPin();
+		this.signDocument(card, !signPanel.getSignatureVisibleCheckBox().isSelected(), true);
 
 		if (signedDocument != null) {
 			try {
@@ -310,12 +311,12 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		return newname;
 	}
 	
-	public void signDocumentByPath(File file, PasswordProtection pin) {
+	public void signDocumentByPath(File file, CardSignInfo card) {
 		documenttosign = file.toString();
 		loadDocument(documenttosign);
 		toSignDocument = new FileDocument(documenttosign);
 
-		this.signDocument(pin, !signPanel.getSignatureVisibleCheckBox().isSelected(), false);
+		this.signDocument(card, !signPanel.getSignatureVisibleCheckBox().isSelected(), false);
 		if(signedDocument != null) {
 			fileName = addSuffixToFilePath(documenttosign, "-firmado");
 			try {

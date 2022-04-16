@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 
+import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.FirmadorCAdES;
 import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
@@ -61,6 +62,7 @@ import cr.libre.firmador.gui.swing.CopyableJLabel;
 import cr.libre.firmador.gui.swing.ExecutorWorkerInterface;
 import cr.libre.firmador.gui.swing.LogHandler;
 import cr.libre.firmador.gui.swing.LogginFrame;
+import cr.libre.firmador.gui.swing.RequestPinWindow;
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import cr.libre.firmador.gui.swing.ValidatePanel;
@@ -281,7 +283,7 @@ public class BaseSwing {
     }
 
     
-    protected void signDocument(PasswordProtection pin, Boolean visibleSignature) {
+    protected void signDocument(CardSignInfo card, Boolean visibleSignature) {
    	
     	signedDocument = null;
     	MimeType mimeType = toSignDocument.getMimeType();
@@ -291,33 +293,30 @@ public class BaseSwing {
             firmador.addVisibleSignature((int)signPanel.getPageSpinner().getValue(), 
             		(int)Math.round(signPanel.getSignatureLabel().getX() * 1.5), 
             		(int)Math.round(signPanel.getSignatureLabel().getY() * 1.5));
-            signedDocument = firmador.sign(toSignDocument, pin, signPanel.getReasonField().getText(), signPanel.getLocationField().getText(), 
+            signedDocument = firmador.sign(toSignDocument, card, signPanel.getReasonField().getText(), signPanel.getLocationField().getText(), 
             		signPanel.getContactInfoField().getText(), System.getProperty("jnlp.signatureImage"), Boolean.getBoolean("jnlp.hideSignatureAdvice"));
         } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
             FirmadorOpenDocument firmador = new FirmadorOpenDocument(gui);
-            signedDocument = firmador.sign(toSignDocument, pin);
         } else if (mimeType == MimeType.XML || signPanel.getAdESFormatButtonGroup().getSelection().getActionCommand().equals("XAdES")) {
             FirmadorXAdES firmador = new FirmadorXAdES(gui);
-            signedDocument = firmador.sign(toSignDocument, pin);
+            signedDocument = firmador.sign(toSignDocument, card);
          
         } else {
             FirmadorCAdES firmador = new FirmadorCAdES(gui);
-            signedDocument = firmador.sign(toSignDocument, pin);
+            signedDocument = firmador.sign(toSignDocument, card);
             
         }
     }
     
-    protected void signDocument(PasswordProtection pin, Boolean visibleSignature, Boolean destroyPin){
-        if (pin.getPassword() != null && pin.getPassword().length != 0) {
+    protected void signDocument(CardSignInfo card, 
+    		 Boolean visibleSignature, Boolean destroyPin){
+
+        if (card.isValid()) {
         	gui.nextStep("Inicio del proceso de firmado");
-        	signDocument(pin,  visibleSignature);
+        	signDocument(card,  visibleSignature);
             if(destroyPin) {
             	gui.nextStep("Destroyendo el pin");
-	            try {
-	                pin.destroy();
-	            } catch (Exception e) {
-	            	LOG.error("Error destruyendo el pin", e);
-	            }
+	            card.destroyPin();
             }
         }
     }
@@ -395,25 +394,12 @@ public class BaseSwing {
         if(closed) if (messageType == JOptionPane.ERROR_MESSAGE) System.exit(0);
     }
 
-    public PasswordProtection getPin() {
-        JPasswordField pinField = new JPasswordField(14);
-        pinField.addHierarchyListener(new HierarchyListener() {
-            public void hierarchyChanged(HierarchyEvent event) {
-                final Component component = event.getComponent();
-                if (component.isShowing() && (event.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
-                    Window toplevel = SwingUtilities.getWindowAncestor(component);
-                    toplevel.addWindowFocusListener(new WindowAdapter() {
-                        public void windowGainedFocus(WindowEvent event) {
-                            component.requestFocus();
-                        }
-                    });
-                }
-            }
-        });
-        int action = JOptionPane.showConfirmDialog(null, pinField, "Ingresar PIN", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-        pinField.grabFocus();
-        if (action == 0) return new PasswordProtection(pinField.getPassword());
-        else return new PasswordProtection(null);
+    public CardSignInfo getPin() {
+    	RequestPinWindow pinrequestwindow = new RequestPinWindow();
+        int action = pinrequestwindow.showandwait();
+        
+        if (action == 0) return pinrequestwindow.getCardInfo();
+        else return null;
     }
     
 	public void setPluginManager(PluginManager pluginManager) {

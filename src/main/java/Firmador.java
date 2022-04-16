@@ -27,9 +27,14 @@ import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISelector;
 import cr.libre.firmador.plugins.PluginManager;
 
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.net.URISyntaxException;
+
 public class Firmador {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException, IOException, URISyntaxException {
+    
         // PDFBox font cache warmup
         FontMappers.instance().getFontBoxFont(null, null);
         // Workaround illegal access for Java 9+ until jaxb 2.4.0 gets released

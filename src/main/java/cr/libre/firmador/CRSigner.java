@@ -18,14 +18,11 @@ You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador;
-
-import java.security.KeyStore.PasswordProtection;
 import java.util.List;
 
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.gui.GUIInterface;
-import cr.libre.firmador.gui.GUISwing;
 
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.enumerations.KeyUsageBit;
@@ -95,7 +92,7 @@ public class CRSigner {
         return privateKey;
     }
 
-    private String getPkcs11Lib() {
+    public static String getPkcs11Lib() {
         String osName = System.getProperty("os.name").toLowerCase();
         Settings settings = SettingsManager.getInstance().get_and_create_settings();
         if(settings.extrapkcs11Lib != null && !settings.extrapkcs11Lib.isEmpty()) {
@@ -107,11 +104,11 @@ public class CRSigner {
         return "";
     }
 
-    public SignatureTokenConnection getSignatureConnection(PasswordProtection pin) {
-        return getSignatureConnection(pin, -1);
+    public SignatureTokenConnection getSignatureConnection(CardSignInfo card) {
+        return getSignatureConnection(card, -1);
     }
 
-    public SignatureTokenConnection getSignatureConnection(PasswordProtection pin, int slot) {
+    public SignatureTokenConnection getSignatureConnection(CardSignInfo card, int slot) {
         /*
          * There should be other ways to find alternative PKCS#11 module
          * configuration settings in the future, operating system specific,
@@ -119,10 +116,10 @@ public class CRSigner {
          * hardware devices for Sello Electrónico).
          */
         SignatureTokenConnection signingToken = null;
-        PrefilledPasswordCallback pinCallback = new PrefilledPasswordCallback(pin);
+        PrefilledPasswordCallback pinCallback = new PrefilledPasswordCallback(card.getPin());
 
         try {
-            if (!gui.getPkcs12file().isEmpty()) signingToken = new Pkcs12SignatureToken(gui.getPkcs12file(), pin);
+            if (!gui.getPkcs12file().isEmpty()) signingToken = new Pkcs12SignatureToken(gui.getPkcs12file(), card.getPin());
             else signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pinCallback, gui.getSlot(), slot, null);
         } catch (Exception|Error e) {
 			LOG.error("Error al obtener la conexión de firma", e);

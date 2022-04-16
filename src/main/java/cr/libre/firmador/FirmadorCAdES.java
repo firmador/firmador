@@ -69,7 +69,7 @@ public class FirmadorCAdES extends CRSigner {
         settings = SettingsManager.getInstance().get_and_create_settings();
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin) {
+    public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card) {
         CertificateVerifier verifier = this.getCertificateVerifier();
         CAdESService service = new CAdESService(verifier);
 
@@ -78,7 +78,7 @@ public class FirmadorCAdES extends CRSigner {
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
         try {
-            token = getSignatureConnection(pin);
+            token = getSignatureConnection(card);
         } catch (DSSException|AlertException|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
@@ -88,7 +88,7 @@ public class FirmadorCAdES extends CRSigner {
             if (privateKey == null) {
                 for (int i = 0;; i++) {
                     try {
-                        token = getSignatureConnection(pin, i);
+                        token = getSignatureConnection(card, i);
                         privateKey = getPrivateKey(token);
                         if (privateKey != null) break;
                     } catch (Exception ex) {

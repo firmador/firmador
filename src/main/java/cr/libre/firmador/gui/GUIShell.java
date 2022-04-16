@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
+import cr.libre.firmador.CardSignInfo;
 //import cr.libre.firmador.FirmadorCAdES;
 //import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
@@ -56,12 +57,10 @@ public class GUIShell implements GUIInterface {
             // FirmadorOpenDocument firmador = new FirmadorOpenDocument(this);
             FirmadorPAdES firmador = new FirmadorPAdES(this);
             // FirmadorXAdES firmador = new FirmadorXAdES(this);
-            PasswordProtection pin = getPin();
+            CardSignInfo card = getPin();
             DSSDocument toSignDocument = new FileDocument(fileName);
-            DSSDocument signedDocument = firmador.sign(toSignDocument, pin, null, null, null, null, null);
-            try {
-                pin.destroy();
-            } catch (Exception e) {}
+            DSSDocument signedDocument = firmador.sign(toSignDocument, card, null, null, null, null, null);
+            card.destroyPin();
             if (signedDocument != null) {
                 fileName = getPathToSave("");
                 try {
@@ -112,14 +111,14 @@ public class GUIShell implements GUIInterface {
         return Paths.get(docpath).toAbsolutePath().toString();
     }
 
-    public PasswordProtection getPin() {
+    public CardSignInfo getPin() {
         Console console = System.console();
         char[] password = null;
         if (console != null) password = console.readPassword("PIN: ");
         else password = readFromInput("PIN: ").toCharArray();
-        PasswordProtection pin = new PasswordProtection(password);
+        CardSignInfo card = new CardSignInfo(password);
         Arrays.fill(password, (char) 0);
-        return pin;
+        return card;
     }
 
     @Override

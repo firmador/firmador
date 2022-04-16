@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 
+import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;  
 
@@ -31,12 +32,12 @@ public class ExecutorSwingWorkerMultipleFiles extends SwingWorker<Void, Void> {
 
 	@Override
 	protected Void doInBackground() throws Exception {
-        PasswordProtection pin = gui.getPin();
+        CardSignInfo card = gui.getPin();
 		for (File file : files) {
 			worker.setProgress(0);
 			this.progressMonitor.setHeaderTitle("Firmando archivo: "+file.getName());
 			try {
-				((GUISwing) gui).signDocumentByPath(file, pin);	
+				((GUISwing) gui).signDocumentByPath(file, card);	
 			}catch (Exception e) {
 				Throwable te = Throwables.getRootCause(e);
 				String msg = te.toString();

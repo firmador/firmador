@@ -67,7 +67,7 @@ public class FirmadorOpenDocument extends CRSigner {
         super(gui);
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin) {
+    public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card) {
         CertificateVerifier verifier = this.getCertificateVerifier();
         ASiCWithXAdESService service = new ASiCWithXAdESService(verifier);
 
@@ -76,7 +76,7 @@ public class FirmadorOpenDocument extends CRSigner {
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
         try {
-            token = getSignatureConnection(pin);
+            token = getSignatureConnection(card);
         } catch (DSSException|AlertException|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
@@ -86,7 +86,7 @@ public class FirmadorOpenDocument extends CRSigner {
             if (privateKey == null) {
                 for (int i = 0;; i++) {
                     try {
-                        token = getSignatureConnection(pin, i);
+                        token = getSignatureConnection(card, i);
                         privateKey = getPrivateKey(token);
                         if (privateKey != null) break;
                     } catch (Exception ex) {

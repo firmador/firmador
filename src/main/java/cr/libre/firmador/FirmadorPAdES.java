@@ -69,7 +69,7 @@ public class FirmadorPAdES extends CRSigner {
         settings = SettingsManager.getInstance().get_and_create_settings();
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
+    public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
         CertificateVerifier verifier = this.getCertificateVerifier();
         PAdESService service = new PAdESService(verifier);
         service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
@@ -82,7 +82,7 @@ public class FirmadorPAdES extends CRSigner {
             image = settings.getImage();
         }
         try {
-            token = getSignatureConnection(pin);
+            token = getSignatureConnection(card);
         } catch (DSSException|AlertException|Error e) {
             gui.showError(Throwables.getRootCause(e));
         }
@@ -94,7 +94,7 @@ public class FirmadorPAdES extends CRSigner {
             if (privateKey == null) {
                 for (int i = 0; i<10; i++) {
                     try {
-                        token = getSignatureConnection(pin, i);
+                        token = getSignatureConnection(card, i);
                         privateKey = getPrivateKey(token);
                         if (privateKey != null) break;
                     } catch (Exception ex) {

@@ -2,6 +2,7 @@ package cr.libre.firmador.gui;
 
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyStore.PasswordProtection;
 import java.util.HashMap;
 
@@ -11,8 +12,10 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import org.apache.hc.core5.http.HttpStatus;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
+import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.ConfigListener;
 import cr.libre.firmador.gui.swing.AboutLayout;
 import cr.libre.firmador.gui.swing.ConfigPanel;
@@ -90,8 +93,8 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
 	}
 	
 	public boolean signDocuments() {
-		PasswordProtection pin = getPin();
-		super.signDocument(pin, true);
+		CardSignInfo card = getPin();
+		super.signDocument(card, true);
 
 		try {
 			signedDocument.writeTo(docinfo.getData());
@@ -141,7 +144,8 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
 		docinfo = docmap.get(fileName);
 		PDDocument doc;
 		try {
-			byte[] data = docinfo.getInputdata().readAllBytes();
+	 
+			byte[] data =IOUtils.toByteArray( docinfo.getInputdata());
 			toSignDocument = new InMemoryDocument(data, fileName);
 			MimeType mimeType = toSignDocument.getMimeType();
 			if(MimeType.PDF == mimeType) {

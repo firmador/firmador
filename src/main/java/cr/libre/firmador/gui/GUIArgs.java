@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
+import cr.libre.firmador.CardSignInfo;
 //import cr.libre.firmador.FirmadorCAdES;
 //import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
@@ -59,11 +60,11 @@ public class GUIArgs implements GUIInterface {
             DSSDocument toSignDocument = new FileDocument(fileName);
             DSSDocument signedDocument = null;
             if (!timestamp && !visibleTimestamp) {
-                PasswordProtection pin = getPin();
-                signedDocument = firmador.sign(toSignDocument, pin, null, null, null, null, null);
-                try {
-                    pin.destroy();
-                } catch (Exception e) {}
+                CardSignInfo card = getPin();
+                signedDocument = firmador.sign(toSignDocument, card, null, null, null, null, null);
+               
+                card.destroyPin();;
+             
             } else signedDocument = firmador.timestamp(toSignDocument, visibleTimestamp);
             if (signedDocument != null) {
                 fileName = getPathToSave("");
@@ -104,7 +105,7 @@ public class GUIArgs implements GUIInterface {
         return documenttosave;
     }
 
-    public PasswordProtection getPin() {
+    public CardSignInfo getPin() {
         String pintext = null;
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         try {
@@ -113,7 +114,7 @@ public class GUIArgs implements GUIInterface {
             System.err.println("PIN not encontrado");
             System.exit(1);
         }
-        return new PasswordProtection(pintext.toCharArray());
+        return new CardSignInfo(pintext);
     }
 
     @Override
