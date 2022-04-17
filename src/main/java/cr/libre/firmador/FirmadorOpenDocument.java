@@ -79,24 +79,15 @@ public class FirmadorOpenDocument extends CRSigner {
             token = getSignatureConnection(card);
         } catch (DSSException|AlertException|Error e) {
             gui.showError(Throwables.getRootCause(e));
+            return null;
         }
         DSSPrivateKeyEntry privateKey = null;
         try {
             privateKey = getPrivateKey(token);
-            if (privateKey == null) {
-                for (int i = 0;; i++) {
-                    try {
-                        token = getSignatureConnection(card, i);
-                        privateKey = getPrivateKey(token);
-                        if (privateKey != null) break;
-                    } catch (Exception ex) {
-                        if (Throwables.getRootCause(ex).getLocalizedMessage().equals("CKR_SLOT_ID_INVALID")) break;
-                        else gui.showError(Throwables.getRootCause(ex));
-                    }
-                }
-            }
+            
         } catch (Exception e) {
             gui.showError(Throwables.getRootCause(e));
+            return null;
         }
         try {
             CertificateToken certificate = privateKey.getCertificate();

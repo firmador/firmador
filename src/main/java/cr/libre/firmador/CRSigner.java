@@ -105,10 +105,6 @@ public class CRSigner {
     }
 
     public SignatureTokenConnection getSignatureConnection(CardSignInfo card) {
-        return getSignatureConnection(card, -1);
-    }
-
-    public SignatureTokenConnection getSignatureConnection(CardSignInfo card, int slot) {
         /*
          * There should be other ways to find alternative PKCS#11 module
          * configuration settings in the future, operating system specific,
@@ -116,11 +112,15 @@ public class CRSigner {
          * hardware devices for Sello Electrónico).
          */
         SignatureTokenConnection signingToken = null;
-        PrefilledPasswordCallback pinCallback = new PrefilledPasswordCallback(card.getPin());
+        
 
         try {
-            if (!gui.getPkcs12file().isEmpty()) signingToken = new Pkcs12SignatureToken(gui.getPkcs12file(), card.getPin());
-            else signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), pinCallback, gui.getSlot(), slot, null);
+        	if(card.getCardType() == CardSignInfo.PKCS12TYPE) {
+        		signingToken = new Pkcs12SignatureToken(card.getTokenSerialNumber(), card.getPin());
+        	}else {
+        		PrefilledPasswordCallback pinCallback = new PrefilledPasswordCallback(card.getPin());
+        		signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), card.getPin(), (int)card.getSlotID());
+        	}
         } catch (Exception|Error e) {
 			LOG.error("Error al obtener la conexión de firma", e);
             gui.showError(Throwables.getRootCause(e));

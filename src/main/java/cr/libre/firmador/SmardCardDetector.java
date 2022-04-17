@@ -91,7 +91,7 @@ public class SmardCardDetector implements  ConfigListener {
                                 LOG.debug(firstName + " " + lastName + " (" + identification + ") " + certificate.getSerialNumber().toString(16) + " [Token serial number: " + new String(tokenInfo.serialNumber) + "] (Expires: " + expires+ ")");
                                 Object keyIdentifier = pTemplate2[i + 1]/* .pValue */; // TODO use pValue to get the value for comparison when using it to match with private key!
                                 LOG.debug("Public/Private key pair identifier: " + keyIdentifier); // After logging in with PIN, find the matching private key pValue. NOTE: Old certificates didn't use "LlaveDeFirma" id/label.
-                                cardinfo.add(new CardSignInfo(
+                                cardinfo.add(new CardSignInfo(CardSignInfo.PKCS11TYPE,
                                 		identification,
                                 		firstName,
                                 		lastName,

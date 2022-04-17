@@ -7,20 +7,26 @@ import org.slf4j.LoggerFactory;
 import cr.libre.firmador.gui.BaseSwing;
 
 public class CardSignInfo {
+	public static int PKCS11TYPE=1;
+	public static int PKCS12TYPE=2;
+	public static int ONLYPIN=3;
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(CardSignInfo.class);
 	private String identification;
 	private String firstName;
 	private String lastName;
 	private String expires;
 	private String certSerialNumber;
+	// On pkcs12 use tokenSerialNumber to store pkcs12 file path 
 	private String tokenSerialNumber;
 	private long slotID;
 	private PasswordProtection pin;
+	private int cardType;
 	
-	
-	public CardSignInfo(String identification, String firstName, String lastName, String expires,
+
+	public CardSignInfo(int cardType, String identification, String firstName, String lastName, String expires,
 			String certSerialNumber, String tokenSerialNumber, long slotID) {
 		super();
+		this.cardType=cardType;
 		this.identification = identification;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -32,10 +38,20 @@ public class CardSignInfo {
 	
 	public CardSignInfo(String pin) {
 		this.setPin(pin);
+		this.cardType=ONLYPIN;
 	}
 	
 	public CardSignInfo(char[] password) {
 		this.setPin(password);
+		this.cardType=ONLYPIN;
+	}
+
+	public int getCardType() {
+		return cardType;
+	}
+
+	public void setCardType(int cardType) {
+		this.cardType = cardType;
 	}
 
 	public String getTokenSerialNumber() {
@@ -65,7 +81,8 @@ public class CardSignInfo {
 	}
 	
 	public String getDisplayInfo() {
-        return firstName + " " + lastName + " (" + identification + ") " + this.certSerialNumber+ " [Token serial number: " + this.tokenSerialNumber + "] (Expires: " + expires+ ")";
+        return firstName + " " + lastName + " (" + identification + ") (Expira: " + expires+ ")";
+	//+ this.certSerialNumber+ " [Token serial number: " + this.tokenSerialNumber + "] (Expires: " + expires+ ")";
 
 	}
 	
