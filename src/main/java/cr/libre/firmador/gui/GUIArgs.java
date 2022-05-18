@@ -28,12 +28,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 //import cr.libre.firmador.FirmadorCAdES;
-//import cr.libre.firmador.FirmadorOpenDocument;
+import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
-//import cr.libre.firmador.FirmadorXAdES;
+import cr.libre.firmador.FirmadorXAdES;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 public class GUIArgs implements GUIInterface {
 
@@ -47,19 +48,31 @@ public class GUIArgs implements GUIInterface {
     public void loadGUI() {
         String fileName = getDocumentToSign();
         if (fileName != null) {
-            // FirmadorCAdES firmador = new FirmadorCAdES(this);
-            // FirmadorOpenDocument firmador = new FirmadorOpenDocument(this);
-            FirmadorPAdES firmador = new FirmadorPAdES(this);
-            // FirmadorXAdES firmador = new FirmadorXAdES(this);
             DSSDocument toSignDocument = new FileDocument(fileName);
             DSSDocument signedDocument = null;
             if (!timestamp && !visibleTimestamp) {
                 PasswordProtection pin = getPin();
-                signedDocument = firmador.sign(toSignDocument, pin, null, null, null, null, null, null);
+                MimeType mimeType = toSignDocument.getMimeType();
+                if (mimeType == MimeType.PDF) {
+                    FirmadorPAdES firmador = new FirmadorPAdES(this);
+                    signedDocument = firmador.sign(toSignDocument, card, null, null, null, null, null);
+                } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
+                    FirmadorOpenDocument firmador = new FirmadorOpenDocument(this);
+                    signedDocument = firmador.sign(toSignDocument, card);
+                } else if (mimeType == MimeType.XML) {
+                    FirmadorXAdES firmador = new FirmadorXAdES(this);
+                    signedDocument = firmador.sign(toSignDocument, card);
+                } else {
+                    FirmadorXAdES firmador = new FirmadorXAdES(this);
+                    signedDocument = firmador.sign(toSignDocument, card);
+                }
                 try {
                     pin.destroy();
                 } catch (Exception e) {}
-            } else signedDocument = firmador.timestamp(toSignDocument, visibleTimestamp);
+            } else {
+                FirmadorPAdES firmador = new FirmadorPAdES(this);
+                signedDocument = firmador.timestamp(toSignDocument, visibleTimestamp);
+            }
             if (signedDocument != null) {
                 fileName = getPathToSave("");
                 try {
