@@ -102,7 +102,7 @@ public class FirmadorXAdES extends CRSigner {
             CertificateToken certificate = privateKey.getCertificate();
 
 
-            parameters.setSignatureLevel(settings.getXAdESLevel());
+            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificateDigestMethod(parameters.getDigestAlgorithm());
 
