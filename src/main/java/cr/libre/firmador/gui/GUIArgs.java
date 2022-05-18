@@ -34,6 +34,7 @@ import cr.libre.firmador.FirmadorXAdES;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
+import eu.europa.esig.dss.model.MimeType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 public class GUIArgs implements GUIInterface {
@@ -55,16 +56,16 @@ public class GUIArgs implements GUIInterface {
                 MimeType mimeType = toSignDocument.getMimeType();
                 if (mimeType == MimeType.PDF) {
                     FirmadorPAdES firmador = new FirmadorPAdES(this);
-                    signedDocument = firmador.sign(toSignDocument, card, null, null, null, null, null);
+                    signedDocument = firmador.sign(toSignDocument, pin, null, null, null, null, null, null);
                 } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
                     FirmadorOpenDocument firmador = new FirmadorOpenDocument(this);
-                    signedDocument = firmador.sign(toSignDocument, card);
+                    signedDocument = firmador.sign(toSignDocument, pin);
                 } else if (mimeType == MimeType.XML) {
                     FirmadorXAdES firmador = new FirmadorXAdES(this);
-                    signedDocument = firmador.sign(toSignDocument, card);
+                    signedDocument = firmador.sign(toSignDocument, pin);
                 } else {
                     FirmadorXAdES firmador = new FirmadorXAdES(this);
-                    signedDocument = firmador.sign(toSignDocument, card);
+                    signedDocument = firmador.sign(toSignDocument, pin);
                 }
                 try {
                     pin.destroy();
