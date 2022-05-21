@@ -49,9 +49,9 @@ public class ValidatePanel extends ScrollableJPanel {
 		validateLayout.setAutoCreateGaps(true);
 		validateLayout.setAutoCreateContainerGaps(true);
 		validateLayout.setHorizontalGroup(
-				validateLayout.createParallelGroup().addComponent(reportLabel).addComponent(extendButton));
+				validateLayout.createParallelGroup().addComponent(reportLabel)/*.addComponent(extendButton)*/);
 		validateLayout.setVerticalGroup(
-				validateLayout.createSequentialGroup().addComponent(reportLabel).addComponent(extendButton));
+				validateLayout.createSequentialGroup().addComponent(reportLabel)/*.addComponent(extendButton)*/);
 		this.setLayout(validateLayout);
 		this.setOpaque(false);
 
