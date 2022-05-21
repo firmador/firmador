@@ -472,12 +472,12 @@ public class GUISwing implements GUIInterface, ConfigListener {
         validateLayout.setHorizontalGroup(
             validateLayout.createParallelGroup()
                 .addComponent(reportLabel)
-                .addComponent(extendButton)
+                //.addComponent(extendButton)
         );
         validateLayout.setVerticalGroup(
             validateLayout.createSequentialGroup()
                 .addComponent(reportLabel)
-                .addComponent(extendButton)
+                //.addComponent(extendButton)
         );
         validatePanel.setLayout(validateLayout);
         validatePanel.setOpaque(false);
