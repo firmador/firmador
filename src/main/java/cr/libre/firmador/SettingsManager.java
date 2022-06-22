@@ -202,7 +202,6 @@ public class SettingsManager {
             conf.cadesLevel = props.getProperty("cadesLevel", conf.cadesLevel);
             conf.extrapkcs11Lib=props.getProperty("extrapkcs11Lib");
             conf.pkcs12file=props.getProperty("pkcs12file");
-            conf.usepkcs12file=Boolean.parseBoolean(props.getProperty("usepkcs12file", String.valueOf(conf.usepkcs12file)));
             conf.active_plugins=getListFromString(props.getProperty("plugins", ""), conf.active_plugins);
         }
 
@@ -246,9 +245,7 @@ public class SettingsManager {
         
         if (conf.pkcs12file != null && conf.pkcs12file != "") {
             setProperty("pkcs12file", conf.pkcs12file);
-        }
-        setProperty("usepkcs12file", String.valueOf(conf.usepkcs12file));
-        
+        }       
         
         if (conf.image != null) {
             setProperty("image", conf.image);

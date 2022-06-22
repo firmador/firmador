@@ -127,10 +127,6 @@ public class GUIArgs implements GUIInterface {
         return slot;
     }
 
-    @Override
-    public String getPkcs12file() {
-        return pkcs12file;
-    }
 
 	@Override
 	public void setPluginManager(PluginManager pluginManager) {

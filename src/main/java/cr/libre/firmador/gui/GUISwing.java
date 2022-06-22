@@ -340,13 +340,6 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		return -1;
 	}
 
-	@Override
-	public String getPkcs12file() {
-		if(this.settings.usepkcs12file) {
-			return this.settings.pkcs12file;
-		}
-		return "";
-	}
 
 	public void displayFunctionality(String functionality) {
 		if (functionality.equalsIgnoreCase("sign")) {

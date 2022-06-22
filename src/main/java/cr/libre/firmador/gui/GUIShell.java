@@ -131,15 +131,7 @@ public class GUIShell implements GUIInterface {
         return -1;
     }
 
-	@Override
-	public String getPkcs12file() {
-		if(this.settings.usepkcs12file) {
-			return this.settings.pkcs12file;
-		}
-		return "";
-	}
-
-
+ 
 	@Override
 	public void setPluginManager(PluginManager pluginManager) {
 		pluginManager.start_loggin();

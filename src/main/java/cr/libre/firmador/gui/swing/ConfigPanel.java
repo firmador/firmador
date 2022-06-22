@@ -112,13 +112,9 @@ public class ConfigPanel extends JPanel {
     private JComboBox<String> padesLevel;
     private JComboBox<String> xadesLevel;
     private JComboBox<String> cadesLevel;
-	private JTextField pkcs12text;
-	private JButton btpkcs12;
 	private JTextField pkcs11moduletext;
 	private JButton btpkcs11module;
-	private JCheckBox usepkcs12file;
-	private JPanel pkcs12panel;
-	private JLabel pkcs12label;
+	private Pkcs12ConfigPanel pkcs12panel;
 	private JPanel advancedbottomspace;
 	private PluginManagerPlugin pluginsactive;
 	
@@ -359,20 +355,6 @@ public class ConfigPanel extends JPanel {
 	}
 	
 	
-	private void statePKCS12CheckChange() {
-		if(usepkcs12file.isSelected()){
-			pkcs12panel.setVisible(true);
-			pkcs12label.setVisible(true);
-			advancedbottomspace.removeAll();
-	        advancedbottomspace.add(Box.createRigidArea(new Dimension(400, 80)));
-		}else{
-		   pkcs12panel.setVisible(false);
-		   pkcs12label.setVisible(false);
-		   advancedbottomspace.removeAll();
-	       advancedbottomspace.add(Box.createRigidArea(new Dimension(400, 120)));
-		}
-	}
-	
 	private void changeLTA() {
 		if(uselta.isSelected()){
 			padesLevel.setSelectedItem("LTA");
@@ -414,41 +396,16 @@ public class ConfigPanel extends JPanel {
         checkpanelpkcs12.setBorder(new EmptyBorder(0, 0, 0, 0));
         checkpanelpkcs12.setLayout(new BoxLayout(checkpanelpkcs12, 0));
 
-        usepkcs12file = new JCheckBox("Usar archivo pkcs12 para firmar", this.settings.usepkcs12file);
-        checkpanelpkcs12.add(usepkcs12file);
-        checkpanelpkcs12.add(Box.createRigidArea(new Dimension(5, 0)));
-        
-        
-		usepkcs12file.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent arg0) { statePKCS12CheckChange(); } 
-		});
+ 
+	 
         
         addSettingsBox(advancedPanel, "", checkpanelpkcs12);
         
-        pkcs12panel = new JPanel();
+        pkcs12panel = new Pkcs12ConfigPanel();
         pkcs12panel.setBorder(new EmptyBorder(0, 0, 0, 0));
         pkcs12panel.setLayout(new BoxLayout(pkcs12panel, 0));
-        pkcs12text = new JTextField();
-        btpkcs12 = new JButton("Elegir");
-        //btimage.setForeground(this.settings.getBackgroundColor());
-        if(this.settings.pkcs12file != null) {
-        	pkcs12text.setText(this.settings.pkcs12file);
-             
-        }
-        pkcs12panel.add(pkcs12text);
-        pkcs12panel.add(btpkcs12);
-        pkcs12label = addSettingsBox(advancedPanel, "Archivo PKCS12", pkcs12panel);
-        
-        btpkcs12.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                String path = getFilePath();
-                if(path != null) {
-                	pkcs12text.setText(path);
-                }
-            }
-        });
-        
+
+        addSettingsBox(advancedPanel, "Archivo PKCS12", pkcs12panel);
         
         JPanel pkcs11modulepanel = new JPanel();
         pkcs11modulepanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -462,7 +419,6 @@ public class ConfigPanel extends JPanel {
         }
         pkcs11modulepanel.add(pkcs11moduletext);
         pkcs11modulepanel.add(btpkcs11module);
-        
         btpkcs11module.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 String path = getFilePath();
@@ -478,7 +434,6 @@ public class ConfigPanel extends JPanel {
         
         advancedbottomspace = new JPanel();
         advancedPanel.add(advancedbottomspace);
-        statePKCS12CheckChange();
         changeLTA();
 
 	}
@@ -598,8 +553,8 @@ public class ConfigPanel extends JPanel {
         settings.xadesLevel = xadesLevel.getSelectedItem().toString();
         settings.cadesLevel = cadesLevel.getSelectedItem().toString();
         
-        settings.usepkcs12file = usepkcs12file.isSelected();
-        settings.pkcs12file = pkcs12text.getText();
+
+        settings.pkcs12file = pkcs12panel.getText();
         settings.extrapkcs11Lib = pkcs11moduletext.getText();
         if(settings.pkcs12file.isEmpty()) settings.pkcs12file = null;
         if(settings.extrapkcs11Lib.isEmpty()) settings.extrapkcs11Lib = null;
@@ -650,13 +605,12 @@ public class ConfigPanel extends JPanel {
             btimage.setIcon(createImageIcon(new Color(255, 255, 255, 0)));
         }
         
-        if(settings.pkcs12file != null) {  pkcs12text.setText(settings.pkcs12file);
-        }else{ pkcs12text.setText(""); };
+        if(settings.pkcs12file != null) {  pkcs12panel.setText(settings.pkcs12file);
+        }else{ pkcs12panel.setText(null); };
         
         if(settings.extrapkcs11Lib != null) {  pkcs11moduletext.setText(settings.extrapkcs11Lib);
         }else{ pkcs11moduletext.setText(""); };
         
-        usepkcs12file.setSelected(settings.usepkcs12file);
         pluginsactive.load_plugins(settings);
 
     }

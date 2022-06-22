@@ -32,7 +32,6 @@ public interface GUIInterface {
     void showError(Throwable error);
     void showMessage(String message);
     int getSlot();
-    String getPkcs12file();
     String getDocumentToSign();
     String getPathToSave(String extension);
     CardSignInfo getPin();

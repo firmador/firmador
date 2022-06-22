@@ -69,7 +69,6 @@ public class Settings {
     public String xadesLevel = "LTA";
     public String cadesLevel = "LTA";
     public String pkcs12file = null;
-    public boolean usepkcs12file = false;
     
 
     public List<String> active_plugins = new ArrayList<String>();
