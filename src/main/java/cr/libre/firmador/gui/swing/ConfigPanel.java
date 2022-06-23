@@ -121,6 +121,7 @@ public class ConfigPanel extends JPanel {
 	private JLabel pkcs12label;
 	private JPanel advancedbottomspace;
 	private PluginManagerPlugin pluginsactive;
+	private JTextField pdfImgScaleFactor;
 	
 	private void createSimpleConfigPanel() {
 		simplePanel = new JPanel();
@@ -386,6 +387,9 @@ public class ConfigPanel extends JPanel {
 		advancedPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		advancedPanel.setLayout(new BoxLayout(advancedPanel, 1)); 
 		
+		pdfImgScaleFactor = new JTextField();
+        pdfImgScaleFactor.setText(String.format("%.2f", this.settings.pdfImgScaleFactor));
+        pdfImgScaleFactor.setToolTipText("Factor de escala al presentar la previsualización de la página de pdf");
 
         
         pluginsactive = new PluginManagerPlugin();
@@ -406,7 +410,7 @@ public class ConfigPanel extends JPanel {
         cadesLevel = new JComboBox<String>(cadesLeveloptions);
         cadesLevel.setSelectedItem(settings.cadesLevel);
         addSettingsBox(advancedPanel, "Nivel CAdES:", cadesLevel);
-        
+        addSettingsBox(advancedPanel, "Escala de previsualización del Pdf", pdfImgScaleFactor);
         
         JPanel checkpanelpkcs12 = new JPanel();
         checkpanelpkcs12.setPreferredSize(new Dimension(450, 30));
@@ -471,11 +475,12 @@ public class ConfigPanel extends JPanel {
                 }
             }
         });
+
         
         addSettingsBox(advancedPanel, "Archivo PKCS11", pkcs11modulepanel);
         advancedPanel.add(new JLabel("El archivo pkcs11 se detecta automáticamente, "));
         advancedPanel.add(new JLabel("pero podrá ser escrito usando el campo anterior"));
-        
+        //settings.pdfImgScaleFactor
         advancedbottomspace = new JPanel();
         advancedPanel.add(advancedbottomspace);
         statePKCS12CheckChange();
@@ -597,7 +602,7 @@ public class ConfigPanel extends JPanel {
         settings.padesLevel = padesLevel.getSelectedItem().toString();
         settings.xadesLevel = xadesLevel.getSelectedItem().toString();
         settings.cadesLevel = cadesLevel.getSelectedItem().toString();
-        
+        settings.pdfImgScaleFactor = Float.parseFloat(pdfImgScaleFactor.getText());
         settings.usepkcs12file = usepkcs12file.isSelected();
         settings.pkcs12file = pkcs12text.getText();
         settings.extrapkcs11Lib = pkcs11moduletext.getText();
@@ -641,7 +646,7 @@ public class ConfigPanel extends JPanel {
         padesLevel.setSelectedItem(settings.padesLevel);
         xadesLevel.setSelectedItem(settings.xadesLevel);
         cadesLevel.setSelectedItem(settings.cadesLevel);
-
+        pdfImgScaleFactor.setText(String.format("%.2f", pdfImgScaleFactor));
         if(settings.image != null) {
             imagetext.setText(settings.image);
             btimage.setIcon(this.getIcon(settings.image));

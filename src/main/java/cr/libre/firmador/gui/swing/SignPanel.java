@@ -20,8 +20,13 @@ package cr.libre.firmador.gui.swing;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
@@ -34,14 +39,18 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +66,8 @@ public class SignPanel extends JPanel implements ConfigListener{
 	private static final long serialVersionUID = 945116850482545687L;
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SignPanel.class);
 
-
+	private JScrollPane imgScroll;
+	private ScrollableJPanel imagePanel;
 	private JLabel imageLabel;
 	private JLabel signatureLabel;
 	private JCheckBox signatureVisibleCheckBox;
@@ -98,6 +108,19 @@ public class SignPanel extends JPanel implements ConfigListener{
     	this.doc = doc;
     	
     }
+    
+	public JScrollPane getImageScrollPane(ScrollableJPanel panel) {
+		JScrollPane imgScrollPane = new JScrollPane();
+		imgScrollPane.setPreferredSize(new Dimension(100, 200));
+		imgScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		imgScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		imgScrollPane.setBorder(null);
+		imgScrollPane.setViewportView(panel);
+		imgScrollPane.setOpaque(false);
+		imgScrollPane.getViewport().setOpaque(false);
+		imgScrollPane.setVisible(true);
+		return imgScrollPane;
+	}
     
 	public SignPanel(){
 		super();
@@ -156,9 +179,13 @@ public class SignPanel extends JPanel implements ConfigListener{
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
 
+        imagePanel = new ScrollableJPanel(false, false);  
+
         imageLabel = new JLabel();
         signatureLabel.setBounds(settings.signx, settings.signy, settings.signwith, settings.signheight);
         imageLabel.add(signatureLabel);
+        imagePanel.add(imageLabel);
+        imgScroll = this.getImageScrollPane(imagePanel);
         
         signButton = new JButton("Firmar documento");
         signButton.setToolTipText("<html>Este botón permite firmar el documento seleccionado.<br>Requiere dispositivo de Firma Digital al cual se le<br>solicitará ingresar el PIN.</html>");
@@ -173,28 +200,77 @@ public class SignPanel extends JPanel implements ConfigListener{
         //initializeActions();
 	}
 	
+	
+	public Rectangle calculateSignatureRectangle() {
+		Rectangle reg = new Rectangle(getPDFVisibleSignatureX(),
+				                      getPDFVisibleSignatureY(),
+				                      signatureLabel.getWidth(), 
+				                      signatureLabel.getHeight());
+		
+		return reg;
+		
+	}
+	
+	public int getPDFVisibleSignatureX() {
+		Point pposition = signatureLabel.getLocation();
+		int position = pposition.x;
+		return (int)Math.round(position * (2-settings.pdfImgScaleFactor));
+	}
+	
+	public int getPDFVisibleSignatureY() {
+		 Point pposition = signatureLabel.getLocation();
+		 int position = pposition.y;
+		return (int)Math.round(position * (2-settings.pdfImgScaleFactor));
+	}
+	
+	public void paintPDFViewer() {
+		int page = (int)pageSpinner.getValue();
+        if (page > 0) {
+        	renderPDFViewer(page - 1);
+        	//setMinimumSize(getSize());
+        } 
+	}
+	
+	public void renderPDFViewer(int page) {
+	  try {
+		pageImage = renderer.renderImage(page, settings.pdfImgScaleFactor);
+		imageLabel.setSize(pageImage.getWidth(), pageImage.getHeight());
+    	imageLabel.setIcon(new ImageIcon(pageImage));
+	  } catch (Exception ex) {
+      	LOG.error("Error cambiando cambiando página", ex);
+          ex.printStackTrace();
+          gui.showError(Throwables.getRootCause(ex));
+      }
+	}
+	
 	public void initializeActions(){
         imageLabel.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 signatureLabel.setLocation(e.getX() - signatureLabel.getWidth() / 2, e.getY() - signatureLabel.getHeight() / 2);
             }
+            
+        });
+        imageLabel.addMouseListener(new MouseAdapter() {
+        	public void mouseClicked(MouseEvent evt) {
+        		if(evt.getClickCount()==3) {
+        		 
+        	    	signatureLabel.setText("<html><span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span></html>");
+        	     
+        	    	 signatureLabel.setForeground(new Color(0, 0, 0, 0));
+        	         signatureLabel.setBackground(new Color(127, 127, 127, 127));
+        	         signatureLabel.setOpaque(true);
+        	    	 
+        	    }else if (evt.getClickCount() == 2) {
+        	    	 signatureLabel.setLocation(evt.getX() - signatureLabel.getWidth() / 2, evt.getY() - signatureLabel.getHeight() / 2);
+        	    }
+        	}
         });
         
         pageSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                try {
-                    int page = (int)pageSpinner.getValue();
-                    if (page > 0) {
-                    	pageImage = renderer.renderImage(page - 1, 1 / 1.5f);
-                    	imageLabel.setIcon(new ImageIcon(pageImage));
-                    	//panel.pack();
-                    	setMinimumSize(getSize());
-                    }
-                } catch (Exception ex) {
-                	LOG.error("Error cambiando cambiando página", ex);
-                    ex.printStackTrace();
-                    gui.showError(Throwables.getRootCause(ex));
-                }
+              
+                    paintPDFViewer();
+              
             }
         });
         
@@ -213,7 +289,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         signLayout.setAutoCreateContainerGaps(true);
             signLayout.setHorizontalGroup(
             signLayout.createSequentialGroup()
-                .addComponent(imageLabel)
+                .addComponent(imgScroll)
                 .addGroup(signLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                     .addComponent(pageLabel)
                     .addComponent(reasonLabel)
@@ -238,7 +314,7 @@ public class SignPanel extends JPanel implements ConfigListener{
                     .addComponent(signButton)));
         signLayout.setVerticalGroup(
             signLayout.createParallelGroup()
-                .addComponent(imageLabel)
+                .addComponent(imgScroll)
                 .addGroup(signLayout.createSequentialGroup()
                     .addGroup(signLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                         .addComponent(pageSpinner)
@@ -287,6 +363,7 @@ public class SignPanel extends JPanel implements ConfigListener{
 	}
 	
 	public void showSignButtons() {
+		imagePanel.setVisible(true);
         imageLabel.setVisible(true);
         pageLabel.setVisible(true);
         pageSpinner.setVisible(true);
@@ -297,6 +374,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         locationField.setVisible(true);
         contactInfoLabel.setVisible(true);
         contactInfoField.setVisible(true);
+        imagePanel.setBorder(new LineBorder(Color.BLACK));
 /*
         AdESLevelLabel.setVisible(true);
         levelTButton.setVisible(true);
@@ -317,6 +395,7 @@ public class SignPanel extends JPanel implements ConfigListener{
 	}
 	
 	public void docHideButtons() {
+		 imagePanel.setVisible(false);
 		 imageLabel.setVisible(false);
          pageLabel.setVisible(false);
          pageSpinner.setVisible(false);
@@ -351,6 +430,7 @@ public class SignPanel extends JPanel implements ConfigListener{
                 } else {
                     pageSpinner.setValue(1);
                 }
+                paintPDFViewer();
             }
         } catch (Exception e) {
         	LOG.error("Error actualizando configuración", e);
@@ -492,8 +572,35 @@ public class SignPanel extends JPanel implements ConfigListener{
 
 	public void setAdESFormatButtonGroup(ButtonGroup adESFormatButtonGroup) {
 		AdESFormatButtonGroup = adESFormatButtonGroup;
+	}	
+	
+	public String getTextExample() {
+		String dev="";
+		String reason = reasonField.getText();
+		String location = locationField.getText();
+		String contactInfo = contactInfoField.getText();
+        Boolean hasReason = false;
+        Boolean hasLocation = false;
+        Boolean hasContact = false;
+        String additionalText = "SU NOMBRE COMPLETO (FIRMA)<br>Cedula CTP-08-8888-8888<br>Fecha declarada "+settings.dateformat+"<br>";
+
+        if (reason != null && !reason.trim().isEmpty()) {
+            hasReason = true;
+            additionalText += "Razón: " + reason + "\n";
+        }
+        if (location != null && !location.trim().isEmpty()) {
+            hasLocation = true;
+            additionalText += "Lugar: " + location;
+           
+        }
+        if (contactInfo != null && !contactInfo .trim().isEmpty()) {
+        	hasContact=true;
+            additionalText += "  Contacto: " + contactInfo;
+             
+        }
+        if (!(hasReason || hasLocation ||hasContact )) {
+            additionalText += settings.getDefaultSignMessage();
+        }
+        return additionalText;
 	}
-	
-	
-	
 }

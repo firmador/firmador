@@ -74,6 +74,8 @@ public class Settings {
 
     public List<String> active_plugins = new ArrayList<String>();
     public List<String> available_plugins = new ArrayList<String>();
+
+	public float pdfImgScaleFactor = 1 / 1.5f;
     
     public Settings() {
     	active_plugins.add("cr.libre.firmador.plugins.DummyPlugin");

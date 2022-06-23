@@ -104,6 +104,7 @@ public class SettingsManager {
 
     public void setProperty(String key, String value) {
         props.setProperty(key, value);
+       
     }
 
     private String get_config_file() throws IOException {
@@ -204,6 +205,7 @@ public class SettingsManager {
             conf.pkcs12file=props.getProperty("pkcs12file");
             conf.usepkcs12file=Boolean.parseBoolean(props.getProperty("usepkcs12file", String.valueOf(conf.usepkcs12file)));
             conf.active_plugins=getListFromString(props.getProperty("plugins", ""), conf.active_plugins);
+            conf.pdfImgScaleFactor=Float.parseFloat(props.getProperty("pdfimgscalefactor", String.format("%.2f", conf.pdfImgScaleFactor)));
         }
 
         return conf;
@@ -234,6 +236,7 @@ public class SettingsManager {
         setProperty("fontalignment", conf.fontalignment.toString());
         setProperty("portnumber", conf.portnumber.toString());
         setProperty("showlogs", String.valueOf(conf.showlogs));
+        setProperty("pdfimgscalefactor", String.format("%.2f", conf.pdfImgScaleFactor));
                 
         setProperty("padesLevel", conf.padesLevel);
         setProperty("xadesLevel", conf.xadesLevel);
@@ -242,16 +245,22 @@ public class SettingsManager {
                 
         if (conf.extrapkcs11Lib != null && conf.extrapkcs11Lib != "") {
             setProperty("extrapkcs11Lib", conf.extrapkcs11Lib);
+        }else {
+        	if(props.get("extrapkcs11Lib") != null) props.remove("extrapkcs11Lib");
         }
         
         if (conf.pkcs12file != null && conf.pkcs12file != "") {
             setProperty("pkcs12file", conf.pkcs12file);
+        }else {
+        	if(props.get("pkcs12file") != null) props.remove("pkcs12file");
         }
         setProperty("usepkcs12file", String.valueOf(conf.usepkcs12file));
         
         
         if (conf.image != null) {
             setProperty("image", conf.image);
+        }else {
+        	if(props.get("image") != null) props.remove("image");
         }
         if (save) save_config();
     }

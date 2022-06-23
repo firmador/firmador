@@ -22,6 +22,7 @@ package cr.libre.firmador.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
@@ -246,7 +247,6 @@ public class BaseSwing {
     	int pages = doc.getNumberOfPages();
         renderer = signPanel.getRender(doc);
         if (pages > 0) {
-        	signPanel.pageImage = renderer.renderImage(0, 1 / 1.5f);
             SpinnerNumberModel model = ((SpinnerNumberModel)signPanel.getPageSpinner().getModel());
             model.setMinimum(1);
             model.setMaximum(pages);
@@ -255,9 +255,8 @@ public class BaseSwing {
             } else {
             	signPanel.getPageSpinner().setValue(1);
             }
+            signPanel.paintPDFViewer();
         }
-        signPanel.getImageLabel().setBorder(new LineBorder(Color.BLACK));
-        signPanel.getImageLabel().setIcon(new ImageIcon(signPanel.pageImage));
         signPanel.showSignButtons();
     }
     
@@ -284,15 +283,13 @@ public class BaseSwing {
 
     
     protected void signDocument(CardSignInfo card, Boolean visibleSignature) {
-   	
     	signedDocument = null;
     	MimeType mimeType = toSignDocument.getMimeType();
         if (mimeType == MimeType.PDF) {
             FirmadorPAdES firmador = new FirmadorPAdES(gui);
             firmador.setVisibleSignature(visibleSignature);
             firmador.addVisibleSignature((int)signPanel.getPageSpinner().getValue(), 
-            		(int)Math.round(signPanel.getSignatureLabel().getX() * 1.5), 
-            		(int)Math.round(signPanel.getSignatureLabel().getY() * 1.5));
+            		signPanel.calculateSignatureRectangle());
             signedDocument = firmador.sign(toSignDocument, card, signPanel.getReasonField().getText(), signPanel.getLocationField().getText(), 
             		signPanel.getContactInfoField().getText(), System.getProperty("jnlp.signatureImage"), Boolean.getBoolean("jnlp.hideSignatureAdvice"));
         } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
