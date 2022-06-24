@@ -205,12 +205,18 @@ public class SettingsManager {
             conf.pkcs12file=props.getProperty("pkcs12file");
             conf.usepkcs12file=Boolean.parseBoolean(props.getProperty("usepkcs12file", String.valueOf(conf.usepkcs12file)));
             conf.active_plugins=getListFromString(props.getProperty("plugins", ""), conf.active_plugins);
-            conf.pdfImgScaleFactor=Float.parseFloat(props.getProperty("pdfimgscalefactor", String.format("%.2f", conf.pdfImgScaleFactor)));
+            conf.pdfImgScaleFactor=getFloatFromString(props.getProperty("pdfimgscalefactor", String.format("%.2f", conf.pdfImgScaleFactor)));
         }
 
         return conf;
     }
 
+    private float getFloatFromString(String value) {
+    	String valuetmp=value.replace(",", ".");
+    	
+    	return Float.parseFloat(valuetmp);
+    	
+    }
     private String getListRepr(List<String> items) {
     	return String.join("|", items);
     }
