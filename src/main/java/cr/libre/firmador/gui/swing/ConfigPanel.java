@@ -602,7 +602,7 @@ public class ConfigPanel extends JPanel {
         settings.padesLevel = padesLevel.getSelectedItem().toString();
         settings.xadesLevel = xadesLevel.getSelectedItem().toString();
         settings.cadesLevel = cadesLevel.getSelectedItem().toString();
-        settings.pdfImgScaleFactor = Float.parseFloat(pdfImgScaleFactor.getText());
+        settings.pdfImgScaleFactor = Float.parseFloat(pdfImgScaleFactor.getText().replace(",", ","));
         settings.usepkcs12file = usepkcs12file.isSelected();
         settings.pkcs12file = pkcs12text.getText();
         settings.extrapkcs11Lib = pkcs11moduletext.getText();
@@ -697,26 +697,21 @@ public class ConfigPanel extends JPanel {
             String buf = Integer.toHexString(newColor.getRGB());
             String hex = "#"+buf.substring(buf.length()-6);
             backgroundcolor.setText(hex);
-
         }
     }
 
     public String getFilePath() {
     	String dev = null;
-    	
     	FileDialog loadDialog = new FileDialog(new JDialog(), "Seleccionar un archivo");
 		loadDialog.setMultipleMode(false);
 		loadDialog.setLocationRelativeTo(null);
 		loadDialog.setVisible(true);
 		loadDialog.dispose();
-    	
 		File[] files = loadDialog.getFiles();
-		
 		if(files.length>=1) {
 			dev=files[0].toString();
 		}
 		return dev;
-		
     }
     
     public void show_image_picker() {

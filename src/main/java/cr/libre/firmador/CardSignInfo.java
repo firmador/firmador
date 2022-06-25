@@ -101,6 +101,30 @@ public class CardSignInfo {
 	public boolean isValid() {
 		return pin.getPassword() != null && pin.getPassword().length != 0;
 	}
+
+	public String getIdentification() {
+		return identification;
+	}
+
+	public void setIdentification(String identification) {
+		this.identification = identification;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 	
 
 }

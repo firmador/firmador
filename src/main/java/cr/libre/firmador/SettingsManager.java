@@ -207,19 +207,24 @@ public class SettingsManager {
             conf.active_plugins=getListFromString(props.getProperty("plugins", ""), conf.active_plugins);
             conf.pdfImgScaleFactor=getFloatFromString(props.getProperty("pdfimgscalefactor", String.format("%.2f", conf.pdfImgScaleFactor)));
         }
-
         return conf;
     }
 
     private float getFloatFromString(String value) {
     	String valuetmp=value.replace(",", ".");
-    	
-    	return Float.parseFloat(valuetmp);
-    	
+    	float fvalue = 1;
+    	 try {
+    		 fvalue = Float.parseFloat(valuetmp);
+         } catch (Exception e) {
+             fvalue=1;
+         }	
+    	return fvalue;
     }
+    
     private String getListRepr(List<String> items) {
     	return String.join("|", items);
     }
+    
     public void setSettings(Settings conf, boolean save) {
         setProperty("withoutvisiblesign", String.valueOf(conf.withoutvisiblesign));
         setProperty("uselta", String.valueOf(conf.uselta));

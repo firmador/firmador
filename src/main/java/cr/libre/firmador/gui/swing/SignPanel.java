@@ -30,6 +30,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
@@ -56,11 +59,13 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 
+import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.ConfigListener;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
+import cr.libre.firmador.SmardCardDetector;
 import cr.libre.firmador.gui.GUIInterface;
-import cr.libre.firmador.gui.GUISwing;
+
 
 public class SignPanel extends JPanel implements ConfigListener{
 	private static final long serialVersionUID = 945116850482545687L;
@@ -259,6 +264,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         	    	 signatureLabel.setForeground(new Color(0, 0, 0, 0));
         	         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         	         signatureLabel.setOpaque(true);
+        	         signatureLabel.setSize(signatureLabel.getPreferredSize());
         	    	 
         	    }else if (evt.getClickCount() == 2) {
         	    	 signatureLabel.setLocation(evt.getX() - signatureLabel.getWidth() / 2, evt.getY() - signatureLabel.getHeight() / 2);
@@ -582,8 +588,18 @@ public class SignPanel extends JPanel implements ConfigListener{
         Boolean hasReason = false;
         Boolean hasLocation = false;
         Boolean hasContact = false;
-        String additionalText = "SU NOMBRE COMPLETO (FIRMA)<br>Cedula CTP-08-8888-8888<br>Fecha declarada "+settings.dateformat+"<br>";
-
+        String nombre="SU NOMBRE COMPLETO (FIRMA)";
+        String cedula="CTP-08-8888-8888";
+        SmardCardDetector cardd = new SmardCardDetector();
+		List<CardSignInfo> cards = cardd.readSaveListSmartCard();		
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(settings.dateformat);
+		LocalDateTime now = LocalDateTime.now();
+        if(!cards.isEmpty()) {
+        	CardSignInfo card = cards.get(0);
+        	nombre= card.getFirstName() + " " + card.getLastName() + " (FIRMA)" ;
+        	cedula = card.getIdentification();
+        }
+        String additionalText = nombre+"<br>Cedula "+cedula+" <br>Fecha declarada "+dtf.format(now)+"<br>";
         if (reason != null && !reason.trim().isEmpty()) {
             hasReason = true;
             additionalText += "Razón: " + reason + "\n";
@@ -591,16 +607,17 @@ public class SignPanel extends JPanel implements ConfigListener{
         if (location != null && !location.trim().isEmpty()) {
             hasLocation = true;
             additionalText += "Lugar: " + location;
-           
         }
         if (contactInfo != null && !contactInfo .trim().isEmpty()) {
         	hasContact=true;
             additionalText += "  Contacto: " + contactInfo;
-             
         }
         if (!(hasReason || hasLocation ||hasContact )) {
             additionalText += settings.getDefaultSignMessage();
         }
+        
+        additionalText = additionalText.replace("\n", "<br>");
+        
         return additionalText;
 	}
 }

@@ -43,6 +43,15 @@ public class SmardCardDetector implements  ConfigListener {
 		
 	}
 	
+	public List<CardSignInfo> readSaveListSmartCard(){
+		List<CardSignInfo> cards;
+		try {
+			cards = readListSmartCard();
+		} catch (Throwable e) {
+			cards = new ArrayList<CardSignInfo>();
+		}
+		return cards;
+	}
 	
     public List<CardSignInfo> readListSmartCard() throws Throwable {
     	List<CardSignInfo> cardinfo = new ArrayList<CardSignInfo>();
