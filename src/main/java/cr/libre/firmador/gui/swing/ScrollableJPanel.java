@@ -26,8 +26,20 @@ import javax.swing.Scrollable;
 
 @SuppressWarnings("serial")
 public class ScrollableJPanel extends JPanel implements Scrollable {
+	private boolean widthTrackScrollable = true;
+	private boolean heigthTrackScrollable = false;
 
-    public Dimension getPreferredScrollableViewportSize() {
+    public ScrollableJPanel() {
+		super();
+	}
+
+    public ScrollableJPanel(boolean widthTrackScrollable, boolean heigthTrackScrollable) {
+		super();
+		this.widthTrackScrollable = widthTrackScrollable;
+		this.heigthTrackScrollable = heigthTrackScrollable;
+	}
+
+	public Dimension getPreferredScrollableViewportSize() {
         return this.getPreferredSize();
     }
 
@@ -40,11 +52,10 @@ public class ScrollableJPanel extends JPanel implements Scrollable {
     }
 
     public boolean getScrollableTracksViewportWidth() {
-        return true;
+        return this.widthTrackScrollable;
     }
 
     public boolean getScrollableTracksViewportHeight() {
-        return false;
+        return this.heigthTrackScrollable;
     }
-
 }

@@ -160,8 +160,8 @@ public class RequestPinWindow extends JFrame {
 		while(!ok) {
 			action = JOptionPane.showConfirmDialog(null, contentPane, "Ingresar PIN", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if(action==JOptionPane.OK_OPTION) {
-				if(!pinField.getText().isEmpty() && this.card !=null ) {
-					this.card.setPin(pinField.getText());
+				if (pinField.getPassword().length > 0 && this.card != null) {
+					this.card.setPin(pinField.getPassword());
 					pinField.setText("");
 					ok=true;
 				}else {
@@ -188,7 +188,7 @@ public class RequestPinWindow extends JFrame {
 	
 	public void inspectCardInfo() throws Throwable {
 		SmardCardDetector cardd = new SmardCardDetector();
-		cards= cardd.readListSmartCard();
+		cards= cardd.readSaveListSmartCard();
 		comboBox.removeAllItems();
 		ComboBoxModel model = comboBox.getModel();
 		 

@@ -68,11 +68,13 @@ public class Settings {
     public String padesLevel = "LTA";
     public String xadesLevel = "LTA";
     public String cadesLevel = "LTA";
-    public String pkcs12file = null;
+    public List<String> pkcs12file = new ArrayList<String>();
     
 
     public List<String> active_plugins = new ArrayList<String>();
     public List<String> available_plugins = new ArrayList<String>();
+
+	public float pdfImgScaleFactor = 1;
     
     public Settings() {
     	active_plugins.add("cr.libre.firmador.plugins.DummyPlugin");

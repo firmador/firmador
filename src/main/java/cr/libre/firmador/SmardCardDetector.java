@@ -1,5 +1,6 @@
 package cr.libre.firmador;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
@@ -43,6 +44,22 @@ public class SmardCardDetector implements  ConfigListener {
 		
 	}
 	
+	public List<CardSignInfo> readSaveListSmartCard(){
+		List<CardSignInfo> cards;
+		try {
+			cards = readListSmartCard();
+		} catch (Throwable e) {
+			cards = new ArrayList<CardSignInfo>();
+		}
+		
+		File f;
+		for (String pkcs12 : settings.pkcs12file) {
+			f = new File(pkcs12);
+			if(f.exists()) cards.add(new CardSignInfo(CardSignInfo.PKCS12TYPE, pkcs12, f.getName()));
+		}
+		
+		return cards;
+	}
 	
     public List<CardSignInfo> readListSmartCard() throws Throwable {
     	List<CardSignInfo> cardinfo = new ArrayList<CardSignInfo>();

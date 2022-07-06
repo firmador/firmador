@@ -36,9 +36,16 @@ public class CardSignInfo {
 		this.slotID=slotID;
 	}
 	
+	public CardSignInfo(int cardType, String path, String identification) {
+		this.cardType = cardType;
+		this.tokenSerialNumber=path;
+		this.identification = identification;		
+	}
+	
 	public CardSignInfo(String pin) {
 		this.setPin(pin);
 		this.cardType=ONLYPIN;
+		this.identification="Pin card";
 	}
 	
 	public CardSignInfo(char[] password) {
@@ -81,9 +88,11 @@ public class CardSignInfo {
 	}
 	
 	public String getDisplayInfo() {
-        return firstName + " " + lastName + " (" + identification + ") (Expira: " + expires+ ")";
+		
+		if(this.cardType == PKCS11TYPE)
+			return firstName + " " + lastName + " (" + identification + ") (Expira: " + expires+ ")";
 	//+ this.certSerialNumber+ " [Token serial number: " + this.tokenSerialNumber + "] (Expires: " + expires+ ")";
-
+		return this.identification;
 	}
 	
 	public PasswordProtection getPin() {
@@ -100,6 +109,30 @@ public class CardSignInfo {
 	
 	public boolean isValid() {
 		return pin.getPassword() != null && pin.getPassword().length != 0;
+	}
+
+	public String getIdentification() {
+		return identification;
+	}
+
+	public void setIdentification(String identification) {
+		this.identification = identification;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 	
 

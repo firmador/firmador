@@ -19,56 +19,51 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui.swing;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.SwingConstants;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FileDialog;
-import java.awt.Font;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.io.File;
-import java.awt.event.ActionEvent;
-
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
-
-import cr.libre.firmador.Settings;
-import cr.libre.firmador.SettingsManager;
-import cr.libre.firmador.gui.GUISwing;
-import eu.europa.esig.dss.enumerations.SignatureLevel;
-
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
 import org.slf4j.LoggerFactory;
 
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.JTextArea;
-import java.awt.Component;
-import java.awt.Color;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.geom.Ellipse2D;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+import cr.libre.firmador.Settings;
+import cr.libre.firmador.SettingsManager;
 
 public class ConfigPanel extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -117,6 +112,7 @@ public class ConfigPanel extends JPanel {
 	private Pkcs12ConfigPanel pkcs12panel;
 	private JPanel advancedbottomspace;
 	private PluginManagerPlugin pluginsactive;
+	private JTextField pdfImgScaleFactor;
 	
 	private void createSimpleConfigPanel() {
 		simplePanel = new JPanel();
@@ -368,11 +364,20 @@ public class ConfigPanel extends JPanel {
 		advancedPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		advancedPanel.setLayout(new BoxLayout(advancedPanel, 1)); 
 		
+		pdfImgScaleFactor = new JTextField();
+        pdfImgScaleFactor.setText(String.format("%.2f", this.settings.pdfImgScaleFactor));
+        pdfImgScaleFactor.setToolTipText("Factor de escala al presentar la previsualización de la página de pdf");
 
         
         pluginsactive = new PluginManagerPlugin();
         pluginsactive.setPreferredSize(new Dimension(450, 130));
         advancedPanel.add(pluginsactive);
+        
+        pkcs12panel = new Pkcs12ConfigPanel();
+        //pkcs12panel.setPreferredSize(new Dimension(450, 200));
+        pkcs12panel.setList(settings.pkcs12file);
+        advancedPanel.add(pkcs12panel);
+        
         String padesLeveloptions[] = { "T", "LT", "LTA" };
         padesLevel = new JComboBox<String>(padesLeveloptions);
         padesLevel.setSelectedItem(settings.padesLevel);
@@ -388,24 +393,8 @@ public class ConfigPanel extends JPanel {
         cadesLevel = new JComboBox<String>(cadesLeveloptions);
         cadesLevel.setSelectedItem(settings.cadesLevel);
         addSettingsBox(advancedPanel, "Nivel CAdES:", cadesLevel);
+        addSettingsBox(advancedPanel, "Escala de previsualización del Pdf", pdfImgScaleFactor);
         
-        
-        JPanel checkpanelpkcs12 = new JPanel();
-        checkpanelpkcs12.setPreferredSize(new Dimension(450, 30));
-        checkpanelpkcs12.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        checkpanelpkcs12.setBorder(new EmptyBorder(0, 0, 0, 0));
-        checkpanelpkcs12.setLayout(new BoxLayout(checkpanelpkcs12, 0));
-
- 
-	 
-        
-        addSettingsBox(advancedPanel, "", checkpanelpkcs12);
-        
-        pkcs12panel = new Pkcs12ConfigPanel();
-        pkcs12panel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        pkcs12panel.setLayout(new BoxLayout(pkcs12panel, 0));
-
-        addSettingsBox(advancedPanel, "Archivo PKCS12", pkcs12panel);
         
         JPanel pkcs11modulepanel = new JPanel();
         pkcs11modulepanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -427,11 +416,12 @@ public class ConfigPanel extends JPanel {
                 }
             }
         });
+
         
         addSettingsBox(advancedPanel, "Archivo PKCS11", pkcs11modulepanel);
         advancedPanel.add(new JLabel("El archivo pkcs11 se detecta automáticamente, "));
         advancedPanel.add(new JLabel("pero podrá ser escrito usando el campo anterior"));
-        
+        //settings.pdfImgScaleFactor
         advancedbottomspace = new JPanel();
         advancedPanel.add(advancedbottomspace);
         changeLTA();
@@ -552,11 +542,9 @@ public class ConfigPanel extends JPanel {
         settings.padesLevel = padesLevel.getSelectedItem().toString();
         settings.xadesLevel = xadesLevel.getSelectedItem().toString();
         settings.cadesLevel = cadesLevel.getSelectedItem().toString();
-        
-
-        settings.pkcs12file = pkcs12panel.getText();
+        settings.pdfImgScaleFactor = Float.parseFloat(pdfImgScaleFactor.getText().replace(",", ","));
+        settings.pkcs12file = pkcs12panel.getList();
         settings.extrapkcs11Lib = pkcs11moduletext.getText();
-        if(settings.pkcs12file.isEmpty()) settings.pkcs12file = null;
         if(settings.extrapkcs11Lib.isEmpty()) settings.extrapkcs11Lib = null;
         
         settings.active_plugins = pluginsactive.getActivePlugin();
@@ -596,7 +584,7 @@ public class ConfigPanel extends JPanel {
         padesLevel.setSelectedItem(settings.padesLevel);
         xadesLevel.setSelectedItem(settings.xadesLevel);
         cadesLevel.setSelectedItem(settings.cadesLevel);
-
+        pdfImgScaleFactor.setText(String.format("%.2f", pdfImgScaleFactor));
         if(settings.image != null) {
             imagetext.setText(settings.image);
             btimage.setIcon(this.getIcon(settings.image));
@@ -605,8 +593,7 @@ public class ConfigPanel extends JPanel {
             btimage.setIcon(createImageIcon(new Color(255, 255, 255, 0)));
         }
         
-        if(settings.pkcs12file != null) {  pkcs12panel.setText(settings.pkcs12file);
-        }else{ pkcs12panel.setText(null); };
+        if(settings.pkcs12file != null) pkcs12panel.setList(settings.pkcs12file);
         
         if(settings.extrapkcs11Lib != null) {  pkcs11moduletext.setText(settings.extrapkcs11Lib);
         }else{ pkcs11moduletext.setText(""); };
@@ -646,26 +633,21 @@ public class ConfigPanel extends JPanel {
             String buf = Integer.toHexString(newColor.getRGB());
             String hex = "#"+buf.substring(buf.length()-6);
             backgroundcolor.setText(hex);
-
         }
     }
 
     public String getFilePath() {
     	String dev = null;
-    	
     	FileDialog loadDialog = new FileDialog(new JDialog(), "Seleccionar un archivo");
 		loadDialog.setMultipleMode(false);
 		loadDialog.setLocationRelativeTo(null);
 		loadDialog.setVisible(true);
 		loadDialog.dispose();
-    	
 		File[] files = loadDialog.getFiles();
-		
 		if(files.length>=1) {
 			dev=files[0].toString();
 		}
 		return dev;
-		
     }
     
     public void show_image_picker() {

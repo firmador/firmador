@@ -104,6 +104,7 @@ public class SettingsManager {
 
     public void setProperty(String key, String value) {
         props.setProperty(key, value);
+       
     }
 
     private String get_config_file() throws IOException {
@@ -201,16 +202,28 @@ public class SettingsManager {
             conf.xadesLevel = props.getProperty("xadesLevel", conf.xadesLevel);
             conf.cadesLevel = props.getProperty("cadesLevel", conf.cadesLevel);
             conf.extrapkcs11Lib=props.getProperty("extrapkcs11Lib");
-            conf.pkcs12file=props.getProperty("pkcs12file");
+            conf.pkcs12file=getListFromString(props.getProperty("pkcs12file", ""), conf.pkcs12file);
             conf.active_plugins=getListFromString(props.getProperty("plugins", ""), conf.active_plugins);
+            conf.pdfImgScaleFactor=getFloatFromString(props.getProperty("pdfimgscalefactor", String.format("%.2f", conf.pdfImgScaleFactor)));
         }
-
         return conf;
     }
 
+    private float getFloatFromString(String value) {
+    	String valuetmp=value.replace(",", ".");
+    	float fvalue = 1;
+    	 try {
+    		 fvalue = Float.parseFloat(valuetmp);
+         } catch (Exception e) {
+             fvalue=1;
+         }	
+    	return fvalue;
+    }
+    
     private String getListRepr(List<String> items) {
     	return String.join("|", items);
     }
+    
     public void setSettings(Settings conf, boolean save) {
         setProperty("withoutvisiblesign", String.valueOf(conf.withoutvisiblesign));
         setProperty("uselta", String.valueOf(conf.uselta));
@@ -233,6 +246,7 @@ public class SettingsManager {
         setProperty("fontalignment", conf.fontalignment.toString());
         setProperty("portnumber", conf.portnumber.toString());
         setProperty("showlogs", String.valueOf(conf.showlogs));
+        setProperty("pdfimgscalefactor", String.format("%.2f", conf.pdfImgScaleFactor));
                 
         setProperty("padesLevel", conf.padesLevel);
         setProperty("xadesLevel", conf.xadesLevel);
@@ -241,14 +255,16 @@ public class SettingsManager {
                 
         if (conf.extrapkcs11Lib != null && conf.extrapkcs11Lib != "") {
             setProperty("extrapkcs11Lib", conf.extrapkcs11Lib);
+        }else {
+        	if(props.get("extrapkcs11Lib") != null) props.remove("extrapkcs11Lib");
         }
         
-        if (conf.pkcs12file != null && conf.pkcs12file != "") {
-            setProperty("pkcs12file", conf.pkcs12file);
-        }       
+        setProperty("pkcs12file", getListRepr(conf.pkcs12file));
         
         if (conf.image != null) {
             setProperty("image", conf.image);
+        }else {
+        	if(props.get("image") != null) props.remove("image");
         }
         if (save) save_config();
     }

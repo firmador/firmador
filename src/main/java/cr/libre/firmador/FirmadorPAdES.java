@@ -21,6 +21,7 @@ package cr.libre.firmador;
 
 
 import java.awt.Font;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URL;
 import java.security.KeyStore.PasswordProtection;
@@ -45,6 +46,7 @@ import eu.europa.esig.dss.model.x509.X500PrincipalHelper;
 import eu.europa.esig.dss.pades.DSSJavaFont;
 import eu.europa.esig.dss.pades.PAdESSignatureParameters;
 import eu.europa.esig.dss.pades.PAdESTimestampParameters;
+import eu.europa.esig.dss.pades.SignatureFieldParameters;
 import eu.europa.esig.dss.pades.SignatureImageParameters;
 import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pades.signature.PAdESService;
@@ -63,6 +65,8 @@ public class FirmadorPAdES extends CRSigner {
     PAdESSignatureParameters parameters;
     private boolean visibleSignature = true;
     private Settings settings;
+	private float width;
+	private float height;
 
     public FirmadorPAdES(GUIInterface gui) {
         super(gui);
@@ -221,17 +225,29 @@ public class FirmadorPAdES extends CRSigner {
         this.visibleSignature = visibleSignature;
     }
 
+    public void addVisibleSignature(int page, Rectangle rect) {
+		this.page = page;
+		this.x = rect.x;
+		this.y = rect.y;
+		this.width=(float)rect.width;
+		this.height=(float)rect.height;
+    }
     public void addVisibleSignature(int page, int x, int y) {
         this.page = page;
         this.x = x;
         this.y = y;
+        this.width=settings.signwith;
+        this.height=settings.signheight;
     }
 
     private void appendVisibleSignature(CertificateToken certificate, Date date, String reason, String location, String contactInfo, String image, Boolean hideAdvice) {
         SignatureImageParameters imageParameters = new SignatureImageParameters();
         imageParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
-        imageParameters.getFieldParameters().setOriginX(x);
-        imageParameters.getFieldParameters().setOriginY(y);
+        SignatureFieldParameters fparamet = imageParameters.getFieldParameters();
+        fparamet.setOriginX(this.x);
+        fparamet.setOriginY(this.y);
+        fparamet.setHeight(height);
+        fparamet.setWidth(width);
         SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
         textParameters.setFont(new DSSJavaFont(new Font(settings.font, Font.PLAIN, settings.fontsize)));
         String cn = DSSASN1Utils.getSubjectCommonName(certificate);
