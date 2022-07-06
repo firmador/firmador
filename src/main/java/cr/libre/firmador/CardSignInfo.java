@@ -39,7 +39,10 @@ public class CardSignInfo {
 	public CardSignInfo(int cardType, String path, String identification) {
 		this.cardType = cardType;
 		this.tokenSerialNumber=path;
-		this.identification = identification;		
+		this.identification = identification;	
+		firstName="SU NOMBRE COMPLETO";
+		lastName="";
+		expires="";
 	}
 	
 	public CardSignInfo(String pin) {

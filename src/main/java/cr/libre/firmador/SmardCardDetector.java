@@ -37,7 +37,7 @@ public class SmardCardDetector implements  ConfigListener {
 	private String lib;
 	public SmardCardDetector() {
 		settings = SettingsManager.getInstance().get_and_create_settings();
-		settings.addListener(this);
+		//settings.addListener(this);
 	}
 	public void updateLib() {
 		lib = CRSigner.getPkcs11Lib();

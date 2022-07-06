@@ -33,6 +33,7 @@ import cr.libre.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.ImageScaling;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignerTextPosition;
 import eu.europa.esig.dss.enumerations.VisualSignatureRotation;
@@ -248,7 +249,9 @@ public class FirmadorPAdES extends CRSigner {
         fparamet.setOriginY(this.y);
         fparamet.setHeight(height);
         fparamet.setWidth(width);
+       
         SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
+        
         textParameters.setFont(new DSSJavaFont(new Font(settings.font, Font.PLAIN, settings.fontsize)));
         String cn = DSSASN1Utils.getSubjectCommonName(certificate);
         X500PrincipalHelper subject = certificate.getSubject();
@@ -283,10 +286,14 @@ public class FirmadorPAdES extends CRSigner {
         
         imageParameters.setTextParameters(textParameters);
         try {
-            if (image != null && !image.trim().isEmpty()) imageParameters.setImage(new InMemoryDocument(Utils.toByteArray(new URL(image).openStream())));
+			if (image != null && !image.trim().isEmpty()) {
+            	imageParameters.setImage(new InMemoryDocument(Utils.toByteArray(new URL(image).openStream())));
+            }
+            	
         } catch (IOException e) {
             e.printStackTrace();
         }
+       // imageParameters.setImageScaling(ImageScaling.STRETCH);
         imageParameters.getFieldParameters().setPage(page);
         parameters.setImageParameters(imageParameters);
     }

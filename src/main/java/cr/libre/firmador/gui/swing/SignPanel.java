@@ -233,6 +233,8 @@ public class SignPanel extends JPanel implements ConfigListener{
         if (page > 0) {
         	renderPDFViewer(page - 1);
         	//setMinimumSize(getSize());
+         
+        	
         } 
 	}
 	
@@ -246,6 +248,42 @@ public class SignPanel extends JPanel implements ConfigListener{
           ex.printStackTrace();
           gui.showError(Throwables.getRootCause(ex));
       }
+	  previewSignLabel();
+	}
+	
+ 
+	
+	public void previewSignLabel() {
+		String previewimg = settings.getImage();
+		String table;
+		
+		if(previewimg != null) {
+		
+			table = "<table cellpadding=0 border=0>";
+			if(settings.fontalignment.contains("BOTTOM")) {
+				table += "<tr><td><img src=\""+settings.getImage()+"\"></td></tr>";
+				table += "<tr><td><span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span></td></tr>";
+			}
+			else if(settings.fontalignment.contains("LEFT")) {
+				table += "<tr><td><span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span></td>";
+				table += "<td><img src=\""+settings.getImage()+"\"></td></tr>";
+			}else if(settings.fontalignment.contains("TOP")) {
+				table += "<tr><td><span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span></td></tr>";
+				table += "<tr><td><img src=\""+settings.getImage()+"\"></td></tr>";
+			}else {
+				table += "<tr><td><img src=\""+settings.getImage()+"\"></td>";
+				table += "<td><span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span></td></tr>";
+			}
+			table += "</table>";
+		}else {
+			table ="<span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span>";
+		}	
+    	signatureLabel.setText("<html>"+table+"</html>");
+   	    signatureLabel.setForeground(new Color(0, 0, 0, 0));
+        signatureLabel.setBackground(new Color(127, 127, 127, 127));
+        signatureLabel.setOpaque(true);
+        signatureLabel.setSize(signatureLabel.getPreferredSize());		
+		
 	}
 	
 	public void initializeActions(){
@@ -253,19 +291,11 @@ public class SignPanel extends JPanel implements ConfigListener{
             public void mouseDragged(MouseEvent e) {
                 signatureLabel.setLocation(e.getX() - signatureLabel.getWidth() / 2, e.getY() - signatureLabel.getHeight() / 2);
             }
-            
         });
         imageLabel.addMouseListener(new MouseAdapter() {
         	public void mouseClicked(MouseEvent evt) {
         		if(evt.getClickCount()==3) {
-        		 
-        	    	signatureLabel.setText("<html><span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span></html>");
-        	     
-        	    	 signatureLabel.setForeground(new Color(0, 0, 0, 0));
-        	         signatureLabel.setBackground(new Color(127, 127, 127, 127));
-        	         signatureLabel.setOpaque(true);
-        	         signatureLabel.setSize(signatureLabel.getPreferredSize());
-        	    	 
+        			previewSignLabel(); 
         	    }else if (evt.getClickCount() == 2) {
         	    	 signatureLabel.setLocation(evt.getX() - signatureLabel.getWidth() / 2, evt.getY() - signatureLabel.getHeight() / 2);
         	    }
@@ -274,9 +304,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         
         pageSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-              
                     paintPDFViewer();
-              
             }
         });
         
@@ -289,13 +317,13 @@ public class SignPanel extends JPanel implements ConfigListener{
         
 	}
 	
-	public void signLayout(GroupLayout signLayout, JPanel signPanel) {
+	public void signLayout(GroupLayout signLayout, JPanel signPanel) {	
         this.setLayout(signLayout);
         signLayout.setAutoCreateGaps(true);
         signLayout.setAutoCreateContainerGaps(true);
             signLayout.setHorizontalGroup(
             signLayout.createSequentialGroup()
-                .addComponent(imgScroll)
+                .addComponent(imgScroll, 200,  600,  GroupLayout.DEFAULT_SIZE)
                 .addGroup(signLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                     .addComponent(pageLabel)
                     .addComponent(reasonLabel)
