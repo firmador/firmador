@@ -28,7 +28,6 @@ import static sun.security.pkcs11.wrapper.PKCS11Constants.CKF_OS_LOCKING_OK;
 import static sun.security.pkcs11.wrapper.PKCS11Constants.CKF_SERIAL_SESSION;
 import static sun.security.pkcs11.wrapper.PKCS11Constants.CKF_TOKEN_PRESENT;
 import static sun.security.pkcs11.wrapper.PKCS11Constants.CKO_CERTIFICATE;
-import static sun.security.pkcs11.wrapper.PKCS11Constants.CKR_TOKEN_NOT_RECOGNIZED;
 
 
 public class SmardCardDetector implements  ConfigListener {
@@ -124,7 +123,7 @@ public class SmardCardDetector implements  ConfigListener {
                     }
                     pkcs11.C_CloseSession(hSession);
                 } catch (PKCS11Exception e) {
-                    if (e.getErrorCode() == CKR_TOKEN_NOT_RECOGNIZED) {
+                    if (e.getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) {
                         System.err.println("Slot reports token is present but not recognized by the cryptoki library");
                     } else throw e;
                 }
