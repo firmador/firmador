@@ -139,7 +139,7 @@ Si se está probando y no se dispone de salida estándar para ver los mensajes
 (por ejemplo en Windows), puede exportarse esta información de salida hacia un
 fichero de la siguiente manera:
 
-    java -jar -Dorg.slf4j.simpleLogger.defaultLogLevel=trace -Dorg.slf4j.simpleLogger.logFile=firmador.log -jar firmador.jar
+    java -jar -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog -Dorg.apache.commons.logging.simplelog.defaultlog=trace -jar firmador.jar
 
 De esta forma se creará el fichero `firmador.log` en el mismo directorio para
 poderlo consultar.
