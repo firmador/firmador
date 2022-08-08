@@ -24,14 +24,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
@@ -63,9 +61,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 	private DocumentSelectionGroupLayout docSelector;
 	private PDDocument doc;
 	private String fileName;
-	private static Integer tabnumber=3;
 
-	@SuppressWarnings("serial")
 	public void loadGUI() {
 		super.loadGUI();
 		gui = this;

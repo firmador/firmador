@@ -23,7 +23,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
-import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +43,7 @@ public class GUIArgs implements GUIInterface {
 
     private String documenttosign;
     private String documenttosave;
-    private String pkcs12file = "";
+    //private String pkcs12file = "";
     private int slot = -1;
     private Boolean timestamp = false;
     private Boolean visibleTimestamp = false;
@@ -98,7 +97,7 @@ public class GUIArgs implements GUIInterface {
         }
         documenttosign = Paths.get(arguments.get(0)).toAbsolutePath().toString();
         documenttosave = Paths.get(arguments.get(1)).toAbsolutePath().toString();
-        if (arguments.size() > 2) pkcs12file = Paths.get(arguments.get(2)).toAbsolutePath().toString();
+        //if (arguments.size() > 2) pkcs12file = Paths.get(arguments.get(2)).toAbsolutePath().toString();
     }
 
     public void showError(Throwable error) {

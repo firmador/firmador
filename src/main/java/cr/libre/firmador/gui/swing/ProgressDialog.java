@@ -20,6 +20,7 @@ import java.awt.Image;
 
 import javax.swing.JProgressBar;
 
+@SuppressWarnings("serial")
 public class ProgressDialog extends JDialog {
 	protected Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
 	private final JPanel contentPanel = new JPanel();

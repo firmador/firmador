@@ -34,7 +34,7 @@ import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonTrustedCertificateSource;
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
-import eu.europa.esig.dss.token.PrefilledPasswordCallback;
+//import eu.europa.esig.dss.token.PrefilledPasswordCallback;
 import eu.europa.esig.dss.token.Pkcs11SignatureToken;
 import eu.europa.esig.dss.token.Pkcs12SignatureToken;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
@@ -118,7 +118,7 @@ public class CRSigner {
         	if(card.getCardType() == CardSignInfo.PKCS12TYPE) {
         		signingToken = new Pkcs12SignatureToken(card.getTokenSerialNumber(), card.getPin());
         	}else {
-        		PrefilledPasswordCallback pinCallback = new PrefilledPasswordCallback(card.getPin());
+        		//PrefilledPasswordCallback pinCallback = new PrefilledPasswordCallback(card.getPin());
         		signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), card.getPin(), (int)card.getSlotID());
         	}
         } catch (Exception|Error e) {

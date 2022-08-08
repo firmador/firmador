@@ -23,12 +23,12 @@ package cr.libre.firmador;
 
 
 
-import java.security.KeyStore.PasswordProtection;
 
 
 
 
 import cr.libre.firmador.gui.GUIInterface;
+
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;

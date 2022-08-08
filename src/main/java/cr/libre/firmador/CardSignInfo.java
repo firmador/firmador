@@ -4,8 +4,6 @@ import java.security.KeyStore.PasswordProtection;
 
 import org.slf4j.LoggerFactory;
 
-import cr.libre.firmador.gui.BaseSwing;
-
 public class CardSignInfo {
 	public static int PKCS11TYPE=1;
 	public static int PKCS12TYPE=2;
@@ -15,7 +13,7 @@ public class CardSignInfo {
 	private String firstName;
 	private String lastName;
 	private String expires;
-	private String certSerialNumber;
+	//private String certSerialNumber;
 	// On pkcs12 use tokenSerialNumber to store pkcs12 file path 
 	private String tokenSerialNumber;
 	private long slotID;
@@ -31,7 +29,7 @@ public class CardSignInfo {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.expires = expires;
-		this.certSerialNumber = certSerialNumber;
+		//this.certSerialNumber = certSerialNumber;
 		this.tokenSerialNumber = tokenSerialNumber;
 		this.slotID=slotID;
 	}

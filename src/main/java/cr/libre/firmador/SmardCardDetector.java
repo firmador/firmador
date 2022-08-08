@@ -12,8 +12,6 @@ import javax.naming.ldap.Rdn;
 
 import org.slf4j.LoggerFactory;
 
-import cr.libre.firmador.gui.GUIInterface;
-import cr.libre.firmador.gui.GUISwing;
 import sun.security.pkcs11.wrapper.CK_ATTRIBUTE;
 import sun.security.pkcs11.wrapper.CK_C_INITIALIZE_ARGS;
 import sun.security.pkcs11.wrapper.CK_INFO;
@@ -131,10 +129,9 @@ public class SmardCardDetector implements  ConfigListener {
         }
         return cardinfo;
     }
-	@Override
+
+    @Override
 	public void updateConfig() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

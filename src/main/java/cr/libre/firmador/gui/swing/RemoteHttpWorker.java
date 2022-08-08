@@ -21,9 +21,9 @@ import org.apache.hc.core5.http.impl.bootstrap.HttpServer;
 import org.apache.hc.core5.http.impl.bootstrap.ServerBootstrap;
 import org.apache.hc.core5.http.io.HttpRequestHandler;
 import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
-import org.apache.hc.core5.http.io.entity.StringEntity;
+//import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.protocol.HttpContext;
-import org.apache.hc.core5.io.CloseMode;
+//import org.apache.hc.core5.io.CloseMode;
 import org.apache.hc.core5.util.TimeValue;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,6 @@ import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUIRemote;
-import cr.libre.firmador.gui.GUISwing;
 
 public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
 		private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(RemoteHttpWorker.class);
@@ -91,7 +90,8 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                     try {
                         if (request.getUri().getPath().equals("/close")) {
                         	response.setCode(HttpStatus.SC_OK);
-                        	response.setEntity (new StringEntity ("Closing..."));
+                        	//response.setEntity(new StringEntity("Closing..."));
+                        	LOG.trace("Closing...");
                         	response.close();
                         	 
                         	 SwingUtilities.invokeLater(new Runnable() {
@@ -99,7 +99,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                                 	 try {
 										Thread.sleep(1000);
 									} catch (InterruptedException e) {
-										LOG.error("Interrupción al correr servidoro", e);
+										LOG.error("Interrupción al correr servidor", e);
 										e.printStackTrace();
 									}
                                      ((GUIRemote) gui).close();

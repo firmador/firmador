@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2021 Firmador authors.
+Copyright (C) 2018, 2022 Firmador authors.
 
 This file is part of Firmador.
 
@@ -21,7 +21,6 @@ package cr.libre.firmador.gui.swing;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -44,7 +43,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
@@ -53,7 +51,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.LoggerFactory;
 
@@ -219,13 +216,13 @@ public class SignPanel extends JPanel implements ConfigListener{
 	public int getPDFVisibleSignatureX() {
 		Point pposition = signatureLabel.getLocation();
 		int position = pposition.x;
-		return (int)Math.round(position * (2-settings.pdfImgScaleFactor));
+		return Math.round(position * (2 - settings.pdfImgScaleFactor));
 	}
 	
 	public int getPDFVisibleSignatureY() {
 		 Point pposition = signatureLabel.getLocation();
 		 int position = pposition.y;
-		return (int)Math.round(position * (2-settings.pdfImgScaleFactor));
+		return Math.round(position * (2 - settings.pdfImgScaleFactor));
 	}
 	
 	public void paintPDFViewer() {
@@ -310,7 +307,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-				boolean ok = gui.signDocuments();
+				/*boolean ok =*/ gui.signDocuments();
             }
         });
         
@@ -609,7 +606,7 @@ public class SignPanel extends JPanel implements ConfigListener{
 	}	
 	
 	public String getTextExample() {
-		String dev="";
+		//String dev="";
 		String reason = reasonField.getText();
 		String location = locationField.getText();
 		String contactInfo = contactInfoField.getText();
