@@ -19,7 +19,6 @@ import com.google.common.base.Throwables;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
-import cr.libre.firmador.gui.GUISwing;
 
 public class AboutLayout extends GroupLayout {
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(AboutLayout.class);

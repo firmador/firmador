@@ -17,8 +17,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-import java.security.*;
-
 import javax.swing.SwingUtilities;
 
 import org.apache.pdfbox.pdmodel.font.FontMappers;
@@ -28,7 +26,6 @@ import cr.libre.firmador.gui.GUISelector;
 import cr.libre.firmador.plugins.PluginManager;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.net.URISyntaxException;
 
 public class Firmador {
@@ -37,8 +34,6 @@ public class Firmador {
     
         // PDFBox font cache warmup
         FontMappers.instance().getFontBoxFont(null, null);
-        // Workaround illegal access for Java 9+ until jaxb 2.4.0 gets released
-        System.setProperty("com.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize", "true");
         GUISelector guiselector = new GUISelector();
         GUIInterface gui = guiselector.getInterface(args);
         gui.setArgs(args);

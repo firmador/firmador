@@ -28,6 +28,7 @@ import javax.swing.ScrollPaneConstants;
 
 import cr.libre.firmador.gui.GUIInterface;
 
+@SuppressWarnings("serial")
 public class ValidatePanel extends ScrollableJPanel {
 	public CopyableJLabel reportLabel;
 	public JButton extendButton;

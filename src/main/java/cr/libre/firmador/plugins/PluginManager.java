@@ -28,25 +28,23 @@ import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
 
 public class PluginManager implements Runnable {
-	private GUIInterface gui;
+	//private GUIInterface gui;
 	private Settings settings;
 	private List<Plugin> runnables_plugins = new ArrayList<Plugin>();
 	private List<Plugin> plugins = new ArrayList<Plugin>();
 
 	public PluginManager(GUIInterface gui) {
 		super();
-		this.gui = gui;
+		//this.gui = gui;
 		this.settings = SettingsManager.getInstance().get_and_create_settings();
-
 	}
 
 	private void loadPlugins() {
 		for (String name : settings.active_plugins) {
 
 			try {
-				Class pluginClass = Class.forName(name, true, Plugin.class.getClassLoader());
+				Class<?> pluginClass = Class.forName(name, true, Plugin.class.getClassLoader());
 				Plugin plugin = (Plugin) pluginClass.getDeclaredConstructor().newInstance();
-
 
 				if (plugin.get_isrunnable()) {
 					SwingUtilities.invokeLater((Runnable) plugin);
@@ -57,12 +55,9 @@ public class PluginManager implements Runnable {
 				plugin.start();
 
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
-
 			}
 		}
 	}
@@ -83,7 +78,6 @@ public class PluginManager implements Runnable {
 	@Override
 	public void run() {
 		loadPlugins();
-
 	}
 
 }

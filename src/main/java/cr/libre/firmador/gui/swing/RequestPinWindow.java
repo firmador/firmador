@@ -1,42 +1,34 @@
 package cr.libre.firmador.gui.swing;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.EventQueue;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
+import java.security.KeyStore.PasswordProtection;
+//import javax.swing.ComboBoxModel;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import java.util.List;
 
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.CardSignInfo;
-import java.security.KeyStore.PasswordProtection;
-import java.util.List;
-
 import cr.libre.firmador.SmardCardDetector;
-
-import javax.swing.ComboBoxModel;
-import java.awt.GridLayout;
-import javax.swing.JLabel;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.JButton;
-import javax.swing.ImageIcon;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
 
 public class RequestPinWindow extends JFrame {
 
@@ -45,12 +37,11 @@ public class RequestPinWindow extends JFrame {
 	private JPasswordField pinField = new JPasswordField(14);
 	protected CardSignInfo card;
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(RequestPinWindow.class);
-	protected JComboBox comboBox;
+	protected JComboBox<String> comboBox;
 	private JLabel label;
 	private JLabel lblNewLabel;
 	private final JLabel infotext = new JLabel("");
 	protected List<CardSignInfo> cards;
-
  
 	public RequestPinWindow() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -78,7 +69,7 @@ public class RequestPinWindow extends JFrame {
 		
 		
 		lblNewLabel = new JLabel("Seleccione el certificado: ");
-		comboBox = new JComboBox();
+		comboBox = new JComboBox<String>();
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				updateSelected();
@@ -190,7 +181,7 @@ public class RequestPinWindow extends JFrame {
 		SmardCardDetector cardd = new SmardCardDetector();
 		cards= cardd.readSaveListSmartCard();
 		comboBox.removeAllItems();
-		ComboBoxModel model = comboBox.getModel();
+		//ComboBoxModel model = comboBox.getModel();
 		 
 		for(int x=0; x<cards.size(); x++ ) {
 			comboBox.addItem(cards.get(x).getDisplayInfo());

@@ -2,8 +2,6 @@ package cr.libre.firmador.gui;
 
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyStore.PasswordProtection;
 import java.util.HashMap;
 
 import javax.swing.GroupLayout;
@@ -28,11 +26,9 @@ import eu.europa.esig.dss.model.MimeType;
 
 public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener {
 	public JTabbedPane frameTabbedPane;
-	private byte[] toSignByteArray;
 	private RemoteHttpWorker<Void, byte[]> remote;
 	private RemoteDocInformation docinfo;
 
-	@SuppressWarnings("serial")
 	public void loadGUI() {
 		super.loadGUI();
 	
@@ -87,7 +83,7 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
 	}
 
 	
-	GUIRemote(){
+	GUIRemote() {
 		super();
 		setTabnumber(3);
 	}
@@ -100,7 +96,6 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
 			signedDocument.writeTo(docinfo.getData());
 			docinfo.setStatus(HttpStatus.SC_SUCCESS);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -109,8 +104,6 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
 
 	@Override
 	public void setArgs(String[] args) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -120,13 +113,11 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
 
 	@Override
 	public String getDocumentToSign() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getPathToSave(String extension) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -136,59 +127,47 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
 		docinfo = docmap.get(fileName);
 		PDDocument doc;
 		try {
-	 
 			byte[] data =IOUtils.toByteArray( docinfo.getInputdata());
 			toSignDocument = new InMemoryDocument(data, fileName);
 			MimeType mimeType = toSignDocument.getMimeType();
 			if(MimeType.PDF == mimeType) {
 				doc = PDDocument.load(data);
 				loadDocument(mimeType, doc);
-			
 			} else if (mimeType == MimeType.XML || mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
 				showMessage("Está intentando firmar un documento XML o un openDocument que no posee visualización");
 				signPanel.getSignButton().setEnabled(true);
 			} else {
 	           signPanel.shownonPDFButtons();
-	           
 	        }
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	@Override
 	public void extendDocument() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public String getPathToSaveExtended(String extension) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void displayFunctionality(String functionality) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void close() {
-
-		// if(!remote.isCancelled())remote.cancel(true);
+		// if (!remote.isCancelled()) remote.cancel(true);
 		mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
 		// mainFrame.dispose();
-
 	}
 
 	@Override
 	public void updateConfig() {
-		if(this.settings.showlogs) {
+		if (this.settings.showlogs) {
 			showLogs(this.frameTabbedPane);
-		}else {
+		} else {
 			hideLogs(this.frameTabbedPane);
 		}
 		

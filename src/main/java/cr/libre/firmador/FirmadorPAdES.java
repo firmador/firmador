@@ -19,12 +19,10 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador;
 
-
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URL;
-import java.security.KeyStore.PasswordProtection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -33,7 +31,7 @@ import cr.libre.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
-import eu.europa.esig.dss.enumerations.ImageScaling;
+
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignerTextPosition;
 import eu.europa.esig.dss.enumerations.VisualSignatureRotation;

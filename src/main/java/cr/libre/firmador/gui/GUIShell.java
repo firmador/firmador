@@ -24,7 +24,6 @@ import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
-import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,8 +34,8 @@ import cr.libre.firmador.CardSignInfo;
 //import cr.libre.firmador.FirmadorCAdES;
 //import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
-import cr.libre.firmador.Settings;
-import cr.libre.firmador.SettingsManager;
+//import cr.libre.firmador.Settings;
+//import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.plugins.PluginManager;
 
 //import cr.libre.firmador.FirmadorXAdES;
@@ -47,10 +46,10 @@ import eu.europa.esig.dss.model.MimeType;
 
 public class GUIShell implements GUIInterface {
 
-    private Settings settings;
+    //private Settings settings;
 
 	public void loadGUI() {
-    	settings = SettingsManager.getInstance().get_and_create_settings();
+    	//settings = SettingsManager.getInstance().get_and_create_settings();
         String fileName = getDocumentToSign();
         if (fileName != null) {
             // FirmadorCAdES firmador = new FirmadorCAdES(this);
@@ -135,36 +134,27 @@ public class GUIShell implements GUIInterface {
 	@Override
 	public void setPluginManager(PluginManager pluginManager) {
 		pluginManager.start_loggin();
-		
 	}
 
 	@Override
 	public void loadDocument(String fileName) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void loadDocument(MimeType mimeType, PDDocument doc) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void extendDocument() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public String getPathToSaveExtended(String extension) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean signDocuments() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

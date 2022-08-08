@@ -1,12 +1,8 @@
 package cr.libre.firmador.gui.swing;
 
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
-import javax.swing.ProgressMonitor;
-import javax.swing.UIManager;
 
 import org.slf4j.LoggerFactory;
 

@@ -77,6 +77,7 @@ public class SwingMainWindowFrame extends JFrame {
 
 	}
 
+	@SuppressWarnings("serial")
 	public void loadGUI() {
 		settings = SettingsManager.getInstance().get_and_create_settings();
 		menu = new JPopupMenu();
