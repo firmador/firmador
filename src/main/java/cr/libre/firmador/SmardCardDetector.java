@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import sun.security.pkcs11.wrapper.CK_ATTRIBUTE;
 import sun.security.pkcs11.wrapper.CK_C_INITIALIZE_ARGS;
-import sun.security.pkcs11.wrapper.CK_INFO;
+//import sun.security.pkcs11.wrapper.CK_INFO;
 import sun.security.pkcs11.wrapper.CK_SLOT_INFO;
 import sun.security.pkcs11.wrapper.CK_TOKEN_INFO;
 import sun.security.pkcs11.wrapper.PKCS11;
@@ -28,6 +28,7 @@ import static sun.security.pkcs11.wrapper.PKCS11Constants.CKF_TOKEN_PRESENT;
 import static sun.security.pkcs11.wrapper.PKCS11Constants.CKO_CERTIFICATE;
 
 
+@SuppressWarnings("restriction")
 public class SmardCardDetector implements  ConfigListener {
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SmardCardDetector.class);
 	protected Settings settings;
@@ -71,7 +72,7 @@ public class SmardCardDetector implements  ConfigListener {
             pInitArgs.flags = 0;
             pkcs11 = PKCS11.getInstance(lib, functionList, pInitArgs, false);
         }
-        CK_INFO info = pkcs11.C_GetInfo();
+        //CK_INFO info = pkcs11.C_GetInfo();
         //System.out.println("Interface: " + new String(info.libraryDescription).trim());
         Boolean tokenPresent = true;
         for (long slotID : pkcs11.C_GetSlotList(tokenPresent)) {
