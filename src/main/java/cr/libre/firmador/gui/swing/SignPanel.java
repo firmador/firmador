@@ -21,6 +21,7 @@ package cr.libre.firmador.gui.swing;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -177,6 +178,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         signatureLabel = new JLabel("<html><span style='font-size: 12pt'>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIRMA<br>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VISIBLE</span></html>");
+        signatureLabel.setFont(new Font(settings.font, Font.PLAIN, settings.fontsize));
         signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
@@ -275,6 +277,64 @@ public class SignPanel extends JPanel implements ConfigListener{
 		}else {
 			table ="<span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span>";
 		}	
+        String pdfFont = "";
+        int pdfFontStyle = 0;
+        LOG.warn("settings.font: " + settings.font);
+        switch (settings.font) {
+        case "Nimbus Roman Regular":
+            pdfFont = "Nimbus Roman";
+            pdfFontStyle = Font.PLAIN;
+            break;
+        case "Nimbus Roman Italic":
+            pdfFont = "Nimbus Roman";
+            pdfFontStyle = Font.ITALIC;
+            break;
+        case "Nimbus Roman Bold":
+            pdfFont = "Nimbus Roman";
+            pdfFontStyle = Font.BOLD;
+            break;
+        case "Nimbus Roman Bold Italic":
+            pdfFont = "Nimbus Roman";
+            pdfFontStyle = Font.BOLD + Font.ITALIC;
+            break;
+        case "Nimbus Sans Regular":
+            pdfFont = "Nimbus Sans";
+            pdfFontStyle = Font.PLAIN;
+            break;
+        case "Nimbus Sans Italic":
+            pdfFont = "Nimbus Sans";
+            pdfFontStyle = Font.ITALIC;
+            break;
+        case "Nimbus Sans Bold":
+            pdfFont = "Nimbus Sans";
+            pdfFontStyle = Font.BOLD;
+            break;
+        case "Nimbus Sans Bold Italic":
+            pdfFont = "Nimbus Sans";
+            pdfFontStyle = Font.BOLD + Font.ITALIC;
+            break;
+        case "Nimbus Mono PS Regular":
+            pdfFont = "Nimbus Mono PS";
+            pdfFontStyle = Font.PLAIN;
+            break;
+        case "Nimbus Mono PS Italic":
+            pdfFont = "Nimbus Mono PS";
+            pdfFontStyle = Font.ITALIC;
+            break;
+        case "Nimbus Mono PS Bold":
+            pdfFont = "Nimbus Mono PS";
+            pdfFontStyle = Font.BOLD;
+            break;
+        case "Nimbus Mono PS Bold Italic":
+            pdfFont = "Nimbus Mono PS";
+            pdfFontStyle = Font.BOLD + Font.ITALIC;
+            break;
+        default:
+            pdfFont = Font.SANS_SERIF;
+            pdfFontStyle = Font.PLAIN;
+            break;
+        }
+        signatureLabel.setFont(new Font(pdfFont, pdfFontStyle, settings.fontsize));
     	signatureLabel.setText("<html>"+table+"</html>");
    	    signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
