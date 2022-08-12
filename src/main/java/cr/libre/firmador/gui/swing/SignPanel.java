@@ -21,6 +21,7 @@ package cr.libre.firmador.gui.swing;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -177,6 +178,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         signatureLabel = new JLabel("<html><span style='font-size: 12pt'>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIRMA<br>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VISIBLE</span></html>");
+        signatureLabel.setFont(new Font(settings.font, Font.PLAIN, settings.fontsize));
         signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
@@ -275,6 +277,7 @@ public class SignPanel extends JPanel implements ConfigListener{
 		}else {
 			table ="<span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span>";
 		}	
+        signatureLabel.setFont(new Font(settings.getFontName(settings.font, false), settings.getFontStyle(settings.font), settings.fontsize));
     	signatureLabel.setText("<html>"+table+"</html>");
    	    signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
@@ -613,18 +616,20 @@ public class SignPanel extends JPanel implements ConfigListener{
         Boolean hasReason = false;
         Boolean hasLocation = false;
         Boolean hasContact = false;
-        String nombre="SU NOMBRE COMPLETO (FIRMA)";
-        String cedula="CTP-08-8888-8888";
+        String commonName="NOMBRE DE LA PERSONA (TIPO DE CERTIFICADO)";
+        String identification="XXX-XXXXXXXXXXXX";
+        String organization="TIPO DE PERSONA";
         SmardCardDetector cardd = new SmardCardDetector();
 		List<CardSignInfo> cards = cardd.readSaveListSmartCard();		
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(settings.dateformat);
 		LocalDateTime now = LocalDateTime.now();
         if(!cards.isEmpty()) {
         	CardSignInfo card = cards.get(0);
-        	nombre= card.getFirstName() + " " + card.getLastName() + " (FIRMA)" ;
-        	cedula = card.getIdentification();
+            commonName = card.getCommonName();
+            organization = card.getOrganization();
+            identification = card.getIdentification();
         }
-        String additionalText = nombre+"<br>Cedula "+cedula+" <br>Fecha declarada "+dtf.format(now)+"<br>";
+        String additionalText = commonName+"<br>"+organization+", "+identification+".<br>Fecha declarada: "+dtf.format(now)+"<br>";
         if (reason != null && !reason.trim().isEmpty()) {
             hasReason = true;
             additionalText += "Razón: " + reason + "\n";
