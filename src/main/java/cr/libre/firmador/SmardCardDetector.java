@@ -96,20 +96,24 @@ public class SmardCardDetector implements  ConfigListener {
                             boolean[] keyUsage = certificate.getKeyUsage();
                             if (certificate.getBasicConstraints() == -1 && keyUsage[0] && keyUsage[1]) {
                                 LdapName ldapName = new LdapName(certificate.getSubjectX500Principal().getName("RFC1779"));
-                                String firstName = "", lastName = "", identification = "";
+                                String firstName = "", lastName = "", identification = "", commonName = "", organization = "";
                                 for (Rdn rdn : ldapName.getRdns()) {
                                     if (rdn.getType().equals("OID.2.5.4.5")) identification = rdn.getValue().toString();
                                     if (rdn.getType().equals("OID.2.5.4.4")) lastName = rdn.getValue().toString();
                                     if (rdn.getType().equals("OID.2.5.4.42")) firstName = rdn.getValue().toString();
+                                    if (rdn.getType().equals("CN")) commonName = rdn.getValue().toString();
+                                    if (rdn.getType().equals("O")) organization = rdn.getValue().toString();
                                 }
                                 String expires = new SimpleDateFormat("yyyy-MM-dd").format(certificate.getNotAfter());
-                                LOG.debug(firstName + " " + lastName + " (" + identification + ") " + certificate.getSerialNumber().toString(16) + " [Token serial number: " + new String(tokenInfo.serialNumber) + "] (Expires: " + expires+ ")");
+                                LOG.debug(firstName + " " + lastName + " (" + identification + "), " + organization + ", " + certificate.getSerialNumber().toString(16) + " [Token serial number: " + new String(tokenInfo.serialNumber) + "] (Expires: " + expires+ ")");
                                 Object keyIdentifier = pTemplate2[i + 1]/* .pValue */; // TODO use pValue to get the value for comparison when using it to match with private key!
                                 LOG.debug("Public/Private key pair identifier: " + keyIdentifier); // After logging in with PIN, find the matching private key pValue. NOTE: Old certificates didn't use "LlaveDeFirma" id/label.
                                 cardinfo.add(new CardSignInfo(CardSignInfo.PKCS11TYPE,
                                 		identification,
                                 		firstName,
                                 		lastName,
+                                    commonName,
+                                    organization,
                                 		expires,
                                 		certificate.getSerialNumber().toString(16),
                                 		new String(tokenInfo.serialNumber),

@@ -277,64 +277,7 @@ public class SignPanel extends JPanel implements ConfigListener{
 		}else {
 			table ="<span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span>";
 		}	
-        String pdfFont = "";
-        int pdfFontStyle = 0;
-        LOG.warn("settings.font: " + settings.font);
-        switch (settings.font) {
-        case "Nimbus Roman Regular":
-            pdfFont = "Nimbus Roman";
-            pdfFontStyle = Font.PLAIN;
-            break;
-        case "Nimbus Roman Italic":
-            pdfFont = "Nimbus Roman";
-            pdfFontStyle = Font.ITALIC;
-            break;
-        case "Nimbus Roman Bold":
-            pdfFont = "Nimbus Roman";
-            pdfFontStyle = Font.BOLD;
-            break;
-        case "Nimbus Roman Bold Italic":
-            pdfFont = "Nimbus Roman";
-            pdfFontStyle = Font.BOLD + Font.ITALIC;
-            break;
-        case "Nimbus Sans Regular":
-            pdfFont = "Nimbus Sans";
-            pdfFontStyle = Font.PLAIN;
-            break;
-        case "Nimbus Sans Italic":
-            pdfFont = "Nimbus Sans";
-            pdfFontStyle = Font.ITALIC;
-            break;
-        case "Nimbus Sans Bold":
-            pdfFont = "Nimbus Sans";
-            pdfFontStyle = Font.BOLD;
-            break;
-        case "Nimbus Sans Bold Italic":
-            pdfFont = "Nimbus Sans";
-            pdfFontStyle = Font.BOLD + Font.ITALIC;
-            break;
-        case "Nimbus Mono PS Regular":
-            pdfFont = "Nimbus Mono PS";
-            pdfFontStyle = Font.PLAIN;
-            break;
-        case "Nimbus Mono PS Italic":
-            pdfFont = "Nimbus Mono PS";
-            pdfFontStyle = Font.ITALIC;
-            break;
-        case "Nimbus Mono PS Bold":
-            pdfFont = "Nimbus Mono PS";
-            pdfFontStyle = Font.BOLD;
-            break;
-        case "Nimbus Mono PS Bold Italic":
-            pdfFont = "Nimbus Mono PS";
-            pdfFontStyle = Font.BOLD + Font.ITALIC;
-            break;
-        default:
-            pdfFont = Font.SANS_SERIF;
-            pdfFontStyle = Font.PLAIN;
-            break;
-        }
-        signatureLabel.setFont(new Font(pdfFont, pdfFontStyle, settings.fontsize));
+        signatureLabel.setFont(new Font(settings.getFontName(settings.font, false), settings.getFontStyle(settings.font), settings.fontsize));
     	signatureLabel.setText("<html>"+table+"</html>");
    	    signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
@@ -673,18 +616,20 @@ public class SignPanel extends JPanel implements ConfigListener{
         Boolean hasReason = false;
         Boolean hasLocation = false;
         Boolean hasContact = false;
-        String nombre="SU NOMBRE COMPLETO (FIRMA)";
-        String cedula="CTP-08-8888-8888";
+        String commonName="NOMBRE DE LA PERSONA (TIPO DE CERTIFICADO)";
+        String identification="XXX-XXXXXXXXXXXX";
+        String organization="TIPO DE PERSONA";
         SmardCardDetector cardd = new SmardCardDetector();
 		List<CardSignInfo> cards = cardd.readSaveListSmartCard();		
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(settings.dateformat);
 		LocalDateTime now = LocalDateTime.now();
         if(!cards.isEmpty()) {
         	CardSignInfo card = cards.get(0);
-        	nombre= card.getFirstName() + " " + card.getLastName() + " (FIRMA)" ;
-        	cedula = card.getIdentification();
+            commonName = card.getCommonName();
+            organization = card.getOrganization();
+            identification = card.getIdentification();
         }
-        String additionalText = nombre+"<br>Cedula "+cedula+" <br>Fecha declarada "+dtf.format(now)+"<br>";
+        String additionalText = commonName+"<br>"+organization+", "+identification+".<br>Fecha declarada: "+dtf.format(now)+"<br>";
         if (reason != null && !reason.trim().isEmpty()) {
             hasReason = true;
             additionalText += "Razón: " + reason + "\n";

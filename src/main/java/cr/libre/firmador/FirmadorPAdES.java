@@ -199,7 +199,7 @@ public class FirmadorPAdES extends CRSigner {
                 imageParameters.getFieldParameters().setOriginX(0);
                 imageParameters.getFieldParameters().setOriginY(0);
                 SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
-                textParameters.setFont(new DSSJavaFont(new Font(settings.font, Font.PLAIN, settings.fontsize)));
+                textParameters.setFont(new DSSJavaFont(new Font(settings.getFontName(settings.font, true), settings.getFontStyle(settings.font), settings.fontsize)));
                 SimpleDateFormat date = new SimpleDateFormat(settings.getDateFormat());
                 date.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
                 textParameters.setText("Este documento incluye un sello de tiempo de la\n" +
@@ -250,63 +250,7 @@ public class FirmadorPAdES extends CRSigner {
        
         SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
         
-        String pdfFont = "";
-        int pdfFontStyle = 0;
-        switch (settings.font) {
-        case "Nimbus Roman Regular":
-            pdfFont = Font.SERIF;
-            pdfFontStyle = Font.PLAIN;
-            break;
-        case "Nimbus Roman Italic":
-            pdfFont = Font.SERIF;
-            pdfFontStyle = Font.ITALIC;
-            break;
-        case "Nimbus Roman Bold":
-            pdfFont = Font.SERIF;
-            pdfFontStyle = Font.BOLD;
-            break;
-        case "Nimbus Roman Bold Italic":
-            pdfFont = Font.SERIF;
-            pdfFontStyle = Font.BOLD + Font.ITALIC;
-            break;
-        case "Nimbus Sans Regular":
-            pdfFont = Font.SANS_SERIF;
-            pdfFontStyle = Font.PLAIN;
-            break;
-        case "Nimbus Sans Italic":
-            pdfFont = Font.SANS_SERIF;
-            pdfFontStyle = Font.ITALIC;
-            break;
-        case "Nimbus Sans Bold":
-            pdfFont = Font.SANS_SERIF;
-            pdfFontStyle = Font.BOLD;
-            break;
-        case "Nimbus Sans Bold Italic":
-            pdfFont = Font.SANS_SERIF;
-            pdfFontStyle = Font.BOLD + Font.ITALIC;
-            break;
-        case "Nimbus Mono PS Regular":
-            pdfFont = Font.MONOSPACED;
-            pdfFontStyle = Font.PLAIN;
-            break;
-        case "Nimbus Mono PS Italic":
-            pdfFont = Font.MONOSPACED;
-            pdfFontStyle = Font.ITALIC;
-            break;
-        case "Nimbus Mono PS Bold":
-            pdfFont = Font.MONOSPACED;
-            pdfFontStyle = Font.BOLD;
-            break;
-        case "Nimbus Mono PS Bold Italic":
-            pdfFont = Font.MONOSPACED;
-            pdfFontStyle = Font.BOLD + Font.ITALIC;
-            break;
-        default:
-            pdfFont = Font.SANS_SERIF;
-            pdfFontStyle = Font.PLAIN;
-            break;
-        }
-        textParameters.setFont(new DSSJavaFont(new Font(pdfFont, pdfFontStyle, settings.fontsize)));
+        textParameters.setFont(new DSSJavaFont(new Font(settings.getFontName(settings.font, true), settings.getFontStyle(settings.font), settings.fontsize)));
         String cn = DSSASN1Utils.getSubjectCommonName(certificate);
         X500PrincipalHelper subject = certificate.getSubject();
         String o = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.O, subject);
