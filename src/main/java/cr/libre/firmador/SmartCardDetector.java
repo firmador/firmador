@@ -29,11 +29,11 @@ import static sun.security.pkcs11.wrapper.PKCS11Constants.CKO_CERTIFICATE;
 
 
 @SuppressWarnings("restriction")
-public class SmardCardDetector implements  ConfigListener {
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SmardCardDetector.class);
+public class SmartCardDetector implements  ConfigListener {
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SmartCardDetector.class);
 	protected Settings settings;
 	private String lib;
-	public SmardCardDetector() {
+	public SmartCardDetector() {
 		settings = SettingsManager.getInstance().get_and_create_settings();
 		//settings.addListener(this);
 	}

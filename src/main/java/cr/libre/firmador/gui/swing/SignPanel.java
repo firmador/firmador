@@ -61,7 +61,7 @@ import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.ConfigListener;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
-import cr.libre.firmador.SmardCardDetector;
+import cr.libre.firmador.SmartCardDetector;
 import cr.libre.firmador.gui.GUIInterface;
 
 
@@ -619,7 +619,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         String commonName="NOMBRE DE LA PERSONA (TIPO DE CERTIFICADO)";
         String identification="XXX-XXXXXXXXXXXX";
         String organization="TIPO DE PERSONA";
-        SmardCardDetector cardd = new SmardCardDetector();
+        SmartCardDetector cardd = new SmartCardDetector();
 		List<CardSignInfo> cards = cardd.readSaveListSmartCard();		
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(settings.dateformat);
 		LocalDateTime now = LocalDateTime.now();

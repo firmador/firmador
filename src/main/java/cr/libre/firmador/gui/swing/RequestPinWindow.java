@@ -28,7 +28,7 @@ import java.util.List;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.CardSignInfo;
-import cr.libre.firmador.SmardCardDetector;
+import cr.libre.firmador.SmartCardDetector;
 
 public class RequestPinWindow extends JFrame {
 
@@ -178,7 +178,7 @@ public class RequestPinWindow extends JFrame {
 	}
 	
 	public void inspectCardInfo() throws Throwable {
-		SmardCardDetector cardd = new SmardCardDetector();
+		SmartCardDetector cardd = new SmartCardDetector();
 		cards= cardd.readSaveListSmartCard();
 		comboBox.removeAllItems();
 		//ComboBoxModel model = comboBox.getModel();
