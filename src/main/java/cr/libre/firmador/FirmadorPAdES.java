@@ -228,8 +228,8 @@ public class FirmadorPAdES extends CRSigner {
 		this.page = page;
 		this.x = rect.x;
 		this.y = rect.y;
-		this.width=(float)rect.width;
-		this.height=(float)rect.height;
+		//this.width=(float)rect.width;
+		//this.height=(float)rect.height;
     }
     public void addVisibleSignature(int page, int x, int y) {
         this.page = page;
