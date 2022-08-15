@@ -80,7 +80,7 @@ public class ConfigPanel extends ScrollableJPanel {
     private JCheckBox uselta;
     private JCheckBox overwritesourcefile;
     JTextArea defaultsignmessage;
-    private JSpinner signwith;
+    private JSpinner signwidth;
     private JSpinner signheight;
     private JSpinner fontsize;
     private JSpinner signx;
@@ -174,8 +174,8 @@ public class ConfigPanel extends ScrollableJPanel {
         pagenumber = new JSpinner();
         pagenumber.setModel(new SpinnerNumberModel(this.settings.pagenumber, null, null, 1));
 
-        signwith = new JSpinner();
-        signwith.setModel(new SpinnerNumberModel(this.settings.signwith, null, null, 1));
+        signwidth = new JSpinner();
+        signwidth.setModel(new SpinnerNumberModel(this.settings.signwidth, null, null, 1));
         signheight = new JSpinner();
         signheight.setModel(new SpinnerNumberModel(this.settings.signheight, null, null, 1));
         signx = new JSpinner();
@@ -325,7 +325,7 @@ public class ConfigPanel extends ScrollableJPanel {
         addSettingsBox(simplePanel, "Mensaje de firma:", defaultsignmessage, new Dimension(150, 50));
 
         addSettingsBox(simplePanel, "Página inicial:", pagenumber);
-        addSettingsBox(simplePanel, "Ancho de firma:", signwith);
+        addSettingsBox(simplePanel, "Ancho de firma:", signwidth);
         addSettingsBox(simplePanel, "Largo de firma:", signheight);
 
         addSettingsBox(simplePanel, "Posición inicial X:", signx);
@@ -544,7 +544,7 @@ public class ConfigPanel extends ScrollableJPanel {
         settings.showlogs = this.showlogs.isSelected();
         settings.overwritesourcefile = overwritesourcefile.isSelected();
         settings.pagenumber = Integer.parseInt(pagenumber.getValue().toString());
-        settings.signwith = Integer.parseInt(signwith.getValue().toString());
+        settings.signwidth = Integer.parseInt(signwidth.getValue().toString());
         settings.signheight = Integer.parseInt(signheight.getValue().toString());
         settings.fontsize = Integer.parseInt(fontsize.getValue().toString());
         settings.signx = Integer.parseInt(signx.getValue().toString());
@@ -581,7 +581,7 @@ public class ConfigPanel extends ScrollableJPanel {
         dateformat.setText(settings.dateformat);
         defaultsignmessage.setText(settings.defaultsignmessage);
         pagenumber.setValue(settings.pagenumber);
-        signwith.setValue(settings.signwith);
+        signwidth.setValue(settings.signwidth);
         signheight.setValue(settings.signheight);
         signx.setValue(settings.signx);
         signy.setValue(settings.signy);
