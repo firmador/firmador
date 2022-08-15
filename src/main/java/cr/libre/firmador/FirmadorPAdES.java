@@ -235,7 +235,7 @@ public class FirmadorPAdES extends CRSigner {
         this.page = page;
         this.x = x;
         this.y = y;
-        this.width=settings.signwith;
+        this.width=settings.signwidth;
         this.height=settings.signheight;
     }
 

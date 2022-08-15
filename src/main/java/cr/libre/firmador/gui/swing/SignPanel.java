@@ -186,7 +186,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         imagePanel = new ScrollableJPanel(false, false);  
 
         imageLabel = new JLabel();
-        signatureLabel.setBounds(settings.signx, settings.signy, settings.signwith, settings.signheight);
+        signatureLabel.setBounds(settings.signx, settings.signy, settings.signwidth, settings.signheight);
         imageLabel.add(signatureLabel);
         imagePanel.add(imageLabel);
         imgScroll = this.getImageScrollPane(imagePanel);
@@ -454,7 +454,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         reasonField.setText(settings.reason);
         locationField.setText(settings.place);
         contactInfoField.setText(settings.contact);
-        signatureLabel.setBounds(settings.signx, settings.signy, settings.signwith, settings.signheight);
+        signatureLabel.setBounds(settings.signx, settings.signy, settings.signwidth, settings.signheight);
 
         try {
              if (doc != null) {
