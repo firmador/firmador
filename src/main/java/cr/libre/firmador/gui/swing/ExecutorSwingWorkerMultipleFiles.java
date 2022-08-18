@@ -1,12 +1,9 @@
 package cr.libre.firmador.gui.swing;
 
 import java.io.File;
-import java.security.KeyStore.PasswordProtection;
-
 import javax.swing.SwingWorker;
 
 import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Throwables;
 
 import cr.libre.firmador.CardSignInfo;

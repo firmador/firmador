@@ -4,8 +4,6 @@ import java.security.KeyStore.PasswordProtection;
 
 import org.slf4j.LoggerFactory;
 
-import cr.libre.firmador.gui.BaseSwing;
-
 public class CardSignInfo {
 	public static int PKCS11TYPE=1;
 	public static int PKCS12TYPE=2;
@@ -14,8 +12,10 @@ public class CardSignInfo {
 	private String identification;
 	private String firstName;
 	private String lastName;
+	private String commonName;
+	private String organization;
 	private String expires;
-	private String certSerialNumber;
+	//private String certSerialNumber;
 	// On pkcs12 use tokenSerialNumber to store pkcs12 file path 
 	private String tokenSerialNumber;
 	private long slotID;
@@ -23,15 +23,17 @@ public class CardSignInfo {
 	private int cardType;
 	
 
-	public CardSignInfo(int cardType, String identification, String firstName, String lastName, String expires,
+	public CardSignInfo(int cardType, String identification, String firstName, String lastName, String commonName, String organization, String expires,
 			String certSerialNumber, String tokenSerialNumber, long slotID) {
 		super();
 		this.cardType=cardType;
 		this.identification = identification;
 		this.firstName = firstName;
 		this.lastName = lastName;
+        this.commonName = commonName;
+        this.organization = organization;
 		this.expires = expires;
-		this.certSerialNumber = certSerialNumber;
+		//this.certSerialNumber = certSerialNumber;
 		this.tokenSerialNumber = tokenSerialNumber;
 		this.slotID=slotID;
 	}
@@ -40,8 +42,10 @@ public class CardSignInfo {
 		this.cardType = cardType;
 		this.tokenSerialNumber=path;
 		this.identification = identification;	
-		firstName="SU NOMBRE COMPLETO";
-		lastName="";
+		firstName="NOMBRE";
+		lastName="DE LA PERSONA";
+        commonName="NOMBRE DE LA PERSONA (TIPO DE CERTIFICADO)";
+		organization="TIPO DE PERSONA";
 		expires="";
 	}
 	
@@ -138,5 +142,20 @@ public class CardSignInfo {
 		this.lastName = lastName;
 	}
 	
+    public String getCommonName() {
+        return commonName;
+    }
+
+    public void setCommonName(String commonName) {
+        this.commonName = commonName;
+    }
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
 
 }

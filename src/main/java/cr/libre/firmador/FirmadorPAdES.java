@@ -19,12 +19,10 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador;
 
-
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URL;
-import java.security.KeyStore.PasswordProtection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -33,7 +31,7 @@ import cr.libre.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
-import eu.europa.esig.dss.enumerations.ImageScaling;
+
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignerTextPosition;
 import eu.europa.esig.dss.enumerations.VisualSignatureRotation;
@@ -201,7 +199,7 @@ public class FirmadorPAdES extends CRSigner {
                 imageParameters.getFieldParameters().setOriginX(0);
                 imageParameters.getFieldParameters().setOriginY(0);
                 SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
-                textParameters.setFont(new DSSJavaFont(new Font(settings.font, Font.PLAIN, settings.fontsize)));
+                textParameters.setFont(new DSSJavaFont(new Font(settings.getFontName(settings.font, true), settings.getFontStyle(settings.font), settings.fontsize)));
                 SimpleDateFormat date = new SimpleDateFormat(settings.getDateFormat());
                 date.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
                 textParameters.setText("Este documento incluye un sello de tiempo de la\n" +
@@ -230,14 +228,14 @@ public class FirmadorPAdES extends CRSigner {
 		this.page = page;
 		this.x = rect.x;
 		this.y = rect.y;
-		this.width=(float)rect.width;
-		this.height=(float)rect.height;
+		//this.width=(float)rect.width;
+		//this.height=(float)rect.height;
     }
     public void addVisibleSignature(int page, int x, int y) {
         this.page = page;
         this.x = x;
         this.y = y;
-        this.width=settings.signwith;
+        this.width=settings.signwidth;
         this.height=settings.signheight;
     }
 
@@ -252,7 +250,7 @@ public class FirmadorPAdES extends CRSigner {
        
         SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
         
-        textParameters.setFont(new DSSJavaFont(new Font(settings.font, Font.PLAIN, settings.fontsize)));
+        textParameters.setFont(new DSSJavaFont(new Font(settings.getFontName(settings.font, true), settings.getFontStyle(settings.font), settings.fontsize)));
         String cn = DSSASN1Utils.getSubjectCommonName(certificate);
         X500PrincipalHelper subject = certificate.getSubject();
         String o = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.O, subject);

@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2021 Firmador authors.
+Copyright (C) 2018, 2022 Firmador authors.
 
 This file is part of Firmador.
 
@@ -44,7 +44,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
@@ -53,7 +52,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +61,7 @@ import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.ConfigListener;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
-import cr.libre.firmador.SmardCardDetector;
+import cr.libre.firmador.SmartCardDetector;
 import cr.libre.firmador.gui.GUIInterface;
 
 
@@ -180,6 +178,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         signatureLabel = new JLabel("<html><span style='font-size: 12pt'>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIRMA<br>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VISIBLE</span></html>");
+        signatureLabel.setFont(new Font(settings.font, Font.PLAIN, settings.fontsize));
         signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
@@ -187,7 +186,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         imagePanel = new ScrollableJPanel(false, false);  
 
         imageLabel = new JLabel();
-        signatureLabel.setBounds(settings.signx, settings.signy, settings.signwith, settings.signheight);
+        signatureLabel.setBounds(settings.signx, settings.signy, settings.signwidth, settings.signheight);
         imageLabel.add(signatureLabel);
         imagePanel.add(imageLabel);
         imgScroll = this.getImageScrollPane(imagePanel);
@@ -219,13 +218,13 @@ public class SignPanel extends JPanel implements ConfigListener{
 	public int getPDFVisibleSignatureX() {
 		Point pposition = signatureLabel.getLocation();
 		int position = pposition.x;
-		return (int)Math.round(position * (2-settings.pdfImgScaleFactor));
+		return Math.round(position * (2 - settings.pdfImgScaleFactor));
 	}
 	
 	public int getPDFVisibleSignatureY() {
 		 Point pposition = signatureLabel.getLocation();
 		 int position = pposition.y;
-		return (int)Math.round(position * (2-settings.pdfImgScaleFactor));
+		return Math.round(position * (2 - settings.pdfImgScaleFactor));
 	}
 	
 	public void paintPDFViewer() {
@@ -278,6 +277,7 @@ public class SignPanel extends JPanel implements ConfigListener{
 		}else {
 			table ="<span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span>";
 		}	
+        signatureLabel.setFont(new Font(settings.getFontName(settings.font, false), settings.getFontStyle(settings.font), settings.fontsize));
     	signatureLabel.setText("<html>"+table+"</html>");
    	    signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
@@ -310,7 +310,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-				boolean ok = gui.signDocuments();
+				/*boolean ok =*/ gui.signDocuments();
             }
         });
         
@@ -454,7 +454,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         reasonField.setText(settings.reason);
         locationField.setText(settings.place);
         contactInfoField.setText(settings.contact);
-        signatureLabel.setBounds(settings.signx, settings.signy, settings.signwith, settings.signheight);
+        signatureLabel.setBounds(settings.signx, settings.signy, settings.signwidth, settings.signheight);
 
         try {
              if (doc != null) {
@@ -609,25 +609,27 @@ public class SignPanel extends JPanel implements ConfigListener{
 	}	
 	
 	public String getTextExample() {
-		String dev="";
+		//String dev="";
 		String reason = reasonField.getText();
 		String location = locationField.getText();
 		String contactInfo = contactInfoField.getText();
         Boolean hasReason = false;
         Boolean hasLocation = false;
         Boolean hasContact = false;
-        String nombre="SU NOMBRE COMPLETO (FIRMA)";
-        String cedula="CTP-08-8888-8888";
-        SmardCardDetector cardd = new SmardCardDetector();
+        String commonName="NOMBRE DE LA PERSONA (TIPO DE CERTIFICADO)";
+        String identification="XXX-XXXXXXXXXXXX";
+        String organization="TIPO DE PERSONA";
+        SmartCardDetector cardd = new SmartCardDetector();
 		List<CardSignInfo> cards = cardd.readSaveListSmartCard();		
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(settings.dateformat);
 		LocalDateTime now = LocalDateTime.now();
         if(!cards.isEmpty()) {
         	CardSignInfo card = cards.get(0);
-        	nombre= card.getFirstName() + " " + card.getLastName() + " (FIRMA)" ;
-        	cedula = card.getIdentification();
+            commonName = card.getCommonName();
+            organization = card.getOrganization();
+            identification = card.getIdentification();
         }
-        String additionalText = nombre+"<br>Cedula "+cedula+" <br>Fecha declarada "+dtf.format(now)+"<br>";
+        String additionalText = commonName+"<br>"+organization+", "+identification+".<br>Fecha declarada: "+dtf.format(now)+"<br>";
         if (reason != null && !reason.trim().isEmpty()) {
             hasReason = true;
             additionalText += "Razón: " + reason + "\n";

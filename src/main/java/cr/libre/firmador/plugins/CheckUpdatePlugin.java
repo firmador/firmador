@@ -13,17 +13,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
-import javax.xml.bind.DatatypeConverter;
 
 import org.slf4j.LoggerFactory;
 

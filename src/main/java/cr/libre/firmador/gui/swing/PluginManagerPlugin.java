@@ -46,7 +46,7 @@ public class PluginManagerPlugin extends JPanel {
 	}
 	
 	public List<String> getActivePlugin(){
-		List<String> active= new ArrayList();
+		List<String> active= new ArrayList<String>();
 		for(int i = 0; i< activeModel.getSize();i++){
 			active.add(activeModel.getElementAt(i));
         }

@@ -1,16 +1,13 @@
 package cr.libre.firmador.gui.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -20,23 +17,17 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
 public class Pkcs12ConfigPanel extends JPanel {
 	private static final long serialVersionUID = -2813831810835064245L;
-	private JButton btpkcs12;
 	private JList<String> pk12list;
 	private DefaultListModel<String> pk12Model;
-	private JButton addbtn;
-	private JButton rmbtn;
 
- 
 	public List<String> getList(){
 		return Collections.list(pk12Model.elements());
 	}

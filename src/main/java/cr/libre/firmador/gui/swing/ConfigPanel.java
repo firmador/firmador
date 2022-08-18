@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 
-public class ConfigPanel extends JPanel {
+public class ConfigPanel extends ScrollableJPanel {
     private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ConfigPanel.class);
 
@@ -80,7 +80,7 @@ public class ConfigPanel extends JPanel {
     private JCheckBox uselta;
     private JCheckBox overwritesourcefile;
     JTextArea defaultsignmessage;
-    private JSpinner signwith;
+    private JSpinner signwidth;
     private JSpinner signheight;
     private JSpinner fontsize;
     private JSpinner signx;
@@ -99,8 +99,8 @@ public class ConfigPanel extends JPanel {
     private JSpinner portnumber;
     private JComboBox<String> fontposition;
 	private JCheckBox showlogs;
-	private JPanel simplePanel;
-	private JPanel advancedPanel;
+	private ScrollableJPanel simplePanel;
+	private ScrollableJPanel advancedPanel;
 	private boolean isadvancedoptions = false;
 	private JScrollPane configPanel;
 	
@@ -115,7 +115,7 @@ public class ConfigPanel extends JPanel {
 	private JTextField pdfImgScaleFactor;
 	
 	private void createSimpleConfigPanel() {
-		simplePanel = new JPanel();
+		simplePanel = new ScrollableJPanel();
 		simplePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		simplePanel.setLayout(new BoxLayout(simplePanel, 1));
         JPanel checkpanel = new JPanel();
@@ -174,8 +174,8 @@ public class ConfigPanel extends JPanel {
         pagenumber = new JSpinner();
         pagenumber.setModel(new SpinnerNumberModel(this.settings.pagenumber, null, null, 1));
 
-        signwith = new JSpinner();
-        signwith.setModel(new SpinnerNumberModel(this.settings.signwith, null, null, 1));
+        signwidth = new JSpinner();
+        signwidth.setModel(new SpinnerNumberModel(this.settings.signwidth, null, null, 1));
         signheight = new JSpinner();
         signheight.setModel(new SpinnerNumberModel(this.settings.signheight, null, null, 1));
         signx = new JSpinner();
@@ -184,7 +184,24 @@ public class ConfigPanel extends JPanel {
         signy.setModel(new SpinnerNumberModel(this.settings.signy, null, null, 1));
         fontsize = new JSpinner();
         fontsize.setModel(new SpinnerNumberModel(this.settings.fontsize, null, null, 1));
-        String fonts[] = { Font.SANS_SERIF, Font.DIALOG, Font.DIALOG_INPUT, Font.MONOSPACED, Font.SANS_SERIF, Font.SERIF };
+        String fonts[];
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("mac")) fonts = new String[] {
+            "Times New Roman Regular", "Times New Roman Italic", "Times New Roman Bold", "Times New Roman Bold Italic",
+            "Helvetica Regular", "Helvetica Oblique", "Helvetica Bold", "Helvetica Bold Oblique",
+            "Courier New Regular", "Courier New Italic", "Courier New Bold", "Courier New Bold Italic"
+        };
+        else if (osName.contains("linux")) fonts = new String[] {
+            "Nimbus Roman Regular", "Nimbus Roman Italic", "Nimbus Roman Bold", "Nimbus Roman Bold Italic",
+            "Nimbus Sans Regular", "Nimbus Sans Italic", "Nimbus Sans Bold", "Nimbus Sans Bold Italic",
+            "Nimbus Mono PS Regular", "Nimbus Mono PS Italic", "Nimbus Mono PS Bold", "Nimbus Mono PS Bold Italic"
+        };
+        else if (osName.contains("windows")) fonts = new String[] {
+            "Times New Roman Regular", "Times New Roman Italic", "Times New Roman Bold", "Times New Roman Bold Italic",
+            "Arial Regular", "Arial Italic", "Arial Bold", "Arial Bold Italic",
+            "Courier New Regular", "Courier New Italic", "Courier New Bold", "Courier New Bold Italic"
+        };
+        else fonts = new String[] { Font.SERIF, Font.SANS_SERIF, Font.MONOSPACED };
         font = new JComboBox<String>(fonts);
 
         String fontpositions[] = { "RIGHT", "LEFT", "BOTTOM", "TOP" };
@@ -308,7 +325,7 @@ public class ConfigPanel extends JPanel {
         addSettingsBox(simplePanel, "Mensaje de firma:", defaultsignmessage, new Dimension(150, 50));
 
         addSettingsBox(simplePanel, "Página inicial:", pagenumber);
-        addSettingsBox(simplePanel, "Ancho de firma:", signwith);
+        addSettingsBox(simplePanel, "Ancho de firma:", signwidth);
         addSettingsBox(simplePanel, "Largo de firma:", signheight);
 
         addSettingsBox(simplePanel, "Posición inicial X:", signx);
@@ -360,7 +377,7 @@ public class ConfigPanel extends JPanel {
 	}
 	
 	private void createAdvancedConfigPanel() {
-		advancedPanel = new JPanel();		
+		advancedPanel = new ScrollableJPanel();
 		advancedPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		advancedPanel.setLayout(new BoxLayout(advancedPanel, 1)); 
 		
@@ -527,7 +544,7 @@ public class ConfigPanel extends JPanel {
         settings.showlogs = this.showlogs.isSelected();
         settings.overwritesourcefile = overwritesourcefile.isSelected();
         settings.pagenumber = Integer.parseInt(pagenumber.getValue().toString());
-        settings.signwith = Integer.parseInt(signwith.getValue().toString());
+        settings.signwidth = Integer.parseInt(signwidth.getValue().toString());
         settings.signheight = Integer.parseInt(signheight.getValue().toString());
         settings.fontsize = Integer.parseInt(fontsize.getValue().toString());
         settings.signx = Integer.parseInt(signx.getValue().toString());
@@ -564,7 +581,7 @@ public class ConfigPanel extends JPanel {
         dateformat.setText(settings.dateformat);
         defaultsignmessage.setText(settings.defaultsignmessage);
         pagenumber.setValue(settings.pagenumber);
-        signwith.setValue(settings.signwith);
+        signwidth.setValue(settings.signwidth);
         signheight.setValue(settings.signheight);
         signx.setValue(settings.signx);
         signy.setValue(settings.signy);

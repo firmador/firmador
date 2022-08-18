@@ -49,7 +49,7 @@ public class Settings {
     public String contact = "";
     public String dateformat = "dd/MM/yyyy hh:mm:ss a";
     public String defaultsignmessage = "Esta es una representación gráfica únicamente,\nverifique la validez de la firma.";
-    public Integer signwith = 133;
+    public Integer signwidth = 133;
     public Integer signheight = 33;
     public Integer fontsize = 7;
     public String font = Font.SANS_SERIF;
@@ -102,6 +102,91 @@ public class Settings {
     public void updateConfig() {
         for (ConfigListener hl : listeners)
             hl.updateConfig();
+    }
+
+    @SuppressWarnings("fallthrough")
+    public String getFontName(String fontName, boolean isPdf) {
+        switch (fontName) {
+        case "Nimbus Roman Regular":
+        case "Nimbus Roman Italic":
+        case "Nimbus Roman Bold":
+        case "Nimbus Roman Bold Italic":
+            if (!isPdf) return "Nimbus Roman";
+        case "Times New Roman Regular":
+        case "Times New Roman Italic":
+        case "Times New Roman Bold":
+        case "Times New Roman Bold Italic":
+            if (!isPdf) return "Times New Roman";
+            return Font.SERIF;
+        case "Arial Regular":
+        case "Arial Italic":
+        case "Arial Bold":
+        case "Arial Bold Italic":
+            if (!isPdf) return "Arial";
+        case "Helvetica Regular":
+        case "Helvetica Oblique":
+        case "Helvetica Bold":
+        case "Helvetica Bold Oblique":
+            if (!isPdf) return "Helvetica";
+        case "Nimbus Sans Regular":
+        case "Nimbus Sans Italic":
+        case "Nimbus Sans Bold":
+        case "Nimbus Sans Bold Italic":
+            if (!isPdf) return "Nimbus Sans";
+            return Font.SANS_SERIF;
+        case "Courier New Regular":
+        case "Courier New Italic":
+        case "Courier New Bold":
+        case "Courier New Bold Italic":
+            if (!isPdf) return "Courier New";
+        case "Nimbus Mono PS Regular":
+        case "Nimbus Mono PS Italic":
+        case "Nimbus Mono PS Bold":
+        case "Nimbus Mono PS Bold Italic":
+            if (!isPdf) return "Nimbus Mono PS";
+            return Font.MONOSPACED;
+        default:
+            return Font.SANS_SERIF;
+        }
+    }
+
+    public int getFontStyle(String fontName) {
+        switch (fontName) {
+        case "Arial Regular":
+        case "Courier New Regular":
+        case "Helvetica Regular":
+        case "Nimbus Roman Regular":
+        case "Nimbus Sans Regular":
+        case "Nimbus Mono PS Regular":
+        case "Times New Roman Regular":
+            return Font.PLAIN;
+        case "Arial Italic":
+        case "Courier New Italic":
+        case "Helvetica Oblique":
+        case "Nimbus Roman Italic":
+        case "Nimbus Sans Italic":
+        case "Nimbus Mono PS Italic":
+        case "Times New Roman Italic":
+            return Font.ITALIC;
+        case "Arial Bold":
+        case "Courier New Bold":
+        case "Helvetica Bold":
+        case "Nimbus Roman Bold":
+        case "Nimbus Sans Bold":
+        case "Nimbus Mono PS Bold":
+        case "Times New Roman Bold":
+            return Font.BOLD;
+        case "Arial Bold Italic":
+        case "Courier New Bold Italic":
+        case "Helvetica Bold Oblique":
+        case "Nimbus Roman Bold Italic":
+        case "Nimbus Sans Bold Italic":
+        case "Nimbus Mono PS Bold Italic":
+        case "Times New Roman Bold Italic":
+            return Font.BOLD + Font.ITALIC;
+        default:
+            return Font.PLAIN;
+        }
     }
 
     public SignerTextPosition getFontAlignment() {

@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2021 Firmador authors.
+Copyright (C) 2018, 2022 Firmador authors.
 
 This file is part of Firmador.
 
@@ -77,6 +77,7 @@ public class SwingMainWindowFrame extends JFrame {
 
 	}
 
+	@SuppressWarnings("serial")
 	public void loadGUI() {
 		settings = SettingsManager.getInstance().get_and_create_settings();
 		menu = new JPopupMenu();

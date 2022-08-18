@@ -12,11 +12,9 @@ import javax.naming.ldap.Rdn;
 
 import org.slf4j.LoggerFactory;
 
-import cr.libre.firmador.gui.GUIInterface;
-import cr.libre.firmador.gui.GUISwing;
 import sun.security.pkcs11.wrapper.CK_ATTRIBUTE;
 import sun.security.pkcs11.wrapper.CK_C_INITIALIZE_ARGS;
-import sun.security.pkcs11.wrapper.CK_INFO;
+//import sun.security.pkcs11.wrapper.CK_INFO;
 import sun.security.pkcs11.wrapper.CK_SLOT_INFO;
 import sun.security.pkcs11.wrapper.CK_TOKEN_INFO;
 import sun.security.pkcs11.wrapper.PKCS11;
@@ -28,14 +26,14 @@ import static sun.security.pkcs11.wrapper.PKCS11Constants.CKF_OS_LOCKING_OK;
 import static sun.security.pkcs11.wrapper.PKCS11Constants.CKF_SERIAL_SESSION;
 import static sun.security.pkcs11.wrapper.PKCS11Constants.CKF_TOKEN_PRESENT;
 import static sun.security.pkcs11.wrapper.PKCS11Constants.CKO_CERTIFICATE;
-import static sun.security.pkcs11.wrapper.PKCS11Constants.CKR_TOKEN_NOT_RECOGNIZED;
 
 
-public class SmardCardDetector implements  ConfigListener {
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SmardCardDetector.class);
+@SuppressWarnings("restriction")
+public class SmartCardDetector implements  ConfigListener {
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SmartCardDetector.class);
 	protected Settings settings;
 	private String lib;
-	public SmardCardDetector() {
+	public SmartCardDetector() {
 		settings = SettingsManager.getInstance().get_and_create_settings();
 		//settings.addListener(this);
 	}
@@ -74,7 +72,7 @@ public class SmardCardDetector implements  ConfigListener {
             pInitArgs.flags = 0;
             pkcs11 = PKCS11.getInstance(lib, functionList, pInitArgs, false);
         }
-        CK_INFO info = pkcs11.C_GetInfo();
+        //CK_INFO info = pkcs11.C_GetInfo();
         //System.out.println("Interface: " + new String(info.libraryDescription).trim());
         Boolean tokenPresent = true;
         for (long slotID : pkcs11.C_GetSlotList(tokenPresent)) {
@@ -98,20 +96,24 @@ public class SmardCardDetector implements  ConfigListener {
                             boolean[] keyUsage = certificate.getKeyUsage();
                             if (certificate.getBasicConstraints() == -1 && keyUsage[0] && keyUsage[1]) {
                                 LdapName ldapName = new LdapName(certificate.getSubjectX500Principal().getName("RFC1779"));
-                                String firstName = "", lastName = "", identification = "";
+                                String firstName = "", lastName = "", identification = "", commonName = "", organization = "";
                                 for (Rdn rdn : ldapName.getRdns()) {
                                     if (rdn.getType().equals("OID.2.5.4.5")) identification = rdn.getValue().toString();
                                     if (rdn.getType().equals("OID.2.5.4.4")) lastName = rdn.getValue().toString();
                                     if (rdn.getType().equals("OID.2.5.4.42")) firstName = rdn.getValue().toString();
+                                    if (rdn.getType().equals("CN")) commonName = rdn.getValue().toString();
+                                    if (rdn.getType().equals("O")) organization = rdn.getValue().toString();
                                 }
                                 String expires = new SimpleDateFormat("yyyy-MM-dd").format(certificate.getNotAfter());
-                                LOG.debug(firstName + " " + lastName + " (" + identification + ") " + certificate.getSerialNumber().toString(16) + " [Token serial number: " + new String(tokenInfo.serialNumber) + "] (Expires: " + expires+ ")");
+                                LOG.debug(firstName + " " + lastName + " (" + identification + "), " + organization + ", " + certificate.getSerialNumber().toString(16) + " [Token serial number: " + new String(tokenInfo.serialNumber) + "] (Expires: " + expires+ ")");
                                 Object keyIdentifier = pTemplate2[i + 1]/* .pValue */; // TODO use pValue to get the value for comparison when using it to match with private key!
                                 LOG.debug("Public/Private key pair identifier: " + keyIdentifier); // After logging in with PIN, find the matching private key pValue. NOTE: Old certificates didn't use "LlaveDeFirma" id/label.
                                 cardinfo.add(new CardSignInfo(CardSignInfo.PKCS11TYPE,
                                 		identification,
                                 		firstName,
                                 		lastName,
+                                    commonName,
+                                    organization,
                                 		expires,
                                 		certificate.getSerialNumber().toString(16),
                                 		new String(tokenInfo.serialNumber),
@@ -124,7 +126,7 @@ public class SmardCardDetector implements  ConfigListener {
                     }
                     pkcs11.C_CloseSession(hSession);
                 } catch (PKCS11Exception e) {
-                    if (e.getErrorCode() == CKR_TOKEN_NOT_RECOGNIZED) {
+                    if (e.getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) {
                         System.err.println("Slot reports token is present but not recognized by the cryptoki library");
                     } else throw e;
                 }
@@ -132,10 +134,9 @@ public class SmardCardDetector implements  ConfigListener {
         }
         return cardinfo;
     }
-	@Override
+
+    @Override
 	public void updateConfig() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

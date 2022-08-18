@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2021 Firmador authors.
+Copyright (C) 2018, 2022 Firmador authors.
 
 This file is part of Firmador.
 
@@ -19,34 +19,22 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui;
 
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.Window;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.security.KeyStore.PasswordProtection;
-
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.LineBorder;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.LoggerFactory;
-
 import com.apple.eawt.Application;
 import com.google.common.base.Throwables;
 
@@ -294,10 +282,10 @@ public class BaseSwing {
             		signPanel.getContactInfoField().getText(), System.getProperty("jnlp.signatureImage"), Boolean.getBoolean("jnlp.hideSignatureAdvice"));
         } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
             FirmadorOpenDocument firmador = new FirmadorOpenDocument(gui);
+            signedDocument = firmador.sign(toSignDocument, card);
         } else if (mimeType == MimeType.XML || signPanel.getAdESFormatButtonGroup().getSelection().getActionCommand().equals("XAdES")) {
             FirmadorXAdES firmador = new FirmadorXAdES(gui);
             signedDocument = firmador.sign(toSignDocument, card);
-         
         } else {
             FirmadorCAdES firmador = new FirmadorCAdES(gui);
             signedDocument = firmador.sign(toSignDocument, card);
@@ -377,8 +365,8 @@ public class BaseSwing {
                 if (message.contains("asepkcs") || message.contains("libASEP11")) {
                     message = "No se ha encontrado la librería de Firma Digital en el sistema.<br>" +
                         "¿Están instalados los controladores?";
-                    break;
                 }
+                break;
             default:
                 message = "Error: " + className + "<br>" +
                     "Detalle: " + message + "<br>" +

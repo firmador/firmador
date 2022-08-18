@@ -10,8 +10,6 @@ import java.util.logging.SimpleFormatter;
 
 //import org.slf4j.impl.JCLLoggerAdapter;
 
-import org.apache.commons.logging.LogFactory;
-
 public class LogHandler extends Handler {
 	  
 	  private LogginFrame writter = null;
