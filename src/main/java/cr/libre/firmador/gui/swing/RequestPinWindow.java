@@ -1,3 +1,22 @@
+/* Firmador is a program to sign documents using AdES standards.
+
+Copyright (C) 2018, 2022 Firmador authors.
+
+This file is part of Firmador.
+
+Firmador is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Firmador is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
+
 package cr.libre.firmador.gui.swing;
 
 import java.awt.Component;
@@ -42,15 +61,15 @@ public class RequestPinWindow extends JFrame {
 	private JLabel lblNewLabel;
 	private final JLabel infotext = new JLabel("");
 	protected List<CardSignInfo> cards;
- 
+
 	public RequestPinWindow() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 651, 262);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		
-		
+
+
 		pinField.setBounds(124, 34, 312, 36);
 		pinField.addHierarchyListener(new HierarchyListener() {
             public void hierarchyChanged(HierarchyEvent event) {
@@ -66,8 +85,8 @@ public class RequestPinWindow extends JFrame {
             }
         });
 		pinField.grabFocus();
-		
-		
+
+
 		lblNewLabel = new JLabel("Seleccione el certificado: ");
 		comboBox = new JComboBox<String>();
 		comboBox.addActionListener(new ActionListener() {
@@ -76,9 +95,9 @@ public class RequestPinWindow extends JFrame {
 			}
 		});
 		comboBox.setBounds(121, 111, 315, 36);
-		
+
 		label = new JLabel("Ingrese su PIN:");
-		
+
 		JButton btnNewButton = new JButton("");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -137,7 +156,7 @@ public class RequestPinWindow extends JFrame {
 		contentPane.setLayout(gl_contentPane);
 	}
 
-	
+
 	public int showandwait() {
 		try {
 			inspectCardInfo();
@@ -164,8 +183,8 @@ public class RequestPinWindow extends JFrame {
 		}
         return action;
 	}
-	
-	
+
+
 	public void updateSelected() {
 		int index = comboBox.getSelectedIndex();
 		if (index>=0) {
@@ -176,23 +195,23 @@ public class RequestPinWindow extends JFrame {
 			infotext.setText("Debe seleccionar al menos una tarjeta");
 		}
 	}
-	
+
 	public void inspectCardInfo() throws Throwable {
 		SmartCardDetector cardd = new SmartCardDetector();
 		cards= cardd.readSaveListSmartCard();
 		comboBox.removeAllItems();
 		//ComboBoxModel model = comboBox.getModel();
-		 
+
 		for(int x=0; x<cards.size(); x++ ) {
 			comboBox.addItem(cards.get(x).getDisplayInfo());
 		}
-		
+
 		updateSelected();
 	}
 	public PasswordProtection getPassword() {
 		return new PasswordProtection(pinField.getPassword());
 	}
-	
+
 	public CardSignInfo getCardInfo() {
 		return this.card;
 	}

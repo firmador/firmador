@@ -1,3 +1,22 @@
+/* Firmador is a program to sign documents using AdES standards.
+
+Copyright (C) 2018, 2022 Firmador authors.
+
+This file is part of Firmador.
+
+Firmador is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Firmador is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
+
 package cr.libre.firmador.gui.swing;
 
 import java.util.logging.ErrorManager;
@@ -11,15 +30,15 @@ import java.util.logging.SimpleFormatter;
 //import org.slf4j.impl.JCLLoggerAdapter;
 
 public class LogHandler extends Handler {
-	  
+
 	  private LogginFrame writter = null;
 
 	  //the singleton instance
-	  private static LogHandler handler = null; 
-	  
+	  private static LogHandler handler = null;
+
 	  private LogHandler() {
 	    configure();
-	    
+
 	  }
 	  public void setWritter(LogginFrame writter) {
 		  this.writter = writter;
@@ -40,8 +59,8 @@ public class LogHandler extends Handler {
 	  }
 
 
-	  private void configure() { 
-		  
+	  private void configure() {
+
 	    setLevel(Level.ALL);
 	    setFilter(new Filter() {
 
@@ -67,7 +86,7 @@ public class LogHandler extends Handler {
 
 	    try {
 	      writter.showInfo(message);
-	      
+
 	    } catch (Exception ex) {
 	      reportError(null, ex, ErrorManager.WRITE_FAILURE);
 	    }
@@ -81,8 +100,8 @@ public class LogHandler extends Handler {
 	  }
 	  public void register() {
 		Logger rootlog = Logger.getGlobal();
-		rootlog.addHandler(this);	
-		Logger.getLogger("").addHandler(this);		 
-		
+		rootlog.addHandler(this);
+		Logger.getLogger("").addHandler(this);
+
 	  }
 	}

@@ -1,3 +1,22 @@
+/* Firmador is a program to sign documents using AdES standards.
+
+Copyright (C) 2018, 2022 Firmador authors.
+
+This file is part of Firmador.
+
+Firmador is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Firmador is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
+
 package cr.libre.firmador;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -39,9 +58,9 @@ public class SmartCardDetector implements  ConfigListener {
 	}
 	public void updateLib() {
 		lib = CRSigner.getPkcs11Lib();
-		
+
 	}
-	
+
 	public List<CardSignInfo> readSaveListSmartCard(){
 		List<CardSignInfo> cards;
 		try {
@@ -49,16 +68,16 @@ public class SmartCardDetector implements  ConfigListener {
 		} catch (Throwable e) {
 			cards = new ArrayList<CardSignInfo>();
 		}
-		
+
 		File f;
 		for (String pkcs12 : settings.pkcs12file) {
 			f = new File(pkcs12);
 			if(f.exists()) cards.add(new CardSignInfo(CardSignInfo.PKCS12TYPE, pkcs12, f.getName()));
 		}
-		
+
 		return cards;
 	}
-	
+
     public List<CardSignInfo> readListSmartCard() throws Throwable {
     	List<CardSignInfo> cardinfo = new ArrayList<CardSignInfo>();
     	this.updateLib();
@@ -119,7 +138,7 @@ public class SmartCardDetector implements  ConfigListener {
                                 		new String(tokenInfo.serialNumber),
                                 		slotID
                                 		));
-                            
+
                             }
                             // TODO Don't assume there's a single valid certificate per token (Persona Jurídica keystores might contain more than 1 usable certificate per token as they are handmade)
                         }
