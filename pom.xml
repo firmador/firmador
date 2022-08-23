@@ -20,7 +20,7 @@
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
               <compilerArgs>
-                  <arg>--add-exports=jdk.crypto.cryptoki/sun.security.pkcs11.wrapper=ALL-UNNAMED</arg>
+                <arg>--add-exports=jdk.crypto.cryptoki/sun.security.pkcs11.wrapper=ALL-UNNAMED</arg>
               </compilerArgs>
               <fork>true</fork>
             </configuration>
@@ -28,13 +28,13 @@
           <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-                <argLine>--add-exports=jdk.crypto.cryptoki/sun.security.pkcs11.wrapper=ALL-UNNAMED</argLine>
+              <argLine>--add-exports=jdk.crypto.cryptoki/sun.security.pkcs11.wrapper=ALL-UNNAMED</argLine>
             </configuration>
           </plugin>
           <plugin>
             <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>
-                <argLine>--add-exports=jdk.crypto.cryptoki/sun.security.pkcs11.wrapper=ALL-UNNAMED</argLine>
+              <argLine>--add-exports=jdk.crypto.cryptoki/sun.security.pkcs11.wrapper=ALL-UNNAMED</argLine>
             </configuration>
           </plugin>
         </plugins>
