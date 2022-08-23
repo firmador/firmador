@@ -51,7 +51,6 @@ public class Firmador {
         command.add("jdk.crypto.cryptoki/sun.security.pkcs11.wrapper=ALL-UNNAMED");
         for (String argument : arguments) command.add(argument);
         command.add("run");
-        System.out.println("******************** " + command + " *********************");
         new ProcessBuilder().inheritIO().command(command).start().waitFor();
     }
 
