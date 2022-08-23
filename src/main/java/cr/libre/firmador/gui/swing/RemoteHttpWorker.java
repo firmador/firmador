@@ -1,3 +1,22 @@
+/* Firmador is a program to sign documents using AdES standards.
+
+Copyright (C) 2018, 2022 Firmador authors.
+
+This file is part of Firmador.
+
+Firmador is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Firmador is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
+
 package cr.libre.firmador.gui.swing;
 
 import java.awt.event.WindowAdapter;
@@ -40,15 +59,15 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
 		protected GUIInterface gui;
         private HttpServer server;
         private String requestFileName;
- 
+
     	protected HashMap<String, RemoteDocInformation> docInformation = new HashMap<>();
-    	
+
         public RemoteHttpWorker(GUIInterface gui) {
 			super();
 			this.gui=gui;
-			
+
 		}
-        
+
 
 		public HashMap<String, RemoteDocInformation> getDocInformation() {
 			return docInformation;
@@ -64,26 +83,26 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
             class RequestHandler implements HttpRequestHandler {
             	protected Settings settings;
             	protected GUIInterface gui;
-            	
-            	
+
+
                 public RequestHandler(GUIInterface gui, Settings settings) {
                     super();
                     this.settings = settings;
                     this.gui=gui;
-                    ((GUIRemote) gui).getMainFrame().addWindowListener(new WindowAdapter() {				
+                    ((GUIRemote) gui).getMainFrame().addWindowListener(new WindowAdapter() {
         				@Override
         				public void windowClosing(WindowEvent arg0) {
         					server.stop();
-        				}			 
+        				}
         	        });
-                
+
                 }
-              
-                
+
+
                 public void processSign(String name, RemoteDocInformation data) {
                 	gui.loadDocument(name);
                 }
-                
+
                 public void handle(final ClassicHttpRequest request, final ClassicHttpResponse response, final HttpContext context) throws HttpException, IOException {
                     response.setHeader("Access-Control-Allow-Origin", settings.getOrigin());
                     response.setHeader("Vary", "Origin");
@@ -93,7 +112,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                         	//response.setEntity(new StringEntity("Closing..."));
                         	LOG.trace("Closing...");
                         	response.close();
-                        	 
+
                         	 SwingUtilities.invokeLater(new Runnable() {
                                  public void run() {
                                 	 try {
@@ -103,14 +122,14 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
 										e.printStackTrace();
 									}
                                      ((GUIRemote) gui).close();
-                                     
+
                                  }
                              });
                         	return;
                         }
-                        
+
                         requestFileName = request.getUri().getPath().substring(1);
-                        
+
                         if(request.getMethod().contains("DELETE") ) {
                         	if(docInformation.containsKey(requestFileName)) {
                         		docInformation.remove(requestFileName);
@@ -119,8 +138,8 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                         	}
                         	response.setCode(HttpStatus.SC_NOT_FOUND);
                     		return;
-                        }  
-       
+                        }
+
                     } catch (URISyntaxException e) {
                     	LOG.error("Error URISyntaxException", e);
                         e.printStackTrace();
@@ -145,10 +164,10 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                     }else {
                     	docinfo = docInformation.get(requestFileName);
                     }
-                    
+
 					response.setEntity(new ByteArrayEntity(docinfo.getData().toByteArray(), ContentType.DEFAULT_TEXT));
                 	response.setCode(docinfo.getStatus());
-                	
+
                 }
             };
             Settings settings = SettingsManager.getInstance().get_and_create_settings();
