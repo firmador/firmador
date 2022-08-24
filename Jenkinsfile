@@ -8,7 +8,8 @@ pipeline {
     }
     stage('Archive') {
       steps {
-        archiveArtifacts(artifacts: 'target/firmador.jar', onlyIfSuccessful: true)
+        sh 'firmar-jar target/firmador.jar'
+        archiveArtifacts artifacts: 'target/firmador.jar', onlyIfSuccessful: true
       }
     }
   }
