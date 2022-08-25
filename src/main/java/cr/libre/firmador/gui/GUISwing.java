@@ -116,7 +116,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 			mainFrame.getContentPane().setLayout(docSelector);
 		else
 			mainFrame.getContentPane().setLayout(signLayout);
- 
+
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.pack();
 		mainFrame.setMinimumSize(mainFrame.getSize());
@@ -149,7 +149,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		gui.nextStep("Validando formas dentro del documento");
 		validateDocument(fileName);
 	}
-	
+
 	public void clean_elements() {
 		docSelector.fileField.setText("");
 		if (doc != null) {
@@ -162,7 +162,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		}
 		// Muchas cosas mas acá
     }
-	
+
 
 
 	public String getExtension() {
@@ -180,17 +180,17 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		return extension;
 
 	}
-	
+
 	/**
      * Invoked when task's progress property changes.
      */
 
-	
+
 	public boolean signDocuments() {
 		worker = new ExecutorWorker(this);
 		SwingUtilities.invokeLater((Runnable) worker);
 		Thread.yield();
-		
+
 		return true;
 	}
 
@@ -215,7 +215,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 				e.printStackTrace();
 				showError(Throwables.getRootCause(e));
 			}
-			
+
 		}
 		return ok;
 	}
@@ -229,11 +229,11 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 	}
 
 	public String getDocumentToSign() {
-		
-		
+
+
 		return docSelector.getLastFile();
-		
-		
+
+
 	}
 
 	public String getPathToSave(String extension) {
@@ -267,7 +267,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 			dotExtension = extension;
 		} else if (lastDot >= 0)
 			dotExtension = lastFile.substring(lastDot);
-		
+
 		Path path = Paths.get(lastFile);
 		lastFile=path.getFileName().toString();
 		saveDialog.setFile(lastFile.substring(0, lastFile.lastIndexOf(".")) + suffix + dotExtension);
@@ -295,7 +295,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 			documenttosave = Paths.get(arguments.get(1)).toAbsolutePath().toString();
 	}
 
-	
+
 	private String addSuffixToFilePath(String name, String suffix) {
 		String dotExtension = "";
 		String newname=name+suffix;
@@ -306,7 +306,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		}
 		return newname;
 	}
-	
+
 	public void signDocumentByPath(File file, CardSignInfo card) {
 		documenttosign = file.toString();
 		loadDocument(documenttosign);
@@ -316,21 +316,21 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		if(signedDocument != null) {
 			fileName = addSuffixToFilePath(documenttosign, "-firmado");
 			try {
-				signedDocument.save(fileName);	
+				signedDocument.save(fileName);
 			} catch (IOException e) {
 				LOG.error("Error Firmando Multiples documentos", e);
 				gui.showError(Throwables.getRootCause(e));
 				e.printStackTrace();
 			}
-		} 
+		}
 	}
-	
+
 	public void signMultipleDocuments(File[] files) {
 		worker = new ExecutorWorkerMultipleFiles(this, files);
 		SwingUtilities.invokeLater((Runnable) worker);
 		Thread.yield();
 	}
-	
+
 	@Override
 	public int getSlot() {
 		return -1;
@@ -352,9 +352,9 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		}else {
 			hideLogs(this.frameTabbedPane);
 		}
-		
+
 	}
-	
+
 
 
 }

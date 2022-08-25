@@ -70,7 +70,7 @@ public class GUIArgs implements GUIInterface {
                     signedDocument = firmador.sign(toSignDocument, card);
                 }
                 card.destroyPin();;
-             
+
             } else {
                 FirmadorPAdES firmador = new FirmadorPAdES(this);
                 signedDocument = firmador.timestamp(toSignDocument, visibleTimestamp);
@@ -140,25 +140,25 @@ public class GUIArgs implements GUIInterface {
 	@Override
 	public void setPluginManager(PluginManager pluginManager) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void loadDocument(String fileName) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void loadDocument(MimeType mimeType, PDDocument doc) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void extendDocument() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -176,12 +176,12 @@ public class GUIArgs implements GUIInterface {
 	@Override
 	public void displayFunctionality(String functionality) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void nextStep(String msg) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
