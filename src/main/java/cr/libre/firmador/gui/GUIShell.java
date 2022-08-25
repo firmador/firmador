@@ -24,34 +24,42 @@ import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
-import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+
+import cr.libre.firmador.CardSignInfo;
 //import cr.libre.firmador.FirmadorCAdES;
 //import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
+//import cr.libre.firmador.Settings;
+//import cr.libre.firmador.SettingsManager;
+import cr.libre.firmador.plugins.PluginManager;
+
 //import cr.libre.firmador.FirmadorXAdES;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
+import eu.europa.esig.dss.model.MimeType;
 
 public class GUIShell implements GUIInterface {
 
-    public void loadGUI() {
+    //private Settings settings;
+
+	public void loadGUI() {
+    	//settings = SettingsManager.getInstance().get_and_create_settings();
         String fileName = getDocumentToSign();
         if (fileName != null) {
             // FirmadorCAdES firmador = new FirmadorCAdES(this);
             // FirmadorOpenDocument firmador = new FirmadorOpenDocument(this);
             FirmadorPAdES firmador = new FirmadorPAdES(this);
             // FirmadorXAdES firmador = new FirmadorXAdES(this);
-            PasswordProtection pin = getPin();
+            CardSignInfo card = getPin();
             DSSDocument toSignDocument = new FileDocument(fileName);
-            DSSDocument signedDocument = firmador.sign(toSignDocument, pin, null, null, null, null, null, null);
-            try {
-                pin.destroy();
-            } catch (Exception e) {}
+            DSSDocument signedDocument = firmador.sign(toSignDocument, card, null, null, null, null, null);
+            card.destroyPin();
             if (signedDocument != null) {
                 fileName = getPathToSave("");
                 try {
@@ -102,14 +110,14 @@ public class GUIShell implements GUIInterface {
         return Paths.get(docpath).toAbsolutePath().toString();
     }
 
-    public PasswordProtection getPin() {
+    public CardSignInfo getPin() {
         Console console = System.console();
         char[] password = null;
         if (console != null) password = console.readPassword("PIN: ");
         else password = readFromInput("PIN: ").toCharArray();
-        PasswordProtection pin = new PasswordProtection(password);
+        CardSignInfo card = new CardSignInfo(password);
         Arrays.fill(password, (char) 0);
-        return pin;
+        return card;
     }
 
     @Override
@@ -122,9 +130,44 @@ public class GUIShell implements GUIInterface {
         return -1;
     }
 
-    @Override
-    public String getPkcs12file() {
-        return "";
-    }
+ 
+	@Override
+	public void setPluginManager(PluginManager pluginManager) {
+		pluginManager.start_loggin();
+	}
+
+	@Override
+	public void loadDocument(String fileName) {
+	}
+
+	@Override
+	public void loadDocument(MimeType mimeType, PDDocument doc) {
+	}
+
+	@Override
+	public void extendDocument() {
+	}
+
+	@Override
+	public String getPathToSaveExtended(String extension) {
+		return null;
+	}
+
+	@Override
+	public boolean signDocuments() {
+		return false;
+	}
+
+	@Override
+	public void displayFunctionality(String functionality) {
+		System.out.println(functionality);
+		
+	}
+
+	@Override
+	public void nextStep(String msg) {
+		System.out.println(msg);
+		
+	}
 
 }

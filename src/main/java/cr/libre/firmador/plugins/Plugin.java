@@ -16,10 +16,21 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
+package cr.libre.firmador.plugins;
 
-package cr.libre.firmador;
+public interface Plugin {
 
-public interface ConfigListener {
-    void updateConfig();
+	public boolean isrunnable = false;
+
+	// Es el primer método que se llama en el plugin.
+	public void start();
+	
+	// Permite iniciar el bitacoreo
+	public void start_loggin();
+
+	// Es el último método que se llama al cerrar la aplicación
+	public void stop();
+	
+	public boolean get_isrunnable();
 
 }

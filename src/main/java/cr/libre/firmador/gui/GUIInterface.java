@@ -19,7 +19,11 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui;
 
-import java.security.KeyStore.PasswordProtection;
+import org.apache.pdfbox.pdmodel.PDDocument;
+
+import cr.libre.firmador.CardSignInfo;
+import cr.libre.firmador.plugins.PluginManager;
+import eu.europa.esig.dss.model.MimeType;
 
 public interface GUIInterface {
 
@@ -28,9 +32,15 @@ public interface GUIInterface {
     void showError(Throwable error);
     void showMessage(String message);
     int getSlot();
-    String getPkcs12file();
     String getDocumentToSign();
     String getPathToSave(String extension);
-    PasswordProtection getPin();
-
+    CardSignInfo getPin();
+    void setPluginManager(PluginManager pluginManager);
+    public void loadDocument(String fileName);
+    public void loadDocument(MimeType mimeType, PDDocument doc);
+    public void extendDocument();
+    String getPathToSaveExtended(String extension);
+    public boolean signDocuments();
+    public void displayFunctionality(String functionality);
+    public void nextStep(String msg);
 }

@@ -103,7 +103,7 @@ de forma más intuitiva el tipo de servicio que está funcionando en esa
 conexión, facilitando la auditoría de red.
 
 
-## ¿Se puede agregar una imagen personalizada a la hora de firmar ficheros PDF?
+## ¿Se puede agregar una imagen personalizada por línea de comandos a la hora de firmar ficheros PDF?
 
 Sí, aunque la norma PAdES en su parte 6 recomienda que solo se agreguen
 imágenes que provienen del propio certificado. Firmador lo tiene habilitado
@@ -114,7 +114,7 @@ pixeles de alto y aparecerá a la izquierda del texto de la firma. Este
 parámetro también se puede agregar por línea de comandos.
 
 
-## ¿Es posible quitar el mensaje de que la firma visible no es fuente de confianza?
+## ¿Es posible quitar el mensaje de que la firma visible no es fuente de confianza por línea de comandos?
 
 Este mensaje opcional es una recomendación de la norma PAdES parte 6 para
 que las personas no capacitadas en Firma Digital no crean que la representación
@@ -124,6 +124,7 @@ contacto, el mensaje se reemplazará por uno o más de los valores ingresados en
 estos campos. Si aun así se desea eliminar el texto cuando no se rellena
 ninguno de esos campos opcionales, se puede realizar mediante JNLP agregando la
 propiedad `jnlp.hideSignatureAdvice` con el valor `true`.
+
 
 ## ¿Cómo se puede ajustar el nivel de información de depuración mostrada por el firmador mediante línea de comandos?
 
@@ -138,7 +139,7 @@ Si se está probando y no se dispone de salida estándar para ver los mensajes
 (por ejemplo en Windows), puede exportarse esta información de salida hacia un
 fichero de la siguiente manera:
 
-    java -jar -Dorg.slf4j.simpleLogger.defaultLogLevel=trace -Dorg.slf4j.simpleLogger.logFile=firmador.log -jar firmador.jar
+    java -jar -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog -Dorg.apache.commons.logging.simplelog.defaultlog=trace -jar firmador.jar
 
 De esta forma se creará el fichero `firmador.log` en el mismo directorio para
 poderlo consultar.

@@ -7,22 +7,106 @@
   <name>firmador</name>
   <url>https://firmador.libre.cr</url>
   <properties>
-    <encoding>UTF-8</encoding>
-    <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
-    <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.fork>true</maven.compiler.fork>
-    <dss.version>5.10.RC1</dss.version>
-    <slf4j.version>1.7.35</slf4j.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+  <profiles>
+    <profile>
+      <activation>
+        <jdk>9</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <compilerArgs>
+                <arg>--add-exports=jdk.crypto.cryptoki/sun.security.pkcs11.wrapper=ALL-UNNAMED</arg>
+              </compilerArgs>
+              <fork>true</fork>
+            </configuration>
+          </plugin>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>--add-exports=jdk.crypto.cryptoki/sun.security.pkcs11.wrapper=ALL-UNNAMED</argLine>
+            </configuration>
+          </plugin>
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <argLine>--add-exports=jdk.crypto.cryptoki/sun.security.pkcs11.wrapper=ALL-UNNAMED</argLine>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <build>
     <finalName>${project.artifactId}</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.2.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0-M7</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>3.0.0-M7</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.2.2</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.3.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <showDeprecation>true</showDeprecation>
+          <showWarnings>true</showWarnings>
+          <source>1.8</source>
+          <target>1.8</target>
+          <fork>true</fork>
+          <compilerArgument>-Xlint:all</compilerArgument>
+        </configuration>
+        <executions>
+          <execution>
+            <id>java9-compile</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <configuration>
+              <release>9</release>
+              <compileSourceRoots>
+                <compileSourceRoot>${project.basedir}/src/main/java9</compileSourceRoot>
+              </compileSourceRoots>
+              <outputDirectory>${project.build.outputDirectory}/META-INF/versions/9</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.1</version>
+        <version>3.3.0</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -40,6 +124,15 @@
                     <exclude>META-INF/*.SF</exclude>
                     <exclude>META-INF/*.DSA</exclude>
                     <exclude>META-INF/*.RSA</exclude>
+                    <exclude>META-INF/DEPENDENCIES</exclude>
+                    <exclude>META-INF/NOTICE*</exclude>
+                    <exclude>META-INF/LICENSE*</exclude>
+                    <exclude>META-INF/*.MF</exclude>
+                    <exclude>META-INF/sun-jaxb.episode</exclude>
+                    <exclude>META-INF/services/eu.europa.esig.dss.validation.policy.SignaturePolicyValidator</exclude>
+                    <exclude>xsd/binding.xml</exclude>
+                    <exclude>xsd/bindings.xml</exclude>
+                    <exclude>xsd/catalog.cat</exclude>
                   </excludes>
                 </filter>
               </filters>
@@ -47,6 +140,7 @@
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <manifestEntries>
                     <Main-Class>Firmador</Main-Class>
+                    <Class-Path>true</Class-Path>
                     <Multi-Release>true</Multi-Release>
                     <Permissions>all-permissions</Permissions>
                     <Specification-Version>${project.version}</Specification-Version>
@@ -66,7 +160,7 @@
     <dependencies>
       <dependency>
         <groupId>eu.europa.ec.joinup.sd-dss</groupId>
-        <version>${dss.version}</version>
+        <version>5.11.RC1</version>
         <artifactId>dss-bom</artifactId>
         <type>pom</type>
         <scope>import</scope>
@@ -114,18 +208,13 @@
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
-      <version>5.2.0</version>
+      <version>5.2.2</version>
     </dependency>
 -->
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>${slf4j.version}</version>
+      <artifactId>slf4j-jcl</artifactId>
+      <version>1.7.36</version>
     </dependency>
     <dependency>
       <groupId>com.apple</groupId>
@@ -135,8 +224,8 @@
   </dependencies>
   <repositories>
     <repository>
-      <id>cefdigital</id>
-      <url>https://ec.europa.eu/cefdigital/artifact/content/repositories/esignaturedss/</url>
+      <id>digital-building-blocks</id>
+      <url>https://ec.europa.eu/digital-building-blocks/artifact/content/repositories/esignaturedss/</url>
     </repository>
   </repositories>
 </project>

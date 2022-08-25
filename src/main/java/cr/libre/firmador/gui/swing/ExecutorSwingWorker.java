@@ -17,9 +17,37 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package cr.libre.firmador;
+package cr.libre.firmador.gui.swing;
 
-public interface ConfigListener {
-    void updateConfig();
+import javax.swing.SwingWorker;
+
+import cr.libre.firmador.gui.GUIInterface;
+import cr.libre.firmador.gui.GUISwing;
+
+public class ExecutorSwingWorker extends SwingWorker<Void, Void> {
+
+
+	private GUIInterface gui;
+	private ProgressDialog progressMonitor;
+
+
+
+	public ExecutorSwingWorker(ProgressDialog progressMonitor, GUIInterface gui) {
+		super();
+		this.progressMonitor = progressMonitor;
+		this.gui = gui;
+	}
+
+	@Override
+	protected Void doInBackground() throws Exception {
+        ((GUISwing) gui).dosignDocuments();
+        return null;
+	}
+
+	 @Override
+     public void done() {
+		 progressMonitor.setVisible(false);
+
+     }
 
 }

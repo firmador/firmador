@@ -19,50 +19,56 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui.swing;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.SwingConstants;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.awt.event.ActionEvent;
-
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileFilter;
+
+import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
-import javax.swing.filechooser.FileFilter;
 
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.JTextArea;
-import java.awt.Component;
-import java.awt.Color;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.geom.Ellipse2D;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-
-public class ConfigPanel extends JPanel {
+public class ConfigPanel extends ScrollableJPanel {
     private static final long serialVersionUID = 1L;
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ConfigPanel.class);
+
     private JTextField reason;
     private JTextField place;
     private JTextField contact;
@@ -74,7 +80,7 @@ public class ConfigPanel extends JPanel {
     private JCheckBox uselta;
     private JCheckBox overwritesourcefile;
     JTextArea defaultsignmessage;
-    private JSpinner signwith;
+    private JSpinner signwidth;
     private JSpinner signheight;
     private JSpinner fontsize;
     private JSpinner signx;
@@ -92,34 +98,51 @@ public class ConfigPanel extends JPanel {
     private JCheckBox startserver;
     private JSpinner portnumber;
     private JComboBox<String> fontposition;
-
-    public ConfigPanel() {
-        manager = SettingsManager.getInstance();
-        settings = manager.get_and_create_settings();
-        setLayout(new BorderLayout(0, 0));
-
-        JLabel lblValoresPorDefecto = new JLabel("Valores por defecto");
-        lblValoresPorDefecto.setHorizontalAlignment(SwingConstants.CENTER);
-        add(lblValoresPorDefecto, BorderLayout.NORTH);
-
-        JPanel panel = new JPanel();
-        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        panel.setLayout(new BoxLayout(panel, 1));
+	private JCheckBox showlogs;
+	private ScrollableJPanel simplePanel;
+	private ScrollableJPanel advancedPanel;
+	private boolean isadvancedoptions = false;
+	private JScrollPane configPanel;
+	
+    private JComboBox<String> padesLevel;
+    private JComboBox<String> xadesLevel;
+    private JComboBox<String> cadesLevel;
+	private JTextField pkcs11moduletext;
+	private JButton btpkcs11module;
+	private Pkcs12ConfigPanel pkcs12panel;
+	private JPanel advancedbottomspace;
+	private PluginManagerPlugin pluginsactive;
+	private JTextField pdfImgScaleFactor;
+	
+	private void createSimpleConfigPanel() {
+		simplePanel = new ScrollableJPanel();
+		simplePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		simplePanel.setLayout(new BoxLayout(simplePanel, 1));
         JPanel checkpanel = new JPanel();
         checkpanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
         checkpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         checkpanel.setLayout(new BoxLayout(checkpanel, 0));
 
-        withoutvisiblesign = new JCheckBox("Sin Firma Visible                              ", this.settings.withoutvisiblesign);
+        withoutvisiblesign = new JCheckBox("Sin Firma Visible             ", this.settings.withoutvisiblesign);
 
         checkpanel.add(withoutvisiblesign);
         //checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        uselta = new JCheckBox("Usar LTA automático         ", this.settings.uselta);
+        uselta = new JCheckBox("Usar LTA automático", this.settings.uselta);
         checkpanel.add(uselta);
         checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
-        panel.add(checkpanel);
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+		uselta.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent arg0) { changeLTA(); } 
+		});
+        
+        showlogs = new JCheckBox("Ver bitácoras", this.settings.showlogs);
+        checkpanel.add(showlogs);
+        checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
+
+        
+        simplePanel.add(checkpanel);
+        simplePanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
         JPanel checkpanelserver = new JPanel();
         checkpanelserver.setPreferredSize(new Dimension(450, 30));
@@ -127,14 +150,14 @@ public class ConfigPanel extends JPanel {
         checkpanelserver.setBorder(new EmptyBorder(0, 0, 0, 0));
         checkpanelserver.setLayout(new BoxLayout(checkpanelserver, 0));
 
-        overwritesourcefile = new JCheckBox("Sobreescribir archivo original", this.settings.overwritesourcefile);
+        overwritesourcefile = new JCheckBox("Sobreescribir archivo original               ", this.settings.overwritesourcefile);
         checkpanelserver.add(overwritesourcefile);
         checkpanelserver.add(Box.createRigidArea(new Dimension(5, 0)));
         startserver = new JCheckBox("Inicializar firmado remoto", this.settings.startserver);
         checkpanelserver.add(startserver);
 
-        panel.add(checkpanelserver);
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        simplePanel.add(checkpanelserver);
+        simplePanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
         reason = new JTextField();
         reason.setText(this.settings.reason);
@@ -151,8 +174,8 @@ public class ConfigPanel extends JPanel {
         pagenumber = new JSpinner();
         pagenumber.setModel(new SpinnerNumberModel(this.settings.pagenumber, null, null, 1));
 
-        signwith = new JSpinner();
-        signwith.setModel(new SpinnerNumberModel(this.settings.signwith, null, null, 1));
+        signwidth = new JSpinner();
+        signwidth.setModel(new SpinnerNumberModel(this.settings.signwidth, null, null, 1));
         signheight = new JSpinner();
         signheight.setModel(new SpinnerNumberModel(this.settings.signheight, null, null, 1));
         signx = new JSpinner();
@@ -161,7 +184,24 @@ public class ConfigPanel extends JPanel {
         signy.setModel(new SpinnerNumberModel(this.settings.signy, null, null, 1));
         fontsize = new JSpinner();
         fontsize.setModel(new SpinnerNumberModel(this.settings.fontsize, null, null, 1));
-        String fonts[] = { Font.SANS_SERIF, Font.DIALOG, Font.DIALOG_INPUT, Font.MONOSPACED, Font.SANS_SERIF, Font.SERIF };
+        String fonts[];
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("mac")) fonts = new String[] {
+            "Times New Roman Regular", "Times New Roman Italic", "Times New Roman Bold", "Times New Roman Bold Italic",
+            "Helvetica Regular", "Helvetica Oblique", "Helvetica Bold", "Helvetica Bold Oblique",
+            "Courier New Regular", "Courier New Italic", "Courier New Bold", "Courier New Bold Italic"
+        };
+        else if (osName.contains("linux")) fonts = new String[] {
+            "Nimbus Roman Regular", "Nimbus Roman Italic", "Nimbus Roman Bold", "Nimbus Roman Bold Italic",
+            "Nimbus Sans Regular", "Nimbus Sans Italic", "Nimbus Sans Bold", "Nimbus Sans Bold Italic",
+            "Nimbus Mono PS Regular", "Nimbus Mono PS Italic", "Nimbus Mono PS Bold", "Nimbus Mono PS Bold Italic"
+        };
+        else if (osName.contains("windows")) fonts = new String[] {
+            "Times New Roman Regular", "Times New Roman Italic", "Times New Roman Bold", "Times New Roman Bold Italic",
+            "Arial Regular", "Arial Italic", "Arial Bold", "Arial Bold Italic",
+            "Courier New Regular", "Courier New Italic", "Courier New Bold", "Courier New Bold Italic"
+        };
+        else fonts = new String[] { Font.SERIF, Font.SANS_SERIF, Font.MONOSPACED };
         font = new JComboBox<String>(fonts);
 
         String fontpositions[] = { "RIGHT", "LEFT", "BOTTOM", "TOP" };
@@ -175,6 +215,7 @@ public class ConfigPanel extends JPanel {
         fontcolor.setToolTipText("Use la palabra 'transparente' si no desea un color");
         fontcolor.setText(this.settings.fontcolor);
 
+
         fontcolor.getDocument().addDocumentListener(new DocumentListener() {
             public void updateIcon(DocumentEvent edoc) {
                 try {
@@ -186,8 +227,7 @@ public class ConfigPanel extends JPanel {
                         btfontcolor.setIcon(getTransparentImageIcon());
                     }
                 } catch (Exception e) {
-                    System.err.println(e);
-                    // nothing
+                	LOG.error("Error cambiando color de fuente", e);
                 }
             }
 
@@ -238,8 +278,8 @@ public class ConfigPanel extends JPanel {
                         btbackgroundcolor.setIcon(getTransparentImageIcon());
                     }
                 } catch (Exception e) {
-                    System.err.println(e);
-                    // nothing
+                	LOG.error("Error cambiando color de fondo", e);
+                 
                 }
             }
 
@@ -278,27 +318,27 @@ public class ConfigPanel extends JPanel {
 
         portnumber.setEditor(new JSpinner.NumberEditor(portnumber, "0000"));
 
-        addSettingsBox(panel, "Razón:", reason);
-        addSettingsBox(panel, "Lugar:", place);
-        addSettingsBox(panel, "Contacto:", contact);
-        addSettingsBox(panel, "Formato de fecha:", dateformat);
-        addSettingsBox(panel, "Mensaje de firma:", defaultsignmessage, new Dimension(150, 50));
+        addSettingsBox(simplePanel, "Razón:", reason);
+        addSettingsBox(simplePanel, "Lugar:", place);
+        addSettingsBox(simplePanel, "Contacto:", contact);
+        addSettingsBox(simplePanel, "Formato de fecha:", dateformat);
+        addSettingsBox(simplePanel, "Mensaje de firma:", defaultsignmessage, new Dimension(150, 50));
 
-        addSettingsBox(panel, "Página inicial:", pagenumber);
-        addSettingsBox(panel, "Ancho de firma:", signwith);
-        addSettingsBox(panel, "Largo de firma:", signheight);
+        addSettingsBox(simplePanel, "Página inicial:", pagenumber);
+        addSettingsBox(simplePanel, "Ancho de firma:", signwidth);
+        addSettingsBox(simplePanel, "Largo de firma:", signheight);
 
-        addSettingsBox(panel, "Posición inicial X:", signx);
-        addSettingsBox(panel, "Posición inicial Y:", signy);
-        addSettingsBox(panel, "Tamaño de fuente:", fontsize);
-        addSettingsBox(panel, "Fuente:", font);
-        addSettingsBox(panel, "Posición de fuente:", fontposition);
+        addSettingsBox(simplePanel, "Posición inicial X:", signx);
+        addSettingsBox(simplePanel, "Posición inicial Y:", signy);
+        addSettingsBox(simplePanel, "Tamaño de fuente:", fontsize);
+        addSettingsBox(simplePanel, "Fuente:", font);
+        addSettingsBox(simplePanel, "Posición de fuente:", fontposition);
 
-        addSettingsBox(panel, "Color de fuente:", fontcolorpanel);
-        addSettingsBox(panel, "Color de fondo:", backgroundcolorpanel);
-        addSettingsBox(panel, "Imagen de firma:", imagepanel);
-        addSettingsBox(panel, "Puerto de escucha:", portnumber);
-
+        addSettingsBox(simplePanel, "Color de fuente:", fontcolorpanel);
+        addSettingsBox(simplePanel, "Color de fondo:", backgroundcolorpanel);
+        addSettingsBox(simplePanel, "Imagen de firma:", imagepanel);
+        addSettingsBox(simplePanel, "Puerto de escucha:", portnumber);
+        
         btfontcolor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 show_fontcolor_picker();
@@ -316,8 +356,7 @@ public class ConfigPanel extends JPanel {
                 show_image_picker();
             }
         });
-
-        JScrollPane configPanel = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        configPanel = new JScrollPane(simplePanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         configPanel.setPreferredSize(new Dimension(700, 400));
         configPanel.setBorder(null);
 
@@ -326,7 +365,123 @@ public class ConfigPanel extends JPanel {
         configPanel.getViewport().setOpaque(false);
 
         add(configPanel, BorderLayout.CENTER);
+	}
+	
+	
+	private void changeLTA() {
+		if(uselta.isSelected()){
+			padesLevel.setSelectedItem("LTA");
+			xadesLevel.setSelectedItem("LTA");
+			cadesLevel.setSelectedItem("LTA");
+		}
+	}
+	
+	private void createAdvancedConfigPanel() {
+		advancedPanel = new ScrollableJPanel();
+		advancedPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		advancedPanel.setLayout(new BoxLayout(advancedPanel, 1)); 
+		
+		pdfImgScaleFactor = new JTextField();
+        pdfImgScaleFactor.setText(String.format("%.2f", this.settings.pdfImgScaleFactor));
+        pdfImgScaleFactor.setToolTipText("Factor de escala al presentar la previsualización de la página de pdf");
 
+        
+        pluginsactive = new PluginManagerPlugin();
+        pluginsactive.setPreferredSize(new Dimension(450, 130));
+        advancedPanel.add(pluginsactive);
+        
+        pkcs12panel = new Pkcs12ConfigPanel();
+        //pkcs12panel.setPreferredSize(new Dimension(450, 200));
+        pkcs12panel.setList(settings.pkcs12file);
+        advancedPanel.add(pkcs12panel);
+        
+        String padesLeveloptions[] = { "T", "LT", "LTA" };
+        padesLevel = new JComboBox<String>(padesLeveloptions);
+        padesLevel.setSelectedItem(settings.padesLevel);
+        addSettingsBox(advancedPanel, "Nivel PAdES:", padesLevel);
+        
+        
+        String xadesLeveloptions[] = {"T", "LT", "LTA" };
+        xadesLevel = new JComboBox<String>(xadesLeveloptions);
+        xadesLevel.setSelectedItem(settings.xadesLevel);
+        addSettingsBox(advancedPanel, "Nivel XAdES:", xadesLevel);
+        
+        String cadesLeveloptions[] = {"T", "LT", "LTA"};
+        cadesLevel = new JComboBox<String>(cadesLeveloptions);
+        cadesLevel.setSelectedItem(settings.cadesLevel);
+        addSettingsBox(advancedPanel, "Nivel CAdES:", cadesLevel);
+        addSettingsBox(advancedPanel, "Escala de previsualización del Pdf", pdfImgScaleFactor);
+        
+        
+        JPanel pkcs11modulepanel = new JPanel();
+        pkcs11modulepanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        pkcs11modulepanel.setLayout(new BoxLayout(pkcs11modulepanel, 0));
+        pkcs11moduletext = new JTextField();
+        btpkcs11module = new JButton("Elegir");
+        //btimage.setForeground(this.settings.getBackgroundColor());
+        if(this.settings.extrapkcs11Lib != null ) {
+        	pkcs11moduletext.setText(this.settings.extrapkcs11Lib);
+             
+        }
+        pkcs11modulepanel.add(pkcs11moduletext);
+        pkcs11modulepanel.add(btpkcs11module);
+        btpkcs11module.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                String path = getFilePath();
+                if(path != null) {
+                	pkcs11moduletext.setText(path);
+                }
+            }
+        });
+
+        
+        addSettingsBox(advancedPanel, "Archivo PKCS11", pkcs11modulepanel);
+        advancedPanel.add(new JLabel("El archivo pkcs11 se detecta automáticamente, "));
+        advancedPanel.add(new JLabel("pero podrá ser escrito usando el campo anterior"));
+        //settings.pdfImgScaleFactor
+        advancedbottomspace = new JPanel();
+        advancedPanel.add(advancedbottomspace);
+        changeLTA();
+
+	}
+    public ConfigPanel() {
+        manager = SettingsManager.getInstance();
+        settings = manager.get_and_create_settings();
+        setLayout(new BorderLayout(0, 0));
+
+        //JLabel lblValoresPorDefecto = new JLabel("Valores por defecto");
+        //lblValoresPorDefecto.setHorizontalAlignment(SwingConstants.CENTER);
+        //add(lblValoresPorDefecto, BorderLayout.NORTH);
+
+        this.createSimpleConfigPanel();
+        this.createAdvancedConfigPanel();
+
+        JPanel optionswitchpanel = new JPanel();
+        add(optionswitchpanel, BorderLayout.NORTH);
+        
+        JButton showadvanced = new JButton("Opciones Avanzadas"); 
+        showadvanced.setOpaque(false);        
+        optionswitchpanel.add(showadvanced);
+        
+        showadvanced.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+            	isadvancedoptions = !isadvancedoptions;
+            	if(isadvancedoptions) {
+            		showadvanced.setText("Opciones básicas");
+            		//configPanel.getViewport().setVisible(false);
+            		configPanel.setViewportView(advancedPanel);
+            		simplePanel.setVisible(false);
+            		advancedPanel.setVisible(true);
+            	}else {
+            		showadvanced.setText("Opciones Avanzadas");
+            		//configPanel.getViewport().setVisible(true);
+            		configPanel.setViewportView(simplePanel);
+              		advancedPanel.setVisible(false);
+            		simplePanel.setVisible(true);
+            	}
+            }
+        });
+        
         JPanel btns = new JPanel();
         add(btns, BorderLayout.SOUTH);
 
@@ -361,10 +516,10 @@ public class ConfigPanel extends JPanel {
         btns.add(btsave);
 
     }
-    public void addSettingsBox(JPanel panel, String text, JComponent item) {
-        this.addSettingsBox(panel, text, item, new Dimension(150, 30));
+    public JLabel addSettingsBox(JPanel panel, String text, JComponent item) {
+        return this.addSettingsBox(panel, text, item, new Dimension(150, 30));
     }
-    public void addSettingsBox(JPanel panel, String text, JComponent item, Dimension d) {
+    public JLabel addSettingsBox(JPanel panel, String text, JComponent item, Dimension d) {
         JLabel label = new JLabel(text);
         JPanel itempanel = new JPanel();
         label.setPreferredSize(new Dimension(150, 30));
@@ -375,6 +530,7 @@ public class ConfigPanel extends JPanel {
         panel.add(itempanel);
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
         item.setPreferredSize(d);
+        return label;
     }
     public void charge_settings() {
         settings.withoutvisiblesign = this.withoutvisiblesign.isSelected();
@@ -385,9 +541,10 @@ public class ConfigPanel extends JPanel {
         settings.defaultsignmessage = defaultsignmessage.getText();
         settings.withoutvisiblesign = withoutvisiblesign.isSelected();
         settings.uselta = uselta.isSelected();
+        settings.showlogs = this.showlogs.isSelected();
         settings.overwritesourcefile = overwritesourcefile.isSelected();
         settings.pagenumber = Integer.parseInt(pagenumber.getValue().toString());
-        settings.signwith = Integer.parseInt(signwith.getValue().toString());
+        settings.signwidth = Integer.parseInt(signwidth.getValue().toString());
         settings.signheight = Integer.parseInt(signheight.getValue().toString());
         settings.fontsize = Integer.parseInt(fontsize.getValue().toString());
         settings.signx = Integer.parseInt(signx.getValue().toString());
@@ -399,7 +556,15 @@ public class ConfigPanel extends JPanel {
         settings.image = imagetext.getText();
         settings.startserver = this.startserver.isSelected();
         settings.portnumber = Integer.parseInt(portnumber.getValue().toString());
-
+        settings.padesLevel = padesLevel.getSelectedItem().toString();
+        settings.xadesLevel = xadesLevel.getSelectedItem().toString();
+        settings.cadesLevel = cadesLevel.getSelectedItem().toString();
+        settings.pdfImgScaleFactor = Float.parseFloat(pdfImgScaleFactor.getText().replace(",", ","));
+        settings.pkcs12file = pkcs12panel.getList();
+        settings.extrapkcs11Lib = pkcs11moduletext.getText();
+        if(settings.extrapkcs11Lib.isEmpty()) settings.extrapkcs11Lib = null;
+        
+        settings.active_plugins = pluginsactive.getActivePlugin();
         settings.updateConfig();
     }
 
@@ -408,6 +573,7 @@ public class ConfigPanel extends JPanel {
 
         withoutvisiblesign.setSelected(settings.withoutvisiblesign);
         uselta.setSelected(settings.uselta);
+        showlogs.setSelected(settings.showlogs);
         overwritesourcefile.setSelected(settings.overwritesourcefile);
         reason.setText(settings.reason);
         place.setText(settings.place);
@@ -415,7 +581,7 @@ public class ConfigPanel extends JPanel {
         dateformat.setText(settings.dateformat);
         defaultsignmessage.setText(settings.defaultsignmessage);
         pagenumber.setValue(settings.pagenumber);
-        signwith.setValue(settings.signwith);
+        signwidth.setValue(settings.signwidth);
         signheight.setValue(settings.signheight);
         signx.setValue(settings.signx);
         signy.setValue(settings.signy);
@@ -432,6 +598,10 @@ public class ConfigPanel extends JPanel {
         //btfontcolor.setForeground(settings.getFontColor());
         //btfontcolor.setIcon(createImageIcon(this.settings.getFontColor()));
 
+        padesLevel.setSelectedItem(settings.padesLevel);
+        xadesLevel.setSelectedItem(settings.xadesLevel);
+        cadesLevel.setSelectedItem(settings.cadesLevel);
+        pdfImgScaleFactor.setText(String.format("%.2f", pdfImgScaleFactor));
         if(settings.image != null) {
             imagetext.setText(settings.image);
             btimage.setIcon(this.getIcon(settings.image));
@@ -439,6 +609,13 @@ public class ConfigPanel extends JPanel {
             imagetext.setText("");
             btimage.setIcon(createImageIcon(new Color(255, 255, 255, 0)));
         }
+        
+        if(settings.pkcs12file != null) pkcs12panel.setList(settings.pkcs12file);
+        
+        if(settings.extrapkcs11Lib != null) {  pkcs11moduletext.setText(settings.extrapkcs11Lib);
+        }else{ pkcs11moduletext.setText(""); };
+        
+        pluginsactive.load_plugins(settings);
 
     }
 
@@ -473,10 +650,23 @@ public class ConfigPanel extends JPanel {
             String buf = Integer.toHexString(newColor.getRGB());
             String hex = "#"+buf.substring(buf.length()-6);
             backgroundcolor.setText(hex);
-
         }
     }
 
+    public String getFilePath() {
+    	String dev = null;
+    	FileDialog loadDialog = new FileDialog(new JDialog(), "Seleccionar un archivo");
+		loadDialog.setMultipleMode(false);
+		loadDialog.setLocationRelativeTo(null);
+		loadDialog.setVisible(true);
+		loadDialog.dispose();
+		File[] files = loadDialog.getFiles();
+		if(files.length>=1) {
+			dev=files[0].toString();
+		}
+		return dev;
+    }
+    
     public void show_image_picker() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.addChoosableFileFilter(new ImageFilter());
@@ -488,8 +678,8 @@ public class ConfigPanel extends JPanel {
            imagetext.setText(path);
            btimage.setIcon(this.getIcon(path));
         }
-
     }
+    
     public Icon getIcon(String path) {
         Icon  icon = new ImageIcon(new ImageIcon(path).getImage().getScaledInstance(iconsize, iconsize, Image.SCALE_DEFAULT));
         return icon;

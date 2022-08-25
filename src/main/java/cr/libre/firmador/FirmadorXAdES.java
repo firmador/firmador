@@ -23,7 +23,6 @@ package cr.libre.firmador;
 
 
 
-import java.security.KeyStore.PasswordProtection;
 
 import java.util.Arrays;
 
@@ -60,13 +59,15 @@ public class FirmadorXAdES extends CRSigner {
 
     //XAdESCounterSignatureParameters parameters; // Electronic receipts v4.4 proposal
     XAdESSignatureParameters parameters;
+	private Settings settings;
 
 
     public FirmadorXAdES(GUIInterface gui) {
         super(gui);
+        settings = SettingsManager.getInstance().get_and_create_settings();
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin) {
+    public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card) {
         CertificateVerifier verifier = this.getCertificateVerifier();
         XAdESService service = new XAdESService(verifier);
         //parameters = new XAdESCounterSignatureParameters(); // Electronic receipts v4.4 proposal
@@ -75,34 +76,24 @@ public class FirmadorXAdES extends CRSigner {
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
         try {
-            token = getSignatureConnection(pin);
+            token = getSignatureConnection(card);
         } catch (DSSException|AlertException|Error e) {
             gui.showError(Throwables.getRootCause(e));
+            return null;
         }
         DSSPrivateKeyEntry privateKey = null;
         try {
             privateKey = getPrivateKey(token);
-            if (privateKey == null) {
-                for (int i = 0;; i++) {
-                    try {
-                        token = getSignatureConnection(pin, i);
-                        privateKey = getPrivateKey(token);
-                        if (privateKey != null) break;
-                    } catch (Exception ex) {
-                        if (Throwables.getRootCause(ex).getLocalizedMessage().equals("CKR_SLOT_ID_INVALID")) break;
-                        else gui.showError(Throwables.getRootCause(ex));
-                    }
-                }
-            }
         } catch (Exception e) {
             gui.showError(Throwables.getRootCause(e));
+            return null;
         }
 
         try {
             CertificateToken certificate = privateKey.getCertificate();
 
 
-            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
+            parameters.setSignatureLevel(settings.getXAdESLevel());
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificateDigestMethod(parameters.getDigestAlgorithm());
 

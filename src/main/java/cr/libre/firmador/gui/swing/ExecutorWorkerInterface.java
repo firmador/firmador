@@ -17,9 +17,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package cr.libre.firmador;
+package cr.libre.firmador.gui.swing;
 
-public interface ConfigListener {
-    void updateConfig();
+public interface ExecutorWorkerInterface   {
 
+	public void nextStep(String msg);
 }

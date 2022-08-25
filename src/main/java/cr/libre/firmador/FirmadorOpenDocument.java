@@ -23,12 +23,12 @@ package cr.libre.firmador;
 
 
 
-import java.security.KeyStore.PasswordProtection;
 
 
 
 
 import cr.libre.firmador.gui.GUIInterface;
+
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
@@ -67,7 +67,7 @@ public class FirmadorOpenDocument extends CRSigner {
         super(gui);
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin) {
+    public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card) {
         CertificateVerifier verifier = this.getCertificateVerifier();
         ASiCWithXAdESService service = new ASiCWithXAdESService(verifier);
 
@@ -76,27 +76,18 @@ public class FirmadorOpenDocument extends CRSigner {
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
         try {
-            token = getSignatureConnection(pin);
+            token = getSignatureConnection(card);
         } catch (DSSException|AlertException|Error e) {
             gui.showError(Throwables.getRootCause(e));
+            return null;
         }
         DSSPrivateKeyEntry privateKey = null;
         try {
             privateKey = getPrivateKey(token);
-            if (privateKey == null) {
-                for (int i = 0;; i++) {
-                    try {
-                        token = getSignatureConnection(pin, i);
-                        privateKey = getPrivateKey(token);
-                        if (privateKey != null) break;
-                    } catch (Exception ex) {
-                        if (Throwables.getRootCause(ex).getLocalizedMessage().equals("CKR_SLOT_ID_INVALID")) break;
-                        else gui.showError(Throwables.getRootCause(ex));
-                    }
-                }
-            }
+            
         } catch (Exception e) {
             gui.showError(Throwables.getRootCause(e));
+            return null;
         }
         try {
             CertificateToken certificate = privateKey.getCertificate();

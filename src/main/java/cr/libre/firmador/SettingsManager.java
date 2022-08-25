@@ -23,6 +23,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,8 +46,15 @@ public class SettingsManager {
 
     public Path get_config_dir() throws IOException {
         String osName = System.getProperty("os.name").toLowerCase();
+        String homepath = System.getProperty("user.home");
+        String suffixpath=".config/firmadorlibre";
+        if(osName.contains("windows")) { 
+        	homepath = System.getenv("APPDATA");
+        	suffixpath="firmadorlibre";
+        }
+        
         // Se asegura que siempre exista el directorio de configuracion
-        path = FileSystems.getDefault().getPath(System.getProperty("user.home"), ".firmadorlibre");
+        path = FileSystems.getDefault().getPath(homepath, suffixpath);
         if (!Files.isDirectory(path)) {
             Files.createDirectories(path);
             if (osName.contains("windows")) Files.setAttribute(path, "dos:hidden", true);
@@ -94,6 +104,7 @@ public class SettingsManager {
 
     public void setProperty(String key, String value) {
         props.setProperty(key, value);
+       
     }
 
     private String get_config_file() throws IOException {
@@ -149,6 +160,16 @@ public class SettingsManager {
             }
         }
     }
+    private List<String> getListFromString(String data, List<String> defaultdata){
+    	// Si no se tienen settings activados se ponen los que se definan por defecto en el código
+    	if(data.isEmpty() && defaultdata != null && defaultdata.size()>0 ) return defaultdata;  
+    	
+    	List<String> plugins = new ArrayList<String>();
+    	for(String item: Arrays.asList(data.split("\\|"))){
+    		if(!item.isEmpty())plugins.add(item);
+    	}
+    	return plugins;
+    }
 
     public Settings getSettings() {
         Settings conf = new Settings();
@@ -157,6 +178,7 @@ public class SettingsManager {
         if (loaded) {
             conf.withoutvisiblesign=Boolean.parseBoolean(props.getProperty("withoutvisiblesign", String.valueOf(conf.withoutvisiblesign)));
             conf.uselta=Boolean.parseBoolean(props.getProperty("uselta", String.valueOf(conf.uselta)));
+            conf.showlogs = Boolean.parseBoolean(props.getProperty("showlogs", String.valueOf(conf.showlogs)));
             conf.overwritesourcefile=Boolean.parseBoolean(props.getProperty("overwritesourcefile", String.valueOf(conf.overwritesourcefile)));
             conf.reason=props.getProperty("reason", conf.reason);
             conf.place=props.getProperty("place", conf.place);
@@ -164,7 +186,7 @@ public class SettingsManager {
             conf.dateformat=props.getProperty("dateformat", conf.dateformat);
             conf.defaultsignmessage=new String(props.getProperty("defaultsignmessage", conf.defaultsignmessage).getBytes(StandardCharsets.UTF_8));
             conf.pagenumber=Integer.parseInt(props.getProperty("pagenumber", conf.pagenumber.toString()));
-            conf.signwith=Integer.parseInt(props.getProperty("signwith", conf.signwith.toString()));
+            conf.signwidth=Integer.parseInt(props.getProperty("signwidth", conf.signwidth.toString()));
             conf.signheight=Integer.parseInt(props.getProperty("signheight", conf.signheight.toString()));
             conf.fontsize=Integer.parseInt(props.getProperty("fontsize", conf.fontsize.toString()));
             conf.font = props.getProperty("font", conf.font);
@@ -172,16 +194,36 @@ public class SettingsManager {
             conf.backgroundcolor = props.getProperty("backgroundcolor", conf.backgroundcolor);
             conf.signx=Integer.parseInt(props.getProperty("singy", conf.signx.toString()));
             conf.signy=Integer.parseInt(props.getProperty("singy", conf.signy.toString()));
-            conf.extrapkcs11Lib=props.getProperty("extrapkcs11Lib");
             conf.image = props.getProperty("image");
             conf.startserver = Boolean.parseBoolean(props.getProperty("startserver", String.valueOf(conf.startserver)));
             conf.fontalignment =  props.getProperty("fontalignment", conf.fontalignment);
             conf.portnumber=Integer.parseInt(props.getProperty("portnumber", conf.portnumber.toString()));
+            conf.padesLevel = props.getProperty("padesLevel", conf.padesLevel);
+            conf.xadesLevel = props.getProperty("xadesLevel", conf.xadesLevel);
+            conf.cadesLevel = props.getProperty("cadesLevel", conf.cadesLevel);
+            conf.extrapkcs11Lib=props.getProperty("extrapkcs11Lib");
+            conf.pkcs12file=getListFromString(props.getProperty("pkcs12file", ""), conf.pkcs12file);
+            conf.active_plugins=getListFromString(props.getProperty("plugins", ""), conf.active_plugins);
+            conf.pdfImgScaleFactor=getFloatFromString(props.getProperty("pdfimgscalefactor", String.format("%.2f", conf.pdfImgScaleFactor)));
         }
-
         return conf;
     }
 
+    private float getFloatFromString(String value) {
+    	String valuetmp=value.replace(",", ".");
+    	float fvalue = 1;
+    	 try {
+    		 fvalue = Float.parseFloat(valuetmp);
+         } catch (Exception e) {
+             fvalue=1;
+         }	
+    	return fvalue;
+    }
+    
+    private String getListRepr(List<String> items) {
+    	return String.join("|", items);
+    }
+    
     public void setSettings(Settings conf, boolean save) {
         setProperty("withoutvisiblesign", String.valueOf(conf.withoutvisiblesign));
         setProperty("uselta", String.valueOf(conf.uselta));
@@ -192,7 +234,7 @@ public class SettingsManager {
         setProperty("dateformat", conf.dateformat);
         setProperty("defaultsignmessage", conf.defaultsignmessage);
         setProperty("pagenumber", conf.pagenumber.toString());
-        setProperty("signwith", conf.signwith.toString());
+        setProperty("signwidth", conf.signwidth.toString());
         setProperty("signheight", conf.signheight.toString());
         setProperty("fontsize", conf.fontsize.toString());
         setProperty("font", conf.font);
@@ -203,12 +245,26 @@ public class SettingsManager {
         setProperty("startserver", String.valueOf(conf.startserver));
         setProperty("fontalignment", conf.fontalignment.toString());
         setProperty("portnumber", conf.portnumber.toString());
-
-        if (conf.extrapkcs11Lib != null) {
+        setProperty("showlogs", String.valueOf(conf.showlogs));
+        setProperty("pdfimgscalefactor", String.format("%.2f", conf.pdfImgScaleFactor));
+                
+        setProperty("padesLevel", conf.padesLevel);
+        setProperty("xadesLevel", conf.xadesLevel);
+        setProperty("cadesLevel", conf.cadesLevel);
+        setProperty("plugins", getListRepr(conf.active_plugins));
+                
+        if (conf.extrapkcs11Lib != null && conf.extrapkcs11Lib != "") {
             setProperty("extrapkcs11Lib", conf.extrapkcs11Lib);
+        }else {
+        	if(props.get("extrapkcs11Lib") != null) props.remove("extrapkcs11Lib");
         }
+        
+        setProperty("pkcs12file", getListRepr(conf.pkcs12file));
+        
         if (conf.image != null) {
             setProperty("image", conf.image);
+        }else {
+        	if(props.get("image") != null) props.remove("image");
         }
         if (save) save_config();
     }

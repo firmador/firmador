@@ -23,14 +23,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
-import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.List;
 
+import cr.libre.firmador.CardSignInfo;
 //import cr.libre.firmador.FirmadorCAdES;
 import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
 import cr.libre.firmador.FirmadorXAdES;
+import cr.libre.firmador.plugins.PluginManager;
+
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
@@ -41,7 +43,7 @@ public class GUIArgs implements GUIInterface {
 
     private String documenttosign;
     private String documenttosave;
-    private String pkcs12file = "";
+    //private String pkcs12file = "";
     private int slot = -1;
     private Boolean timestamp = false;
     private Boolean visibleTimestamp = false;
@@ -52,24 +54,23 @@ public class GUIArgs implements GUIInterface {
             DSSDocument toSignDocument = new FileDocument(fileName);
             DSSDocument signedDocument = null;
             if (!timestamp && !visibleTimestamp) {
-                PasswordProtection pin = getPin();
+                CardSignInfo card = getPin();
                 MimeType mimeType = toSignDocument.getMimeType();
                 if (mimeType == MimeType.PDF) {
                     FirmadorPAdES firmador = new FirmadorPAdES(this);
-                    signedDocument = firmador.sign(toSignDocument, pin, null, null, null, null, null, null);
+                    signedDocument = firmador.sign(toSignDocument, card, null, null, null, null, null);
                 } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
                     FirmadorOpenDocument firmador = new FirmadorOpenDocument(this);
-                    signedDocument = firmador.sign(toSignDocument, pin);
+                    signedDocument = firmador.sign(toSignDocument, card);
                 } else if (mimeType == MimeType.XML) {
                     FirmadorXAdES firmador = new FirmadorXAdES(this);
-                    signedDocument = firmador.sign(toSignDocument, pin);
+                    signedDocument = firmador.sign(toSignDocument, card);
                 } else {
                     FirmadorXAdES firmador = new FirmadorXAdES(this);
-                    signedDocument = firmador.sign(toSignDocument, pin);
+                    signedDocument = firmador.sign(toSignDocument, card);
                 }
-                try {
-                    pin.destroy();
-                } catch (Exception e) {}
+                card.destroyPin();;
+
             } else {
                 FirmadorPAdES firmador = new FirmadorPAdES(this);
                 signedDocument = firmador.timestamp(toSignDocument, visibleTimestamp);
@@ -96,7 +97,7 @@ public class GUIArgs implements GUIInterface {
         }
         documenttosign = Paths.get(arguments.get(0)).toAbsolutePath().toString();
         documenttosave = Paths.get(arguments.get(1)).toAbsolutePath().toString();
-        if (arguments.size() > 2) pkcs12file = Paths.get(arguments.get(2)).toAbsolutePath().toString();
+        //if (arguments.size() > 2) pkcs12file = Paths.get(arguments.get(2)).toAbsolutePath().toString();
     }
 
     public void showError(Throwable error) {
@@ -113,7 +114,7 @@ public class GUIArgs implements GUIInterface {
         return documenttosave;
     }
 
-    public PasswordProtection getPin() {
+    public CardSignInfo getPin() {
         String pintext = null;
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         try {
@@ -122,7 +123,7 @@ public class GUIArgs implements GUIInterface {
             System.err.println("PIN not encontrado");
             System.exit(1);
         }
-        return new PasswordProtection(pintext.toCharArray());
+        return new CardSignInfo(pintext);
     }
 
     @Override
@@ -135,8 +136,52 @@ public class GUIArgs implements GUIInterface {
         return slot;
     }
 
-    @Override
-    public String getPkcs12file() {
-        return pkcs12file;
-    }
+
+	@Override
+	public void setPluginManager(PluginManager pluginManager) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void loadDocument(String fileName) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void loadDocument(MimeType mimeType, PDDocument doc) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void extendDocument() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public String getPathToSaveExtended(String extension) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean signDocuments() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public void displayFunctionality(String functionality) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void nextStep(String msg) {
+		// TODO Auto-generated method stub
+
+	}
 }

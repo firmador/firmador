@@ -19,11 +19,10 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador;
 
-
 import java.awt.Font;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URL;
-import java.security.KeyStore.PasswordProtection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -32,6 +31,7 @@ import cr.libre.firmador.gui.GUIInterface;
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignerTextPosition;
 import eu.europa.esig.dss.enumerations.VisualSignatureRotation;
@@ -45,6 +45,7 @@ import eu.europa.esig.dss.model.x509.X500PrincipalHelper;
 import eu.europa.esig.dss.pades.DSSJavaFont;
 import eu.europa.esig.dss.pades.PAdESSignatureParameters;
 import eu.europa.esig.dss.pades.PAdESTimestampParameters;
+import eu.europa.esig.dss.pades.SignatureFieldParameters;
 import eu.europa.esig.dss.pades.SignatureImageParameters;
 import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pades.signature.PAdESService;
@@ -63,13 +64,15 @@ public class FirmadorPAdES extends CRSigner {
     PAdESSignatureParameters parameters;
     private boolean visibleSignature = true;
     private Settings settings;
+	private float width;
+	private float height;
 
     public FirmadorPAdES(GUIInterface gui) {
         super(gui);
         settings = SettingsManager.getInstance().get_and_create_settings();
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, PasswordProtection pin, String level, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
+    public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
         CertificateVerifier verifier = this.getCertificateVerifier();
         PAdESService service = new PAdESService(verifier);
         service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
@@ -77,41 +80,32 @@ public class FirmadorPAdES extends CRSigner {
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
+        gui.nextStep("Obteniendo servicios de verificación de certificados");
         if(image == null) {
             image = settings.getImage();
         }
         try {
-            token = getSignatureConnection(pin);
+            token = getSignatureConnection(card);
         } catch (DSSException|AlertException|Error e) {
             gui.showError(Throwables.getRootCause(e));
+            return null;
         }
+
         DSSPrivateKeyEntry privateKey = null;
         try {
             privateKey = getPrivateKey(token);
-            if (privateKey == null) {
-                for (int i = 0;; i++) {
-                    try {
-                        token = getSignatureConnection(pin, i);
-                        privateKey = getPrivateKey(token);
-                        if (privateKey != null) break;
-                    } catch (Exception ex) {
-                        if (Throwables.getRootCause(ex).getLocalizedMessage().equals("CKR_SLOT_ID_INVALID")) break;
-                        else gui.showError(Throwables.getRootCause(ex));
-                    }
-                }
-            }
+            gui.nextStep("Obteniendo manejador de llaves privadas");
         } catch (Exception e) {
             gui.showError(Throwables.getRootCause(e));
+            return null;
         }
         try {
+        	gui.nextStep("Obteniendo certificados de la tarjeta");
             CertificateToken certificate = privateKey.getCertificate();
-            if (level == null) level = "LTA";
-            switch (level) {
-            case "T": parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_T); break;
-            case "LT": parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LT); break;
-            case "LTA": parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA); break;
-            default: parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA); break;
-            }
+            
+            parameters.setSignatureLevel(settings.getPAdESLevel());
+            
+          
             parameters.setContentSize(13312);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
@@ -119,11 +113,14 @@ public class FirmadorPAdES extends CRSigner {
             if (location != null && !location.trim().isEmpty()) parameters.setLocation(location);
             if (contactInfo != null && !contactInfo .trim().isEmpty()) parameters.setContactInfo(contactInfo);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
+            gui.nextStep("Obteniendo servicios TSP");
             service.setTspSource(onlineTSPSource);
             Date date = new Date();
             if (visibleSignature) appendVisibleSignature(certificate, date, reason, location, contactInfo, image, hideSignatureAdvice);
+            gui.nextStep("Agregando representación gráfica de la firma");
             parameters.bLevel().setSigningDate(date);
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
+            gui.nextStep("Obteniendo estructura de datos a firmar");
             signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
         } catch (DSSException|AlertException|Error e) {
             if (Throwables.getRootCause(e).getLocalizedMessage().equals("The new signature field position overlaps with an existing annotation!")) {
@@ -131,10 +128,17 @@ public class FirmadorPAdES extends CRSigner {
                     "Debe mover la firma para ubicarla en otra posición que no tape las existentes.");
                 return null;
             } else gui.showError(Throwables.getRootCause(e));
+        } catch (IllegalArgumentException e) {
+        	 if(Throwables.getRootCause(e).getMessage().contains("is expired")) {
+        		 gui.showMessage("Certificado vencido, no se puede realizar la firma");
+        		 return null;
+        	 }
         }
 
         try {
+        	gui.nextStep("Firmando estructura de datos");
             signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
+            gui.nextStep("Firmado del documento completo");
         } catch (Exception e) {
             e.printStackTrace();
             gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
@@ -195,7 +199,7 @@ public class FirmadorPAdES extends CRSigner {
                 imageParameters.getFieldParameters().setOriginX(0);
                 imageParameters.getFieldParameters().setOriginY(0);
                 SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
-                textParameters.setFont(new DSSJavaFont(new Font(settings.font, Font.PLAIN, settings.fontsize)));
+                textParameters.setFont(new DSSJavaFont(new Font(settings.getFontName(settings.font, true), settings.getFontStyle(settings.font), settings.fontsize)));
                 SimpleDateFormat date = new SimpleDateFormat(settings.getDateFormat());
                 date.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
                 textParameters.setText("Este documento incluye un sello de tiempo de la\n" +
@@ -220,19 +224,33 @@ public class FirmadorPAdES extends CRSigner {
         this.visibleSignature = visibleSignature;
     }
 
+    public void addVisibleSignature(int page, Rectangle rect) {
+		this.page = page;
+		this.x = rect.x;
+		this.y = rect.y;
+		//this.width=(float)rect.width;
+		//this.height=(float)rect.height;
+    }
     public void addVisibleSignature(int page, int x, int y) {
         this.page = page;
         this.x = x;
         this.y = y;
+        this.width=settings.signwidth;
+        this.height=settings.signheight;
     }
 
     private void appendVisibleSignature(CertificateToken certificate, Date date, String reason, String location, String contactInfo, String image, Boolean hideAdvice) {
         SignatureImageParameters imageParameters = new SignatureImageParameters();
         imageParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
-        imageParameters.getFieldParameters().setOriginX(x);
-        imageParameters.getFieldParameters().setOriginY(y);
+        SignatureFieldParameters fparamet = imageParameters.getFieldParameters();
+        fparamet.setOriginX(this.x);
+        fparamet.setOriginY(this.y);
+        fparamet.setHeight(height);
+        fparamet.setWidth(width);
+       
         SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
-        textParameters.setFont(new DSSJavaFont(new Font(settings.font, Font.PLAIN, settings.fontsize)));
+        
+        textParameters.setFont(new DSSJavaFont(new Font(settings.getFontName(settings.font, true), settings.getFontStyle(settings.font), settings.fontsize)));
         String cn = DSSASN1Utils.getSubjectCommonName(certificate);
         X500PrincipalHelper subject = certificate.getSubject();
         String o = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.O, subject);
@@ -266,10 +284,14 @@ public class FirmadorPAdES extends CRSigner {
         
         imageParameters.setTextParameters(textParameters);
         try {
-            if (image != null && !image.trim().isEmpty()) imageParameters.setImage(new InMemoryDocument(Utils.toByteArray(new URL(image).openStream())));
+			if (image != null && !image.trim().isEmpty()) {
+            	imageParameters.setImage(new InMemoryDocument(Utils.toByteArray(new URL(image).openStream())));
+            }
+            	
         } catch (IOException e) {
             e.printStackTrace();
         }
+       // imageParameters.setImageScaling(ImageScaling.STRETCH);
         imageParameters.getFieldParameters().setPage(page);
         parameters.setImageParameters(imageParameters);
     }

@@ -31,11 +31,11 @@ public class CopyableJLabel extends JTextPane {
         super();
         setDefault();
     }
-
+    
     public CopyableJLabel(String text) {
         super();
         setDefault();
-        setText("<html>" + text + "</html>");
+        setText("<html><p style=\"word-wrap: break-word; width: 400px;\">" +text + "<p></html>");
     }
 
     private void setDefault() {
