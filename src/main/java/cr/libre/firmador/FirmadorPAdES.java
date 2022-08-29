@@ -102,10 +102,10 @@ public class FirmadorPAdES extends CRSigner {
         try {
         	gui.nextStep("Obteniendo certificados de la tarjeta");
             CertificateToken certificate = privateKey.getCertificate();
-            
+
             parameters.setSignatureLevel(settings.getPAdESLevel());
-            
-          
+
+
             parameters.setContentSize(13312);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
@@ -247,9 +247,9 @@ public class FirmadorPAdES extends CRSigner {
         fparamet.setOriginY(this.y);
         fparamet.setHeight(height);
         fparamet.setWidth(width);
-       
+
         SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
-        
+
         textParameters.setFont(new DSSJavaFont(new Font(settings.getFontName(settings.font, true), settings.getFontStyle(settings.font), settings.fontsize)));
         String cn = DSSASN1Utils.getSubjectCommonName(certificate);
         X500PrincipalHelper subject = certificate.getSubject();
@@ -281,13 +281,13 @@ public class FirmadorPAdES extends CRSigner {
         textParameters.setBackgroundColor(settings.getBackgroundColor());
 
         textParameters.setSignerTextPosition(settings.getFontAlignment());
-        
+
         imageParameters.setTextParameters(textParameters);
         try {
 			if (image != null && !image.trim().isEmpty()) {
             	imageParameters.setImage(new InMemoryDocument(Utils.toByteArray(new URL(image).openStream())));
             }
-            	
+
         } catch (IOException e) {
             e.printStackTrace();
         }

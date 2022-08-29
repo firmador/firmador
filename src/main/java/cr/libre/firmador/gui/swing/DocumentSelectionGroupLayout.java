@@ -99,7 +99,7 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
 			lastDirectory = loadDialog.getDirectory();
             lastFile = files[0].toString();
 			gui.loadDocument(files[0].toString());
-            
+
 		}
 	}
 	public void clean() {
@@ -126,16 +126,16 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
 		this.lastDirectory = path.getParent().toString();
 	}
 
- 
-	
+
+
 	public FileDialog getLoadDialog() {
-		
+
 		if(loadDialog == null) {
 			loadDialog = new FileDialog(frame, "Seleccionar documento a firmar");
 			loadDialog.setMultipleMode(true);
 			loadDialog.setLocationRelativeTo(null);
 		}
-		
+
 		return loadDialog;
 	}
 

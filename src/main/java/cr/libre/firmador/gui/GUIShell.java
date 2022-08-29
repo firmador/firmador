@@ -130,7 +130,7 @@ public class GUIShell implements GUIInterface {
         return -1;
     }
 
- 
+
 	@Override
 	public void setPluginManager(PluginManager pluginManager) {
 		pluginManager.start_loggin();
@@ -161,13 +161,13 @@ public class GUIShell implements GUIInterface {
 	@Override
 	public void displayFunctionality(String functionality) {
 		System.out.println(functionality);
-		
+
 	}
 
 	@Override
 	public void nextStep(String msg) {
 		System.out.println(msg);
-		
+
 	}
 
 }

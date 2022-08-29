@@ -29,10 +29,10 @@ public class DummyPlugin implements Plugin {
 	public void start() {
 		LOG.info("Stating DummyPlugin");
 	}
-	
+
 	public void start_loggin() {
-	 
-		
+
+
 		String[] informationkey = {
 				"sun.jnu.encoding",
 				"java.vm.vendor",
@@ -42,20 +42,20 @@ public class DummyPlugin implements Plugin {
 				"sun.boot.library.path",
 				"sun.cpu.endian",
 				"user.language",
-				"java.runtime.version", 
+				"java.runtime.version",
 				"os.arch",
 				"java.vm.version"
-				
+
 		};
 		String info="";
 		for (Object propertyKeyName: informationkey){
 			info+=propertyKeyName+" - "+System.getProperty(propertyKeyName.toString())+"\n";
         }
-		
+
 		Settings settings = SettingsManager.getInstance().get_and_create_settings();
 		String version=settings.getVersion();
         info +="firmador.libre.version - "+ version+"\n";
-		
+
 		LOG.info(info);
 	}
 
@@ -67,5 +67,5 @@ public class DummyPlugin implements Plugin {
 	public boolean get_isrunnable() {
 		return false;
 	}
-	
+
 }

@@ -107,19 +107,19 @@ public class SwingMainWindowFrame extends JFrame {
 					@SuppressWarnings("unchecked")
 					List<File> droppedFiles = (List<File>) e.getTransferable()
 							.getTransferData(DataFlavor.javaFileListFlavor);
-				 				
+
 					File[] files = new File[droppedFiles.size()];
 					droppedFiles.toArray(files);
 					if(files.length>1) {
 						GUISwing ggui = (GUISwing) gui;
 						ggui.signMultipleDocuments(files);
 					}else if( files.length==1) {
-						
+
 						gui.loadDocument(files[0].toString());
-			            
+
 					}
-					
-					
+
+
 				} catch (Exception ex) {
 					LOG.error("Error cerrando archivo", ex);
 					ex.printStackTrace();
@@ -134,6 +134,6 @@ public class SwingMainWindowFrame extends JFrame {
 	public SwingMainWindowFrame(String name) throws HeadlessException {
 		super(name);
 	}
-	
+
 
 }

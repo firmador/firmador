@@ -48,11 +48,11 @@ public class SettingsManager {
         String osName = System.getProperty("os.name").toLowerCase();
         String homepath = System.getProperty("user.home");
         String suffixpath=".config/firmadorlibre";
-        if(osName.contains("windows")) { 
+        if(osName.contains("windows")) {
         	homepath = System.getenv("APPDATA");
         	suffixpath="firmadorlibre";
         }
-        
+
         // Se asegura que siempre exista el directorio de configuracion
         path = FileSystems.getDefault().getPath(homepath, suffixpath);
         if (!Files.isDirectory(path)) {
@@ -104,7 +104,7 @@ public class SettingsManager {
 
     public void setProperty(String key, String value) {
         props.setProperty(key, value);
-       
+
     }
 
     private String get_config_file() throws IOException {
@@ -162,8 +162,8 @@ public class SettingsManager {
     }
     private List<String> getListFromString(String data, List<String> defaultdata){
     	// Si no se tienen settings activados se ponen los que se definan por defecto en el código
-    	if(data.isEmpty() && defaultdata != null && defaultdata.size()>0 ) return defaultdata;  
-    	
+    	if(data.isEmpty() && defaultdata != null && defaultdata.size()>0 ) return defaultdata;
+
     	List<String> plugins = new ArrayList<String>();
     	for(String item: Arrays.asList(data.split("\\|"))){
     		if(!item.isEmpty())plugins.add(item);
@@ -216,14 +216,14 @@ public class SettingsManager {
     		 fvalue = Float.parseFloat(valuetmp);
          } catch (Exception e) {
              fvalue=1;
-         }	
+         }
     	return fvalue;
     }
-    
+
     private String getListRepr(List<String> items) {
     	return String.join("|", items);
     }
-    
+
     public void setSettings(Settings conf, boolean save) {
         setProperty("withoutvisiblesign", String.valueOf(conf.withoutvisiblesign));
         setProperty("uselta", String.valueOf(conf.uselta));
@@ -247,20 +247,20 @@ public class SettingsManager {
         setProperty("portnumber", conf.portnumber.toString());
         setProperty("showlogs", String.valueOf(conf.showlogs));
         setProperty("pdfimgscalefactor", String.format("%.2f", conf.pdfImgScaleFactor));
-                
+
         setProperty("padesLevel", conf.padesLevel);
         setProperty("xadesLevel", conf.xadesLevel);
         setProperty("cadesLevel", conf.cadesLevel);
         setProperty("plugins", getListRepr(conf.active_plugins));
-                
+
         if (conf.extrapkcs11Lib != null && conf.extrapkcs11Lib != "") {
             setProperty("extrapkcs11Lib", conf.extrapkcs11Lib);
         }else {
         	if(props.get("extrapkcs11Lib") != null) props.remove("extrapkcs11Lib");
         }
-        
+
         setProperty("pkcs12file", getListRepr(conf.pkcs12file));
-        
+
         if (conf.image != null) {
             setProperty("image", conf.image);
         }else {
