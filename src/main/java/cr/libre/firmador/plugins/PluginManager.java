@@ -66,9 +66,9 @@ public class PluginManager implements Runnable {
 		for (Plugin plugin : plugins) {
 			plugin.stop();
 		}
-		 
+
 	}
-	
+
 	public void start_loggin() {
 		for (Plugin plugin : plugins) {
 			plugin.start_loggin();

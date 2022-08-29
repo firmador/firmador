@@ -84,7 +84,7 @@ public class FirmadorOpenDocument extends CRSigner {
         DSSPrivateKeyEntry privateKey = null;
         try {
             privateKey = getPrivateKey(token);
-            
+
         } catch (Exception e) {
             gui.showError(Throwables.getRootCause(e));
             return null;

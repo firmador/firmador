@@ -31,20 +31,20 @@ import java.net.URISyntaxException;
 public class Firmador {
 
     public static void main(String[] args) throws InterruptedException, IOException, URISyntaxException {
-    
+
         // PDFBox font cache warmup
         FontMappers.instance().getFontBoxFont(null, null);
         GUISelector guiselector = new GUISelector();
         GUIInterface gui = guiselector.getInterface(args);
         gui.setArgs(args);
         PluginManager pluginManager = new PluginManager(gui);
-       
+
         SwingUtilities.invokeLater(pluginManager);
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 gui.loadGUI();
                 gui.setPluginManager(pluginManager);
-                
+
             }
         });
     }

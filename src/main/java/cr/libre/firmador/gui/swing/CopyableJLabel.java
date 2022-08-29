@@ -31,7 +31,7 @@ public class CopyableJLabel extends JTextPane {
         super();
         setDefault();
     }
-    
+
     public CopyableJLabel(String text) {
         super();
         setDefault();

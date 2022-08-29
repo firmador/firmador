@@ -39,7 +39,7 @@ public class Settings {
     public String checksum_url = "https://firmador.libre.cr/firmador.jar.sha256";
     public String checksum_snapshot_url = "https://firmador.libre.cr/firmador-en-pruebas.jar.sha256";
 
-    
+
     public String defaultdevelopmentversion = "Desarrollo";
     public boolean withoutvisiblesign = false;
     public boolean uselta = true;
@@ -69,13 +69,13 @@ public class Settings {
     public String xadesLevel = "LTA";
     public String cadesLevel = "LTA";
     public List<String> pkcs12file = new ArrayList<String>();
-    
+
 
     public List<String> active_plugins = new ArrayList<String>();
     public List<String> available_plugins = new ArrayList<String>();
 
 	public float pdfImgScaleFactor = 1;
-    
+
     public Settings() {
     	active_plugins.add("cr.libre.firmador.plugins.DummyPlugin");
     	active_plugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
@@ -252,7 +252,7 @@ public class Settings {
 
         return origin;
     }
-    
+
     public SignatureLevel getPAdESLevel() {
     	SignatureLevel level = SignatureLevel.PAdES_BASELINE_LTA;
         switch (padesLevel) {
@@ -263,7 +263,7 @@ public class Settings {
         }
         return level;
     }
-    
+
     public SignatureLevel getXAdESLevel() {
     	SignatureLevel level = SignatureLevel.XAdES_BASELINE_LTA;
         switch (xadesLevel) {
@@ -273,7 +273,7 @@ public class Settings {
 	        default: level=SignatureLevel.XAdES_BASELINE_LTA; break;
         }
         return level;
-    }  
+    }
     public SignatureLevel getCAdESLevel() {
     	SignatureLevel level = SignatureLevel.CAdES_BASELINE_LTA;
         switch (cadesLevel) {
@@ -284,14 +284,14 @@ public class Settings {
         }
         return level;
     }
-    
-    public String getVersion() {     
+
+    public String getVersion() {
     	String versionstr = getClass().getPackage().getSpecificationVersion();
     	if(versionstr == null) versionstr=this.defaultdevelopmentversion;
     	return versionstr;
-    	  
+
     }
-    
+
     public String getReleaseUrl() {
     	String version = getVersion();
     	if(version.contains("SNAPSHOT")) {
@@ -313,5 +313,5 @@ public class Settings {
     	}
     	return this.checksum_url;
     }
-      
+
 }

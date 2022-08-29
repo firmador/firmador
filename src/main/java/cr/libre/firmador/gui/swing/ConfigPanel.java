@@ -103,7 +103,7 @@ public class ConfigPanel extends ScrollableJPanel {
 	private ScrollableJPanel advancedPanel;
 	private boolean isadvancedoptions = false;
 	private JScrollPane configPanel;
-	
+
     private JComboBox<String> padesLevel;
     private JComboBox<String> xadesLevel;
     private JComboBox<String> cadesLevel;
@@ -113,7 +113,7 @@ public class ConfigPanel extends ScrollableJPanel {
 	private JPanel advancedbottomspace;
 	private PluginManagerPlugin pluginsactive;
 	private JTextField pdfImgScaleFactor;
-	
+
 	private void createSimpleConfigPanel() {
 		simplePanel = new ScrollableJPanel();
 		simplePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -133,14 +133,14 @@ public class ConfigPanel extends ScrollableJPanel {
 
 		uselta.addItemListener(new ItemListener() {
 			@Override
-			public void itemStateChanged(ItemEvent arg0) { changeLTA(); } 
+			public void itemStateChanged(ItemEvent arg0) { changeLTA(); }
 		});
-        
+
         showlogs = new JCheckBox("Ver bitácoras", this.settings.showlogs);
         checkpanel.add(showlogs);
         checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
-        
+
         simplePanel.add(checkpanel);
         simplePanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
@@ -279,7 +279,7 @@ public class ConfigPanel extends ScrollableJPanel {
                     }
                 } catch (Exception e) {
                 	LOG.error("Error cambiando color de fondo", e);
-                 
+
                 }
             }
 
@@ -338,7 +338,7 @@ public class ConfigPanel extends ScrollableJPanel {
         addSettingsBox(simplePanel, "Color de fondo:", backgroundcolorpanel);
         addSettingsBox(simplePanel, "Imagen de firma:", imagepanel);
         addSettingsBox(simplePanel, "Puerto de escucha:", portnumber);
-        
+
         btfontcolor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 show_fontcolor_picker();
@@ -366,8 +366,8 @@ public class ConfigPanel extends ScrollableJPanel {
 
         add(configPanel, BorderLayout.CENTER);
 	}
-	
-	
+
+
 	private void changeLTA() {
 		if(uselta.isSelected()){
 			padesLevel.setSelectedItem("LTA");
@@ -375,44 +375,44 @@ public class ConfigPanel extends ScrollableJPanel {
 			cadesLevel.setSelectedItem("LTA");
 		}
 	}
-	
+
 	private void createAdvancedConfigPanel() {
 		advancedPanel = new ScrollableJPanel();
 		advancedPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		advancedPanel.setLayout(new BoxLayout(advancedPanel, 1)); 
-		
+		advancedPanel.setLayout(new BoxLayout(advancedPanel, 1));
+
 		pdfImgScaleFactor = new JTextField();
         pdfImgScaleFactor.setText(String.format("%.2f", this.settings.pdfImgScaleFactor));
         pdfImgScaleFactor.setToolTipText("Factor de escala al presentar la previsualización de la página de pdf");
 
-        
+
         pluginsactive = new PluginManagerPlugin();
         pluginsactive.setPreferredSize(new Dimension(450, 130));
         advancedPanel.add(pluginsactive);
-        
+
         pkcs12panel = new Pkcs12ConfigPanel();
         //pkcs12panel.setPreferredSize(new Dimension(450, 200));
         pkcs12panel.setList(settings.pkcs12file);
         advancedPanel.add(pkcs12panel);
-        
+
         String padesLeveloptions[] = { "T", "LT", "LTA" };
         padesLevel = new JComboBox<String>(padesLeveloptions);
         padesLevel.setSelectedItem(settings.padesLevel);
         addSettingsBox(advancedPanel, "Nivel PAdES:", padesLevel);
-        
-        
+
+
         String xadesLeveloptions[] = {"T", "LT", "LTA" };
         xadesLevel = new JComboBox<String>(xadesLeveloptions);
         xadesLevel.setSelectedItem(settings.xadesLevel);
         addSettingsBox(advancedPanel, "Nivel XAdES:", xadesLevel);
-        
+
         String cadesLeveloptions[] = {"T", "LT", "LTA"};
         cadesLevel = new JComboBox<String>(cadesLeveloptions);
         cadesLevel.setSelectedItem(settings.cadesLevel);
         addSettingsBox(advancedPanel, "Nivel CAdES:", cadesLevel);
         addSettingsBox(advancedPanel, "Escala de previsualización del Pdf", pdfImgScaleFactor);
-        
-        
+
+
         JPanel pkcs11modulepanel = new JPanel();
         pkcs11modulepanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         pkcs11modulepanel.setLayout(new BoxLayout(pkcs11modulepanel, 0));
@@ -421,7 +421,7 @@ public class ConfigPanel extends ScrollableJPanel {
         //btimage.setForeground(this.settings.getBackgroundColor());
         if(this.settings.extrapkcs11Lib != null ) {
         	pkcs11moduletext.setText(this.settings.extrapkcs11Lib);
-             
+
         }
         pkcs11modulepanel.add(pkcs11moduletext);
         pkcs11modulepanel.add(btpkcs11module);
@@ -434,7 +434,7 @@ public class ConfigPanel extends ScrollableJPanel {
             }
         });
 
-        
+
         addSettingsBox(advancedPanel, "Archivo PKCS11", pkcs11modulepanel);
         advancedPanel.add(new JLabel("El archivo pkcs11 se detecta automáticamente, "));
         advancedPanel.add(new JLabel("pero podrá ser escrito usando el campo anterior"));
@@ -458,11 +458,11 @@ public class ConfigPanel extends ScrollableJPanel {
 
         JPanel optionswitchpanel = new JPanel();
         add(optionswitchpanel, BorderLayout.NORTH);
-        
-        JButton showadvanced = new JButton("Opciones Avanzadas"); 
-        showadvanced.setOpaque(false);        
+
+        JButton showadvanced = new JButton("Opciones Avanzadas");
+        showadvanced.setOpaque(false);
         optionswitchpanel.add(showadvanced);
-        
+
         showadvanced.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
             	isadvancedoptions = !isadvancedoptions;
@@ -481,7 +481,7 @@ public class ConfigPanel extends ScrollableJPanel {
             	}
             }
         });
-        
+
         JPanel btns = new JPanel();
         add(btns, BorderLayout.SOUTH);
 
@@ -563,7 +563,7 @@ public class ConfigPanel extends ScrollableJPanel {
         settings.pkcs12file = pkcs12panel.getList();
         settings.extrapkcs11Lib = pkcs11moduletext.getText();
         if(settings.extrapkcs11Lib.isEmpty()) settings.extrapkcs11Lib = null;
-        
+
         settings.active_plugins = pluginsactive.getActivePlugin();
         settings.updateConfig();
     }
@@ -609,12 +609,12 @@ public class ConfigPanel extends ScrollableJPanel {
             imagetext.setText("");
             btimage.setIcon(createImageIcon(new Color(255, 255, 255, 0)));
         }
-        
+
         if(settings.pkcs12file != null) pkcs12panel.setList(settings.pkcs12file);
-        
+
         if(settings.extrapkcs11Lib != null) {  pkcs11moduletext.setText(settings.extrapkcs11Lib);
         }else{ pkcs11moduletext.setText(""); };
-        
+
         pluginsactive.load_plugins(settings);
 
     }
@@ -666,7 +666,7 @@ public class ConfigPanel extends ScrollableJPanel {
 		}
 		return dev;
     }
-    
+
     public void show_image_picker() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.addChoosableFileFilter(new ImageFilter());
@@ -679,7 +679,7 @@ public class ConfigPanel extends ScrollableJPanel {
            btimage.setIcon(this.getIcon(path));
         }
     }
-    
+
     public Icon getIcon(String path) {
         Icon  icon = new ImageIcon(new ImageIcon(path).getImage().getScaledInstance(iconsize, iconsize, Image.SCALE_DEFAULT));
         return icon;

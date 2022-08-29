@@ -73,10 +73,10 @@ public class BaseSwing {
 	protected ExecutorWorkerInterface worker = null;
 	private JScrollPane logginPane;
 	private  Integer tabnumber=4;
-    
-	
-	
-	
+
+
+
+
     public Integer getTabnumber() {
 		return tabnumber;
 	}
@@ -114,10 +114,10 @@ public class BaseSwing {
 		LogginFrame loggingFrame = new LogginFrame();
 		LogHandler handler = LogHandler.getInstance();
 		handler.setWritter(loggingFrame);
-		handler.register();	
+		handler.register();
 		logginPane = loggingFrame.getLogScrollPane();
 	}
-    
+
 	protected void showLogs(JTabbedPane frameTabbedPane) {
 		frameTabbedPane.addTab("Bitácoras", logginPane);
 		frameTabbedPane.setToolTipTextAt(this.tabnumber,
@@ -125,8 +125,8 @@ public class BaseSwing {
 	}
 	protected void hideLogs(JTabbedPane frameTabbedPane) {
 		frameTabbedPane.remove(logginPane);
-	}    
-    
+	}
+
 	public ByteArrayOutputStream extendDocument(DSSDocument toExtendDocument, boolean asbytes, String fileName ) {
             if(toExtendDocument == null) return null;
 			DSSDocument extendedDocument = null;
@@ -156,7 +156,7 @@ public class BaseSwing {
 						showError(Throwables.getRootCause(e));
 					}
             	}else {
-            		if(fileName==null) {        	
+            		if(fileName==null) {
             			fileName = gui.getPathToSaveExtended("");
             		}
 	                if (fileName != null) {
@@ -164,7 +164,7 @@ public class BaseSwing {
 	                        extendedDocument.save(fileName);
 	                        showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
 	                        gui.loadDocument(fileName);
-	                        
+
 	                    } catch (IOException e) {
 	            			LOG.error("Error guardando extendido", e);
 	                        e.printStackTrace();
@@ -175,12 +175,12 @@ public class BaseSwing {
             }
             return outdoc;
         }
-    
+
     public Boolean validateDocument(Validator validator){
     	Boolean ok=false;
     	if (validator.isSigned()) {
             validatePanel.extendButton.setEnabled(true);
-          
+
             gui.displayFunctionality("validator");
             ok=true;
         } else {
@@ -189,7 +189,7 @@ public class BaseSwing {
         	gui.displayFunctionality("sign");
         	return false;
         }
-    	
+
     	try {
             Report report = new Report(validator.getReports());
             validatePanel.reportLabel.setText(report.getReport());
@@ -203,9 +203,9 @@ public class BaseSwing {
         }
     	return ok;
     }
-    
-    
-    
+
+
+
     public void validateDocument(String fileName) {
         Validator validator = null;
         try {
@@ -213,7 +213,7 @@ public class BaseSwing {
             if (validator != null) {
             	validateDocument(validator);
             }
-        
+
         } catch (UnsupportedOperationException e) {
 			LOG.error("Error documento inválido "+fileName, e);
 			showError(e);
@@ -228,7 +228,7 @@ public class BaseSwing {
             gui.displayFunctionality("sign");
         }
     }
-    
+
     public void loadDocumentPDF(PDDocument doc) throws IOException {
     	signPanel.getSignButton().setEnabled(true);
     	signPanel.docHideButtons();
@@ -247,7 +247,7 @@ public class BaseSwing {
         }
         signPanel.showSignButtons();
     }
-    
+
     public void loadDocument(MimeType mimeType, PDDocument doc) {
     	signPanel.setDoc(doc);
     	signPanel.getSignButton().setEnabled(true);
@@ -266,19 +266,19 @@ public class BaseSwing {
             e.printStackTrace();
             gui.showError(Throwables.getRootCause(e));
         }
-    
+
     }
 
-    
+
     protected void signDocument(CardSignInfo card, Boolean visibleSignature) {
     	signedDocument = null;
     	MimeType mimeType = toSignDocument.getMimeType();
         if (mimeType == MimeType.PDF) {
             FirmadorPAdES firmador = new FirmadorPAdES(gui);
             firmador.setVisibleSignature(visibleSignature);
-            firmador.addVisibleSignature((int)signPanel.getPageSpinner().getValue(), 
+            firmador.addVisibleSignature((int)signPanel.getPageSpinner().getValue(),
             		signPanel.calculateSignatureRectangle());
-            signedDocument = firmador.sign(toSignDocument, card, signPanel.getReasonField().getText(), signPanel.getLocationField().getText(), 
+            signedDocument = firmador.sign(toSignDocument, card, signPanel.getReasonField().getText(), signPanel.getLocationField().getText(),
             		signPanel.getContactInfoField().getText(), System.getProperty("jnlp.signatureImage"), Boolean.getBoolean("jnlp.hideSignatureAdvice"));
         } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
             FirmadorOpenDocument firmador = new FirmadorOpenDocument(gui);
@@ -289,11 +289,11 @@ public class BaseSwing {
         } else {
             FirmadorCAdES firmador = new FirmadorCAdES(gui);
             signedDocument = firmador.sign(toSignDocument, card);
-            
+
         }
     }
-    
-    protected void signDocument(CardSignInfo card, 
+
+    protected void signDocument(CardSignInfo card,
     		 Boolean visibleSignature, Boolean destroyPin){
 
         if (card.isValid()) {
@@ -305,7 +305,7 @@ public class BaseSwing {
             }
         }
     }
-    
+
     public void showMessage(String message) {
         JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -374,7 +374,7 @@ public class BaseSwing {
                     "para detallar mejor el posible motivo de este error en próximas versiones.";
                 break;
         }
-        
+
         JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", messageType);
         if(closed) if (messageType == JOptionPane.ERROR_MESSAGE) System.exit(0);
     }
@@ -382,19 +382,19 @@ public class BaseSwing {
     public CardSignInfo getPin() {
     	RequestPinWindow pinrequestwindow = new RequestPinWindow();
         int action = pinrequestwindow.showandwait();
-        
+
         if (action == 0) return pinrequestwindow.getCardInfo();
         else return null;
     }
-    
+
 	public void setPluginManager(PluginManager pluginManager) {
 		pluginManager.start_loggin();
-		mainFrame.addWindowListener(new WindowAdapter() {				
+		mainFrame.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent arg0) {
 					pluginManager.stop();
-					
-				}			 
+
+				}
 	        });
 
 	}

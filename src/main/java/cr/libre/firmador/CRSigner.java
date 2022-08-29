@@ -70,15 +70,15 @@ public class CRSigner {
         	if(te.getLocalizedMessage().equals("CKR_PIN_INCORRECT")) throw e;
         	if(te.getLocalizedMessage().equals("CKR_GENERAL_ERROR")
         			&& e.getCause().toString().contains("Unable to instantiate PKCS11")) throw e;
-        	
-        	
+
+
         	if (te.getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) return null;
-        	
+
             else {
-            	
+
             	if(msg.contains("but token only has 0 slots")) throw e;
             	gui.showError(Throwables.getRootCause(e));
-            
+
             }
         }
         if(keys!=null) {
@@ -112,7 +112,7 @@ public class CRSigner {
          * hardware devices for Sello Electrónico).
          */
         SignatureTokenConnection signingToken = null;
-        
+
 
         try {
         	if(card.getCardType() == CardSignInfo.PKCS12TYPE) {
