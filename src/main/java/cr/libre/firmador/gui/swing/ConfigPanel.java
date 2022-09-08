@@ -203,6 +203,7 @@ public class ConfigPanel extends ScrollableJPanel {
         };
         else fonts = new String[] { Font.SANS_SERIF, Font.SERIF, Font.MONOSPACED };
         font = new JComboBox<String>(fonts);
+        font.setSelectedItem(settings.font);
 
         String fontpositions[] = { "RIGHT", "LEFT", "BOTTOM", "TOP" };
         fontposition = new JComboBox<String>(fontpositions);
