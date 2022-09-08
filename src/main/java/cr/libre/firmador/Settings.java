@@ -107,17 +107,6 @@ public class Settings {
     @SuppressWarnings("fallthrough")
     public String getFontName(String fontName, boolean isPdf) {
         switch (fontName) {
-        case "Nimbus Roman Regular":
-        case "Nimbus Roman Italic":
-        case "Nimbus Roman Bold":
-        case "Nimbus Roman Bold Italic":
-            if (!isPdf) return "Nimbus Roman";
-        case "Times New Roman Regular":
-        case "Times New Roman Italic":
-        case "Times New Roman Bold":
-        case "Times New Roman Bold Italic":
-            if (!isPdf) return "Times New Roman";
-            return Font.SERIF;
         case "Arial Regular":
         case "Arial Italic":
         case "Arial Bold":
@@ -134,6 +123,17 @@ public class Settings {
         case "Nimbus Sans Bold Italic":
             if (!isPdf) return "Nimbus Sans";
             return Font.SANS_SERIF;
+        case "Nimbus Roman Regular":
+        case "Nimbus Roman Italic":
+        case "Nimbus Roman Bold":
+        case "Nimbus Roman Bold Italic":
+            if (!isPdf) return "Nimbus Roman";
+        case "Times New Roman Regular":
+        case "Times New Roman Italic":
+        case "Times New Roman Bold":
+        case "Times New Roman Bold Italic":
+            if (!isPdf) return "Times New Roman";
+            return Font.SERIF;
         case "Courier New Regular":
         case "Courier New Italic":
         case "Courier New Bold":

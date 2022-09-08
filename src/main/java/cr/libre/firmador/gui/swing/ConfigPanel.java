@@ -187,21 +187,21 @@ public class ConfigPanel extends ScrollableJPanel {
         String fonts[];
         String osName = System.getProperty("os.name").toLowerCase();
         if (osName.contains("mac")) fonts = new String[] {
-            "Times New Roman Regular", "Times New Roman Italic", "Times New Roman Bold", "Times New Roman Bold Italic",
             "Helvetica Regular", "Helvetica Oblique", "Helvetica Bold", "Helvetica Bold Oblique",
+            "Times New Roman Regular", "Times New Roman Italic", "Times New Roman Bold", "Times New Roman Bold Italic",
             "Courier New Regular", "Courier New Italic", "Courier New Bold", "Courier New Bold Italic"
         };
         else if (osName.contains("linux")) fonts = new String[] {
-            "Nimbus Roman Regular", "Nimbus Roman Italic", "Nimbus Roman Bold", "Nimbus Roman Bold Italic",
             "Nimbus Sans Regular", "Nimbus Sans Italic", "Nimbus Sans Bold", "Nimbus Sans Bold Italic",
+            "Nimbus Roman Regular", "Nimbus Roman Italic", "Nimbus Roman Bold", "Nimbus Roman Bold Italic",
             "Nimbus Mono PS Regular", "Nimbus Mono PS Italic", "Nimbus Mono PS Bold", "Nimbus Mono PS Bold Italic"
         };
         else if (osName.contains("windows")) fonts = new String[] {
-            "Times New Roman Regular", "Times New Roman Italic", "Times New Roman Bold", "Times New Roman Bold Italic",
             "Arial Regular", "Arial Italic", "Arial Bold", "Arial Bold Italic",
+            "Times New Roman Regular", "Times New Roman Italic", "Times New Roman Bold", "Times New Roman Bold Italic",
             "Courier New Regular", "Courier New Italic", "Courier New Bold", "Courier New Bold Italic"
         };
-        else fonts = new String[] { Font.SERIF, Font.SANS_SERIF, Font.MONOSPACED };
+        else fonts = new String[] { Font.SANS_SERIF, Font.SERIF, Font.MONOSPACED };
         font = new JComboBox<String>(fonts);
 
         String fontpositions[] = { "RIGHT", "LEFT", "BOTTOM", "TOP" };
