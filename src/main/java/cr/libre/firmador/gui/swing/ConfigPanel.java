@@ -272,7 +272,7 @@ public class ConfigPanel extends ScrollableJPanel {
             public void updateIcon(DocumentEvent edoc) {
                 try {
                     String text = backgroundcolor.getText();
-                    if(!text.isEmpty() && text != "transparente") {
+                    if(!text.isEmpty() && ! text.equalsIgnoreCase("transparente")) {
                         Color color = Color.decode(text);
                         btbackgroundcolor.setIcon(createImageIcon(color));
                     } else {
