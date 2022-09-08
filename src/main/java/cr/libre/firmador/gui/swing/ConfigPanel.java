@@ -559,7 +559,7 @@ public class ConfigPanel extends ScrollableJPanel {
         settings.padesLevel = padesLevel.getSelectedItem().toString();
         settings.xadesLevel = xadesLevel.getSelectedItem().toString();
         settings.cadesLevel = cadesLevel.getSelectedItem().toString();
-        settings.pdfImgScaleFactor = Float.parseFloat(pdfImgScaleFactor.getText().replace(",", ","));
+        settings.pdfImgScaleFactor = Float.parseFloat(pdfImgScaleFactor.getText().replace(",", "."));
         settings.pkcs12file = pkcs12panel.getList();
         settings.extrapkcs11Lib = pkcs11moduletext.getText();
         if(settings.extrapkcs11Lib.isEmpty()) settings.extrapkcs11Lib = null;
