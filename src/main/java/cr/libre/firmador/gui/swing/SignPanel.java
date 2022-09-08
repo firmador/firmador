@@ -174,11 +174,12 @@ public class SignPanel extends JPanel implements ConfigListener{
         pageSpinner.setToolTipText("<html>Este control permite seleccionar el número de página<br>para visualizar y seleccionar en cuál mostrar la firma visible.</html>");
         pageSpinner.setMaximumSize(pageSpinner.getPreferredSize());
 
-
-        signatureLabel = new JLabel("<html><span style='font-size: 12pt'>" +
+        signatureLabel = new JLabel();
+        // FIXME partially dead code?
+        signatureLabel.setFont(new Font(settings.getFontName(settings.font, false), settings.getFontStyle(settings.font), settings.fontsize));
+        signatureLabel.setText("<html><span style='font-size: '"+settings.fontsize * settings.pdfImgScaleFactor+"pt'" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIRMA<br>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VISIBLE</span></html>");
-        signatureLabel.setFont(new Font(settings.font, Font.PLAIN, settings.fontsize));
         signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
@@ -261,21 +262,21 @@ public class SignPanel extends JPanel implements ConfigListener{
 			table = "<table cellpadding=0 cellspacing=0 border=0>";
 			if(settings.fontalignment.contains("BOTTOM")) {
 				table += "<tr><td><img src=\""+settings.getImage()+"\"></td></tr>";
-				table += "<tr><td><span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span></td></tr>";
+				table += "<tr><td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
 			}
 			else if(settings.fontalignment.contains("LEFT")) {
-				table += "<tr><td><span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span></td>";
+				table += "<tr><td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td>";
 				table += "<td><img src=\""+settings.getImage()+"\"></td></tr>";
 			}else if(settings.fontalignment.contains("TOP")) {
-				table += "<tr><td><span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span></td></tr>";
+				table += "<tr><td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
 				table += "<tr><td><img src=\""+settings.getImage()+"\"></td></tr>";
 			}else {
 				table += "<tr><td><img src=\""+settings.getImage()+"\"></td>";
-				table += "<td><span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span></td></tr>";
+				table += "<td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
 			}
 			table += "</table>";
 		}else {
-			table ="<span style='font-size: "+settings.fontsize+"pt'>"+getTextExample()+"</span>";
+			table ="<span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span>";
 		}
         signatureLabel.setFont(new Font(settings.getFontName(settings.font, false), settings.getFontStyle(settings.font), settings.fontsize));
     	signatureLabel.setText("<html>"+table+"</html>");
