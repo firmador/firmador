@@ -602,7 +602,7 @@ public class ConfigPanel extends ScrollableJPanel {
         padesLevel.setSelectedItem(settings.padesLevel);
         xadesLevel.setSelectedItem(settings.xadesLevel);
         cadesLevel.setSelectedItem(settings.cadesLevel);
-        pdfImgScaleFactor.setText(String.format("%.2f", pdfImgScaleFactor));
+        pdfImgScaleFactor.setText(String.format("%.2f", settings.pdfImgScaleFactor));
         if(settings.image != null) {
             imagetext.setText(settings.image);
             btimage.setIcon(this.getIcon(settings.image));
