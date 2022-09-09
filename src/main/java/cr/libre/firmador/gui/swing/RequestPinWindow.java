@@ -177,7 +177,7 @@ public class RequestPinWindow extends JFrame {
 				}else {
 					JOptionPane.showMessageDialog(null, "Debe seleccionar una tarjeta y un pin", "Ocurrió un error procesando su solicitud", JOptionPane.WARNING_MESSAGE);
 				}
-			}else if(action==JOptionPane.CANCEL_OPTION) {
+			}else if(action==JOptionPane.CANCEL_OPTION || action==JOptionPane.CLOSED_OPTION) {
 				ok=true;
 			}
 		}
