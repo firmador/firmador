@@ -217,15 +217,11 @@ public class SignPanel extends JPanel implements ConfigListener{
 	}
 
 	public int getPDFVisibleSignatureX() {
-		Point pposition = signatureLabel.getLocation();
-		int position = pposition.x;
-		return Math.round(position * (2 - settings.pdfImgScaleFactor));
+        return (int)((float)signatureLabel.getLocation().x / settings.pdfImgScaleFactor);
 	}
 
 	public int getPDFVisibleSignatureY() {
-		 Point pposition = signatureLabel.getLocation();
-		 int position = pposition.y;
-		return Math.round(position * (2 - settings.pdfImgScaleFactor));
+        return (int)((float)signatureLabel.getLocation().y / settings.pdfImgScaleFactor);
 	}
 
 	public void paintPDFViewer() {
