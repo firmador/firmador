@@ -81,14 +81,6 @@ Para ejecutar el JAR:
     java -jar firmador.jar
 
 
-## Ejecución en Java 16 y posteriores
-
-En caso de utilizar una versión de Java mayor o igual a la 16, para ejecutar el
-JAR:
-
-    java --add-exports=jdk.crypto.cryptoki/sun.security.pkcs11.wrapper=ALL-UNNAMED -jar firmador.jar
-
-
 ## Licencia
 
 Copyright © 2018, 2022 de los autores de Firmador.

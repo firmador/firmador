@@ -109,7 +109,7 @@ public class RequestPinWindow extends JFrame {
 				}
 			}
 		});
-		btnNewButton.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("huella.png")));
+		btnNewButton.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("refresh.png")));
 		btnNewButton.setToolTipText("Refrescar tarjetas");
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
@@ -177,7 +177,7 @@ public class RequestPinWindow extends JFrame {
 				}else {
 					JOptionPane.showMessageDialog(null, "Debe seleccionar una tarjeta y un pin", "Ocurrió un error procesando su solicitud", JOptionPane.WARNING_MESSAGE);
 				}
-			}else if(action==JOptionPane.CANCEL_OPTION) {
+			}else if(action==JOptionPane.CANCEL_OPTION || action==JOptionPane.CLOSED_OPTION) {
 				ok=true;
 			}
 		}

@@ -43,6 +43,9 @@ un fichero de almacén de certificados. Se puede utilizar de la siguiente forma:
 
     echo contraseña | java -jar firmador.jar -dargs original.pdf firmado.pdf almacen.p12
 
+En el caso de ejecutarse en Windows, no debe dejar espacio antes del símbolo
+`|` o no reconocerá el PIN o la contraseña como válidos.
+
 
 ## ¿Cómo integrar firmador en un sitio web para que se lance la app, cargue un documento en la app y suba el documento firmado automáticamente?
 
@@ -92,6 +95,9 @@ https://firmador.libre.cr/firmador-en-pruebas.jnlp que permite recibir
 peticiones desde cualquier origen. Esta versión puede recibir modificaciones
 inestables y caídas al tratarse de una versión para desarrollo y pruebas.
 
+Puede accederse a una demostración de firma web en la siguiente dirección:
+https://firmador.libre.cr/demo.html
+
 
 ## ¿Por qué Firmador utiliza el puerto 3516 para el mecanismo de firma remota y no otro número en particular?
 
@@ -130,16 +136,7 @@ propiedad `jnlp.hideSignatureAdvice` con el valor `true`.
 
 Se puede utilizar el siguiente comando donde el nivel máximo es `trace`:
 
-    java -jar -Dorg.slf4j.simpleLogger.defaultLogLevel=trace firmador.jar
+    java -jar -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog -Dorg.apache.commons.logging.simplelog.defaultlog=trace -jar firmador.jar
 
 Los valores posibles son: `off`, `error`, `warn`, `info` (predeterminado),
 `debug` y `trace`.
-
-Si se está probando y no se dispone de salida estándar para ver los mensajes
-(por ejemplo en Windows), puede exportarse esta información de salida hacia un
-fichero de la siguiente manera:
-
-    java -jar -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog -Dorg.apache.commons.logging.simplelog.defaultlog=trace -jar firmador.jar
-
-De esta forma se creará el fichero `firmador.log` en el mismo directorio para
-poderlo consultar.
