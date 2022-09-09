@@ -187,22 +187,23 @@ public class ConfigPanel extends ScrollableJPanel {
         String fonts[];
         String osName = System.getProperty("os.name").toLowerCase();
         if (osName.contains("mac")) fonts = new String[] {
-            "Times New Roman Regular", "Times New Roman Italic", "Times New Roman Bold", "Times New Roman Bold Italic",
             "Helvetica Regular", "Helvetica Oblique", "Helvetica Bold", "Helvetica Bold Oblique",
+            "Times New Roman Regular", "Times New Roman Italic", "Times New Roman Bold", "Times New Roman Bold Italic",
             "Courier New Regular", "Courier New Italic", "Courier New Bold", "Courier New Bold Italic"
         };
         else if (osName.contains("linux")) fonts = new String[] {
-            "Nimbus Roman Regular", "Nimbus Roman Italic", "Nimbus Roman Bold", "Nimbus Roman Bold Italic",
             "Nimbus Sans Regular", "Nimbus Sans Italic", "Nimbus Sans Bold", "Nimbus Sans Bold Italic",
+            "Nimbus Roman Regular", "Nimbus Roman Italic", "Nimbus Roman Bold", "Nimbus Roman Bold Italic",
             "Nimbus Mono PS Regular", "Nimbus Mono PS Italic", "Nimbus Mono PS Bold", "Nimbus Mono PS Bold Italic"
         };
         else if (osName.contains("windows")) fonts = new String[] {
-            "Times New Roman Regular", "Times New Roman Italic", "Times New Roman Bold", "Times New Roman Bold Italic",
             "Arial Regular", "Arial Italic", "Arial Bold", "Arial Bold Italic",
+            "Times New Roman Regular", "Times New Roman Italic", "Times New Roman Bold", "Times New Roman Bold Italic",
             "Courier New Regular", "Courier New Italic", "Courier New Bold", "Courier New Bold Italic"
         };
-        else fonts = new String[] { Font.SERIF, Font.SANS_SERIF, Font.MONOSPACED };
+        else fonts = new String[] { Font.SANS_SERIF, Font.SERIF, Font.MONOSPACED };
         font = new JComboBox<String>(fonts);
+        font.setSelectedItem(settings.font);
 
         String fontpositions[] = { "RIGHT", "LEFT", "BOTTOM", "TOP" };
         fontposition = new JComboBox<String>(fontpositions);
@@ -271,7 +272,7 @@ public class ConfigPanel extends ScrollableJPanel {
             public void updateIcon(DocumentEvent edoc) {
                 try {
                     String text = backgroundcolor.getText();
-                    if(!text.isEmpty() && text != "transparente") {
+                    if(!text.isEmpty() && ! text.equalsIgnoreCase("transparente")) {
                         Color color = Color.decode(text);
                         btbackgroundcolor.setIcon(createImageIcon(color));
                     } else {
@@ -559,7 +560,7 @@ public class ConfigPanel extends ScrollableJPanel {
         settings.padesLevel = padesLevel.getSelectedItem().toString();
         settings.xadesLevel = xadesLevel.getSelectedItem().toString();
         settings.cadesLevel = cadesLevel.getSelectedItem().toString();
-        settings.pdfImgScaleFactor = Float.parseFloat(pdfImgScaleFactor.getText().replace(",", ","));
+        settings.pdfImgScaleFactor = Float.parseFloat(pdfImgScaleFactor.getText().replace(",", "."));
         settings.pkcs12file = pkcs12panel.getList();
         settings.extrapkcs11Lib = pkcs11moduletext.getText();
         if(settings.extrapkcs11Lib.isEmpty()) settings.extrapkcs11Lib = null;
@@ -601,7 +602,7 @@ public class ConfigPanel extends ScrollableJPanel {
         padesLevel.setSelectedItem(settings.padesLevel);
         xadesLevel.setSelectedItem(settings.xadesLevel);
         cadesLevel.setSelectedItem(settings.cadesLevel);
-        pdfImgScaleFactor.setText(String.format("%.2f", pdfImgScaleFactor));
+        pdfImgScaleFactor.setText(String.format("%.2f", settings.pdfImgScaleFactor));
         if(settings.image != null) {
             imagetext.setText(settings.image);
             btimage.setIcon(this.getIcon(settings.image));
