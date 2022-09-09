@@ -228,10 +228,10 @@ public class FirmadorPAdES extends CRSigner {
 		this.page = page;
 		this.x = rect.x;
 		this.y = rect.y;
-		//this.width=(float)rect.width;
-		//this.height=(float)rect.height;
+		this.width=(float)rect.width;
+		this.height=(float)rect.height;
     }
-    public void addVisibleSignature(int page, int x, int y) {
+    public void addVisibleSignature(int page, int x, int y) { // FIXME this seems unused
         this.page = page;
         this.x = x;
         this.y = y;
@@ -245,8 +245,8 @@ public class FirmadorPAdES extends CRSigner {
         SignatureFieldParameters fparamet = imageParameters.getFieldParameters();
         fparamet.setOriginX(this.x);
         fparamet.setOriginY(this.y);
-        fparamet.setHeight(height);
-        fparamet.setWidth(width);
+        //fparamet.setWidth(width);
+        //fparamet.setHeight(height);
 
         SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
 
