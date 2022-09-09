@@ -192,7 +192,7 @@ public class SettingsManager {
             conf.font = props.getProperty("font", conf.font);
             conf.fontcolor = props.getProperty("fontcolor", conf.fontcolor);
             conf.backgroundcolor = props.getProperty("backgroundcolor", conf.backgroundcolor);
-            conf.signx=Integer.parseInt(props.getProperty("singy", conf.signx.toString()));
+            conf.signx=Integer.parseInt(props.getProperty("singx", conf.signx.toString()));
             conf.signy=Integer.parseInt(props.getProperty("singy", conf.signy.toString()));
             conf.image = props.getProperty("image");
             conf.startserver = Boolean.parseBoolean(props.getProperty("startserver", String.valueOf(conf.startserver)));
