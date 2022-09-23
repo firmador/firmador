@@ -300,7 +300,7 @@ public class BaseSwing {
         	gui.nextStep("Inicio del proceso de firmado");
         	signDocument(card,  visibleSignature);
             if(destroyPin) {
-            	gui.nextStep("Destroyendo el pin");
+                gui.nextStep("Destruyendo el pin");
 	            card.destroyPin();
             }
         }
