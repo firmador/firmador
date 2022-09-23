@@ -19,12 +19,12 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 import cr.libre.firmador.CardSignInfo;
 //import cr.libre.firmador.FirmadorCAdES;
@@ -115,15 +115,11 @@ public class GUIArgs implements GUIInterface {
     }
 
     public CardSignInfo getPin() {
-        String pintext = null;
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        try {
-            pintext = br.readLine();
-        } catch (IOException e) {
-            System.err.println("PIN not encontrado");
-            System.exit(1);
-        }
-        return new CardSignInfo(pintext);
+        Scanner scanner = new Scanner(System.in);
+        char[] password = scanner.next().toCharArray();
+        CardSignInfo card = new CardSignInfo(password);
+        Arrays.fill(password, '\0');
+        return card;
     }
 
     @Override
