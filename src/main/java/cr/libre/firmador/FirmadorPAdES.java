@@ -102,7 +102,7 @@ public class FirmadorPAdES extends CRSigner {
         try {
         	gui.nextStep("Obteniendo certificados de la tarjeta");
             CertificateToken certificate = privateKey.getCertificate();
-
+            parameters.setAppName("Firmador " + getClass().getPackage().getSpecificationVersion() + ", https://firmador.libre.cr");
             parameters.setSignatureLevel(settings.getPAdESLevel());
 
 
@@ -211,6 +211,7 @@ public class FirmadorPAdES extends CRSigner {
                 imageParameters.setTextParameters(textParameters);
                 imageParameters.getFieldParameters().setPage(1);
                 timestampParameters.setImageParameters(imageParameters);
+                timestampParameters.setAppName("Firmador " + getClass().getPackage().getSpecificationVersion() + ", https://firmador.libre.cr");
             }
             timestampedDocument = service.timestamp(documentToTimestamp, timestampParameters);
         } catch (Exception e) {
