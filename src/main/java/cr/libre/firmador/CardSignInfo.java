@@ -68,12 +68,6 @@ public class CardSignInfo {
 		expires="";
 	}
 
-	public CardSignInfo(String pin) {
-		this.setPin(pin);
-		this.cardType=ONLYPIN;
-		this.identification="Pin card";
-	}
-
 	public CardSignInfo(char[] password) {
 		this.setPin(password);
 		this.cardType=ONLYPIN;
@@ -106,9 +100,7 @@ public class CardSignInfo {
 	public void setPin(PasswordProtection pin) {
 		this.pin = pin;
 	}
-	public void setPin(String pin) {
-		this.pin = new PasswordProtection(pin.toCharArray());
-	}
+
 	public void setPin(char[] pin) {
 		this.pin = new PasswordProtection(pin);
 	}
