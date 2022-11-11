@@ -116,7 +116,7 @@ public class GUIShell implements GUIInterface {
         if (console != null) password = console.readPassword("PIN: ");
         else password = readFromInput("PIN: ").toCharArray();
         CardSignInfo card = new CardSignInfo(password);
-        Arrays.fill(password, (char) 0);
+        Arrays.fill(password, '\0');
         return card;
     }
 
