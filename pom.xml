@@ -160,7 +160,7 @@
     <dependencies>
       <dependency>
         <groupId>eu.europa.ec.joinup.sd-dss</groupId>
-        <version>5.11.RC1</version>
+        <version>5.11.1</version>
         <artifactId>dss-bom</artifactId>
         <type>pom</type>
         <scope>import</scope>
@@ -222,10 +222,4 @@
       <version>1.4</version>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <id>digital-building-blocks</id>
-      <url>https://ec.europa.eu/digital-building-blocks/artifact/content/repositories/esignaturedss/</url>
-    </repository>
-  </repositories>
 </project>
