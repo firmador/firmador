@@ -20,6 +20,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador;
 
 import java.security.KeyStore.PasswordProtection;
+import java.util.Arrays;
 
 import org.slf4j.LoggerFactory;
 
@@ -103,6 +104,7 @@ public class CardSignInfo {
 
 	public void setPin(char[] pin) {
 		this.pin = new PasswordProtection(pin);
+		Arrays.fill(pin, '\0');
 	}
 
 	public String getDisplayInfo() {
