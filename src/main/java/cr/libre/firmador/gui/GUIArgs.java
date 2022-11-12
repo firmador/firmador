@@ -20,7 +20,11 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador.gui;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -116,9 +120,24 @@ public class GUIArgs implements GUIInterface {
 
     public CardSignInfo getPin() {
         Scanner scanner = new Scanner(System.in);
-        char[] password = scanner.next().toCharArray();
-        CardSignInfo card = new CardSignInfo(password);
-        Arrays.fill(password, '\0');
+        scanner.useDelimiter("[\r\n]");
+        byte[] bytes = new byte[64];
+        for (byte currentByte: bytes) {
+            if (!scanner.hasNextByte()) break;
+            bytes[currentByte] = scanner.nextByte(); // replaced next() because it uses String (bad for pin)
+        }
+        scanner.close();
+        CharBuffer charBuffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(bytes));
+        PasswordProtection pin = new PasswordProtection(Arrays.copyOf(charBuffer.array(), charBuffer.limit()));
+        Arrays.fill(bytes, (byte) 0);
+        charBuffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(bytes)); // Also try to zero-fill buffers
+        CardSignInfo card = new CardSignInfo(pin);
+        try {
+            pin.destroy();
+        } catch (Exception e) {
+            System.err.println("Error destruyendo el pin:");
+            showError(Throwables.getRootCause(e));
+        }
         return card;
     }
 
