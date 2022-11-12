@@ -53,7 +53,7 @@ public class RequestPinWindow extends JFrame {
 
 	private static final long serialVersionUID = -8464569433812264362L;
 	private JPanel contentPane;
-	private JPasswordField pinField = new JPasswordField(14);
+	private JPasswordField pinField = new JPasswordField(50);
 	protected CardSignInfo card;
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(RequestPinWindow.class);
 	protected JComboBox<String> comboBox;
@@ -171,8 +171,10 @@ public class RequestPinWindow extends JFrame {
 			action = JOptionPane.showConfirmDialog(null, contentPane, "Ingresar PIN", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if(action==JOptionPane.OK_OPTION) {
 				if (pinField.getPassword().length > 0 && this.card != null) {
-					this.card.setPin(pinField.getPassword());
-					pinField.setText("");
+					PasswordProtection password = new PasswordProtection(pinField.getPassword());
+					pinField.setText(""); // However, https://stackoverflow.com/a/36828836
+					this.card.setPin(password);
+					password.destroy();
 					ok=true;
 				}else {
 					JOptionPane.showMessageDialog(null, "Debe seleccionar una tarjeta y un pin", "Ocurrió un error procesando su solicitud", JOptionPane.WARNING_MESSAGE);
