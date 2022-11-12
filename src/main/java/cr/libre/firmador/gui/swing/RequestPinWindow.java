@@ -174,7 +174,12 @@ public class RequestPinWindow extends JFrame {
 					PasswordProtection password = new PasswordProtection(pinField.getPassword());
 					pinField.setText(""); // However, https://stackoverflow.com/a/36828836
 					this.card.setPin(password);
-					password.destroy();
+					try {
+						password.destroy();
+					} catch (Exception e) {
+						LOG.error("Error destruyendo el pin", e);
+						e.printStackTrace();
+					}
 					ok=true;
 				}else {
 					JOptionPane.showMessageDialog(null, "Debe seleccionar una tarjeta y un pin", "Ocurrió un error procesando su solicitud", JOptionPane.WARNING_MESSAGE);
