@@ -74,6 +74,11 @@ public class CardSignInfo {
 		this.cardType=ONLYPIN;
 	}
 
+	public CardSignInfo(PasswordProtection password) {
+		this.setPin(password);
+		this.cardType=ONLYPIN;
+	}
+
 	public int getCardType() {
 		return cardType;
 	}
