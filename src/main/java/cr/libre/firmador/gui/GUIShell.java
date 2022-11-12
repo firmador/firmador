@@ -24,6 +24,7 @@ import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
+import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -115,8 +116,15 @@ public class GUIShell implements GUIInterface {
         char[] password = null;
         if (console != null) password = console.readPassword("PIN: ");
         else password = readFromInput("PIN: ").toCharArray();
-        CardSignInfo card = new CardSignInfo(password);
+        PasswordProtection pin = new PasswordProtection(password);
         Arrays.fill(password, '\0');
+        CardSignInfo card = new CardSignInfo(pin);
+        try {
+            pin.destroy();
+        } catch (Exception e) {
+            System.err.println("Error destruyendo el pin:");
+            showError(Throwables.getRootCause(e));
+        }
         return card;
     }
 
