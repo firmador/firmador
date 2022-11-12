@@ -69,11 +69,6 @@ public class CardSignInfo {
 		expires="";
 	}
 
-	public CardSignInfo(char[] password) {
-		this.setPin(password);
-		this.cardType=ONLYPIN;
-	}
-
 	public CardSignInfo(PasswordProtection password) {
 		this.setPin(password);
 		this.cardType=ONLYPIN;
