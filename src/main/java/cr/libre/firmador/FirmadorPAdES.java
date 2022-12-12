@@ -64,12 +64,12 @@ public class FirmadorPAdES extends CRSigner {
     PAdESSignatureParameters parameters;
     private boolean visibleSignature = true;
     private Settings settings;
-	private float width;
-	private float height;
+	//private float width;
+	//private float height;
 
     public FirmadorPAdES(GUIInterface gui) {
         super(gui);
-        settings = SettingsManager.getInstance().get_and_create_settings();
+        settings = SettingsManager.getInstance().getAndCreateSettings();
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
@@ -229,9 +229,10 @@ public class FirmadorPAdES extends CRSigner {
 		this.page = page;
 		this.x = rect.x;
 		this.y = rect.y;
-		this.width=(float)rect.width;
-		this.height=(float)rect.height;
+		//this.width=(float)rect.width;
+		//this.height=(float)rect.height;
     }
+/*
     public void addVisibleSignature(int page, int x, int y) { // FIXME this seems unused
         this.page = page;
         this.x = x;
@@ -239,7 +240,7 @@ public class FirmadorPAdES extends CRSigner {
         this.width=settings.signwidth;
         this.height=settings.signheight;
     }
-
+*/
     private void appendVisibleSignature(CertificateToken certificate, Date date, String reason, String location, String contactInfo, String image, Boolean hideAdvice) {
         SignatureImageParameters imageParameters = new SignatureImageParameters();
         imageParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
