@@ -19,16 +19,14 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 import cr.libre.firmador.CardSignInfo;
 //import cr.libre.firmador.FirmadorCAdES;
@@ -73,7 +71,7 @@ public class GUIArgs implements GUIInterface {
                     FirmadorXAdES firmador = new FirmadorXAdES(this);
                     signedDocument = firmador.sign(toSignDocument, card);
                 }
-                card.destroyPin();;
+                card.destroyPin();
 
             } else {
                 FirmadorPAdES firmador = new FirmadorPAdES(this);
@@ -119,26 +117,16 @@ public class GUIArgs implements GUIInterface {
     }
 
     public CardSignInfo getPin() {
-        Scanner scanner = new Scanner(System.in);
-        scanner.useDelimiter("[\r\n]");
-        byte[] bytes = new byte[64];
-        for (byte currentByte: bytes) {
-            if (!scanner.hasNextByte()) break;
-            bytes[currentByte] = scanner.nextByte(); // replaced next() because it uses String (bad for pin)
-        }
-        scanner.close();
-        CharBuffer charBuffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(bytes));
-        PasswordProtection pin = new PasswordProtection(Arrays.copyOf(charBuffer.array(), charBuffer.limit()));
-        Arrays.fill(bytes, (byte) 0);
-        charBuffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(bytes)); // Also try to zero-fill buffers
-        CardSignInfo card = new CardSignInfo(pin);
+        char[] password = new char[128];
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
-            pin.destroy();
-        } catch (Exception e) {
-            System.err.println("Error destruyendo el pin:");
+            while (reader.read(password, 0, password.length) != -1);
+        } catch (IOException e) {
             showError(Throwables.getRootCause(e));
         }
-        return card;
+        PasswordProtection pin = new PasswordProtection(password);
+        Arrays.fill(password, '\0');
+        return new CardSignInfo(pin);
     }
 
     @Override
