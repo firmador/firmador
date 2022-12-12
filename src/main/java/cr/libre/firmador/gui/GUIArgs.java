@@ -121,6 +121,7 @@ public class GUIArgs implements GUIInterface {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
             while (reader.read(password, 0, password.length) != -1);
+            reader.close();
         } catch (IOException e) {
             showError(Throwables.getRootCause(e));
         }
