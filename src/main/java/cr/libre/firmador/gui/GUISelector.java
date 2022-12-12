@@ -39,7 +39,7 @@ public class GUISelector {
 
     public GUIInterface getInterface(String name) {
         GUIInterface gui = null;
-        Settings settings = SettingsManager.getInstance().get_and_create_settings();
+        Settings settings = SettingsManager.getInstance().getAndCreateSettings();
         if(settings.isRemote()) gui = new GUIRemote();
         else if (name.equals("args")) gui = new GUIArgs();
         else if (name.equals("shell")) gui = new GUIShell();

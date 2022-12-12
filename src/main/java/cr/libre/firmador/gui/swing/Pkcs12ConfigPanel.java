@@ -96,26 +96,26 @@ public class Pkcs12ConfigPanel extends JPanel {
 		JButton addbtn = new JButton("+");
 
 		JButton rmbtn = new JButton("-");
-		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
+		GroupLayout glPanel = new GroupLayout(panel);
+		glPanel.setHorizontalGroup(
+			glPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(glPanel.createSequentialGroup()
 					.addGap(5)
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+					.addGroup(glPanel.createParallelGroup(Alignment.LEADING)
 						.addComponent(rmbtn)
 						.addComponent(addbtn))
 					.addGap(44))
 		);
-		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
+		glPanel.setVerticalGroup(
+			glPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(glPanel.createSequentialGroup()
 					.addGap(5)
 					.addComponent(addbtn)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(rmbtn)
 					.addContainerGap(242, Short.MAX_VALUE))
 		);
-		panel.setLayout(gl_panel);
+		panel.setLayout(glPanel);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(pk12list);

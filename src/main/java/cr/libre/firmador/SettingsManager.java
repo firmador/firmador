@@ -44,7 +44,7 @@ public class SettingsManager {
     private Properties props;
     private Settings settings = null;
 
-    public Path get_config_dir() throws IOException {
+    public Path getConfigDir() throws IOException {
         String osName = System.getProperty("os.name").toLowerCase();
         String homepath = System.getProperty("user.home");
         String suffixpath=".config/firmadorlibre";
@@ -62,16 +62,16 @@ public class SettingsManager {
         return path;
     }
 
-    public Path get_path_config_file(String name) throws IOException{
+    public Path getPathConfigFile(String name) throws IOException{
         if (path == null) {
-            path = this.get_config_dir();
+            path = this.getConfigDir();
             path = path.getFileSystem().getPath(path.toString(), name);
         }
         return path;
     }
 
-    public String get_config_file(String name) throws IOException{
-        return this.get_path_config_file(name).toString();
+    public String getConfigFile(String name) throws IOException{
+        return this.getPathConfigFile(name).toString();
     }
 
     public Path getPath() {
@@ -107,23 +107,23 @@ public class SettingsManager {
 
     }
 
-    private String get_config_file() throws IOException {
+    private String getConfigFile() throws IOException {
         //Retorna el archivo de configuracion
         String dev="";
         if (this.path == null) {
-            dev = this.get_config_file("config.properties");
+            dev = this.getConfigFile("config.properties");
         }else{
             dev = this.path.toString();
         }
         return dev;
     }
 
-    public boolean load_config() {
+    public boolean loadConfig() {
         // carga las configuraciones desde un archivo de texto
         File configFile;
         boolean loaded=false;
         try {
-            configFile = new File(this.get_config_file());
+            configFile = new File(this.getConfigFile());
             if (configFile.exists()) {
                 InputStream inputStream = new FileInputStream(configFile);
                 Reader reader = new InputStreamReader(inputStream, "UTF-8");
@@ -138,14 +138,14 @@ public class SettingsManager {
         return loaded;
     }
 
-    public void save_config() {
+    public void saveConfig() {
         // Guarda las configuraciones en un archivo de texto
         //File configFile = null;
         OutputStreamWriter writer = null;
         //props.setProperty("formato", "json");
         try {
-            writer = new OutputStreamWriter(new FileOutputStream(this.get_config_file()), StandardCharsets.UTF_8);
-            //writer = new FileWriter(this.get_config_file());
+            writer = new OutputStreamWriter(new FileOutputStream(this.getConfigFile()), StandardCharsets.UTF_8);
+            //writer = new FileWriter(this.getConfigFile());
             props.store(writer, "Firmador Libre settings");
 
         } catch (IOException ex) {
@@ -173,7 +173,7 @@ public class SettingsManager {
 
     public Settings getSettings() {
         Settings conf = new Settings();
-        boolean loaded =this.load_config();
+        boolean loaded = this.loadConfig();
 
         if (loaded) {
             conf.withoutvisiblesign=Boolean.parseBoolean(props.getProperty("withoutvisiblesign", String.valueOf(conf.withoutvisiblesign)));
@@ -266,10 +266,10 @@ public class SettingsManager {
         }else {
         	if(props.get("image") != null) props.remove("image");
         }
-        if (save) save_config();
+        if (save) saveConfig();
     }
 
-    public Settings get_and_create_settings() {
+    public Settings getAndCreateSettings() {
         if (this.settings != null) {
             return this.settings;
         }
@@ -278,7 +278,7 @@ public class SettingsManager {
         try {
             // Check if file exists
             if (this.path == null) {
-                //String cpath = get_config_file("config.properties");
+                //String cpath = getConfigFile("config.properties");
             } else {
                 if (!Files.exists(this.path)) {
                      Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, "Config File does not exists");

@@ -342,19 +342,19 @@ public class ConfigPanel extends ScrollableJPanel {
 
         btfontcolor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                show_fontcolor_picker();
+                showFontColorPicker();
             }
         });
 
         btbackgroundcolor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                show_backgroundcolor_picker();
+                showBackgroundColorPicker();
             }
         });
 
         btimage.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                show_image_picker();
+                showImagePicker();
             }
         });
         configPanel = new JScrollPane(simplePanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -447,7 +447,7 @@ public class ConfigPanel extends ScrollableJPanel {
 	}
     public ConfigPanel() {
         manager = SettingsManager.getInstance();
-        settings = manager.get_and_create_settings();
+        settings = manager.getAndCreateSettings();
         setLayout(new BorderLayout(0, 0));
 
         //JLabel lblValoresPorDefecto = new JLabel("Valores por defecto");
@@ -489,7 +489,7 @@ public class ConfigPanel extends ScrollableJPanel {
         JButton restartbtn = new JButton("Reiniciar");
         restartbtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                restart_settings();
+                restartSettings();
             }
         });
         btns.add(restartbtn);
@@ -497,7 +497,7 @@ public class ConfigPanel extends ScrollableJPanel {
         JButton applywithoutsave = new JButton("Aplicar sin guardar");
         applywithoutsave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                charge_settings();
+                chargeSettings();
                 if(startserver.isSelected()) {
                     showMessage("Modo remoto no se activará, debe guardar y reiniciar la aplicación.");
                 }
@@ -508,7 +508,7 @@ public class ConfigPanel extends ScrollableJPanel {
         JButton btsave = new JButton("Guardar");
         btsave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                save_settings();
+                saveSettings();
                 if(startserver.isSelected()) {
                     showMessage("El Modo remoto se iniciará al reinicio de la aplicación, puede desactivarlo con el menú contextual obtenido con clic derecho.");
                 }
@@ -533,7 +533,7 @@ public class ConfigPanel extends ScrollableJPanel {
         item.setPreferredSize(d);
         return label;
     }
-    public void charge_settings() {
+    public void chargeSettings() {
         settings.withoutvisiblesign = this.withoutvisiblesign.isSelected();
         settings.reason = reason.getText();
         settings.place = place.getText();
@@ -569,7 +569,7 @@ public class ConfigPanel extends ScrollableJPanel {
         settings.updateConfig();
     }
 
-    public void restart_settings() {
+    public void restartSettings() {
         Settings settings = new Settings();
 
         withoutvisiblesign.setSelected(settings.withoutvisiblesign);
@@ -616,7 +616,7 @@ public class ConfigPanel extends ScrollableJPanel {
         if(settings.extrapkcs11Lib != null) {  pkcs11moduletext.setText(settings.extrapkcs11Lib);
         }else{ pkcs11moduletext.setText(""); };
 
-        pluginsactive.load_plugins(settings);
+        pluginsactive.loadPlugins(settings);
 
     }
 
@@ -628,12 +628,12 @@ public class ConfigPanel extends ScrollableJPanel {
         }
     }
 
-    public void save_settings() {
-        charge_settings();
+    public void saveSettings() {
+        chargeSettings();
         this.manager.setSettings(this.settings, true);
     }
 
-    public void show_fontcolor_picker() {
+    public void showFontColorPicker() {
         Color newColor = JColorChooser.showDialog(this, "Color del texto", this.settings.getFontColor());
         if (newColor != null) {
             //btfontcolor.setForeground(newColor);
@@ -644,10 +644,10 @@ public class ConfigPanel extends ScrollableJPanel {
         }
     }
 
-    public void show_backgroundcolor_picker() {
+    public void showBackgroundColorPicker() {
         Color newColor = JColorChooser.showDialog(this, "Color de fondo", this.settings.getBackgroundColor());
         if (newColor != null) {
-            //btbackgroundcolor.setIcon(createImageIcon(newColor));
+            //btBackgroundcolor.setIcon(createImageIcon(newColor));
             String buf = Integer.toHexString(newColor.getRGB());
             String hex = "#"+buf.substring(buf.length()-6);
             backgroundcolor.setText(hex);
@@ -668,7 +668,7 @@ public class ConfigPanel extends ScrollableJPanel {
 		return dev;
     }
 
-    public void show_image_picker() {
+    public void showImagePicker() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.addChoosableFileFilter(new ImageFilter());
         fileChooser.setAcceptAllFileFilterUsed(false);

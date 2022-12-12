@@ -79,7 +79,7 @@ public class SwingMainWindowFrame extends JFrame {
 
 	@SuppressWarnings("serial")
 	public void loadGUI() {
-		settings = SettingsManager.getInstance().get_and_create_settings();
+		settings = SettingsManager.getInstance().getAndCreateSettings();
 		menu = new JPopupMenu();
 		JMenuItem mAll = new JMenuItem("Deseleccionar modo remoto");
 		menu.add(mAll);

@@ -50,7 +50,7 @@ public class GUIShell implements GUIInterface {
     //private Settings settings;
 
 	public void loadGUI() {
-    	//settings = SettingsManager.getInstance().get_and_create_settings();
+        //settings = SettingsManager.getInstance().getAndCreateSettings();
         String fileName = getDocumentToSign();
         if (fileName != null) {
             // FirmadorCAdES firmador = new FirmadorCAdES(this);
@@ -141,7 +141,7 @@ public class GUIShell implements GUIInterface {
 
 	@Override
 	public void setPluginManager(PluginManager pluginManager) {
-		pluginManager.start_loggin();
+		pluginManager.startLogging();
 	}
 
 	@Override

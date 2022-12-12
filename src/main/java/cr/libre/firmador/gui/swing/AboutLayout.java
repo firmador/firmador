@@ -49,7 +49,7 @@ public class AboutLayout extends GroupLayout {
 
     public AboutLayout(Container host) {
         super(host);
-        settings = SettingsManager.getInstance().get_and_create_settings();
+        settings = SettingsManager.getInstance().getAndCreateSettings();
 
         JLabel iconLabel = new JLabel(new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
         JLabel descriptionLabel = new JLabel("<html><p align='center'><b>Firmador</b><br><br>" +

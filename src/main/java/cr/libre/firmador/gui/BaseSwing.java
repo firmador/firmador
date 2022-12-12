@@ -110,7 +110,7 @@ public class BaseSwing {
 			e.printStackTrace();
 			this.showError(Throwables.getRootCause(e));
 		}
-    	settings = SettingsManager.getInstance().get_and_create_settings();
+        settings = SettingsManager.getInstance().getAndCreateSettings();
 		LogginFrame loggingFrame = new LogginFrame();
 		LogHandler handler = LogHandler.getInstance();
 		handler.setWritter(loggingFrame);
@@ -388,7 +388,7 @@ public class BaseSwing {
     }
 
 	public void setPluginManager(PluginManager pluginManager) {
-		pluginManager.start_loggin();
+		pluginManager.startLogging();
 		mainFrame.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent arg0) {

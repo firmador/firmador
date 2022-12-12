@@ -111,49 +111,49 @@ public class RequestPinWindow extends JFrame {
 		});
 		btnNewButton.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("refresh.png")));
 		btnNewButton.setToolTipText("Refrescar tarjetas");
-		GroupLayout gl_contentPane = new GroupLayout(contentPane);
-		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+		GroupLayout glContentPane = new GroupLayout(contentPane);
+		glContentPane.setHorizontalGroup(
+			glContentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(glContentPane.createSequentialGroup()
+					.addGroup(glContentPane.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 189, GroupLayout.PREFERRED_SIZE)
 						.addComponent(label))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
+					.addGroup(glContentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(Alignment.TRAILING, glContentPane.createSequentialGroup()
 							.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, 372, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE))
 						.addComponent(pinField, GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE))
 					.addContainerGap())
-				.addGroup(gl_contentPane.createSequentialGroup()
+				.addGroup(glContentPane.createSequentialGroup()
 					.addComponent(infotext, GroupLayout.DEFAULT_SIZE, 627, Short.MAX_VALUE)
 					.addContainerGap())
 		);
-		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
-						.addGroup(gl_contentPane.createSequentialGroup()
+		glContentPane.setVerticalGroup(
+			glContentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(glContentPane.createSequentialGroup()
+					.addGroup(glContentPane.createParallelGroup(Alignment.LEADING, false)
+						.addGroup(glContentPane.createSequentialGroup()
 							.addGap(43)
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+							.addGroup(glContentPane.createParallelGroup(Alignment.BASELINE)
 								.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 63, GroupLayout.PREFERRED_SIZE)
 								.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, 41, GroupLayout.PREFERRED_SIZE)))
-						.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
+						.addGroup(Alignment.TRAILING, glContentPane.createSequentialGroup()
 							.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 							.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
 							.addGap(18)))
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPane.createSequentialGroup()
+					.addGroup(glContentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(glContentPane.createSequentialGroup()
 							.addGap(15)
 							.addComponent(pinField, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_contentPane.createSequentialGroup()
+						.addGroup(glContentPane.createSequentialGroup()
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(label, GroupLayout.PREFERRED_SIZE, 62, GroupLayout.PREFERRED_SIZE)))
 					.addGap(18)
 					.addComponent(infotext, GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE))
 		);
-		contentPane.setLayout(gl_contentPane);
+		contentPane.setLayout(glContentPane);
 	}
 
 

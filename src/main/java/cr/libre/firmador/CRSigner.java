@@ -94,7 +94,7 @@ public class CRSigner {
 
     public static String getPkcs11Lib() {
         String osName = System.getProperty("os.name").toLowerCase();
-        Settings settings = SettingsManager.getInstance().get_and_create_settings();
+        Settings settings = SettingsManager.getInstance().getAndCreateSettings();
         if(settings.extrapkcs11Lib != null && !settings.extrapkcs11Lib.isEmpty()) {
             return settings.extrapkcs11Lib;
         }

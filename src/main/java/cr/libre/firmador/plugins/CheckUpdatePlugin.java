@@ -65,19 +65,19 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 
 
 		protected Void updateDevelopment() throws IOException, URISyntaxException {
-			String remotesha=get_remote_checksum();
-			LOG.info("Remote sha: "+remotesha);
-			String localsha=getFileDigest(get_jar_path());
-			LOG.info("Local sha: "+localsha);
+			String remoteHash = getRemoteHash();
+			LOG.info("Remote SHA256: " + remoteHash);
+			String localHash = getFileDigest(getJarPath());
+			LOG.info("Local SHA256: " + localHash);
 
-			if(!remotesha.contains(localsha)) {
+			if(!remoteHash.contains(localHash)) {
 				String message = "Hay una versión nueva disponible, por favor actualice con prontitud a la nueva versión desde: <br> "+settings.base_url;
 
-				if(can_write_path()) {
+				if(canWritePath()) {
 					int answer = JOptionPane.showConfirmDialog(null, new CopyableJLabel(message), "Desea descargar la actualización de Firmador disponible", JOptionPane.YES_NO_OPTION);
 					if(answer== JOptionPane.YES_OPTION) {
 						try {
-							update_jar();
+							updateJar();
 						} catch (Exception e) {
 							LOG.error(e.getMessage());
 							e.printStackTrace();
@@ -107,11 +107,11 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 		    if(!version.contentEquals(responseversion)) {
 		    	String message = "Hay una versión nueva disponible, por favor actualice con prontitud a la nueva versión desde: <br> "+settings.base_url;
 
-				if(can_write_path()) {
+				if(canWritePath()) {
 					int answer = JOptionPane.showConfirmDialog(null, new CopyableJLabel(message), "Desea descargar la actualización de Firmador disponible", JOptionPane.YES_NO_OPTION);
 					if(answer== JOptionPane.YES_OPTION) {
 						try {
-							update_jar();
+							updateJar();
 						} catch (Exception e) {
 							LOG.error(e.getMessage());
 							e.printStackTrace();
@@ -131,7 +131,7 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 				//Thread.sleep(10*1000);
 			//} catch (InterruptedException e1) { e1.printStackTrace();}
 
-			settings = SettingsManager.getInstance().get_and_create_settings();
+			settings = SettingsManager.getInstance().getAndCreateSettings();
 			String version=settings.getVersion();
 			try {
 				if(version.contains("SNAPSHOT")) {
@@ -152,9 +152,9 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 			return null;
 		}
 
-		public String get_remote_checksum() {
-			Settings settings = SettingsManager.getInstance().get_and_create_settings();
-			String checksum = "";
+		public String getRemoteHash() {
+			Settings settings = SettingsManager.getInstance().getAndCreateSettings();
+			String hash = "";
 			try {
 				URL url = new URL(settings.getChecksumUrl());
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -166,16 +166,16 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 			            textBuilder.append((char) c);
 			        }
 			    }
-			    checksum = textBuilder.toString();
+			    hash = textBuilder.toString();
 			} catch (MalformedURLException e) {
 				LOG.error(e.toString());
 			}catch (IOException e) {
 				LOG.error(e.toString());
 			}
-			return checksum.toUpperCase();
+			return hash.toUpperCase();
 		}
 
-		public Path get_jar_path() throws URISyntaxException{
+		public Path getJarPath() throws URISyntaxException{
 			return Paths.get(getClass()
 	          .getProtectionDomain()
 	          .getCodeSource()
@@ -183,11 +183,11 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 	          .toURI());
 		}
 
-		public boolean can_write_path()  {
+		public boolean canWritePath()  {
 			boolean dev=false;
 			Path path;
 			try {
-				path = get_jar_path();
+				path = getJarPath();
 				dev= Files.isWritable(path) && !Files.isDirectory(path);
 			} catch (URISyntaxException e) {
 				LOG.error(e.getMessage());
@@ -196,23 +196,23 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 			return dev;
 
 		}
-		public boolean check_md5sum(Path tmpfile) throws IOException, NoSuchAlgorithmException {
+		public boolean checkHash(Path tmpfile) throws IOException, NoSuchAlgorithmException {
 			String hexsha = getFileDigest(tmpfile);
 			LOG.info("Sha256 of Downloaded file "+hexsha);
-			String remotecheck=get_remote_checksum();
-			LOG.info("Sha256 of Remote: "+remotecheck);
-			return remotecheck.contains(hexsha);
+			String remoteCheck = getRemoteHash();
+			LOG.info("SHA256 of Remote: "+remoteCheck);
+			return remoteCheck.contains(hexsha);
 
 		}
 
-		public void copy_file(Path source, Path dest) throws IOException {
+		public void copyFile(Path source, Path dest) throws IOException {
 			byte[] data = Files.readAllBytes(source);
 			Files.write(dest, data);
 
 		}
 
-		public void update_jar() throws Exception {
-			Settings settings = SettingsManager.getInstance().get_and_create_settings();
+		public void updateJar() throws Exception {
+			Settings settings = SettingsManager.getInstance().getAndCreateSettings();
 			String downloadurl=settings.getReleaseUrl();
 			LOG.info("Downloading from "+downloadurl);
 			URL url = new URL(downloadurl);
@@ -229,11 +229,11 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 		    fileOutputStream.close();
 
 
-		    if(check_md5sum(tempFile)) {
-				Path jarfile = get_jar_path();
+		    if(checkHash(tempFile)) {
+				Path jarfile = getJarPath();
 				LOG.info("Copying downloader file to "+jarfile.toString());
 
-				copy_file(tempFile, jarfile);
+				copyFile(tempFile, jarfile);
 				//Files.copy(tempFile, jarfile, StandardCopyOption.REPLACE_EXISTING);
 				File file = new File(jarfile.toString());
 				file.setExecutable(true);
@@ -251,7 +251,7 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 
 	}
 	@Override
-	public void start_loggin() {}
+	public void startLogging() {}
 
 	@Override
 	public void stop() {
@@ -264,7 +264,7 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
 		task.execute();
 	}
 	@Override
-	public boolean get_isrunnable() {
+	public boolean getIsRunnable() {
 		return true;
 	}
 

@@ -30,7 +30,7 @@ public class DummyPlugin implements Plugin {
 		LOG.info("Stating DummyPlugin");
 	}
 
-	public void start_loggin() {
+	public void startLogging() {
 
 
 		String[] informationkey = {
@@ -52,7 +52,7 @@ public class DummyPlugin implements Plugin {
 			info+=propertyKeyName+" - "+System.getProperty(propertyKeyName.toString())+"\n";
         }
 
-		Settings settings = SettingsManager.getInstance().get_and_create_settings();
+		Settings settings = SettingsManager.getInstance().getAndCreateSettings();
 		String version=settings.getVersion();
         info +="firmador.libre.version - "+ version+"\n";
 
@@ -64,7 +64,7 @@ public class DummyPlugin implements Plugin {
 	}
 
 	@Override
-	public boolean get_isrunnable() {
+	public boolean getIsRunnable() {
 		return false;
 	}
 

@@ -26,11 +26,11 @@ public interface Plugin {
 	public void start();
 
 	// Permite iniciar el bitacoreo
-	public void start_loggin();
+	public void startLogging();
 
 	// Es el último método que se llama al cerrar la aplicación
 	public void stop();
 
-	public boolean get_isrunnable();
+	public boolean getIsRunnable();
 
 }

@@ -67,19 +67,19 @@ public class ProgressDialog extends JDialog {
 		progressBar = new JProgressBar();
 		progressBar.setMinimum(min);
 		progressBar.setMaximum(max);
-		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-		gl_contentPanel.setHorizontalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup()
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+		GroupLayout glContentPane = new GroupLayout(contentPanel);
+		glContentPane.setHorizontalGroup(
+			glContentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, glContentPane.createSequentialGroup()
+					.addGroup(glContentPane.createParallelGroup(Alignment.TRAILING)
 						.addComponent(lbNotes, GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)
 						.addComponent(lbtitle, GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)
 						.addComponent(progressBar, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 426, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
-		gl_contentPanel.setVerticalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
+		glContentPane.setVerticalGroup(
+			glContentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(glContentPane.createSequentialGroup()
 					.addComponent(lbtitle, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lbNotes, GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
@@ -87,7 +87,7 @@ public class ProgressDialog extends JDialog {
 					.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())
 		);
-		contentPanel.setLayout(gl_contentPanel);
+		contentPanel.setLayout(glContentPane);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));

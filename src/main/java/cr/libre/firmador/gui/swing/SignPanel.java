@@ -126,7 +126,7 @@ public class SignPanel extends JPanel implements ConfigListener{
 
 	public SignPanel(){
 		super();
-		settings = SettingsManager.getInstance().get_and_create_settings();
+		settings = SettingsManager.getInstance().getAndCreateSettings();
         signatureVisibleCheckBox = new JCheckBox(" Sin firma visible", settings.withoutvisiblesign);
         signatureVisibleCheckBox.setToolTipText("<html>Marque esta casilla si no desea representar visualmente una firma<br>en una página del documento a la hora de firmarlo.</html>");
         signatureVisibleCheckBox.setOpaque(false);

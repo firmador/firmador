@@ -130,7 +130,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 
 	public void loadDocument(String fileName) {
 		gui.nextStep("Cargando el documento");
-		clean_elements();
+		clearElements();
 		docSelector.setLastFile(fileName);
 		docSelector.fileField.setText(Paths.get(fileName).getFileName().toString());
 		FileDocument mimeDocument = new FileDocument(fileName);
@@ -144,13 +144,13 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		} catch (IOException e) {
 			LOG.error("Error Leyendo el archivo", e);
 			e.printStackTrace();
-			clean_elements();
+			clearElements();
 		}
 		gui.nextStep("Validando formas dentro del documento");
 		validateDocument(fileName);
 	}
 
-	public void clean_elements() {
+	public void clearElements() {
 		docSelector.fileField.setText("");
 		if (doc != null) {
 			try {
