@@ -53,7 +53,7 @@ public class SmartCardDetector implements  ConfigListener {
 	protected Settings settings;
 	private String lib;
 	public SmartCardDetector() {
-		settings = SettingsManager.getInstance().get_and_create_settings();
+		settings = SettingsManager.getInstance().getAndCreateSettings();
 		//settings.addListener(this);
 	}
 	public void updateLib() {
