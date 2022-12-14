@@ -49,38 +49,38 @@ import static sun.security.pkcs11.wrapper.PKCS11Constants.CKO_CERTIFICATE;
 
 @SuppressWarnings("restriction")
 public class SmartCardDetector implements  ConfigListener {
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SmartCardDetector.class);
-	protected Settings settings;
-	private String lib;
-	public SmartCardDetector() {
-		settings = SettingsManager.getInstance().getAndCreateSettings();
-		//settings.addListener(this);
-	}
-	public void updateLib() {
-		lib = CRSigner.getPkcs11Lib();
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SmartCardDetector.class);
+    protected Settings settings;
+    private String lib;
+    public SmartCardDetector() {
+        settings = SettingsManager.getInstance().getAndCreateSettings();
+        //settings.addListener(this);
+    }
+    public void updateLib() {
+        lib = CRSigner.getPkcs11Lib();
 
-	}
+    }
 
-	public List<CardSignInfo> readSaveListSmartCard(){
-		List<CardSignInfo> cards;
-		try {
-			cards = readListSmartCard();
-		} catch (Throwable e) {
-			cards = new ArrayList<CardSignInfo>();
-		}
+    public List<CardSignInfo> readSaveListSmartCard(){
+        List<CardSignInfo> cards;
+        try {
+            cards = readListSmartCard();
+        } catch (Throwable e) {
+            cards = new ArrayList<CardSignInfo>();
+        }
 
-		File f;
-		for (String pkcs12 : settings.pkcs12file) {
-			f = new File(pkcs12);
-			if(f.exists()) cards.add(new CardSignInfo(CardSignInfo.PKCS12TYPE, pkcs12, f.getName()));
-		}
+        File f;
+        for (String pkcs12 : settings.pkcs12file) {
+            f = new File(pkcs12);
+            if(f.exists()) cards.add(new CardSignInfo(CardSignInfo.PKCS12TYPE, pkcs12, f.getName()));
+        }
 
-		return cards;
-	}
+        return cards;
+    }
 
     public List<CardSignInfo> readListSmartCard() throws Throwable {
-    	List<CardSignInfo> cardinfo = new ArrayList<CardSignInfo>();
-    	this.updateLib();
+        List<CardSignInfo> cardinfo = new ArrayList<CardSignInfo>();
+        this.updateLib();
         String functionList = "C_GetFunctionList";
         CK_C_INITIALIZE_ARGS pInitArgs = new CK_C_INITIALIZE_ARGS();
         PKCS11 pkcs11;
@@ -128,16 +128,16 @@ public class SmartCardDetector implements  ConfigListener {
                                 Object keyIdentifier = pTemplate2[i + 1]/* .pValue */; // TODO use pValue to get the value for comparison when using it to match with private key!
                                 LOG.debug("Public/Private key pair identifier: " + keyIdentifier); // After logging in with PIN, find the matching private key pValue. NOTE: Old certificates didn't use "LlaveDeFirma" id/label.
                                 cardinfo.add(new CardSignInfo(CardSignInfo.PKCS11TYPE,
-                                		identification,
-                                		firstName,
-                                		lastName,
+                                        identification,
+                                        firstName,
+                                        lastName,
                                     commonName,
                                     organization,
-                                		expires,
-                                		certificate.getSerialNumber().toString(16),
-                                		new String(tokenInfo.serialNumber),
-                                		slotID
-                                		));
+                                        expires,
+                                        certificate.getSerialNumber().toString(16),
+                                        new String(tokenInfo.serialNumber),
+                                        slotID
+                                        ));
 
                             }
                             // TODO Don't assume there's a single valid certificate per token (Persona Jurídica keystores might contain more than 1 usable certificate per token as they are handmade)
@@ -155,7 +155,7 @@ public class SmartCardDetector implements  ConfigListener {
     }
 
     @Override
-	public void updateConfig() {
-	}
+    public void updateConfig() {
+    }
 
 }

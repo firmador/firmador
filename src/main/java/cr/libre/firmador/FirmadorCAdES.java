@@ -60,7 +60,7 @@ public class FirmadorCAdES extends CRSigner {
 
 
     CAdESSignatureParameters parameters;
-	private Settings settings;
+    private Settings settings;
 
 
     public FirmadorCAdES(GUIInterface gui) {

@@ -136,51 +136,51 @@ public class GUIArgs implements GUIInterface {
     }
 
 
-	@Override
-	public void setPluginManager(PluginManager pluginManager) {
-		// TODO Auto-generated method stub
+    @Override
+    public void setPluginManager(PluginManager pluginManager) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public void loadDocument(String fileName) {
-		// TODO Auto-generated method stub
+    @Override
+    public void loadDocument(String fileName) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public void loadDocument(MimeType mimeType, PDDocument doc) {
-		// TODO Auto-generated method stub
+    @Override
+    public void loadDocument(MimeType mimeType, PDDocument doc) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public void extendDocument() {
-		// TODO Auto-generated method stub
+    @Override
+    public void extendDocument() {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public String getPathToSaveExtended(String extension) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String getPathToSaveExtended(String extension) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public boolean signDocuments() {
-		// TODO Auto-generated method stub
-		return true;
-	}
+    @Override
+    public boolean signDocuments() {
+        // TODO Auto-generated method stub
+        return true;
+    }
 
-	@Override
-	public void displayFunctionality(String functionality) {
-		// TODO Auto-generated method stub
+    @Override
+    public void displayFunctionality(String functionality) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public void nextStep(String msg) {
-		// TODO Auto-generated method stub
+    @Override
+    public void nextStep(String msg) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 }

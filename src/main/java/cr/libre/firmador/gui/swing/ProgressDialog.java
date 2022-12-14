@@ -41,82 +41,82 @@ import javax.swing.JProgressBar;
 
 @SuppressWarnings("serial")
 public class ProgressDialog extends JDialog {
-	protected Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
-	private final JPanel contentPanel = new JPanel();
-	private JLabel lbNotes;
-	private JLabel lbtitle;
-	private JProgressBar progressBar;
-	private boolean isCanceled = false;
-	/**
-	 * Create the dialog.
-	 */
-	public ProgressDialog(String title, Integer min, Integer max) {
-		setBounds(100, 100, 450, 300);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		setIconImage(image);
-		setTitle("Progreso de firmado");
+    protected Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
+    private final JPanel contentPanel = new JPanel();
+    private JLabel lbNotes;
+    private JLabel lbtitle;
+    private JProgressBar progressBar;
+    private boolean isCanceled = false;
+    /**
+     * Create the dialog.
+     */
+    public ProgressDialog(String title, Integer min, Integer max) {
+        setBounds(100, 100, 450, 300);
+        getContentPane().setLayout(new BorderLayout());
+        contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        getContentPane().add(contentPanel, BorderLayout.CENTER);
+        setIconImage(image);
+        setTitle("Progreso de firmado");
 
-		lbtitle = new JLabel(title);
-		lbtitle.setFont(new Font("Dialog", Font.BOLD, 14));
-		lbtitle.setHorizontalAlignment(SwingConstants.CENTER);
+        lbtitle = new JLabel(title);
+        lbtitle.setFont(new Font("Dialog", Font.BOLD, 14));
+        lbtitle.setHorizontalAlignment(SwingConstants.CENTER);
 
-		lbNotes = new JLabel("");
+        lbNotes = new JLabel("");
 
-		progressBar = new JProgressBar();
-		progressBar.setMinimum(min);
-		progressBar.setMaximum(max);
-		GroupLayout glContentPane = new GroupLayout(contentPanel);
-		glContentPane.setHorizontalGroup(
-			glContentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, glContentPane.createSequentialGroup()
-					.addGroup(glContentPane.createParallelGroup(Alignment.TRAILING)
-						.addComponent(lbNotes, GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)
-						.addComponent(lbtitle, GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)
-						.addComponent(progressBar, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 426, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap())
-		);
-		glContentPane.setVerticalGroup(
-			glContentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(glContentPane.createSequentialGroup()
-					.addComponent(lbtitle, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lbNotes, GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
-					.addGap(18)
-					.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap())
-		);
-		contentPanel.setLayout(glContentPane);
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("Cerrar");
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						isCanceled = true;
-					}
-				});
+        progressBar = new JProgressBar();
+        progressBar.setMinimum(min);
+        progressBar.setMaximum(max);
+        GroupLayout glContentPane = new GroupLayout(contentPanel);
+        glContentPane.setHorizontalGroup(
+            glContentPane.createParallelGroup(Alignment.LEADING)
+                .addGroup(Alignment.TRAILING, glContentPane.createSequentialGroup()
+                    .addGroup(glContentPane.createParallelGroup(Alignment.TRAILING)
+                        .addComponent(lbNotes, GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)
+                        .addComponent(lbtitle, GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)
+                        .addComponent(progressBar, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 426, GroupLayout.PREFERRED_SIZE))
+                    .addContainerGap())
+        );
+        glContentPane.setVerticalGroup(
+            glContentPane.createParallelGroup(Alignment.LEADING)
+                .addGroup(glContentPane.createSequentialGroup()
+                    .addComponent(lbtitle, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(lbNotes, GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                    .addGap(18)
+                    .addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap())
+        );
+        contentPanel.setLayout(glContentPane);
+        {
+            JPanel buttonPane = new JPanel();
+            buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+            getContentPane().add(buttonPane, BorderLayout.SOUTH);
+            {
+                JButton okButton = new JButton("Cerrar");
+                okButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        isCanceled = true;
+                    }
+                });
 
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-		}
-	}
+                okButton.setActionCommand("OK");
+                buttonPane.add(okButton);
+                getRootPane().setDefaultButton(okButton);
+            }
+        }
+    }
 
-	public void setProgress(Integer status) {
-		progressBar.setValue(status);
-	}
-	public void setNote(String msg) {
-		lbNotes.setText(msg);
-	}
-	public void setHeaderTitle(String msg) {
-		lbtitle.setText(msg);
-	}
-	public boolean isCanceled() {
-		return this.isCanceled;
-	}
+    public void setProgress(Integer status) {
+        progressBar.setValue(status);
+    }
+    public void setNote(String msg) {
+        lbNotes.setText(msg);
+    }
+    public void setHeaderTitle(String msg) {
+        lbtitle.setText(msg);
+    }
+    public boolean isCanceled() {
+        return this.isCanceled;
+    }
 }

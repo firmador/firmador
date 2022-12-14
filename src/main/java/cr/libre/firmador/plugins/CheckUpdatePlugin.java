@@ -49,223 +49,223 @@ import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.spi.DSSUtils;
 
 public class CheckUpdatePlugin implements Plugin, Runnable {
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(CheckUpdatePlugin.class);
-	public boolean isrunnable = true;
-	private Settings settings;
-	private class ExecutorWorker extends SwingWorker<Void, Void> {
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(CheckUpdatePlugin.class);
+    public boolean isrunnable = true;
+    private Settings settings;
+    private class ExecutorWorker extends SwingWorker<Void, Void> {
 
 
-		protected String getFileDigest(Path jarfile) throws IOException {
-			LOG.info("Reading file for sha digest: "+jarfile.toString());
-			Digest digest = new Digest(DigestAlgorithm.SHA256,
-					DSSUtils.digest(DigestAlgorithm.SHA256, Files.readAllBytes(jarfile)));
+        protected String getFileDigest(Path jarfile) throws IOException {
+            LOG.info("Reading file for sha digest: "+jarfile.toString());
+            Digest digest = new Digest(DigestAlgorithm.SHA256,
+                    DSSUtils.digest(DigestAlgorithm.SHA256, Files.readAllBytes(jarfile)));
 
-			return  digest.getHexValue().toUpperCase();
-		}
-
-
-		protected Void updateDevelopment() throws IOException, URISyntaxException {
-			String remoteHash = getRemoteHash();
-			LOG.info("Remote SHA256: " + remoteHash);
-			String localHash = getFileDigest(getJarPath());
-			LOG.info("Local SHA256: " + localHash);
-
-			if(!remoteHash.contains(localHash)) {
-				String message = "Hay una versión nueva disponible, por favor actualice con prontitud a la nueva versión desde: <br> "+settings.base_url;
-
-				if(canWritePath()) {
-					int answer = JOptionPane.showConfirmDialog(null, new CopyableJLabel(message), "Desea descargar la actualización de Firmador disponible", JOptionPane.YES_NO_OPTION);
-					if(answer== JOptionPane.YES_OPTION) {
-						try {
-							updateJar();
-						} catch (Exception e) {
-							LOG.error(e.getMessage());
-							e.printStackTrace();
-						}
-					}
-				}else {
-					JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Actualización de Firmador disponible", JOptionPane.INFORMATION_MESSAGE);
-				}
-			}
-			return null;
-		}
-
-		protected Void updateRelease() throws IOException {
-
-			URL url = new URL(settings.getReleaseCheckUrl());
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			StringBuilder textBuilder = new StringBuilder();
-		    try (Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),
-		    		Charset.forName(StandardCharsets.UTF_8.name())))) {
-		        int c = 0;
-		        while ((c = reader.read()) != -1) {
-		            textBuilder.append((char) c);
-		        }
-		    }
-		    String responseversion = textBuilder.toString();
-		    String version=settings.getVersion();
-		    if(!version.contentEquals(responseversion)) {
-		    	String message = "Hay una versión nueva disponible, por favor actualice con prontitud a la nueva versión desde: <br> "+settings.base_url;
-
-				if(canWritePath()) {
-					int answer = JOptionPane.showConfirmDialog(null, new CopyableJLabel(message), "Desea descargar la actualización de Firmador disponible", JOptionPane.YES_NO_OPTION);
-					if(answer== JOptionPane.YES_OPTION) {
-						try {
-							updateJar();
-						} catch (Exception e) {
-							LOG.error(e.getMessage());
-							e.printStackTrace();
-						}
-					}
-				}else {
-					JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Actualización de Firmador disponible", JOptionPane.INFORMATION_MESSAGE);
-				}
-		    }
-
-			return null;
-		}
-
-		@Override
-		protected Void doInBackground()  {
-			//try {
-				//Thread.sleep(10*1000);
-			//} catch (InterruptedException e1) { e1.printStackTrace();}
-
-			settings = SettingsManager.getInstance().getAndCreateSettings();
-			String version=settings.getVersion();
-			try {
-				if(version.contains("SNAPSHOT")) {
-					LOG.info("Updating development version");
-					updateDevelopment();
-				}else {
-					LOG.info("Updating release version");
-					updateRelease();
-				}
-
-			} catch (IOException e) {
-				LOG.error(e.getMessage());
-				e.printStackTrace();
-			} catch (URISyntaxException e) {
-				LOG.error(e.getMessage());
-				e.printStackTrace();
-			}
-			return null;
-		}
-
-		public String getRemoteHash() {
-			Settings settings = SettingsManager.getInstance().getAndCreateSettings();
-			String hash = "";
-			try {
-				URL url = new URL(settings.getChecksumUrl());
-				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-				StringBuilder textBuilder = new StringBuilder();
-			    try (Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),
-			    		Charset.forName(StandardCharsets.UTF_8.name())))) {
-			        int c = 0;
-			        while ((c = reader.read()) != -1) {
-			            textBuilder.append((char) c);
-			        }
-			    }
-			    hash = textBuilder.toString();
-			} catch (MalformedURLException e) {
-				LOG.error(e.toString());
-			}catch (IOException e) {
-				LOG.error(e.toString());
-			}
-			return hash.toUpperCase();
-		}
-
-		public Path getJarPath() throws URISyntaxException{
-			return Paths.get(getClass()
-	          .getProtectionDomain()
-	          .getCodeSource()
-	          .getLocation()
-	          .toURI());
-		}
-
-		public boolean canWritePath()  {
-			boolean dev=false;
-			Path path;
-			try {
-				path = getJarPath();
-				dev= Files.isWritable(path) && !Files.isDirectory(path);
-			} catch (URISyntaxException e) {
-				LOG.error(e.getMessage());
-				dev=false;
-			}
-			return dev;
-
-		}
-		public boolean checkHash(Path tmpfile) throws IOException, NoSuchAlgorithmException {
-			String hexsha = getFileDigest(tmpfile);
-			LOG.info("Sha256 of Downloaded file "+hexsha);
-			String remoteCheck = getRemoteHash();
-			LOG.info("SHA256 of Remote: "+remoteCheck);
-			return remoteCheck.contains(hexsha);
-
-		}
-
-		public void copyFile(Path source, Path dest) throws IOException {
-			byte[] data = Files.readAllBytes(source);
-			Files.write(dest, data);
-
-		}
-
-		public void updateJar() throws Exception {
-			Settings settings = SettingsManager.getInstance().getAndCreateSettings();
-			String downloadurl=settings.getReleaseUrl();
-			LOG.info("Downloading from "+downloadurl);
-			URL url = new URL(downloadurl);
-			Path tempFile = Files.createTempFile(null, null);
-
-			BufferedInputStream in = new BufferedInputStream(url.openStream());
-		    FileOutputStream fileOutputStream = new FileOutputStream(tempFile.toString());
-			byte dataBuffer[] = new byte[1024];
-		    int bytesRead;
-		    while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-		        fileOutputStream.write(dataBuffer, 0, bytesRead);
-		    }
-
-		    fileOutputStream.close();
+            return  digest.getHexValue().toUpperCase();
+        }
 
 
-		    if(checkHash(tempFile)) {
-				Path jarfile = getJarPath();
-				LOG.info("Copying downloader file to "+jarfile.toString());
+        protected Void updateDevelopment() throws IOException, URISyntaxException {
+            String remoteHash = getRemoteHash();
+            LOG.info("Remote SHA256: " + remoteHash);
+            String localHash = getFileDigest(getJarPath());
+            LOG.info("Local SHA256: " + localHash);
 
-				copyFile(tempFile, jarfile);
-				//Files.copy(tempFile, jarfile, StandardCopyOption.REPLACE_EXISTING);
-				File file = new File(jarfile.toString());
-				file.setExecutable(true);
-				file.setWritable(true);
-				String message="Nueva versión ha sido descargada con éxito, debe reiniciar la aplicación";
-				JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Actualización exitosa", JOptionPane.INFORMATION_MESSAGE);
-		    }
+            if(!remoteHash.contains(localHash)) {
+                String message = "Hay una versión nueva disponible, por favor actualice con prontitud a la nueva versión desde: <br> "+settings.base_url;
 
-		}
+                if(canWritePath()) {
+                    int answer = JOptionPane.showConfirmDialog(null, new CopyableJLabel(message), "Desea descargar la actualización de Firmador disponible", JOptionPane.YES_NO_OPTION);
+                    if(answer== JOptionPane.YES_OPTION) {
+                        try {
+                            updateJar();
+                        } catch (Exception e) {
+                            LOG.error(e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                }else {
+                    JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Actualización de Firmador disponible", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+            return null;
+        }
 
-	}
+        protected Void updateRelease() throws IOException {
 
-	public void start() {
-		LOG.info("Stating CheckUpdatePlugin");
+            URL url = new URL(settings.getReleaseCheckUrl());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            StringBuilder textBuilder = new StringBuilder();
+            try (Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),
+                    Charset.forName(StandardCharsets.UTF_8.name())))) {
+                int c = 0;
+                while ((c = reader.read()) != -1) {
+                    textBuilder.append((char) c);
+                }
+            }
+            String responseversion = textBuilder.toString();
+            String version=settings.getVersion();
+            if(!version.contentEquals(responseversion)) {
+                String message = "Hay una versión nueva disponible, por favor actualice con prontitud a la nueva versión desde: <br> "+settings.base_url;
 
-	}
-	@Override
-	public void startLogging() {}
+                if(canWritePath()) {
+                    int answer = JOptionPane.showConfirmDialog(null, new CopyableJLabel(message), "Desea descargar la actualización de Firmador disponible", JOptionPane.YES_NO_OPTION);
+                    if(answer== JOptionPane.YES_OPTION) {
+                        try {
+                            updateJar();
+                        } catch (Exception e) {
+                            LOG.error(e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                }else {
+                    JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Actualización de Firmador disponible", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
 
-	@Override
-	public void stop() {
-		LOG.info("Stop CheckUpdatePlugin");
+            return null;
+        }
 
-	}
-	@Override
-	public void run() {
-		ExecutorWorker task = new ExecutorWorker();
-		task.execute();
-	}
-	@Override
-	public boolean getIsRunnable() {
-		return true;
-	}
+        @Override
+        protected Void doInBackground()  {
+            //try {
+                //Thread.sleep(10*1000);
+            //} catch (InterruptedException e1) { e1.printStackTrace();}
+
+            settings = SettingsManager.getInstance().getAndCreateSettings();
+            String version=settings.getVersion();
+            try {
+                if(version.contains("SNAPSHOT")) {
+                    LOG.info("Updating development version");
+                    updateDevelopment();
+                }else {
+                    LOG.info("Updating release version");
+                    updateRelease();
+                }
+
+            } catch (IOException e) {
+                LOG.error(e.getMessage());
+                e.printStackTrace();
+            } catch (URISyntaxException e) {
+                LOG.error(e.getMessage());
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        public String getRemoteHash() {
+            Settings settings = SettingsManager.getInstance().getAndCreateSettings();
+            String hash = "";
+            try {
+                URL url = new URL(settings.getChecksumUrl());
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                StringBuilder textBuilder = new StringBuilder();
+                try (Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),
+                        Charset.forName(StandardCharsets.UTF_8.name())))) {
+                    int c = 0;
+                    while ((c = reader.read()) != -1) {
+                        textBuilder.append((char) c);
+                    }
+                }
+                hash = textBuilder.toString();
+            } catch (MalformedURLException e) {
+                LOG.error(e.toString());
+            }catch (IOException e) {
+                LOG.error(e.toString());
+            }
+            return hash.toUpperCase();
+        }
+
+        public Path getJarPath() throws URISyntaxException{
+            return Paths.get(getClass()
+              .getProtectionDomain()
+              .getCodeSource()
+              .getLocation()
+              .toURI());
+        }
+
+        public boolean canWritePath()  {
+            boolean dev=false;
+            Path path;
+            try {
+                path = getJarPath();
+                dev= Files.isWritable(path) && !Files.isDirectory(path);
+            } catch (URISyntaxException e) {
+                LOG.error(e.getMessage());
+                dev=false;
+            }
+            return dev;
+
+        }
+        public boolean checkHash(Path tmpfile) throws IOException, NoSuchAlgorithmException {
+            String hexsha = getFileDigest(tmpfile);
+            LOG.info("Sha256 of Downloaded file "+hexsha);
+            String remoteCheck = getRemoteHash();
+            LOG.info("SHA256 of Remote: "+remoteCheck);
+            return remoteCheck.contains(hexsha);
+
+        }
+
+        public void copyFile(Path source, Path dest) throws IOException {
+            byte[] data = Files.readAllBytes(source);
+            Files.write(dest, data);
+
+        }
+
+        public void updateJar() throws Exception {
+            Settings settings = SettingsManager.getInstance().getAndCreateSettings();
+            String downloadurl=settings.getReleaseUrl();
+            LOG.info("Downloading from "+downloadurl);
+            URL url = new URL(downloadurl);
+            Path tempFile = Files.createTempFile(null, null);
+
+            BufferedInputStream in = new BufferedInputStream(url.openStream());
+            FileOutputStream fileOutputStream = new FileOutputStream(tempFile.toString());
+            byte dataBuffer[] = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+                fileOutputStream.write(dataBuffer, 0, bytesRead);
+            }
+
+            fileOutputStream.close();
+
+
+            if(checkHash(tempFile)) {
+                Path jarfile = getJarPath();
+                LOG.info("Copying downloader file to "+jarfile.toString());
+
+                copyFile(tempFile, jarfile);
+                //Files.copy(tempFile, jarfile, StandardCopyOption.REPLACE_EXISTING);
+                File file = new File(jarfile.toString());
+                file.setExecutable(true);
+                file.setWritable(true);
+                String message="Nueva versión ha sido descargada con éxito, debe reiniciar la aplicación";
+                JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Actualización exitosa", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        }
+
+    }
+
+    public void start() {
+        LOG.info("Stating CheckUpdatePlugin");
+
+    }
+    @Override
+    public void startLogging() {}
+
+    @Override
+    public void stop() {
+        LOG.info("Stop CheckUpdatePlugin");
+
+    }
+    @Override
+    public void run() {
+        ExecutorWorker task = new ExecutorWorker();
+        task.execute();
+    }
+    @Override
+    public boolean getIsRunnable() {
+        return true;
+    }
 
 }

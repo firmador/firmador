@@ -31,77 +31,77 @@ import java.util.logging.SimpleFormatter;
 
 public class LogHandler extends Handler {
 
-	  private LogginFrame writter = null;
+      private LogginFrame writter = null;
 
-	  //the singleton instance
-	  private static LogHandler handler = null;
+      //the singleton instance
+      private static LogHandler handler = null;
 
-	  private LogHandler() {
-	    configure();
+      private LogHandler() {
+        configure();
 
-	  }
-	  public void setWritter(LogginFrame writter) {
-		  this.writter = writter;
-	  }
+      }
+      public void setWritter(LogginFrame writter) {
+          this.writter = writter;
+      }
 
-	  /**
-	   * The getInstance method returns the singleton instance of the
-	   * WindowHandler object It is synchronized to prevent two threads trying to
-	   * create an instance simultaneously. @ return WindowHandler object
-	   */
+      /**
+       * The getInstance method returns the singleton instance of the
+       * WindowHandler object It is synchronized to prevent two threads trying to
+       * create an instance simultaneously. @ return WindowHandler object
+       */
 
-	  public static synchronized LogHandler getInstance() {
+      public static synchronized LogHandler getInstance() {
 
-	    if (handler == null) {
-	      handler = new LogHandler();
-	    }
-	    return handler;
-	  }
+        if (handler == null) {
+          handler = new LogHandler();
+        }
+        return handler;
+      }
 
 
-	  private void configure() {
+      private void configure() {
 
-	    setLevel(Level.ALL);
-	    setFilter(new Filter() {
+        setLevel(Level.ALL);
+        setFilter(new Filter() {
 
             @Override
             public boolean isLoggable(LogRecord record) {
                 return true;
             }
-	    });
-	    setFormatter(new SimpleFormatter());
+        });
+        setFormatter(new SimpleFormatter());
 
-	  }
+      }
 
 
-	  public synchronized void publish(LogRecord record) {
-	    String message = null;
-	    if (!isLoggable(record))
-	      return;
-	    try {
-	      message = getFormatter().format(record);
-	    } catch (Exception e) {
-	      reportError(null, e, ErrorManager.FORMAT_FAILURE);
-	    }
+      public synchronized void publish(LogRecord record) {
+        String message = null;
+        if (!isLoggable(record))
+          return;
+        try {
+          message = getFormatter().format(record);
+        } catch (Exception e) {
+          reportError(null, e, ErrorManager.FORMAT_FAILURE);
+        }
 
-	    try {
-	      writter.showInfo(message);
+        try {
+          writter.showInfo(message);
 
-	    } catch (Exception ex) {
-	      reportError(null, ex, ErrorManager.WRITE_FAILURE);
-	    }
+        } catch (Exception ex) {
+          reportError(null, ex, ErrorManager.WRITE_FAILURE);
+        }
 
-	  }
+      }
 
-	  public void close() {
-	  }
+      public void close() {
+      }
 
-	  public void flush() {
-	  }
-	  public void register() {
-		Logger rootlog = Logger.getGlobal();
-		rootlog.addHandler(this);
-		Logger.getLogger("").addHandler(this);
+      public void flush() {
+      }
+      public void register() {
+        Logger rootlog = Logger.getGlobal();
+        rootlog.addHandler(this);
+        Logger.getLogger("").addHandler(this);
 
-	  }
-	}
+      }
+    }

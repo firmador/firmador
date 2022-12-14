@@ -28,56 +28,56 @@ import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
 
 public class PluginManager implements Runnable {
-	//private GUIInterface gui;
-	private Settings settings;
-	private List<Plugin> runnablePlugins = new ArrayList<Plugin>();
-	private List<Plugin> plugins = new ArrayList<Plugin>();
+    //private GUIInterface gui;
+    private Settings settings;
+    private List<Plugin> runnablePlugins = new ArrayList<Plugin>();
+    private List<Plugin> plugins = new ArrayList<Plugin>();
 
-	public PluginManager(GUIInterface gui) {
-		super();
-		//this.gui = gui;
-		this.settings = SettingsManager.getInstance().getAndCreateSettings();
-	}
+    public PluginManager(GUIInterface gui) {
+        super();
+        //this.gui = gui;
+        this.settings = SettingsManager.getInstance().getAndCreateSettings();
+    }
 
-	private void loadPlugins() {
-		for (String name : settings.active_plugins) {
+    private void loadPlugins() {
+        for (String name : settings.active_plugins) {
 
-			try {
-				Class<?> pluginClass = Class.forName(name, true, Plugin.class.getClassLoader());
-				Plugin plugin = (Plugin) pluginClass.getDeclaredConstructor().newInstance();
+            try {
+                Class<?> pluginClass = Class.forName(name, true, Plugin.class.getClassLoader());
+                Plugin plugin = (Plugin) pluginClass.getDeclaredConstructor().newInstance();
 
-				if (plugin.getIsRunnable()) {
-					SwingUtilities.invokeLater((Runnable) plugin);
-					runnablePlugins.add(plugin);
-				}
+                if (plugin.getIsRunnable()) {
+                    SwingUtilities.invokeLater((Runnable) plugin);
+                    runnablePlugins.add(plugin);
+                }
 
-				plugins.add(plugin);
-				plugin.start();
+                plugins.add(plugin);
+                plugin.start();
 
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-	public void stop() {
-		for (Plugin plugin : plugins) {
-			plugin.stop();
-		}
+    public void stop() {
+        for (Plugin plugin : plugins) {
+            plugin.stop();
+        }
 
-	}
+    }
 
-	public void startLogging() {
-		for (Plugin plugin : plugins) {
-			plugin.startLogging();
-		}
-	}
+    public void startLogging() {
+        for (Plugin plugin : plugins) {
+            plugin.startLogging();
+        }
+    }
 
-	@Override
-	public void run() {
-		loadPlugins();
-	}
+    @Override
+    public void run() {
+        loadPlugins();
+    }
 
 }

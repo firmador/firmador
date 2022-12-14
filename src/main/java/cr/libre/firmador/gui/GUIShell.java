@@ -49,7 +49,7 @@ public class GUIShell implements GUIInterface {
 
     //private Settings settings;
 
-	public void loadGUI() {
+    public void loadGUI() {
         //settings = SettingsManager.getInstance().getAndCreateSettings();
         String fileName = getDocumentToSign();
         if (fileName != null) {
@@ -133,43 +133,43 @@ public class GUIShell implements GUIInterface {
          System.out.println(message);
     }
 
-	@Override
-	public void setPluginManager(PluginManager pluginManager) {
-		pluginManager.startLogging();
-	}
+    @Override
+    public void setPluginManager(PluginManager pluginManager) {
+        pluginManager.startLogging();
+    }
 
-	@Override
-	public void loadDocument(String fileName) {
-	}
+    @Override
+    public void loadDocument(String fileName) {
+    }
 
-	@Override
-	public void loadDocument(MimeType mimeType, PDDocument doc) {
-	}
+    @Override
+    public void loadDocument(MimeType mimeType, PDDocument doc) {
+    }
 
-	@Override
-	public void extendDocument() {
-	}
+    @Override
+    public void extendDocument() {
+    }
 
-	@Override
-	public String getPathToSaveExtended(String extension) {
-		return null;
-	}
+    @Override
+    public String getPathToSaveExtended(String extension) {
+        return null;
+    }
 
-	@Override
-	public boolean signDocuments() {
-		return false;
-	}
+    @Override
+    public boolean signDocuments() {
+        return false;
+    }
 
-	@Override
-	public void displayFunctionality(String functionality) {
-		System.out.println(functionality);
+    @Override
+    public void displayFunctionality(String functionality) {
+        System.out.println(functionality);
 
-	}
+    }
 
-	@Override
-	public void nextStep(String msg) {
-		System.out.println(msg);
+    @Override
+    public void nextStep(String msg) {
+        System.out.println(msg);
 
-	}
+    }
 
 }

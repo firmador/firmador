@@ -98,26 +98,26 @@ public class ConfigPanel extends ScrollableJPanel {
     private JCheckBox startserver;
     private JSpinner portnumber;
     private JComboBox<String> fontposition;
-	private JCheckBox showlogs;
-	private ScrollableJPanel simplePanel;
-	private ScrollableJPanel advancedPanel;
-	private boolean isadvancedoptions = false;
-	private JScrollPane configPanel;
+    private JCheckBox showlogs;
+    private ScrollableJPanel simplePanel;
+    private ScrollableJPanel advancedPanel;
+    private boolean isadvancedoptions = false;
+    private JScrollPane configPanel;
 
     private JComboBox<String> padesLevel;
     private JComboBox<String> xadesLevel;
     private JComboBox<String> cadesLevel;
-	private JTextField pkcs11moduletext;
-	private JButton btpkcs11module;
-	private Pkcs12ConfigPanel pkcs12panel;
-	private JPanel advancedbottomspace;
-	private PluginManagerPlugin pluginsactive;
-	private JTextField pdfImgScaleFactor;
+    private JTextField pkcs11moduletext;
+    private JButton btpkcs11module;
+    private Pkcs12ConfigPanel pkcs12panel;
+    private JPanel advancedbottomspace;
+    private PluginManagerPlugin pluginsactive;
+    private JTextField pdfImgScaleFactor;
 
-	private void createSimpleConfigPanel() {
-		simplePanel = new ScrollableJPanel();
-		simplePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		simplePanel.setLayout(new BoxLayout(simplePanel, 1));
+    private void createSimpleConfigPanel() {
+        simplePanel = new ScrollableJPanel();
+        simplePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        simplePanel.setLayout(new BoxLayout(simplePanel, 1));
         JPanel checkpanel = new JPanel();
         checkpanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
         checkpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -131,10 +131,10 @@ public class ConfigPanel extends ScrollableJPanel {
         checkpanel.add(uselta);
         checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
-		uselta.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent arg0) { changeLTA(); }
-		});
+        uselta.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent arg0) { changeLTA(); }
+        });
 
         showlogs = new JCheckBox("Ver bitácoras", this.settings.showlogs);
         checkpanel.add(showlogs);
@@ -228,7 +228,7 @@ public class ConfigPanel extends ScrollableJPanel {
                         btfontcolor.setIcon(getTransparentImageIcon());
                     }
                 } catch (Exception e) {
-                	LOG.error("Error cambiando color de fuente", e);
+                    LOG.error("Error cambiando color de fuente", e);
                 }
             }
 
@@ -279,7 +279,7 @@ public class ConfigPanel extends ScrollableJPanel {
                         btbackgroundcolor.setIcon(getTransparentImageIcon());
                     }
                 } catch (Exception e) {
-                	LOG.error("Error cambiando color de fondo", e);
+                    LOG.error("Error cambiando color de fondo", e);
 
                 }
             }
@@ -366,23 +366,23 @@ public class ConfigPanel extends ScrollableJPanel {
         configPanel.getViewport().setOpaque(false);
 
         add(configPanel, BorderLayout.CENTER);
-	}
+    }
 
 
-	private void changeLTA() {
-		if(uselta.isSelected()){
-			padesLevel.setSelectedItem("LTA");
-			xadesLevel.setSelectedItem("LTA");
-			cadesLevel.setSelectedItem("LTA");
-		}
-	}
+    private void changeLTA() {
+        if(uselta.isSelected()){
+            padesLevel.setSelectedItem("LTA");
+            xadesLevel.setSelectedItem("LTA");
+            cadesLevel.setSelectedItem("LTA");
+        }
+    }
 
-	private void createAdvancedConfigPanel() {
-		advancedPanel = new ScrollableJPanel();
-		advancedPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		advancedPanel.setLayout(new BoxLayout(advancedPanel, 1));
+    private void createAdvancedConfigPanel() {
+        advancedPanel = new ScrollableJPanel();
+        advancedPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        advancedPanel.setLayout(new BoxLayout(advancedPanel, 1));
 
-		pdfImgScaleFactor = new JTextField();
+        pdfImgScaleFactor = new JTextField();
         pdfImgScaleFactor.setText(String.format("%.2f", this.settings.pdfImgScaleFactor));
         pdfImgScaleFactor.setToolTipText("Factor de escala al presentar la previsualización de la página de pdf");
 
@@ -421,7 +421,7 @@ public class ConfigPanel extends ScrollableJPanel {
         btpkcs11module = new JButton("Elegir");
         //btimage.setForeground(this.settings.getBackgroundColor());
         if(this.settings.extrapkcs11Lib != null ) {
-        	pkcs11moduletext.setText(this.settings.extrapkcs11Lib);
+            pkcs11moduletext.setText(this.settings.extrapkcs11Lib);
 
         }
         pkcs11modulepanel.add(pkcs11moduletext);
@@ -430,7 +430,7 @@ public class ConfigPanel extends ScrollableJPanel {
             public void actionPerformed(ActionEvent arg0) {
                 String path = getFilePath();
                 if(path != null) {
-                	pkcs11moduletext.setText(path);
+                    pkcs11moduletext.setText(path);
                 }
             }
         });
@@ -444,7 +444,7 @@ public class ConfigPanel extends ScrollableJPanel {
         advancedPanel.add(advancedbottomspace);
         changeLTA();
 
-	}
+    }
     public ConfigPanel() {
         manager = SettingsManager.getInstance();
         settings = manager.getAndCreateSettings();
@@ -466,20 +466,20 @@ public class ConfigPanel extends ScrollableJPanel {
 
         showadvanced.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-            	isadvancedoptions = !isadvancedoptions;
-            	if(isadvancedoptions) {
-            		showadvanced.setText("Opciones básicas");
-            		//configPanel.getViewport().setVisible(false);
-            		configPanel.setViewportView(advancedPanel);
-            		simplePanel.setVisible(false);
-            		advancedPanel.setVisible(true);
-            	}else {
-            		showadvanced.setText("Opciones Avanzadas");
-            		//configPanel.getViewport().setVisible(true);
-            		configPanel.setViewportView(simplePanel);
-              		advancedPanel.setVisible(false);
-            		simplePanel.setVisible(true);
-            	}
+                isadvancedoptions = !isadvancedoptions;
+                if(isadvancedoptions) {
+                    showadvanced.setText("Opciones básicas");
+                    //configPanel.getViewport().setVisible(false);
+                    configPanel.setViewportView(advancedPanel);
+                    simplePanel.setVisible(false);
+                    advancedPanel.setVisible(true);
+                }else {
+                    showadvanced.setText("Opciones Avanzadas");
+                    //configPanel.getViewport().setVisible(true);
+                    configPanel.setViewportView(simplePanel);
+                      advancedPanel.setVisible(false);
+                    simplePanel.setVisible(true);
+                }
             }
         });
 
@@ -655,17 +655,17 @@ public class ConfigPanel extends ScrollableJPanel {
     }
 
     public String getFilePath() {
-    	String dev = null;
-    	FileDialog loadDialog = new FileDialog(new JDialog(), "Seleccionar un archivo");
-		loadDialog.setMultipleMode(false);
-		loadDialog.setLocationRelativeTo(null);
-		loadDialog.setVisible(true);
-		loadDialog.dispose();
-		File[] files = loadDialog.getFiles();
-		if(files.length>=1) {
-			dev=files[0].toString();
-		}
-		return dev;
+        String dev = null;
+        FileDialog loadDialog = new FileDialog(new JDialog(), "Seleccionar un archivo");
+        loadDialog.setMultipleMode(false);
+        loadDialog.setLocationRelativeTo(null);
+        loadDialog.setVisible(true);
+        loadDialog.dispose();
+        File[] files = loadDialog.getFiles();
+        if(files.length>=1) {
+            dev=files[0].toString();
+        }
+        return dev;
     }
 
     public void showImagePicker() {

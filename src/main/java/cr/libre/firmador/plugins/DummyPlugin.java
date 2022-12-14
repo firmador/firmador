@@ -25,47 +25,47 @@ import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUISwing;
 
 public class DummyPlugin implements Plugin {
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GUISwing.class);
-	public void start() {
-		LOG.info("Stating DummyPlugin");
-	}
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GUISwing.class);
+    public void start() {
+        LOG.info("Stating DummyPlugin");
+    }
 
-	public void startLogging() {
+    public void startLogging() {
 
 
-		String[] informationkey = {
-				"sun.jnu.encoding",
-				"java.vm.vendor",
-				"sun.arch.data.model",
-				"os.name",
-				"java.vm.specification.version",
-				"sun.boot.library.path",
-				"sun.cpu.endian",
-				"user.language",
-				"java.runtime.version",
-				"os.arch",
-				"java.vm.version"
+        String[] informationkey = {
+                "sun.jnu.encoding",
+                "java.vm.vendor",
+                "sun.arch.data.model",
+                "os.name",
+                "java.vm.specification.version",
+                "sun.boot.library.path",
+                "sun.cpu.endian",
+                "user.language",
+                "java.runtime.version",
+                "os.arch",
+                "java.vm.version"
 
-		};
-		String info="";
-		for (Object propertyKeyName: informationkey){
-			info+=propertyKeyName+" - "+System.getProperty(propertyKeyName.toString())+"\n";
+        };
+        String info="";
+        for (Object propertyKeyName: informationkey){
+            info+=propertyKeyName+" - "+System.getProperty(propertyKeyName.toString())+"\n";
         }
 
-		Settings settings = SettingsManager.getInstance().getAndCreateSettings();
-		String version=settings.getVersion();
+        Settings settings = SettingsManager.getInstance().getAndCreateSettings();
+        String version=settings.getVersion();
         info +="firmador.libre.version - "+ version+"\n";
 
-		LOG.info(info);
-	}
+        LOG.info(info);
+    }
 
-	public void stop() {
-		LOG.info("Stop DummyPlugin");
-	}
+    public void stop() {
+        LOG.info("Stop DummyPlugin");
+    }
 
-	@Override
-	public boolean getIsRunnable() {
-		return false;
-	}
+    @Override
+    public boolean getIsRunnable() {
+        return false;
+    }
 
 }

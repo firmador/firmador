@@ -49,8 +49,8 @@ public class SettingsManager {
         String homepath = System.getProperty("user.home");
         String suffixpath=".config/firmadorlibre";
         if(osName.contains("windows")) {
-        	homepath = System.getenv("APPDATA");
-        	suffixpath="firmadorlibre";
+            homepath = System.getenv("APPDATA");
+            suffixpath="firmadorlibre";
         }
 
         // Se asegura que siempre exista el directorio de configuracion
@@ -161,14 +161,14 @@ public class SettingsManager {
         }
     }
     private List<String> getListFromString(String data, List<String> defaultdata){
-    	// Si no se tienen settings activados se ponen los que se definan por defecto en el código
-    	if(data.isEmpty() && defaultdata != null && defaultdata.size()>0 ) return defaultdata;
+        // Si no se tienen settings activados se ponen los que se definan por defecto en el código
+        if(data.isEmpty() && defaultdata != null && defaultdata.size()>0 ) return defaultdata;
 
-    	List<String> plugins = new ArrayList<String>();
-    	for(String item: Arrays.asList(data.split("\\|"))){
-    		if(!item.isEmpty())plugins.add(item);
-    	}
-    	return plugins;
+        List<String> plugins = new ArrayList<String>();
+        for(String item: Arrays.asList(data.split("\\|"))){
+            if(!item.isEmpty())plugins.add(item);
+        }
+        return plugins;
     }
 
     public Settings getSettings() {
@@ -210,18 +210,18 @@ public class SettingsManager {
     }
 
     private float getFloatFromString(String value) {
-    	String valuetmp=value.replace(",", ".");
-    	float fvalue = 1;
-    	 try {
-    		 fvalue = Float.parseFloat(valuetmp);
+        String valuetmp=value.replace(",", ".");
+        float fvalue = 1;
+         try {
+             fvalue = Float.parseFloat(valuetmp);
          } catch (Exception e) {
              fvalue=1;
          }
-    	return fvalue;
+        return fvalue;
     }
 
     private String getListRepr(List<String> items) {
-    	return String.join("|", items);
+        return String.join("|", items);
     }
 
     public void setSettings(Settings conf, boolean save) {
@@ -256,7 +256,7 @@ public class SettingsManager {
         if (conf.extrapkcs11Lib != null && conf.extrapkcs11Lib != "") {
             setProperty("extrapkcs11Lib", conf.extrapkcs11Lib);
         }else {
-        	if(props.get("extrapkcs11Lib") != null) props.remove("extrapkcs11Lib");
+            if(props.get("extrapkcs11Lib") != null) props.remove("extrapkcs11Lib");
         }
 
         setProperty("pkcs12file", getListRepr(conf.pkcs12file));
@@ -264,7 +264,7 @@ public class SettingsManager {
         if (conf.image != null) {
             setProperty("image", conf.image);
         }else {
-        	if(props.get("image") != null) props.remove("image");
+            if(props.get("image") != null) props.remove("image");
         }
         if (save) saveConfig();
     }

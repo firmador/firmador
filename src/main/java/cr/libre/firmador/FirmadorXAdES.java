@@ -59,7 +59,7 @@ public class FirmadorXAdES extends CRSigner {
 
     //XAdESCounterSignatureParameters parameters; // Electronic receipts v4.4 proposal
     XAdESSignatureParameters parameters;
-	private Settings settings;
+    private Settings settings;
 
 
     public FirmadorXAdES(GUIInterface gui) {

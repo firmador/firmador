@@ -43,106 +43,106 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 public class Pkcs12ConfigPanel extends JPanel {
-	private static final long serialVersionUID = -2813831810835064245L;
-	private JList<String> pk12list;
-	private DefaultListModel<String> pk12Model;
+    private static final long serialVersionUID = -2813831810835064245L;
+    private JList<String> pk12list;
+    private DefaultListModel<String> pk12Model;
 
-	public List<String> getList(){
-		return Collections.list(pk12Model.elements());
-	}
+    public List<String> getList(){
+        return Collections.list(pk12Model.elements());
+    }
 
-	public void setList(List<String> data) {
-		for (String element : data) {
-			pk12Model.addElement(element);
-		}
-	}
+    public void setList(List<String> data) {
+        for (String element : data) {
+            pk12Model.addElement(element);
+        }
+    }
 
     public String getFilePath() {
-    	String dev = null;
+        String dev = null;
 
-    	FileDialog loadDialog = new FileDialog(new JDialog(), "Seleccionar un archivo");
-		loadDialog.setMultipleMode(false);
-		loadDialog.setLocationRelativeTo(null);
-		loadDialog.setVisible(true);
-		loadDialog.dispose();
+        FileDialog loadDialog = new FileDialog(new JDialog(), "Seleccionar un archivo");
+        loadDialog.setMultipleMode(false);
+        loadDialog.setLocationRelativeTo(null);
+        loadDialog.setVisible(true);
+        loadDialog.dispose();
 
-		File[] files = loadDialog.getFiles();
+        File[] files = loadDialog.getFiles();
 
-		if(files.length>=1) {
-			dev=files[0].toString();
-		}
-		return dev;
+        if(files.length>=1) {
+            dev=files[0].toString();
+        }
+        return dev;
 
     }
 
-	public Pkcs12ConfigPanel() {
+    public Pkcs12ConfigPanel() {
 
-		setPreferredSize(new Dimension(450, 200));
-		setLayout(new BorderLayout(0, 0));
-		Border margin = new EmptyBorder(20, 10,20,10);
-		setBorder(margin);
+        setPreferredSize(new Dimension(450, 200));
+        setLayout(new BorderLayout(0, 0));
+        Border margin = new EmptyBorder(20, 10,20,10);
+        setBorder(margin);
 
-		pk12Model = new DefaultListModel<String>();
-		pk12list  = new JList<String>(pk12Model);
+        pk12Model = new DefaultListModel<String>();
+        pk12list  = new JList<String>(pk12Model);
 
-		JLabel ltitle = new JLabel("Archivos PKCS12");
+        JLabel ltitle = new JLabel("Archivos PKCS12");
 
-		ltitle.setHorizontalAlignment(SwingConstants.CENTER);
-		add(ltitle, BorderLayout.NORTH);
+        ltitle.setHorizontalAlignment(SwingConstants.CENTER);
+        add(ltitle, BorderLayout.NORTH);
 
-		JPanel panel = new JPanel();
-		add(panel, BorderLayout.EAST);
+        JPanel panel = new JPanel();
+        add(panel, BorderLayout.EAST);
 
-		JButton addbtn = new JButton("+");
+        JButton addbtn = new JButton("+");
 
-		JButton rmbtn = new JButton("-");
-		GroupLayout glPanel = new GroupLayout(panel);
-		glPanel.setHorizontalGroup(
-			glPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(glPanel.createSequentialGroup()
-					.addGap(5)
-					.addGroup(glPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(rmbtn)
-						.addComponent(addbtn))
-					.addGap(44))
-		);
-		glPanel.setVerticalGroup(
-			glPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(glPanel.createSequentialGroup()
-					.addGap(5)
-					.addComponent(addbtn)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(rmbtn)
-					.addContainerGap(242, Short.MAX_VALUE))
-		);
-		panel.setLayout(glPanel);
+        JButton rmbtn = new JButton("-");
+        GroupLayout glPanel = new GroupLayout(panel);
+        glPanel.setHorizontalGroup(
+            glPanel.createParallelGroup(Alignment.LEADING)
+                .addGroup(glPanel.createSequentialGroup()
+                    .addGap(5)
+                    .addGroup(glPanel.createParallelGroup(Alignment.LEADING)
+                        .addComponent(rmbtn)
+                        .addComponent(addbtn))
+                    .addGap(44))
+        );
+        glPanel.setVerticalGroup(
+            glPanel.createParallelGroup(Alignment.LEADING)
+                .addGroup(glPanel.createSequentialGroup()
+                    .addGap(5)
+                    .addComponent(addbtn)
+                    .addPreferredGap(ComponentPlacement.RELATED)
+                    .addComponent(rmbtn)
+                    .addContainerGap(242, Short.MAX_VALUE))
+        );
+        panel.setLayout(glPanel);
 
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setViewportView(pk12list);
-		pk12list.setLayoutOrientation(JList.VERTICAL);
-		pk12list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportView(pk12list);
+        pk12list.setLayoutOrientation(JList.VERTICAL);
+        pk12list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		add(scrollPane, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
 
         rmbtn.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent arg0) {
-	    		List<String> selectedValues = pk12list.getSelectedValuesList();
-	    		for(String item: selectedValues) {
-	    			pk12Model.removeElement(item);
+            public void actionPerformed(ActionEvent arg0) {
+                List<String> selectedValues = pk12list.getSelectedValuesList();
+                for(String item: selectedValues) {
+                    pk12Model.removeElement(item);
 
-	    		}
-	    	}
-	    });
-        addbtn.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent arg0) {
-	    		String path = getFilePath();
-                if(path != null && !path.isEmpty() ) {
-                	//pk12text.setText(path);
-                	pk12Model.addElement(path);
                 }
-	    	}
-	    });
+            }
+        });
+        addbtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                String path = getFilePath();
+                if(path != null && !path.isEmpty() ) {
+                    //pk12text.setText(path);
+                    pk12Model.addElement(path);
+                }
+            }
+        });
 
-	}
+    }
 
 }

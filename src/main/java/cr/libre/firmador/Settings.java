@@ -74,13 +74,13 @@ public class Settings {
     public List<String> active_plugins = new ArrayList<String>();
     public List<String> available_plugins = new ArrayList<String>();
 
-	public float pdfImgScaleFactor = 1;
+    public float pdfImgScaleFactor = 1;
 
     public Settings() {
-    	active_plugins.add("cr.libre.firmador.plugins.DummyPlugin");
-    	active_plugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
-    	available_plugins.add("cr.libre.firmador.plugins.DummyPlugin");
-    	available_plugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
+        active_plugins.add("cr.libre.firmador.plugins.DummyPlugin");
+        active_plugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
+        available_plugins.add("cr.libre.firmador.plugins.DummyPlugin");
+        available_plugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
     }
 
     public String getDefaultSignMessage() {
@@ -267,64 +267,64 @@ public class Settings {
     }
 
     public SignatureLevel getPAdESLevel() {
-    	SignatureLevel level = SignatureLevel.PAdES_BASELINE_LTA;
+        SignatureLevel level = SignatureLevel.PAdES_BASELINE_LTA;
         switch (padesLevel) {
-	        case "T": level=SignatureLevel.PAdES_BASELINE_T; break;
-	        case "LT": level=SignatureLevel.PAdES_BASELINE_LT; break;
-	        case "LTA": level=SignatureLevel.PAdES_BASELINE_LTA; break;
-	        default: level=SignatureLevel.PAdES_BASELINE_LTA; break;
+            case "T": level=SignatureLevel.PAdES_BASELINE_T; break;
+            case "LT": level=SignatureLevel.PAdES_BASELINE_LT; break;
+            case "LTA": level=SignatureLevel.PAdES_BASELINE_LTA; break;
+            default: level=SignatureLevel.PAdES_BASELINE_LTA; break;
         }
         return level;
     }
 
     public SignatureLevel getXAdESLevel() {
-    	SignatureLevel level = SignatureLevel.XAdES_BASELINE_LTA;
+        SignatureLevel level = SignatureLevel.XAdES_BASELINE_LTA;
         switch (xadesLevel) {
-	        case "T": level=SignatureLevel.XAdES_BASELINE_T; break;
-	        case "LT": level=SignatureLevel.XAdES_BASELINE_LT; break;
-	        case "LTA": level=SignatureLevel.XAdES_BASELINE_LTA; break;
-	        default: level=SignatureLevel.XAdES_BASELINE_LTA; break;
+            case "T": level=SignatureLevel.XAdES_BASELINE_T; break;
+            case "LT": level=SignatureLevel.XAdES_BASELINE_LT; break;
+            case "LTA": level=SignatureLevel.XAdES_BASELINE_LTA; break;
+            default: level=SignatureLevel.XAdES_BASELINE_LTA; break;
         }
         return level;
     }
     public SignatureLevel getCAdESLevel() {
-    	SignatureLevel level = SignatureLevel.CAdES_BASELINE_LTA;
+        SignatureLevel level = SignatureLevel.CAdES_BASELINE_LTA;
         switch (cadesLevel) {
-	        case "T": level=SignatureLevel.CAdES_BASELINE_T; break;
-	        case "LT": level=SignatureLevel.CAdES_BASELINE_LT; break;
-	        case "LTA": level=SignatureLevel.CAdES_BASELINE_LTA; break;
-	        default: level=SignatureLevel.CAdES_BASELINE_LTA; break;
+            case "T": level=SignatureLevel.CAdES_BASELINE_T; break;
+            case "LT": level=SignatureLevel.CAdES_BASELINE_LT; break;
+            case "LTA": level=SignatureLevel.CAdES_BASELINE_LTA; break;
+            default: level=SignatureLevel.CAdES_BASELINE_LTA; break;
         }
         return level;
     }
 
     public String getVersion() {
-    	String versionstr = getClass().getPackage().getSpecificationVersion();
-    	if(versionstr == null) versionstr=this.defaultdevelopmentversion;
-    	return versionstr;
+        String versionstr = getClass().getPackage().getSpecificationVersion();
+        if(versionstr == null) versionstr=this.defaultdevelopmentversion;
+        return versionstr;
 
     }
 
     public String getReleaseUrl() {
-    	String version = getVersion();
-    	if(version.contains("SNAPSHOT")) {
-    		return this.release_snapshot_url;
-    	}
-    	return this.release_url;
+        String version = getVersion();
+        if(version.contains("SNAPSHOT")) {
+            return this.release_snapshot_url;
+        }
+        return this.release_url;
     }
     public String getReleaseCheckUrl() {
-    	String version = getVersion();
-    	if(version.contains("SNAPSHOT")) {
-    		return "";
-    	}
-    	return this.release_url_check;
+        String version = getVersion();
+        if(version.contains("SNAPSHOT")) {
+            return "";
+        }
+        return this.release_url_check;
     }
     public String getChecksumUrl() {
-    	String version = getVersion();
-    	if(version.contains("SNAPSHOT")) {
-    		return this.checksum_snapshot_url;
-    	}
-    	return this.checksum_url;
+        String version = getVersion();
+        if(version.contains("SNAPSHOT")) {
+            return this.checksum_snapshot_url;
+        }
+        return this.checksum_url;
     }
 
 }
