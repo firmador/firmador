@@ -115,17 +115,21 @@ public class GUIShell implements GUIInterface {
         Console console = System.console();
         char[] password = null;
         if (console != null) password = console.readPassword("PIN: ");
-        else password = readFromInput("PIN: ").toCharArray();
+        else {
+            password = new char[128];
+            //password = readFromInput("PIN: ").toCharArray();
+            System.out.print("PIN: ");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            try {
+                while (reader.read(password, 0, password.length) != -1);
+                reader.close();
+            } catch (IOException e) {
+                showError(Throwables.getRootCause(e));
+            }
+        }
         PasswordProtection pin = new PasswordProtection(password);
         Arrays.fill(password, '\0');
-        CardSignInfo card = new CardSignInfo(pin);
-        try {
-            pin.destroy();
-        } catch (Exception e) {
-            System.err.println("Error destruyendo el pin:");
-            showError(Throwables.getRootCause(e));
-        }
-        return card;
+        return new CardSignInfo(pin);
     }
 
     @Override
