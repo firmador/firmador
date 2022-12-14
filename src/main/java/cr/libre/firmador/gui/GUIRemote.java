@@ -126,11 +126,6 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
 	}
 
 	@Override
-	public int getSlot() {
-		return 0;
-	}
-
-	@Override
 	public String getDocumentToSign() {
 		return null;
 	}

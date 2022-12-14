@@ -331,12 +331,6 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 		Thread.yield();
 	}
 
-	@Override
-	public int getSlot() {
-		return -1;
-	}
-
-
 	public void displayFunctionality(String functionality) {
 		if (functionality.equalsIgnoreCase("sign")) {
 			frameTabbedPane.setSelectedIndex(0);

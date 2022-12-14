@@ -135,11 +135,6 @@ public class GUIArgs implements GUIInterface {
          System.out.println(message);
     }
 
-    @Override
-    public int getSlot() {
-        return slot;
-    }
-
 
 	@Override
 	public void setPluginManager(PluginManager pluginManager) {

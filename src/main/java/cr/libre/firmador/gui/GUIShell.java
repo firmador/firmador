@@ -133,12 +133,6 @@ public class GUIShell implements GUIInterface {
          System.out.println(message);
     }
 
-    @Override
-    public int getSlot() {
-        return -1;
-    }
-
-
 	@Override
 	public void setPluginManager(PluginManager pluginManager) {
 		pluginManager.startLogging();
