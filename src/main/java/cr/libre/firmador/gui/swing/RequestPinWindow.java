@@ -171,9 +171,8 @@ public class RequestPinWindow extends JFrame {
 			action = JOptionPane.showConfirmDialog(null, contentPane, "Ingresar PIN", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if(action==JOptionPane.OK_OPTION) {
 				if (pinField.getPassword().length > 0 && this.card != null) {
-					PasswordProtection password = new PasswordProtection(pinField.getPassword());
+					this.card.setPin(new PasswordProtection(pinField.getPassword())); // PasswordProtection is passed as reference, password.destroy() would remove the referred in card variable
 					pinField.setText(""); // However, https://stackoverflow.com/a/36828836
-					this.card.setPin(password); // PasswordProtection is passed as reference, password.destroy() would remove the referred in card variable
 					ok=true;
 				}else {
 					JOptionPane.showMessageDialog(null, "Debe seleccionar una tarjeta y un pin", "Ocurrió un error procesando su solicitud", JOptionPane.WARNING_MESSAGE);
