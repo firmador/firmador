@@ -37,7 +37,7 @@ public class CardSignInfo {
 	//private String certSerialNumber;
 	// On pkcs12 use tokenSerialNumber to store pkcs12 file path
 	private String tokenSerialNumber;
-	private long slotID;
+	private long slotID = -1;
 	private PasswordProtection pin;
 	private int cardType;
 
@@ -89,8 +89,8 @@ public class CardSignInfo {
 		this.tokenSerialNumber = tokenSerialNumber;
 	}
 
-	public long getSlotID() {
-		return slotID;
+	public int getSlotID() {
+		return (int) slotID;
 	}
 
 	public void setSlotID(long slotID) {

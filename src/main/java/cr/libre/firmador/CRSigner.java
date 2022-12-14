@@ -119,7 +119,7 @@ public class CRSigner {
         		signingToken = new Pkcs12SignatureToken(card.getTokenSerialNumber(), card.getPin());
         	}else {
         		//PrefilledPasswordCallback pinCallback = new PrefilledPasswordCallback(card.getPin());
-        		signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), card.getPin(), (int)card.getSlotID());
+		        signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), card.getPin(), card.getSlotID());
         	}
         } catch (Exception|Error e) {
 			LOG.error("Error al obtener la conexión de firma", e);
