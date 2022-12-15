@@ -117,14 +117,23 @@ public class GUIArgs implements GUIInterface {
     }
 
     public CardSignInfo getPin() {
-        char[] password = new char[128];
+        char[] password = null;
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        char[] input = new char[128];
         try {
-            while (reader.read(password, 0, password.length) != -1);
+            while (reader.read(input, 0, input.length) != -1);
             reader.close();
         } catch (IOException e) {
             showError(Throwables.getRootCause(e));
         }
+        int passwordLength = 0;
+        for (char character: input) {
+            if (character == '\0' || character == '\r' || character == '\n') break;
+            passwordLength++;
+        }
+        password = new char[passwordLength];
+        for (int i = 0; i < passwordLength; i++) password[i] = input[i];
+        Arrays.fill(input, '\0');
         PasswordProtection pin = new PasswordProtection(password);
         Arrays.fill(password, '\0');
         return new CardSignInfo(pin);
