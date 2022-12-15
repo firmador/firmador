@@ -29,10 +29,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -254,20 +256,31 @@ public class SignPanel extends JPanel implements ConfigListener{
         String table;
 
         if(previewimg != null) {
+            BufferedImage bufferedImage = null;
+            try {
+                bufferedImage = ImageIO.read(new URL(previewimg));
+            } catch (Exception e) {
+                LOG.error("Error cargando imagen", e);
+                e.printStackTrace();
+                gui.showError(Throwables.getRootCause(e));
+            }
+            int previewimgWidth = Math.round((float) bufferedImage.getWidth() * settings.pdfImgScaleFactor / 4);
+            int previewimgHeight = Math.round((float) bufferedImage.getHeight() * settings.pdfImgScaleFactor / 4);
+            System.out.println("Imagen: " + bufferedImage.getWidth() + "x" + bufferedImage.getHeight() + " (" + previewimgWidth + "x" + previewimgHeight + ")");
 
             table = "<table cellpadding=0 cellspacing=0 border=0>";
             if(settings.fontalignment.contains("BOTTOM")) {
-                table += "<tr><td><img src=\""+settings.getImage()+"\"></td></tr>";
+                table += "<tr><td><img src=\""+settings.getImage()+"\" width=\""+previewimgWidth+"\" height=\""+previewimgHeight+"\"></td></tr>";
                 table += "<tr><td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
             }
             else if(settings.fontalignment.contains("LEFT")) {
                 table += "<tr><td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td>";
-                table += "<td><img src=\""+settings.getImage()+"\"></td></tr>";
+                table += "<td><img src=\""+settings.getImage()+"\" width=\""+previewimgWidth+"\" height=\""+previewimgHeight+"\"></td></tr>";
             }else if(settings.fontalignment.contains("TOP")) {
                 table += "<tr><td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
-                table += "<tr><td><img src=\""+settings.getImage()+"\"></td></tr>";
+                table += "<tr><td><img src=\""+settings.getImage()+"\" width=\""+previewimgWidth+"\" height=\""+previewimgHeight+"\"></td></tr>";
             }else {
-                table += "<tr><td><img src=\""+settings.getImage()+"\"></td>";
+                table += "<tr><td><img src=\""+settings.getImage()+"\" width=\""+previewimgWidth+"\" height=\""+previewimgHeight+"\"></td>";
                 table += "<td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
             }
             table += "</table>";
