@@ -24,6 +24,7 @@ import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
+import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,8 +49,8 @@ public class GUIShell implements GUIInterface {
 
     //private Settings settings;
 
-	public void loadGUI() {
-    	//settings = SettingsManager.getInstance().get_and_create_settings();
+    public void loadGUI() {
+        //settings = SettingsManager.getInstance().getAndCreateSettings();
         String fileName = getDocumentToSign();
         if (fileName != null) {
             // FirmadorCAdES firmador = new FirmadorCAdES(this);
@@ -114,10 +115,28 @@ public class GUIShell implements GUIInterface {
         Console console = System.console();
         char[] password = null;
         if (console != null) password = console.readPassword("PIN: ");
-        else password = readFromInput("PIN: ").toCharArray();
-        CardSignInfo card = new CardSignInfo(password);
-        Arrays.fill(password, (char) 0);
-        return card;
+        else {
+            System.out.print("PIN: ");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            char[] input = new char[128];
+            try {
+                while (reader.read(input, 0, input.length) != -1);
+                reader.close();
+            } catch (IOException e) {
+                showError(Throwables.getRootCause(e));
+            }
+            int passwordLength = 0;
+            for (char character: input) {
+                if (character == '\0' || character == '\r' || character == '\n') break;
+                passwordLength++;
+            }
+            password = new char[passwordLength];
+            for (int i = 0; i < passwordLength; i++) password[i] = input[i];
+            Arrays.fill(input, '\0');
+        }
+        PasswordProtection pin = new PasswordProtection(password);
+        Arrays.fill(password, '\0');
+        return new CardSignInfo(pin);
     }
 
     @Override
@@ -126,48 +145,42 @@ public class GUIShell implements GUIInterface {
     }
 
     @Override
-    public int getSlot() {
-        return -1;
+    public void setPluginManager(PluginManager pluginManager) {
+        pluginManager.startLogging();
     }
 
+    @Override
+    public void loadDocument(String fileName) {
+    }
 
-	@Override
-	public void setPluginManager(PluginManager pluginManager) {
-		pluginManager.start_loggin();
-	}
+    @Override
+    public void loadDocument(MimeType mimeType, PDDocument doc) {
+    }
 
-	@Override
-	public void loadDocument(String fileName) {
-	}
+    @Override
+    public void extendDocument() {
+    }
 
-	@Override
-	public void loadDocument(MimeType mimeType, PDDocument doc) {
-	}
+    @Override
+    public String getPathToSaveExtended(String extension) {
+        return null;
+    }
 
-	@Override
-	public void extendDocument() {
-	}
+    @Override
+    public boolean signDocuments() {
+        return false;
+    }
 
-	@Override
-	public String getPathToSaveExtended(String extension) {
-		return null;
-	}
+    @Override
+    public void displayFunctionality(String functionality) {
+        System.out.println(functionality);
 
-	@Override
-	public boolean signDocuments() {
-		return false;
-	}
+    }
 
-	@Override
-	public void displayFunctionality(String functionality) {
-		System.out.println(functionality);
+    @Override
+    public void nextStep(String msg) {
+        System.out.println(msg);
 
-	}
-
-	@Override
-	public void nextStep(String msg) {
-		System.out.println(msg);
-
-	}
+    }
 
 }

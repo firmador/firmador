@@ -22,7 +22,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -66,32 +65,32 @@ import cr.libre.firmador.gui.GUIInterface;
 
 
 public class SignPanel extends JPanel implements ConfigListener{
-	private static final long serialVersionUID = 945116850482545687L;
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SignPanel.class);
+    private static final long serialVersionUID = 945116850482545687L;
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SignPanel.class);
 
-	private JScrollPane imgScroll;
-	private ScrollableJPanel imagePanel;
-	private JLabel imageLabel;
-	private JLabel signatureLabel;
-	private JCheckBox signatureVisibleCheckBox;
-	private JLabel reasonLabel;
-	private JLabel locationLabel;
-	private JLabel contactInfoLabel;
-	private JTextField reasonField;
-	private JTextField locationField;
-	private JTextField contactInfoField;
-	private JLabel pageLabel;
-	private JSpinner pageSpinner;
-	private JLabel AdESFormatLabel;
-	private ButtonGroup AdESFormatButtonGroup;
-	private JRadioButton CAdESButton;
-	private JRadioButton XAdESButton;
-	private JButton signButton;
-	private JLabel AdESLevelLabel;
-	private JRadioButton levelTButton;
-	private JRadioButton levelLTButton;
-	private JRadioButton levelLTAButton;
-	private ButtonGroup AdESLevelButtonGroup;
+    private JScrollPane imgScroll;
+    private ScrollableJPanel imagePanel;
+    private JLabel imageLabel;
+    private JLabel signatureLabel;
+    private JCheckBox signatureVisibleCheckBox;
+    private JLabel reasonLabel;
+    private JLabel locationLabel;
+    private JLabel contactInfoLabel;
+    private JTextField reasonField;
+    private JTextField locationField;
+    private JTextField contactInfoField;
+    private JLabel pageLabel;
+    private JSpinner pageSpinner;
+    private JLabel AdESFormatLabel;
+    private ButtonGroup AdESFormatButtonGroup;
+    private JRadioButton CAdESButton;
+    private JRadioButton XAdESButton;
+    private JButton signButton;
+    private JLabel AdESLevelLabel;
+    private JRadioButton levelTButton;
+    private JRadioButton levelLTButton;
+    private JRadioButton levelLTAButton;
+    private ButtonGroup AdESLevelButtonGroup;
     protected Settings settings;
     private PDDocument doc;
     public BufferedImage pageImage;
@@ -99,35 +98,35 @@ public class SignPanel extends JPanel implements ConfigListener{
     public GUIInterface gui;
 
     public void setGUI(GUIInterface gui) {
-    	this.gui=gui;
+        this.gui=gui;
     }
 
     public PDFRenderer getRender(PDDocument doc) {
-    	renderer = new PDFRenderer(doc);
-    	return renderer;
+        renderer = new PDFRenderer(doc);
+        return renderer;
     }
 
     public void setDoc(PDDocument doc){
-    	this.doc = doc;
+        this.doc = doc;
 
     }
 
-	public JScrollPane getImageScrollPane(ScrollableJPanel panel) {
-		JScrollPane imgScrollPane = new JScrollPane();
-		imgScrollPane.setPreferredSize(new Dimension(100, 200));
-		imgScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		imgScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		imgScrollPane.setBorder(null);
-		imgScrollPane.setViewportView(panel);
-		imgScrollPane.setOpaque(false);
-		imgScrollPane.getViewport().setOpaque(false);
-		imgScrollPane.setVisible(true);
-		return imgScrollPane;
-	}
+    public JScrollPane getImageScrollPane(ScrollableJPanel panel) {
+        JScrollPane imgScrollPane = new JScrollPane();
+        imgScrollPane.setPreferredSize(new Dimension(100, 200));
+        imgScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        imgScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        imgScrollPane.setBorder(null);
+        imgScrollPane.setViewportView(panel);
+        imgScrollPane.setOpaque(false);
+        imgScrollPane.getViewport().setOpaque(false);
+        imgScrollPane.setVisible(true);
+        return imgScrollPane;
+    }
 
-	public SignPanel(){
-		super();
-		settings = SettingsManager.getInstance().get_and_create_settings();
+    public SignPanel(){
+        super();
+        settings = SettingsManager.getInstance().getAndCreateSettings();
         signatureVisibleCheckBox = new JCheckBox(" Sin firma visible", settings.withoutvisiblesign);
         signatureVisibleCheckBox.setToolTipText("<html>Marque esta casilla si no desea representar visualmente una firma<br>en una página del documento a la hora de firmarlo.</html>");
         signatureVisibleCheckBox.setOpaque(false);
@@ -204,100 +203,100 @@ public class SignPanel extends JPanel implements ConfigListener{
         this.setOpaque(false);
 
         //initializeActions();
-	}
+    }
 
 
-	public Rectangle calculateSignatureRectangle() {
-		Rectangle reg = new Rectangle(getPDFVisibleSignatureX(),
-				                      getPDFVisibleSignatureY(),
-				                      signatureLabel.getWidth(),
-				                      signatureLabel.getHeight());
+    public Rectangle calculateSignatureRectangle() {
+        Rectangle reg = new Rectangle(getPDFVisibleSignatureX(),
+                                      getPDFVisibleSignatureY(),
+                                      signatureLabel.getWidth(),
+                                      signatureLabel.getHeight());
 
-		return reg;
+        return reg;
 
-	}
+    }
 
-	public int getPDFVisibleSignatureX() {
+    public int getPDFVisibleSignatureX() {
         return (int)((float)signatureLabel.getLocation().x / settings.pdfImgScaleFactor);
-	}
+    }
 
-	public int getPDFVisibleSignatureY() {
+    public int getPDFVisibleSignatureY() {
         return (int)((float)signatureLabel.getLocation().y / settings.pdfImgScaleFactor);
-	}
+    }
 
-	public void paintPDFViewer() {
-		int page = (int)pageSpinner.getValue();
+    public void paintPDFViewer() {
+        int page = (int)pageSpinner.getValue();
         if (page > 0) {
-        	renderPDFViewer(page - 1);
-        	//setMinimumSize(getSize());
+            renderPDFViewer(page - 1);
+            //setMinimumSize(getSize());
 
 
         }
-	}
+    }
 
-	public void renderPDFViewer(int page) {
-	  try {
-		pageImage = renderer.renderImage(page, settings.pdfImgScaleFactor);
-		imageLabel.setSize(pageImage.getWidth(), pageImage.getHeight());
-    	imageLabel.setIcon(new ImageIcon(pageImage));
-	  } catch (Exception ex) {
-      	LOG.error("Error cambiando cambiando página", ex);
+    public void renderPDFViewer(int page) {
+      try {
+        pageImage = renderer.renderImage(page, settings.pdfImgScaleFactor);
+        imageLabel.setSize(pageImage.getWidth(), pageImage.getHeight());
+        imageLabel.setIcon(new ImageIcon(pageImage));
+      } catch (Exception ex) {
+          LOG.error("Error cambiando cambiando página", ex);
           ex.printStackTrace();
           gui.showError(Throwables.getRootCause(ex));
       }
-	  previewSignLabel();
-	}
+      previewSignLabel();
+    }
 
 
 
-	public void previewSignLabel() {
-		String previewimg = settings.getImage();
-		String table;
+    public void previewSignLabel() {
+        String previewimg = settings.getImage();
+        String table;
 
-		if(previewimg != null) {
+        if(previewimg != null) {
 
-			table = "<table cellpadding=0 cellspacing=0 border=0>";
-			if(settings.fontalignment.contains("BOTTOM")) {
-				table += "<tr><td><img src=\""+settings.getImage()+"\"></td></tr>";
-				table += "<tr><td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
-			}
-			else if(settings.fontalignment.contains("LEFT")) {
-				table += "<tr><td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td>";
-				table += "<td><img src=\""+settings.getImage()+"\"></td></tr>";
-			}else if(settings.fontalignment.contains("TOP")) {
-				table += "<tr><td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
-				table += "<tr><td><img src=\""+settings.getImage()+"\"></td></tr>";
-			}else {
-				table += "<tr><td><img src=\""+settings.getImage()+"\"></td>";
-				table += "<td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
-			}
-			table += "</table>";
-		}else {
-			table ="<span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span>";
-		}
+            table = "<table cellpadding=0 cellspacing=0 border=0>";
+            if(settings.fontalignment.contains("BOTTOM")) {
+                table += "<tr><td><img src=\""+settings.getImage()+"\"></td></tr>";
+                table += "<tr><td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
+            }
+            else if(settings.fontalignment.contains("LEFT")) {
+                table += "<tr><td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td>";
+                table += "<td><img src=\""+settings.getImage()+"\"></td></tr>";
+            }else if(settings.fontalignment.contains("TOP")) {
+                table += "<tr><td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
+                table += "<tr><td><img src=\""+settings.getImage()+"\"></td></tr>";
+            }else {
+                table += "<tr><td><img src=\""+settings.getImage()+"\"></td>";
+                table += "<td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
+            }
+            table += "</table>";
+        }else {
+            table ="<span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span>";
+        }
         signatureLabel.setFont(new Font(settings.getFontName(settings.font, false), settings.getFontStyle(settings.font), settings.fontsize));
-    	signatureLabel.setText("<html>"+table+"</html>");
-   	    signatureLabel.setForeground(new Color(0, 0, 0, 0));
+        signatureLabel.setText("<html>"+table+"</html>");
+           signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
         signatureLabel.setSize(signatureLabel.getPreferredSize());
 
-	}
+    }
 
-	public void initializeActions(){
+    public void initializeActions(){
         imageLabel.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 signatureLabel.setLocation(e.getX() - signatureLabel.getWidth() / 2, e.getY() - signatureLabel.getHeight() / 2);
             }
         });
         imageLabel.addMouseListener(new MouseAdapter() {
-        	public void mouseClicked(MouseEvent evt) {
-        		if(evt.getClickCount()==3) {
-        			previewSignLabel();
-        	    }else if (evt.getClickCount() == 2) {
-        	    	 signatureLabel.setLocation(evt.getX() - signatureLabel.getWidth() / 2, evt.getY() - signatureLabel.getHeight() / 2);
-        	    }
-        	}
+            public void mouseClicked(MouseEvent evt) {
+                if(evt.getClickCount()==3) {
+                    previewSignLabel();
+                }else if (evt.getClickCount() == 2) {
+                     signatureLabel.setLocation(evt.getX() - signatureLabel.getWidth() / 2, evt.getY() - signatureLabel.getHeight() / 2);
+                }
+            }
         });
 
         pageSpinner.addChangeListener(new ChangeListener() {
@@ -308,14 +307,14 @@ public class SignPanel extends JPanel implements ConfigListener{
 
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-				/*boolean ok =*/ gui.signDocuments();
+                /*boolean ok =*/ gui.signDocuments();
             }
         });
 
 
-	}
+    }
 
-	public void signLayout(GroupLayout signLayout, JPanel signPanel) {
+    public void signLayout(GroupLayout signLayout, JPanel signPanel) {
         this.setLayout(signLayout);
         signLayout.setAutoCreateGaps(true);
         signLayout.setAutoCreateContainerGaps(true);
@@ -371,9 +370,9 @@ public class SignPanel extends JPanel implements ConfigListener{
                         .addComponent(levelLTButton)
                         .addComponent(levelLTAButton))
                     .addComponent(signButton)));
-	}
+    }
 
-	public void hideButtons() {
+    public void hideButtons() {
         signButton.setEnabled(false);
         pageLabel.setVisible(false);
         pageSpinner.setVisible(false);
@@ -392,10 +391,10 @@ public class SignPanel extends JPanel implements ConfigListener{
         levelLTButton.setVisible(false);
         levelLTAButton.setVisible(false);
 
-	}
+    }
 
-	public void showSignButtons() {
-		imagePanel.setVisible(true);
+    public void showSignButtons() {
+        imagePanel.setVisible(true);
         imageLabel.setVisible(true);
         pageLabel.setVisible(true);
         pageSpinner.setVisible(true);
@@ -413,10 +412,10 @@ public class SignPanel extends JPanel implements ConfigListener{
         levelLTButton.setVisible(true);
         levelLTAButton.setVisible(true);
 */
-	}
+    }
 
-	public void shownonPDFButtons() {
-		 AdESFormatLabel.setVisible(true);
+    public void shownonPDFButtons() {
+         AdESFormatLabel.setVisible(true);
          CAdESButton.setVisible(true);
          XAdESButton.setVisible(true);
          AdESLevelLabel.setVisible(false);
@@ -424,11 +423,11 @@ public class SignPanel extends JPanel implements ConfigListener{
          levelLTButton.setVisible(false);
          levelLTAButton.setVisible(false);
          signButton.setEnabled(true);
-	}
+    }
 
-	public void docHideButtons() {
-		 imagePanel.setVisible(false);
-		 imageLabel.setVisible(false);
+    public void docHideButtons() {
+         imagePanel.setVisible(false);
+         imageLabel.setVisible(false);
          pageLabel.setVisible(false);
          pageSpinner.setVisible(false);
          signatureVisibleCheckBox.setVisible(false);
@@ -445,7 +444,7 @@ public class SignPanel extends JPanel implements ConfigListener{
          levelTButton.setVisible(false);
          levelLTButton.setVisible(false);
          levelLTAButton.setVisible(false);
-	}
+    }
 
     public void updateConfig() {
         signatureVisibleCheckBox.setSelected(settings.withoutvisiblesign);
@@ -465,152 +464,152 @@ public class SignPanel extends JPanel implements ConfigListener{
                 paintPDFViewer();
             }
         } catch (Exception e) {
-        	LOG.error("Error actualizando configuración", e);
+            LOG.error("Error actualizando configuración", e);
             pageSpinner.setValue(0);
         }
     }
 
-	public JCheckBox getSignatureVisibleCheckBox() {
-		return signatureVisibleCheckBox;
-	}
+    public JCheckBox getSignatureVisibleCheckBox() {
+        return signatureVisibleCheckBox;
+    }
 
-	public void setSignatureVisibleCheckBox(JCheckBox signatureVisibleCheckBox) {
-		this.signatureVisibleCheckBox = signatureVisibleCheckBox;
-	}
+    public void setSignatureVisibleCheckBox(JCheckBox signatureVisibleCheckBox) {
+        this.signatureVisibleCheckBox = signatureVisibleCheckBox;
+    }
 
-	public JTextField getReasonField() {
-		return reasonField;
-	}
+    public JTextField getReasonField() {
+        return reasonField;
+    }
 
-	public void setReasonField(JTextField reasonField) {
-		this.reasonField = reasonField;
-	}
+    public void setReasonField(JTextField reasonField) {
+        this.reasonField = reasonField;
+    }
 
-	public JTextField getLocationField() {
-		return locationField;
-	}
+    public JTextField getLocationField() {
+        return locationField;
+    }
 
-	public void setLocationField(JTextField locationField) {
-		this.locationField = locationField;
-	}
+    public void setLocationField(JTextField locationField) {
+        this.locationField = locationField;
+    }
 
-	public JTextField getContactInfoField() {
-		return contactInfoField;
-	}
+    public JTextField getContactInfoField() {
+        return contactInfoField;
+    }
 
-	public void setContactInfoField(JTextField contactInfoField) {
-		this.contactInfoField = contactInfoField;
-	}
+    public void setContactInfoField(JTextField contactInfoField) {
+        this.contactInfoField = contactInfoField;
+    }
 
-	public JSpinner getPageSpinner() {
-		return pageSpinner;
-	}
+    public JSpinner getPageSpinner() {
+        return pageSpinner;
+    }
 
-	public void setPageSpinner(JSpinner pageSpinner) {
-		this.pageSpinner = pageSpinner;
-	}
+    public void setPageSpinner(JSpinner pageSpinner) {
+        this.pageSpinner = pageSpinner;
+    }
 
-	public JRadioButton getXAdESButton() {
-		return XAdESButton;
-	}
+    public JRadioButton getXAdESButton() {
+        return XAdESButton;
+    }
 
-	public void setXAdESButton(JRadioButton xAdESButton) {
-		XAdESButton = xAdESButton;
-	}
+    public void setXAdESButton(JRadioButton xAdESButton) {
+        XAdESButton = xAdESButton;
+    }
 
-	public JButton getSignButton() {
-		return signButton;
-	}
+    public JButton getSignButton() {
+        return signButton;
+    }
 
-	public void setSignButton(JButton signButton) {
-		this.signButton = signButton;
-	}
+    public void setSignButton(JButton signButton) {
+        this.signButton = signButton;
+    }
 
-	public JRadioButton getLevelTButton() {
-		return levelTButton;
-	}
+    public JRadioButton getLevelTButton() {
+        return levelTButton;
+    }
 
-	public void setLevelTButton(JRadioButton levelTButton) {
-		this.levelTButton = levelTButton;
-	}
+    public void setLevelTButton(JRadioButton levelTButton) {
+        this.levelTButton = levelTButton;
+    }
 
-	public JRadioButton getLevelLTButton() {
-		return levelLTButton;
-	}
+    public JRadioButton getLevelLTButton() {
+        return levelLTButton;
+    }
 
-	public void setLevelLTButton(JRadioButton levelLTButton) {
-		this.levelLTButton = levelLTButton;
-	}
+    public void setLevelLTButton(JRadioButton levelLTButton) {
+        this.levelLTButton = levelLTButton;
+    }
 
-	public JRadioButton getLevelLTAButton() {
-		return levelLTAButton;
-	}
+    public JRadioButton getLevelLTAButton() {
+        return levelLTAButton;
+    }
 
-	public void setLevelLTAButton(JRadioButton levelLTAButton) {
-		this.levelLTAButton = levelLTAButton;
-	}
+    public void setLevelLTAButton(JRadioButton levelLTAButton) {
+        this.levelLTAButton = levelLTAButton;
+    }
 
-	public BufferedImage getPageImage() {
-		return pageImage;
-	}
+    public BufferedImage getPageImage() {
+        return pageImage;
+    }
 
-	public void setPageImage(BufferedImage pageImage) {
-		this.pageImage = pageImage;
-	}
+    public void setPageImage(BufferedImage pageImage) {
+        this.pageImage = pageImage;
+    }
 
-	public PDFRenderer getRenderer() {
-		return renderer;
-	}
+    public PDFRenderer getRenderer() {
+        return renderer;
+    }
 
-	public void setRenderer(PDFRenderer renderer) {
-		this.renderer = renderer;
-	}
+    public void setRenderer(PDFRenderer renderer) {
+        this.renderer = renderer;
+    }
 
-	public JLabel getImageLabel() {
-		return imageLabel;
-	}
+    public JLabel getImageLabel() {
+        return imageLabel;
+    }
 
-	public void setImageLabel(JLabel imageLabel) {
-		this.imageLabel = imageLabel;
-	}
+    public void setImageLabel(JLabel imageLabel) {
+        this.imageLabel = imageLabel;
+    }
 
-	public JLabel getSignatureLabel() {
-		return signatureLabel;
-	}
+    public JLabel getSignatureLabel() {
+        return signatureLabel;
+    }
 
-	public void setSignatureLabel(JLabel signatureLabel) {
-		this.signatureLabel = signatureLabel;
-	}
+    public void setSignatureLabel(JLabel signatureLabel) {
+        this.signatureLabel = signatureLabel;
+    }
 
-	public ButtonGroup getAdESLevelButtonGroup() {
-		return AdESLevelButtonGroup;
-	}
+    public ButtonGroup getAdESLevelButtonGroup() {
+        return AdESLevelButtonGroup;
+    }
 
-	public void setAdESLevelButtonGroup(ButtonGroup adESLevelButtonGroup) {
-		AdESLevelButtonGroup = adESLevelButtonGroup;
-	}
+    public void setAdESLevelButtonGroup(ButtonGroup adESLevelButtonGroup) {
+        AdESLevelButtonGroup = adESLevelButtonGroup;
+    }
 
-	public JLabel getAdESFormatLabel() {
-		return AdESFormatLabel;
-	}
+    public JLabel getAdESFormatLabel() {
+        return AdESFormatLabel;
+    }
 
-	public void setAdESFormatLabel(JLabel adESFormatLabel) {
-		AdESFormatLabel = adESFormatLabel;
-	}
+    public void setAdESFormatLabel(JLabel adESFormatLabel) {
+        AdESFormatLabel = adESFormatLabel;
+    }
 
-	public ButtonGroup getAdESFormatButtonGroup() {
-		return AdESFormatButtonGroup;
-	}
+    public ButtonGroup getAdESFormatButtonGroup() {
+        return AdESFormatButtonGroup;
+    }
 
-	public void setAdESFormatButtonGroup(ButtonGroup adESFormatButtonGroup) {
-		AdESFormatButtonGroup = adESFormatButtonGroup;
-	}
+    public void setAdESFormatButtonGroup(ButtonGroup adESFormatButtonGroup) {
+        AdESFormatButtonGroup = adESFormatButtonGroup;
+    }
 
-	public String getTextExample() {
-		//String dev="";
-		String reason = reasonField.getText();
-		String location = locationField.getText();
-		String contactInfo = contactInfoField.getText();
+    public String getTextExample() {
+        //String dev="";
+        String reason = reasonField.getText();
+        String location = locationField.getText();
+        String contactInfo = contactInfoField.getText();
         Boolean hasReason = false;
         Boolean hasLocation = false;
         Boolean hasContact = false;
@@ -618,11 +617,11 @@ public class SignPanel extends JPanel implements ConfigListener{
         String identification="XXX-XXXXXXXXXXXX";
         String organization="TIPO DE PERSONA";
         SmartCardDetector cardd = new SmartCardDetector();
-		List<CardSignInfo> cards = cardd.readSaveListSmartCard();
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(settings.dateformat);
-		LocalDateTime now = LocalDateTime.now();
+        List<CardSignInfo> cards = cardd.readSaveListSmartCard();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(settings.dateformat);
+        LocalDateTime now = LocalDateTime.now();
         if(!cards.isEmpty()) {
-        	CardSignInfo card = cards.get(0);
+            CardSignInfo card = cards.get(0);
             commonName = card.getCommonName();
             organization = card.getOrganization();
             identification = card.getIdentification();
@@ -637,7 +636,7 @@ public class SignPanel extends JPanel implements ConfigListener{
             additionalText += "Lugar: " + location;
         }
         if (contactInfo != null && !contactInfo .trim().isEmpty()) {
-        	hasContact=true;
+            hasContact=true;
             additionalText += "  Contacto: " + contactInfo;
         }
         if (!(hasReason || hasLocation ||hasContact )) {
@@ -647,5 +646,5 @@ public class SignPanel extends JPanel implements ConfigListener{
         additionalText = additionalText.replace("\n", "<br>");
 
         return additionalText;
-	}
+    }
 }

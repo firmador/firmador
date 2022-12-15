@@ -59,12 +59,12 @@ public class FirmadorXAdES extends CRSigner {
 
     //XAdESCounterSignatureParameters parameters; // Electronic receipts v4.4 proposal
     XAdESSignatureParameters parameters;
-	private Settings settings;
+    private Settings settings;
 
 
     public FirmadorXAdES(GUIInterface gui) {
         super(gui);
-        settings = SettingsManager.getInstance().get_and_create_settings();
+        settings = SettingsManager.getInstance().getAndCreateSettings();
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card) {

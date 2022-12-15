@@ -40,16 +40,16 @@ import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
 
 public class AboutLayout extends GroupLayout {
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(AboutLayout.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(AboutLayout.class);
 
     private GUIInterface swinginterface;
     private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
 
-	private Settings settings;
+    private Settings settings;
 
     public AboutLayout(Container host) {
         super(host);
-        settings = SettingsManager.getInstance().get_and_create_settings();
+        settings = SettingsManager.getInstance().getAndCreateSettings();
 
         JLabel iconLabel = new JLabel(new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
         JLabel descriptionLabel = new JLabel("<html><p align='center'><b>Firmador</b><br><br>" +
@@ -88,7 +88,7 @@ public class AboutLayout extends GroupLayout {
             try {
                 Desktop.getDesktop().browse(new URI(settings.base_url));
             } catch (Exception e) {
-            	LOG.error("Error abriendo url", e);
+                LOG.error("Error abriendo url", e);
                 this.swinginterface.showError(Throwables.getRootCause(e));
             }
         }

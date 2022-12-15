@@ -98,26 +98,26 @@ public class ConfigPanel extends ScrollableJPanel {
     private JCheckBox startserver;
     private JSpinner portnumber;
     private JComboBox<String> fontposition;
-	private JCheckBox showlogs;
-	private ScrollableJPanel simplePanel;
-	private ScrollableJPanel advancedPanel;
-	private boolean isadvancedoptions = false;
-	private JScrollPane configPanel;
+    private JCheckBox showlogs;
+    private ScrollableJPanel simplePanel;
+    private ScrollableJPanel advancedPanel;
+    private boolean isadvancedoptions = false;
+    private JScrollPane configPanel;
 
     private JComboBox<String> padesLevel;
     private JComboBox<String> xadesLevel;
     private JComboBox<String> cadesLevel;
-	private JTextField pkcs11moduletext;
-	private JButton btpkcs11module;
-	private Pkcs12ConfigPanel pkcs12panel;
-	private JPanel advancedbottomspace;
-	private PluginManagerPlugin pluginsactive;
-	private JTextField pdfImgScaleFactor;
+    private JTextField pkcs11moduletext;
+    private JButton btpkcs11module;
+    private Pkcs12ConfigPanel pkcs12panel;
+    private JPanel advancedbottomspace;
+    private PluginManagerPlugin pluginsactive;
+    private JTextField pdfImgScaleFactor;
 
-	private void createSimpleConfigPanel() {
-		simplePanel = new ScrollableJPanel();
-		simplePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		simplePanel.setLayout(new BoxLayout(simplePanel, 1));
+    private void createSimpleConfigPanel() {
+        simplePanel = new ScrollableJPanel();
+        simplePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        simplePanel.setLayout(new BoxLayout(simplePanel, 1));
         JPanel checkpanel = new JPanel();
         checkpanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
         checkpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -131,10 +131,10 @@ public class ConfigPanel extends ScrollableJPanel {
         checkpanel.add(uselta);
         checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
-		uselta.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent arg0) { changeLTA(); }
-		});
+        uselta.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent arg0) { changeLTA(); }
+        });
 
         showlogs = new JCheckBox("Ver bitácoras", this.settings.showlogs);
         checkpanel.add(showlogs);
@@ -228,7 +228,7 @@ public class ConfigPanel extends ScrollableJPanel {
                         btfontcolor.setIcon(getTransparentImageIcon());
                     }
                 } catch (Exception e) {
-                	LOG.error("Error cambiando color de fuente", e);
+                    LOG.error("Error cambiando color de fuente", e);
                 }
             }
 
@@ -279,7 +279,7 @@ public class ConfigPanel extends ScrollableJPanel {
                         btbackgroundcolor.setIcon(getTransparentImageIcon());
                     }
                 } catch (Exception e) {
-                	LOG.error("Error cambiando color de fondo", e);
+                    LOG.error("Error cambiando color de fondo", e);
 
                 }
             }
@@ -342,19 +342,19 @@ public class ConfigPanel extends ScrollableJPanel {
 
         btfontcolor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                show_fontcolor_picker();
+                showFontColorPicker();
             }
         });
 
         btbackgroundcolor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                show_backgroundcolor_picker();
+                showBackgroundColorPicker();
             }
         });
 
         btimage.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                show_image_picker();
+                showImagePicker();
             }
         });
         configPanel = new JScrollPane(simplePanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -366,23 +366,23 @@ public class ConfigPanel extends ScrollableJPanel {
         configPanel.getViewport().setOpaque(false);
 
         add(configPanel, BorderLayout.CENTER);
-	}
+    }
 
 
-	private void changeLTA() {
-		if(uselta.isSelected()){
-			padesLevel.setSelectedItem("LTA");
-			xadesLevel.setSelectedItem("LTA");
-			cadesLevel.setSelectedItem("LTA");
-		}
-	}
+    private void changeLTA() {
+        if(uselta.isSelected()){
+            padesLevel.setSelectedItem("LTA");
+            xadesLevel.setSelectedItem("LTA");
+            cadesLevel.setSelectedItem("LTA");
+        }
+    }
 
-	private void createAdvancedConfigPanel() {
-		advancedPanel = new ScrollableJPanel();
-		advancedPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		advancedPanel.setLayout(new BoxLayout(advancedPanel, 1));
+    private void createAdvancedConfigPanel() {
+        advancedPanel = new ScrollableJPanel();
+        advancedPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        advancedPanel.setLayout(new BoxLayout(advancedPanel, 1));
 
-		pdfImgScaleFactor = new JTextField();
+        pdfImgScaleFactor = new JTextField();
         pdfImgScaleFactor.setText(String.format("%.2f", this.settings.pdfImgScaleFactor));
         pdfImgScaleFactor.setToolTipText("Factor de escala al presentar la previsualización de la página de pdf");
 
@@ -421,7 +421,7 @@ public class ConfigPanel extends ScrollableJPanel {
         btpkcs11module = new JButton("Elegir");
         //btimage.setForeground(this.settings.getBackgroundColor());
         if(this.settings.extrapkcs11Lib != null ) {
-        	pkcs11moduletext.setText(this.settings.extrapkcs11Lib);
+            pkcs11moduletext.setText(this.settings.extrapkcs11Lib);
 
         }
         pkcs11modulepanel.add(pkcs11moduletext);
@@ -430,7 +430,7 @@ public class ConfigPanel extends ScrollableJPanel {
             public void actionPerformed(ActionEvent arg0) {
                 String path = getFilePath();
                 if(path != null) {
-                	pkcs11moduletext.setText(path);
+                    pkcs11moduletext.setText(path);
                 }
             }
         });
@@ -444,10 +444,10 @@ public class ConfigPanel extends ScrollableJPanel {
         advancedPanel.add(advancedbottomspace);
         changeLTA();
 
-	}
+    }
     public ConfigPanel() {
         manager = SettingsManager.getInstance();
-        settings = manager.get_and_create_settings();
+        settings = manager.getAndCreateSettings();
         setLayout(new BorderLayout(0, 0));
 
         //JLabel lblValoresPorDefecto = new JLabel("Valores por defecto");
@@ -466,20 +466,20 @@ public class ConfigPanel extends ScrollableJPanel {
 
         showadvanced.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-            	isadvancedoptions = !isadvancedoptions;
-            	if(isadvancedoptions) {
-            		showadvanced.setText("Opciones básicas");
-            		//configPanel.getViewport().setVisible(false);
-            		configPanel.setViewportView(advancedPanel);
-            		simplePanel.setVisible(false);
-            		advancedPanel.setVisible(true);
-            	}else {
-            		showadvanced.setText("Opciones Avanzadas");
-            		//configPanel.getViewport().setVisible(true);
-            		configPanel.setViewportView(simplePanel);
-              		advancedPanel.setVisible(false);
-            		simplePanel.setVisible(true);
-            	}
+                isadvancedoptions = !isadvancedoptions;
+                if(isadvancedoptions) {
+                    showadvanced.setText("Opciones básicas");
+                    //configPanel.getViewport().setVisible(false);
+                    configPanel.setViewportView(advancedPanel);
+                    simplePanel.setVisible(false);
+                    advancedPanel.setVisible(true);
+                }else {
+                    showadvanced.setText("Opciones Avanzadas");
+                    //configPanel.getViewport().setVisible(true);
+                    configPanel.setViewportView(simplePanel);
+                      advancedPanel.setVisible(false);
+                    simplePanel.setVisible(true);
+                }
             }
         });
 
@@ -489,7 +489,7 @@ public class ConfigPanel extends ScrollableJPanel {
         JButton restartbtn = new JButton("Reiniciar");
         restartbtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                restart_settings();
+                restartSettings();
             }
         });
         btns.add(restartbtn);
@@ -497,7 +497,7 @@ public class ConfigPanel extends ScrollableJPanel {
         JButton applywithoutsave = new JButton("Aplicar sin guardar");
         applywithoutsave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                charge_settings();
+                chargeSettings();
                 if(startserver.isSelected()) {
                     showMessage("Modo remoto no se activará, debe guardar y reiniciar la aplicación.");
                 }
@@ -508,7 +508,7 @@ public class ConfigPanel extends ScrollableJPanel {
         JButton btsave = new JButton("Guardar");
         btsave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                save_settings();
+                saveSettings();
                 if(startserver.isSelected()) {
                     showMessage("El Modo remoto se iniciará al reinicio de la aplicación, puede desactivarlo con el menú contextual obtenido con clic derecho.");
                 }
@@ -533,7 +533,7 @@ public class ConfigPanel extends ScrollableJPanel {
         item.setPreferredSize(d);
         return label;
     }
-    public void charge_settings() {
+    public void chargeSettings() {
         settings.withoutvisiblesign = this.withoutvisiblesign.isSelected();
         settings.reason = reason.getText();
         settings.place = place.getText();
@@ -569,7 +569,7 @@ public class ConfigPanel extends ScrollableJPanel {
         settings.updateConfig();
     }
 
-    public void restart_settings() {
+    public void restartSettings() {
         Settings settings = new Settings();
 
         withoutvisiblesign.setSelected(settings.withoutvisiblesign);
@@ -616,7 +616,7 @@ public class ConfigPanel extends ScrollableJPanel {
         if(settings.extrapkcs11Lib != null) {  pkcs11moduletext.setText(settings.extrapkcs11Lib);
         }else{ pkcs11moduletext.setText(""); };
 
-        pluginsactive.load_plugins(settings);
+        pluginsactive.loadPlugins(settings);
 
     }
 
@@ -628,12 +628,12 @@ public class ConfigPanel extends ScrollableJPanel {
         }
     }
 
-    public void save_settings() {
-        charge_settings();
+    public void saveSettings() {
+        chargeSettings();
         this.manager.setSettings(this.settings, true);
     }
 
-    public void show_fontcolor_picker() {
+    public void showFontColorPicker() {
         Color newColor = JColorChooser.showDialog(this, "Color del texto", this.settings.getFontColor());
         if (newColor != null) {
             //btfontcolor.setForeground(newColor);
@@ -644,10 +644,10 @@ public class ConfigPanel extends ScrollableJPanel {
         }
     }
 
-    public void show_backgroundcolor_picker() {
+    public void showBackgroundColorPicker() {
         Color newColor = JColorChooser.showDialog(this, "Color de fondo", this.settings.getBackgroundColor());
         if (newColor != null) {
-            //btbackgroundcolor.setIcon(createImageIcon(newColor));
+            //btBackgroundcolor.setIcon(createImageIcon(newColor));
             String buf = Integer.toHexString(newColor.getRGB());
             String hex = "#"+buf.substring(buf.length()-6);
             backgroundcolor.setText(hex);
@@ -655,20 +655,20 @@ public class ConfigPanel extends ScrollableJPanel {
     }
 
     public String getFilePath() {
-    	String dev = null;
-    	FileDialog loadDialog = new FileDialog(new JDialog(), "Seleccionar un archivo");
-		loadDialog.setMultipleMode(false);
-		loadDialog.setLocationRelativeTo(null);
-		loadDialog.setVisible(true);
-		loadDialog.dispose();
-		File[] files = loadDialog.getFiles();
-		if(files.length>=1) {
-			dev=files[0].toString();
-		}
-		return dev;
+        String dev = null;
+        FileDialog loadDialog = new FileDialog(new JDialog(), "Seleccionar un archivo");
+        loadDialog.setMultipleMode(false);
+        loadDialog.setLocationRelativeTo(null);
+        loadDialog.setVisible(true);
+        loadDialog.dispose();
+        File[] files = loadDialog.getFiles();
+        if(files.length>=1) {
+            dev=files[0].toString();
+        }
+        return dev;
     }
 
-    public void show_image_picker() {
+    public void showImagePicker() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.addChoosableFileFilter(new ImageFilter());
         fileChooser.setAcceptAllFileFilterUsed(false);

@@ -64,12 +64,12 @@ public class FirmadorPAdES extends CRSigner {
     PAdESSignatureParameters parameters;
     private boolean visibleSignature = true;
     private Settings settings;
-	private float width;
-	private float height;
+    //private float width;
+    //private float height;
 
     public FirmadorPAdES(GUIInterface gui) {
         super(gui);
-        settings = SettingsManager.getInstance().get_and_create_settings();
+        settings = SettingsManager.getInstance().getAndCreateSettings();
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
@@ -100,9 +100,9 @@ public class FirmadorPAdES extends CRSigner {
             return null;
         }
         try {
-        	gui.nextStep("Obteniendo certificados de la tarjeta");
+            gui.nextStep("Obteniendo certificados de la tarjeta");
             CertificateToken certificate = privateKey.getCertificate();
-
+            parameters.setAppName("Firmador " + getClass().getPackage().getSpecificationVersion() + ", https://firmador.libre.cr");
             parameters.setSignatureLevel(settings.getPAdESLevel());
 
 
@@ -129,14 +129,14 @@ public class FirmadorPAdES extends CRSigner {
                 return null;
             } else gui.showError(Throwables.getRootCause(e));
         } catch (IllegalArgumentException e) {
-        	 if(Throwables.getRootCause(e).getMessage().contains("is expired")) {
-        		 gui.showMessage("Certificado vencido, no se puede realizar la firma");
-        		 return null;
-        	 }
+             if(Throwables.getRootCause(e).getMessage().contains("is expired")) {
+                 gui.showMessage("Certificado vencido, no se puede realizar la firma");
+                 return null;
+             }
         }
 
         try {
-        	gui.nextStep("Firmando estructura de datos");
+            gui.nextStep("Firmando estructura de datos");
             signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
             gui.nextStep("Firmado del documento completo");
         } catch (Exception e) {
@@ -211,6 +211,7 @@ public class FirmadorPAdES extends CRSigner {
                 imageParameters.setTextParameters(textParameters);
                 imageParameters.getFieldParameters().setPage(1);
                 timestampParameters.setImageParameters(imageParameters);
+                timestampParameters.setAppName("Firmador " + getClass().getPackage().getSpecificationVersion() + ", https://firmador.libre.cr");
             }
             timestampedDocument = service.timestamp(documentToTimestamp, timestampParameters);
         } catch (Exception e) {
@@ -225,12 +226,13 @@ public class FirmadorPAdES extends CRSigner {
     }
 
     public void addVisibleSignature(int page, Rectangle rect) {
-		this.page = page;
-		this.x = rect.x;
-		this.y = rect.y;
-		this.width=(float)rect.width;
-		this.height=(float)rect.height;
+        this.page = page;
+        this.x = rect.x;
+        this.y = rect.y;
+        //this.width=(float)rect.width;
+        //this.height=(float)rect.height;
     }
+/*
     public void addVisibleSignature(int page, int x, int y) { // FIXME this seems unused
         this.page = page;
         this.x = x;
@@ -238,7 +240,7 @@ public class FirmadorPAdES extends CRSigner {
         this.width=settings.signwidth;
         this.height=settings.signheight;
     }
-
+*/
     private void appendVisibleSignature(CertificateToken certificate, Date date, String reason, String location, String contactInfo, String image, Boolean hideAdvice) {
         SignatureImageParameters imageParameters = new SignatureImageParameters();
         imageParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
@@ -284,8 +286,8 @@ public class FirmadorPAdES extends CRSigner {
 
         imageParameters.setTextParameters(textParameters);
         try {
-			if (image != null && !image.trim().isEmpty()) {
-            	imageParameters.setImage(new InMemoryDocument(Utils.toByteArray(new URL(image).openStream())));
+            if (image != null && !image.trim().isEmpty()) {
+                imageParameters.setImage(new InMemoryDocument(Utils.toByteArray(new URL(image).openStream())));
             }
 
         } catch (IOException e) {

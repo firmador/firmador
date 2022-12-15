@@ -23,7 +23,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
+import java.security.KeyStore.PasswordProtection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cr.libre.firmador.CardSignInfo;
@@ -69,7 +71,7 @@ public class GUIArgs implements GUIInterface {
                     FirmadorXAdES firmador = new FirmadorXAdES(this);
                     signedDocument = firmador.sign(toSignDocument, card);
                 }
-                card.destroyPin();;
+                card.destroyPin();
 
             } else {
                 FirmadorPAdES firmador = new FirmadorPAdES(this);
@@ -115,15 +117,26 @@ public class GUIArgs implements GUIInterface {
     }
 
     public CardSignInfo getPin() {
-        String pintext = null;
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        char[] password = null;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        char[] input = new char[128];
         try {
-            pintext = br.readLine();
+            while (reader.read(input, 0, input.length) != -1);
+            reader.close();
         } catch (IOException e) {
-            System.err.println("PIN not encontrado");
-            System.exit(1);
+            showError(Throwables.getRootCause(e));
         }
-        return new CardSignInfo(pintext);
+        int passwordLength = 0;
+        for (char character: input) {
+            if (character == '\0' || character == '\r' || character == '\n') break;
+            passwordLength++;
+        }
+        password = new char[passwordLength];
+        for (int i = 0; i < passwordLength; i++) password[i] = input[i];
+        Arrays.fill(input, '\0');
+        PasswordProtection pin = new PasswordProtection(password);
+        Arrays.fill(password, '\0');
+        return new CardSignInfo(pin);
     }
 
     @Override
@@ -131,57 +144,52 @@ public class GUIArgs implements GUIInterface {
          System.out.println(message);
     }
 
+
     @Override
-    public int getSlot() {
-        return slot;
+    public void setPluginManager(PluginManager pluginManager) {
+        // TODO Auto-generated method stub
+
     }
 
+    @Override
+    public void loadDocument(String fileName) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void setPluginManager(PluginManager pluginManager) {
-		// TODO Auto-generated method stub
+    }
 
-	}
+    @Override
+    public void loadDocument(MimeType mimeType, PDDocument doc) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void loadDocument(String fileName) {
-		// TODO Auto-generated method stub
+    }
 
-	}
+    @Override
+    public void extendDocument() {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void loadDocument(MimeType mimeType, PDDocument doc) {
-		// TODO Auto-generated method stub
+    }
 
-	}
+    @Override
+    public String getPathToSaveExtended(String extension) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public void extendDocument() {
-		// TODO Auto-generated method stub
+    @Override
+    public boolean signDocuments() {
+        // TODO Auto-generated method stub
+        return true;
+    }
 
-	}
+    @Override
+    public void displayFunctionality(String functionality) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public String getPathToSaveExtended(String extension) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    }
 
-	@Override
-	public boolean signDocuments() {
-		// TODO Auto-generated method stub
-		return true;
-	}
+    @Override
+    public void nextStep(String msg) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void displayFunctionality(String functionality) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void nextStep(String msg) {
-		// TODO Auto-generated method stub
-
-	}
+    }
 }

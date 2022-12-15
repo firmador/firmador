@@ -60,12 +60,12 @@ public class FirmadorCAdES extends CRSigner {
 
 
     CAdESSignatureParameters parameters;
-	private Settings settings;
+    private Settings settings;
 
 
     public FirmadorCAdES(GUIInterface gui) {
         super(gui);
-        settings = SettingsManager.getInstance().get_and_create_settings();
+        settings = SettingsManager.getInstance().getAndCreateSettings();
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card) {

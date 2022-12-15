@@ -47,93 +47,93 @@ import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
 
 public class SwingMainWindowFrame extends JFrame {
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SwingMainWindowFrame.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SwingMainWindowFrame.class);
 
-	public static final long serialVersionUID = -7495851994719690589L;
+    public static final long serialVersionUID = -7495851994719690589L;
 
-	public JTabbedPane optionsTabbedPane;
-	protected JPopupMenu menu;
-	protected Settings settings;
-	public GUIInterface gui;
+    public JTabbedPane optionsTabbedPane;
+    protected JPopupMenu menu;
+    protected Settings settings;
+    public GUIInterface gui;
 
-	protected Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
+    protected Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
 
-	public void setGUIInterface(GUIInterface gui) {
-		this.gui = gui;
-	}
+    public void setGUIInterface(GUIInterface gui) {
+        this.gui = gui;
+    }
 
-	public void startInterface() {
+    public void startInterface() {
 
-		JPanel pdfOptionsPanel = new JPanel();
-		JPanel advancedOptionsPanel = new JPanel();
+        JPanel pdfOptionsPanel = new JPanel();
+        JPanel advancedOptionsPanel = new JPanel();
 
-		optionsTabbedPane = new JTabbedPane();
-		optionsTabbedPane.addTab("Opciones PDF", pdfOptionsPanel);
-		optionsTabbedPane.setToolTipTextAt(0,
-				"<html>En esta pestaña se muestran opciones específicas<br>para documentos en formato PDF.</html>");
-		optionsTabbedPane.addTab("Opciones avanzadas", advancedOptionsPanel);
-		optionsTabbedPane.setToolTipTextAt(1,
-				"<html>En esta pestaña se muestran opciones avanzadas<br>relacionadas con la creación de la firma.</html>");
+        optionsTabbedPane = new JTabbedPane();
+        optionsTabbedPane.addTab("Opciones PDF", pdfOptionsPanel);
+        optionsTabbedPane.setToolTipTextAt(0,
+                "<html>En esta pestaña se muestran opciones específicas<br>para documentos en formato PDF.</html>");
+        optionsTabbedPane.addTab("Opciones avanzadas", advancedOptionsPanel);
+        optionsTabbedPane.setToolTipTextAt(1,
+                "<html>En esta pestaña se muestran opciones avanzadas<br>relacionadas con la creación de la firma.</html>");
 
-	}
+    }
 
-	@SuppressWarnings("serial")
-	public void loadGUI() {
-		settings = SettingsManager.getInstance().get_and_create_settings();
-		menu = new JPopupMenu();
-		JMenuItem mAll = new JMenuItem("Deseleccionar modo remoto");
-		menu.add(mAll);
-		mAll.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				settings.startserver = false;
-				SettingsManager.getInstance().setSettings(settings, true);
-				gui.showMessage("Debe reiniciar la aplicación para que los cambios tengan efecto");
-			}
-		});
-		this.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON3) {
-					// Aparece el menú contextual
-					menu.show(null, e.getX(), e.getY());
-				}
-			}
-		});
+    @SuppressWarnings("serial")
+    public void loadGUI() {
+        settings = SettingsManager.getInstance().getAndCreateSettings();
+        menu = new JPopupMenu();
+        JMenuItem mAll = new JMenuItem("Deseleccionar modo remoto");
+        menu.add(mAll);
+        mAll.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                settings.startserver = false;
+                SettingsManager.getInstance().setSettings(settings, true);
+                gui.showMessage("Debe reiniciar la aplicación para que los cambios tengan efecto");
+            }
+        });
+        this.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    // Aparece el menú contextual
+                    menu.show(null, e.getX(), e.getY());
+                }
+            }
+        });
 
-		this.setIconImage(image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
-		this.setDropTarget(new DropTarget() {
-			public synchronized void drop(DropTargetDropEvent e) {
-				try {
-					e.acceptDrop(DnDConstants.ACTION_COPY);
-					@SuppressWarnings("unchecked")
-					List<File> droppedFiles = (List<File>) e.getTransferable()
-							.getTransferData(DataFlavor.javaFileListFlavor);
+        this.setIconImage(image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
+        this.setDropTarget(new DropTarget() {
+            public synchronized void drop(DropTargetDropEvent e) {
+                try {
+                    e.acceptDrop(DnDConstants.ACTION_COPY);
+                    @SuppressWarnings("unchecked")
+                    List<File> droppedFiles = (List<File>) e.getTransferable()
+                            .getTransferData(DataFlavor.javaFileListFlavor);
 
-					File[] files = new File[droppedFiles.size()];
-					droppedFiles.toArray(files);
-					if(files.length>1) {
-						GUISwing ggui = (GUISwing) gui;
-						ggui.signMultipleDocuments(files);
-					}else if( files.length==1) {
+                    File[] files = new File[droppedFiles.size()];
+                    droppedFiles.toArray(files);
+                    if(files.length>1) {
+                        GUISwing ggui = (GUISwing) gui;
+                        ggui.signMultipleDocuments(files);
+                    }else if( files.length==1) {
 
-						gui.loadDocument(files[0].toString());
+                        gui.loadDocument(files[0].toString());
 
-					}
+                    }
 
 
-				} catch (Exception ex) {
-					LOG.error("Error cerrando archivo", ex);
-					ex.printStackTrace();
-				}
-			}
-		});
+                } catch (Exception ex) {
+                    LOG.error("Error cerrando archivo", ex);
+                    ex.printStackTrace();
+                }
+            }
+        });
 
-		startInterface();
+        startInterface();
 
-	}
+    }
 
-	public SwingMainWindowFrame(String name) throws HeadlessException {
-		super(name);
-	}
+    public SwingMainWindowFrame(String name) throws HeadlessException {
+        super(name);
+    }
 
 
 }

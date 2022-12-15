@@ -96,7 +96,7 @@ peticiones desde cualquier origen. Esta versión puede recibir modificaciones
 inestables y caídas al tratarse de una versión para desarrollo y pruebas.
 
 Puede accederse a una demostración de firma web en la siguiente dirección:
-https://firmador.libre.cr/demo.html
+https://firmador.libre.cr./demo-firma-web/
 
 
 ## ¿Por qué Firmador utiliza el puerto 3516 para el mecanismo de firma remota y no otro número en particular?

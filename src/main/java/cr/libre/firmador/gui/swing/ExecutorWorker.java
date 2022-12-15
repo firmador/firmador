@@ -30,51 +30,51 @@ import cr.libre.firmador.gui.GUISwing;
 
 public class ExecutorWorker extends Thread implements PropertyChangeListener, ExecutorWorkerInterface  {
 
-	private ProgressDialog progressMonitor;
-	private GUIInterface gui;
-	private ExecutorSwingWorker task;
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GUISwing.class);
-	private Integer progressStatus = 0;
+    private ProgressDialog progressMonitor;
+    private GUIInterface gui;
+    private ExecutorSwingWorker task;
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GUISwing.class);
+    private Integer progressStatus = 0;
 
 
-	public ExecutorWorker(GUIInterface gui) {
-		super();
-		this.gui = gui;
-		//UIManager.put("ProgressMonitor.progressText", "Proceso de firmado de documentos");
-		//progressMonitor = new ProgressMonitor(((GUISwing)gui).getMainFrame().getContentPane(), "Firmando documento", "", 0, 100);
-		progressMonitor = new ProgressDialog("Firmando documento", 0, 100);
-		progressMonitor.setVisible(true);
-		progressMonitor.setSize(500, 250);
-	}
+    public ExecutorWorker(GUIInterface gui) {
+        super();
+        this.gui = gui;
+        //UIManager.put("ProgressMonitor.progressText", "Proceso de firmado de documentos");
+        //progressMonitor = new ProgressMonitor(((GUISwing)gui).getMainFrame().getContentPane(), "Firmando documento", "", 0, 100);
+        progressMonitor = new ProgressDialog("Firmando documento", 0, 100);
+        progressMonitor.setVisible(true);
+        progressMonitor.setSize(500, 250);
+    }
 
 
-	@Override
-	public void run() {
+    @Override
+    public void run() {
 
-		nextStep("Inicio de firmado");
-		Toolkit.getDefaultToolkit().beep();
+        nextStep("Inicio de firmado");
+        Toolkit.getDefaultToolkit().beep();
 
-		task= new ExecutorSwingWorker(progressMonitor, gui);
-		task.addPropertyChangeListener(this);
-		task.execute();
+        task= new ExecutorSwingWorker(progressMonitor, gui);
+        task.addPropertyChangeListener(this);
+        task.execute();
 
 
-	}
+    }
 
-	public void nextStep(String msg) {
-		if(msg == null) msg="";
-		progressStatus += 5 ;
-		if(progressStatus > 100) progressStatus = 99;
-		progressMonitor.setProgress(progressStatus);
-		String message =
+    public void nextStep(String msg) {
+        if(msg == null) msg="";
+        progressStatus += 5 ;
+        if(progressStatus > 100) progressStatus = 99;
+        progressMonitor.setProgress(progressStatus);
+        String message =
                 String.format(" %d%%.\n", progressStatus);
         progressMonitor.setNote(msg+message);
-		try {
+        try {
             Thread.sleep(500); // change the thread to show progress bar.
         } catch (InterruptedException e) {
             //e.printStackTrace();
         }
-	}
+    }
 
     public void propertyChange(PropertyChangeEvent evt) {
         if ("progress" == evt.getPropertyName() ) {
@@ -91,7 +91,7 @@ public class ExecutorWorker extends Thread implements PropertyChangeListener, Ex
                     LOG.info("Tarea cancelada");
 
                 } else {
-                	LOG.info("Tarea completa");
+                    LOG.info("Tarea completa");
                 }
 
             }

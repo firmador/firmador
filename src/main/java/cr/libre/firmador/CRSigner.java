@@ -42,7 +42,7 @@ import eu.europa.esig.dss.validation.CertificateVerifier;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 
 public class CRSigner {
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(CRSigner.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(CRSigner.class);
 
     public static final String TSA_URL = "http://tsa.sinpe.fi.cr/tsaHttp/";
     protected GUIInterface gui;
@@ -64,37 +64,37 @@ public class CRSigner {
         try {
             keys = signingToken.getKeys();
         } catch (Exception|Error e) {
-        	Throwable te = Throwables.getRootCause(e);
-        	String msg = e.getCause().toString();
-        	LOG.error("Error "+te.getLocalizedMessage()+" obteniendo manejador de llaves privadas de la tarjeta", e);
-        	if(te.getLocalizedMessage().equals("CKR_PIN_INCORRECT")) throw e;
-        	if(te.getLocalizedMessage().equals("CKR_GENERAL_ERROR")
-        			&& e.getCause().toString().contains("Unable to instantiate PKCS11")) throw e;
+            Throwable te = Throwables.getRootCause(e);
+            String msg = e.getCause().toString();
+            LOG.error("Error "+te.getLocalizedMessage()+" obteniendo manejador de llaves privadas de la tarjeta", e);
+            if(te.getLocalizedMessage().equals("CKR_PIN_INCORRECT")) throw e;
+            if(te.getLocalizedMessage().equals("CKR_GENERAL_ERROR")
+                    && e.getCause().toString().contains("Unable to instantiate PKCS11")) throw e;
 
 
-        	if (te.getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) return null;
+            if (te.getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) return null;
 
             else {
 
-            	if(msg.contains("but token only has 0 slots")) throw e;
-            	gui.showError(Throwables.getRootCause(e));
+                if(msg.contains("but token only has 0 slots")) throw e;
+                gui.showError(Throwables.getRootCause(e));
 
             }
         }
         if(keys!=null) {
-	        for (DSSPrivateKeyEntry candidatePrivateKey : keys) {
-	            if (candidatePrivateKey.getCertificate().checkKeyUsage(KeyUsageBit.NON_REPUDIATION)) {
-	                privateKey = candidatePrivateKey;
-	                break;
-	            }
-	        }
+            for (DSSPrivateKeyEntry candidatePrivateKey : keys) {
+                if (candidatePrivateKey.getCertificate().checkKeyUsage(KeyUsageBit.NON_REPUDIATION)) {
+                    privateKey = candidatePrivateKey;
+                    break;
+                }
+            }
         }
         return privateKey;
     }
 
     public static String getPkcs11Lib() {
         String osName = System.getProperty("os.name").toLowerCase();
-        Settings settings = SettingsManager.getInstance().get_and_create_settings();
+        Settings settings = SettingsManager.getInstance().getAndCreateSettings();
         if(settings.extrapkcs11Lib != null && !settings.extrapkcs11Lib.isEmpty()) {
             return settings.extrapkcs11Lib;
         }
@@ -115,14 +115,14 @@ public class CRSigner {
 
 
         try {
-        	if(card.getCardType() == CardSignInfo.PKCS12TYPE) {
-        		signingToken = new Pkcs12SignatureToken(card.getTokenSerialNumber(), card.getPin());
-        	}else {
-        		//PrefilledPasswordCallback pinCallback = new PrefilledPasswordCallback(card.getPin());
-        		signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), card.getPin(), (int)card.getSlotID());
-        	}
+            if(card.getCardType() == CardSignInfo.PKCS12TYPE) {
+                signingToken = new Pkcs12SignatureToken(card.getTokenSerialNumber(), card.getPin());
+            }else {
+                //PrefilledPasswordCallback pinCallback = new PrefilledPasswordCallback(card.getPin());
+                signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), card.getPin(), card.getSlotID());
+            }
         } catch (Exception|Error e) {
-			LOG.error("Error al obtener la conexión de firma", e);
+            LOG.error("Error al obtener la conexión de firma", e);
             gui.showError(Throwables.getRootCause(e));
         }
         return signingToken;

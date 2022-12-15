@@ -31,7 +31,6 @@ public interface GUIInterface {
     void setArgs(String[] args);
     void showError(Throwable error);
     void showMessage(String message);
-    int getSlot();
     String getDocumentToSign();
     String getPathToSave(String extension);
     CardSignInfo getPin();
