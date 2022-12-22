@@ -30,6 +30,8 @@ contienen caracteres especiales, como por ejemplo espacios.
 También hay un parámetro `-slot`, en caso de que existiera más de un slot en el
 sistema, al que se le puede proporcionar el número deseado. Este parámetro es
 opcional. El parámetro es un número junto al parámetro, por ejemplo `-slot0`.
+NOTA: el parámetro `-slot` no está funcionando desde la versión 1.9.0, se
+plantea reparar en versiones posteriores.
 
 El parámetro `-timestamp` permite agregar sellos de tiempo a documentos. Cuando
 se define, no firmará, solo sellará, por lo que no requiere suministrar PIN.
@@ -48,6 +50,9 @@ En el caso de ejecutarse en Windows, no debe dejar espacio antes del símbolo
 
 
 ## ¿Cómo integrar firmador en un sitio web para que se lance la app, cargue un documento en la app y suba el documento firmado automáticamente?
+
+NOTA: la integración web no está funcionando desde la versión 1.9.0, se
+plantea reparar en versiones posteriores.
 
 Desde JavaScript deberá crearse una conexión XMLHttpRequest a 127.0.0.1:3516
 por POST que envíe el fichero a firmar. Esperar la respuesta al POST que
