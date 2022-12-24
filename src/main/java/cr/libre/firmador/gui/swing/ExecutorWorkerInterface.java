@@ -19,7 +19,6 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui.swing;
 
-public interface ExecutorWorkerInterface   {
-
-	public void nextStep(String msg);
+public interface ExecutorWorkerInterface {
+    public void nextStep(String msg);
 }
