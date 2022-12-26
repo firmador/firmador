@@ -199,7 +199,7 @@ public class FirmadorPAdES extends CRSigner {
                 imageParameters.getFieldParameters().setOriginX(0);
                 imageParameters.getFieldParameters().setOriginY(0);
                 SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
-                textParameters.setFont(new DSSJavaFont(new Font(settings.getFontName(settings.font, true), settings.getFontStyle(settings.font), settings.fontsize)));
+                textParameters.setFont(new DSSJavaFont(new Font(settings.getFontName(settings.font, true), settings.getFontStyle(settings.font), settings.fontSize)));
                 SimpleDateFormat date = new SimpleDateFormat(settings.getDateFormat());
                 date.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
                 textParameters.setText("Este documento incluye un sello de tiempo de la\n" +
@@ -252,7 +252,7 @@ public class FirmadorPAdES extends CRSigner {
 
         SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
 
-        textParameters.setFont(new DSSJavaFont(new Font(settings.getFontName(settings.font, true), settings.getFontStyle(settings.font), settings.fontsize)));
+        textParameters.setFont(new DSSJavaFont(new Font(settings.getFontName(settings.font, true), settings.getFontStyle(settings.font), settings.fontSize)));
         String cn = DSSASN1Utils.getSubjectCommonName(certificate);
         X500PrincipalHelper subject = certificate.getSubject();
         String o = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.O, subject);

@@ -80,27 +80,19 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
         configPanel.setOpaque(false);
         frameTabbedPane = new JTabbedPane();
         frameTabbedPane.addTab("Firmar", signPanel);
-        frameTabbedPane.setToolTipTextAt(0,
-                "<html>En esta pestaña se muestran las opciones<br>para firmar el documento seleccionado.</html>");
+        frameTabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran las opciones<br>para firmar el documento seleccionado.</html>");
         frameTabbedPane.addTab("Configuración", configPanel);
         frameTabbedPane.setToolTipTextAt(1, "<html>En esta estaña se configura<br>aspectos de este programa.</html>");
         frameTabbedPane.addTab("Acerca de", aboutPanel);
-        frameTabbedPane.setToolTipTextAt(2,
-                "<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
-
-        if(settings.showlogs) {
-            this.showLogs(frameTabbedPane);
-        }
+        frameTabbedPane.setToolTipTextAt(2, "<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
+        if (settings.showLogs) this.showLogs(frameTabbedPane);
         mainFrame.add(frameTabbedPane);
-        // mainFrame.getContentPane().getLayout().addComponent(frameTabbedPane);
-        // mainFrame.getContentPane().setLayout(signLayout);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.pack();
         mainFrame.setMinimumSize(mainFrame.getSize());
         mainFrame.setLocationByPlatform(true);
         mainFrame.setVisible(true);
     }
-
 
     GUIRemote() {
         super();
@@ -121,21 +113,16 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
         return signedDocument != null;
     }
 
-    @Override
-    public void setArgs(String[] args) {
-    }
+    public void setArgs(String[] args) {}
 
-    @Override
     public String getDocumentToSign() {
         return null;
     }
 
-    @Override
     public String getPathToSave(String extension) {
         return null;
     }
 
-    @Override
     public void loadDocument(String fileName) {
         HashMap<String, RemoteDocInformation> docmap = remote.getDocInformation();
         docinfo = docmap.get(fileName);
@@ -150,41 +137,27 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
             } else if (mimeType == MimeType.XML || mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
                 showMessage("Está intentando firmar un documento XML o un openDocument que no posee visualización");
                 signPanel.getSignButton().setEnabled(true);
-            } else {
-               signPanel.shownonPDFButtons();
-            }
+            } else signPanel.shownonPDFButtons();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void extendDocument() {
-    }
+    public void extendDocument() {}
 
-    @Override
     public String getPathToSaveExtended(String extension) {
         return null;
     }
 
-    @Override
-    public void displayFunctionality(String functionality) {
-    }
+    public void displayFunctionality(String functionality) {}
 
     public void close() {
-        // if (!remote.isCancelled()) remote.cancel(true);
         mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
-        // mainFrame.dispose();
     }
 
-    @Override
     public void updateConfig() {
-        if (this.settings.showlogs) {
-            showLogs(this.frameTabbedPane);
-        } else {
-            hideLogs(this.frameTabbedPane);
-        }
-
+        if (this.settings.showLogs) showLogs(this.frameTabbedPane);
+        else hideLogs(this.frameTabbedPane);
     }
 
 }

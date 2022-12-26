@@ -25,26 +25,20 @@ import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISelector;
 import cr.libre.firmador.plugins.PluginManager;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 public class Firmador {
 
-    public static void main(String[] args) throws InterruptedException, IOException, URISyntaxException {
-
+    public static void main(String[] args) throws Throwable {
         // PDFBox font cache warmup
         FontMappers.instance().getFontBoxFont(null, null);
         GUISelector guiselector = new GUISelector();
         GUIInterface gui = guiselector.getInterface(args);
         gui.setArgs(args);
         PluginManager pluginManager = new PluginManager(gui);
-
         SwingUtilities.invokeLater(pluginManager);
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 gui.loadGUI();
                 gui.setPluginManager(pluginManager);
-
             }
         });
     }

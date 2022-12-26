@@ -35,7 +35,6 @@ import java.awt.event.ItemListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -66,53 +65,23 @@ import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 
 public class ConfigPanel extends ScrollableJPanel {
-    private static final long serialVersionUID = 1L;
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ConfigPanel.class);
-
-    private JTextField reason;
-    private JTextField place;
-    private JTextField contact;
-    private JTextField dateformat;
-    private JTextField fontcolor;
-    private JTextField backgroundcolor;
-
-    private JCheckBox withoutvisiblesign;
-    private JCheckBox uselta;
-    private JCheckBox overwritesourcefile;
-    JTextArea defaultsignmessage;
-    private JSpinner signwidth;
-    private JSpinner signheight;
-    private JSpinner fontsize;
-    private JSpinner signx;
-    private JSpinner signy;
-    private JComboBox<String> font;
-
-    private JButton btfontcolor;
-    private JButton btbackgroundcolor;
-    private JTextField imagetext;
-    private JButton btimage;
+    JTextArea defaultSignMessage;
     Settings settings;
     SettingsManager manager;
-    private JSpinner pagenumber;
-    private Integer iconsize=32;
-    private JCheckBox startserver;
-    private JSpinner portnumber;
-    private JComboBox<String> fontposition;
-    private JCheckBox showlogs;
-    private ScrollableJPanel simplePanel;
-    private ScrollableJPanel advancedPanel;
-    private boolean isadvancedoptions = false;
+    private Integer iconSize = 32;
+    private JButton btFontColor, btBackgroundColor, btImage, btPKCS11Module;
+    private JCheckBox withoutVisibleSign, useLTA, overwriteSourceFile, startServer, showLogs;
+    private JComboBox<String> font, fontPosition, pAdESLevel, xAdESLevel, cAdESLevel;
+    private JPanel advancedBottomSpace;
     private JScrollPane configPanel;
-
-    private JComboBox<String> padesLevel;
-    private JComboBox<String> xadesLevel;
-    private JComboBox<String> cadesLevel;
-    private JTextField pkcs11moduletext;
-    private JButton btpkcs11module;
-    private Pkcs12ConfigPanel pkcs12panel;
-    private JPanel advancedbottomspace;
-    private PluginManagerPlugin pluginsactive;
-    private JTextField pdfImgScaleFactor;
+    private JSpinner signWidth, signHeight, fontSize, signX, signY, pageNumber, portNumber;
+    private JTextField reason, place, contact, dateFormat, fontColor, backgroundColor, imageText, pKCS11ModuleText, pDFImgScaleFactor;
+    private Pkcs12ConfigPanel pKCS12Panel;
+    private PluginManagerPlugin pluginsActive;
+    private ScrollableJPanel simplePanel, advancedPanel;
+    private boolean isAdvancedOptions = false;
+    private static final long serialVersionUID = 1L;
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ConfigPanel.class);
 
     private void createSimpleConfigPanel() {
         simplePanel = new ScrollableJPanel();
@@ -122,68 +91,57 @@ public class ConfigPanel extends ScrollableJPanel {
         checkpanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
         checkpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         checkpanel.setLayout(new BoxLayout(checkpanel, 0));
-
-        withoutvisiblesign = new JCheckBox("Sin Firma Visible             ", this.settings.withoutvisiblesign);
-
-        checkpanel.add(withoutvisiblesign);
-        //checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        uselta = new JCheckBox("Usar LTA automático", this.settings.uselta);
-        checkpanel.add(uselta);
+        withoutVisibleSign = new JCheckBox("Sin Firma Visible             ", this.settings.withoutVisibleSign);
+        checkpanel.add(withoutVisibleSign);
+        useLTA = new JCheckBox("Usar LTA automático", this.settings.useLTA);
+        checkpanel.add(useLTA);
         checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
-
-        uselta.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent arg0) { changeLTA(); }
+        useLTA.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent arg0) {
+                changeLTA();
+            }
         });
-
-        showlogs = new JCheckBox("Ver bitácoras", this.settings.showlogs);
-        checkpanel.add(showlogs);
+        showLogs = new JCheckBox("Ver bitácoras", this.settings.showLogs);
+        checkpanel.add(showLogs);
         checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
-
-
         simplePanel.add(checkpanel);
         simplePanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
         JPanel checkpanelserver = new JPanel();
         checkpanelserver.setPreferredSize(new Dimension(450, 30));
         checkpanelserver.setAlignmentX(Component.RIGHT_ALIGNMENT);
         checkpanelserver.setBorder(new EmptyBorder(0, 0, 0, 0));
         checkpanelserver.setLayout(new BoxLayout(checkpanelserver, 0));
-
-        overwritesourcefile = new JCheckBox("Sobreescribir archivo original               ", this.settings.overwritesourcefile);
-        checkpanelserver.add(overwritesourcefile);
+        overwriteSourceFile = new JCheckBox("Sobreescribir archivo original               ", this.settings.overwriteSourceFile);
+        checkpanelserver.add(overwriteSourceFile);
         checkpanelserver.add(Box.createRigidArea(new Dimension(5, 0)));
-        startserver = new JCheckBox("Inicializar firmado remoto", this.settings.startserver);
-        checkpanelserver.add(startserver);
-
+        startServer = new JCheckBox("Inicializar firmado remoto", this.settings.startServer);
+        checkpanelserver.add(startServer);
         simplePanel.add(checkpanelserver);
         simplePanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
         reason = new JTextField();
         reason.setText(this.settings.reason);
         place = new JTextField();
         place.setText(this.settings.place);
         contact = new JTextField();
         contact.setText(this.settings.contact);
-        dateformat = new JTextField();
-        dateformat.setText(this.settings.dateformat);
-        dateformat.setToolTipText("Debe ser compatible con formatos de fecha de java");
-        defaultsignmessage = new JTextArea();
-        defaultsignmessage.setText(this.settings.getDefaultSignMessage());
-        defaultsignmessage.setOpaque(false);
-        pagenumber = new JSpinner();
-        pagenumber.setModel(new SpinnerNumberModel(this.settings.pagenumber, null, null, 1));
-
-        signwidth = new JSpinner();
-        signwidth.setModel(new SpinnerNumberModel(this.settings.signwidth, null, null, 1));
-        signheight = new JSpinner();
-        signheight.setModel(new SpinnerNumberModel(this.settings.signheight, null, null, 1));
-        signx = new JSpinner();
-        signx.setModel(new SpinnerNumberModel(this.settings.signx, null, null, 1));
-        signy = new JSpinner();
-        signy.setModel(new SpinnerNumberModel(this.settings.signy, null, null, 1));
-        fontsize = new JSpinner();
-        fontsize.setModel(new SpinnerNumberModel(this.settings.fontsize, null, null, 1));
+        dateFormat = new JTextField();
+        dateFormat.setText(this.settings.dateFormat);
+        dateFormat.setToolTipText("Debe ser compatible con formatos de fecha de java");
+        defaultSignMessage = new JTextArea();
+        defaultSignMessage.setText(this.settings.getDefaultSignMessage());
+        defaultSignMessage.setOpaque(false);
+        pageNumber = new JSpinner();
+        pageNumber.setModel(new SpinnerNumberModel(this.settings.pageNumber, null, null, 1));
+        signWidth = new JSpinner();
+        signWidth.setModel(new SpinnerNumberModel(this.settings.signWidth, null, null, 1));
+        signHeight = new JSpinner();
+        signHeight.setModel(new SpinnerNumberModel(this.settings.signHeight, null, null, 1));
+        signX = new JSpinner();
+        signX.setModel(new SpinnerNumberModel(this.settings.signX, null, null, 1));
+        signY = new JSpinner();
+        signY.setModel(new SpinnerNumberModel(this.settings.signY, null, null, 1));
+        fontSize = new JSpinner();
+        fontSize.setModel(new SpinnerNumberModel(this.settings.fontSize, null, null, 1));
         String fonts[];
         String osName = System.getProperty("os.name").toLowerCase();
         if (osName.contains("mac")) fonts = new String[] {
@@ -201,158 +159,119 @@ public class ConfigPanel extends ScrollableJPanel {
             "Times New Roman Regular", "Times New Roman Italic", "Times New Roman Bold", "Times New Roman Bold Italic",
             "Courier New Regular", "Courier New Italic", "Courier New Bold", "Courier New Bold Italic"
         };
-        else fonts = new String[] { Font.SANS_SERIF, Font.SERIF, Font.MONOSPACED };
+        else fonts = new String[] {Font.SANS_SERIF, Font.SERIF, Font.MONOSPACED};
         font = new JComboBox<String>(fonts);
         font.setSelectedItem(settings.font);
-
-        String fontpositions[] = { "RIGHT", "LEFT", "BOTTOM", "TOP" };
-        fontposition = new JComboBox<String>(fontpositions);
-        fontposition.setSelectedItem(settings.fontalignment);
-
-        JPanel fontcolorpanel = new JPanel();
-        fontcolorpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        fontcolorpanel.setLayout(new BoxLayout(fontcolorpanel, 0));
-        fontcolor = new JTextField();
-        fontcolor.setToolTipText("Use la palabra 'transparente' si no desea un color");
-        fontcolor.setText(this.settings.fontcolor);
-
-
-        fontcolor.getDocument().addDocumentListener(new DocumentListener() {
+        fontPosition = new JComboBox<String>(new String[]{"RIGHT", "LEFT", "BOTTOM", "TOP"});
+        fontPosition.setSelectedItem(settings.fontAlignment);
+        JPanel fontColorPanel = new JPanel();
+        fontColorPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        fontColorPanel.setLayout(new BoxLayout(fontColorPanel, 0));
+        fontColor = new JTextField();
+        fontColor.setToolTipText("Use la palabra 'transparente' si no desea un color");
+        fontColor.setText(this.settings.fontColor);
+        fontColor.getDocument().addDocumentListener(new DocumentListener() {
             public void updateIcon(DocumentEvent edoc) {
                 try {
-                    String text = fontcolor.getText();
-                    if(!text.isEmpty() && ! text.equalsIgnoreCase("transparente")) {
+                    String text = fontColor.getText();
+                    if (!text.isEmpty() && ! text.equalsIgnoreCase("transparente")) {
                         Color color = Color.decode(text);
-                        btfontcolor.setIcon(createImageIcon(color));
-                    } else {
-                        btfontcolor.setIcon(getTransparentImageIcon());
-                    }
+                        btFontColor.setIcon(createImageIcon(color));
+                    } else btFontColor.setIcon(getTransparentImageIcon());
                 } catch (Exception e) {
                     LOG.error("Error cambiando color de fuente", e);
                 }
             }
-
-            @Override
             public void insertUpdate(DocumentEvent e) {
                 updateIcon(e);
             }
-
-            @Override
             public void removeUpdate(DocumentEvent e) {
                 updateIcon(e);
             }
-
-            @Override
             public void changedUpdate(DocumentEvent e) {
                 updateIcon(e);
             }
         });
-
-        btfontcolor = new JButton("Elegir");
-        btfontcolor.setOpaque(false);
-        setIcons(btfontcolor, this.settings.fontcolor, this.settings.getFontColor());
-
-        fontcolorpanel.add(btfontcolor);
-        fontcolorpanel.add(fontcolor);
-
-        JPanel backgroundcolorpanel = new JPanel();
-        backgroundcolorpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        backgroundcolorpanel.setLayout(new BoxLayout(backgroundcolorpanel, 0));
-        backgroundcolor = new JTextField();
-        backgroundcolor.setToolTipText("Use la palabra 'transparente' si no desea un color de fondo");
-
-        backgroundcolor.setText(this.settings.backgroundcolor);
-        btbackgroundcolor = new JButton("Elegir");
-        btbackgroundcolor.setOpaque(false);
-        setIcons(btbackgroundcolor, this.settings.backgroundcolor, this.settings.getBackgroundColor());
-        backgroundcolorpanel.add(btbackgroundcolor);
-        backgroundcolorpanel.add(backgroundcolor);
-
-        backgroundcolor.getDocument().addDocumentListener(new DocumentListener() {
+        btFontColor = new JButton("Elegir");
+        btFontColor.setOpaque(false);
+        setIcons(btFontColor, this.settings.fontColor, this.settings.getFontColor());
+        fontColorPanel.add(btFontColor);
+        fontColorPanel.add(fontColor);
+        JPanel backgroundColorPanel = new JPanel();
+        backgroundColorPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        backgroundColorPanel.setLayout(new BoxLayout(backgroundColorPanel, 0));
+        backgroundColor = new JTextField();
+        backgroundColor.setToolTipText("Use la palabra 'transparente' si no desea un color de fondo");
+        backgroundColor.setText(this.settings.backgroundColor);
+        btBackgroundColor = new JButton("Elegir");
+        btBackgroundColor.setOpaque(false);
+        setIcons(btBackgroundColor, this.settings.backgroundColor, this.settings.getBackgroundColor());
+        backgroundColorPanel.add(btBackgroundColor);
+        backgroundColorPanel.add(backgroundColor);
+        backgroundColor.getDocument().addDocumentListener(new DocumentListener() {
             public void updateIcon(DocumentEvent edoc) {
                 try {
-                    String text = backgroundcolor.getText();
-                    if(!text.isEmpty() && ! text.equalsIgnoreCase("transparente")) {
+                    String text = backgroundColor.getText();
+                    if (!text.isEmpty() && ! text.equalsIgnoreCase("transparente")) {
                         Color color = Color.decode(text);
-                        btbackgroundcolor.setIcon(createImageIcon(color));
-                    } else {
-                        btbackgroundcolor.setIcon(getTransparentImageIcon());
-                    }
+                        btBackgroundColor.setIcon(createImageIcon(color));
+                    } else btBackgroundColor.setIcon(getTransparentImageIcon());
                 } catch (Exception e) {
                     LOG.error("Error cambiando color de fondo", e);
-
                 }
             }
-
-            @Override
             public void insertUpdate(DocumentEvent e) {
                 updateIcon(e);
             }
-
-            @Override
             public void removeUpdate(DocumentEvent e) {
                 updateIcon(e);
             }
-
-            @Override
             public void changedUpdate(DocumentEvent e) {
                 updateIcon(e);
             }
         });
-
-        JPanel imagepanel = new JPanel();
-        imagepanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        imagepanel.setLayout(new BoxLayout(imagepanel, 0));
-        imagetext = new JTextField();
-        btimage = new JButton("Elegir");
-        //btimage.setForeground(this.settings.getBackgroundColor());
-        if(this.settings.image != null) {
-            imagetext.setText(this.settings.image);
-            btimage.setIcon(this.getIcon(this.settings.image));
+        JPanel imagePanel = new JPanel();
+        imagePanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        imagePanel.setLayout(new BoxLayout(imagePanel, 0));
+        imageText = new JTextField();
+        btImage = new JButton("Elegir");
+        if (this.settings.image != null) {
+            imageText.setText(this.settings.image);
+            btImage.setIcon(this.getIcon(this.settings.image));
         }
-        imagepanel.add(btimage);
-        imagepanel.add(imagetext);
-
-        portnumber = new JSpinner();
-
-        portnumber.setModel(new SpinnerNumberModel(this.settings.portnumber, 2000, null, 1));
-
-        portnumber.setEditor(new JSpinner.NumberEditor(portnumber, "0000"));
-
+        imagePanel.add(btImage);
+        imagePanel.add(imageText);
+        portNumber = new JSpinner();
+        portNumber.setModel(new SpinnerNumberModel(this.settings.portNumber, 2000, null, 1));
+        portNumber.setEditor(new JSpinner.NumberEditor(portNumber, "0000"));
         addSettingsBox(simplePanel, "Razón:", reason);
         addSettingsBox(simplePanel, "Lugar:", place);
         addSettingsBox(simplePanel, "Contacto:", contact);
-        addSettingsBox(simplePanel, "Formato de fecha:", dateformat);
-        addSettingsBox(simplePanel, "Mensaje de firma:", defaultsignmessage, new Dimension(150, 50));
-
-        addSettingsBox(simplePanel, "Página inicial:", pagenumber);
-        addSettingsBox(simplePanel, "Ancho de firma:", signwidth);
-        addSettingsBox(simplePanel, "Largo de firma:", signheight);
-
-        addSettingsBox(simplePanel, "Posición inicial X:", signx);
-        addSettingsBox(simplePanel, "Posición inicial Y:", signy);
-        addSettingsBox(simplePanel, "Tamaño de fuente:", fontsize);
+        addSettingsBox(simplePanel, "Formato de fecha:", dateFormat);
+        addSettingsBox(simplePanel, "Mensaje de firma:", defaultSignMessage, new Dimension(150, 50));
+        addSettingsBox(simplePanel, "Página inicial:", pageNumber);
+        addSettingsBox(simplePanel, "Ancho de firma:", signWidth);
+        addSettingsBox(simplePanel, "Largo de firma:", signHeight);
+        addSettingsBox(simplePanel, "Posición inicial X:", signX);
+        addSettingsBox(simplePanel, "Posición inicial Y:", signY);
+        addSettingsBox(simplePanel, "Tamaño de fuente:", fontSize);
         addSettingsBox(simplePanel, "Fuente:", font);
-        addSettingsBox(simplePanel, "Posición de fuente:", fontposition);
-
-        addSettingsBox(simplePanel, "Color de fuente:", fontcolorpanel);
-        addSettingsBox(simplePanel, "Color de fondo:", backgroundcolorpanel);
-        addSettingsBox(simplePanel, "Imagen de firma:", imagepanel);
-        addSettingsBox(simplePanel, "Puerto de escucha:", portnumber);
-
-        btfontcolor.addActionListener(new ActionListener() {
+        addSettingsBox(simplePanel, "Posición de fuente:", fontPosition);
+        addSettingsBox(simplePanel, "Color de fuente:", fontColorPanel);
+        addSettingsBox(simplePanel, "Color de fondo:", backgroundColorPanel);
+        addSettingsBox(simplePanel, "Imagen de firma:", imagePanel);
+        addSettingsBox(simplePanel, "Puerto de escucha:", portNumber);
+        btFontColor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 showFontColorPicker();
             }
         });
-
-        btbackgroundcolor.addActionListener(new ActionListener() {
+        btBackgroundColor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 showBackgroundColorPicker();
             }
         });
-
-        btimage.addActionListener(new ActionListener() {
+        btImage.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 showImagePicker();
             }
@@ -360,20 +279,16 @@ public class ConfigPanel extends ScrollableJPanel {
         configPanel = new JScrollPane(simplePanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         configPanel.setPreferredSize(new Dimension(700, 400));
         configPanel.setBorder(null);
-
-        // configPanel.setViewportView(panel);
         configPanel.setOpaque(false);
         configPanel.getViewport().setOpaque(false);
-
         add(configPanel, BorderLayout.CENTER);
     }
 
-
     private void changeLTA() {
-        if(uselta.isSelected()){
-            padesLevel.setSelectedItem("LTA");
-            xadesLevel.setSelectedItem("LTA");
-            cadesLevel.setSelectedItem("LTA");
+        if (useLTA.isSelected()){
+            pAdESLevel.setSelectedItem("LTA");
+            xAdESLevel.setSelectedItem("LTA");
+            cAdESLevel.setSelectedItem("LTA");
         }
     }
 
@@ -381,111 +296,78 @@ public class ConfigPanel extends ScrollableJPanel {
         advancedPanel = new ScrollableJPanel();
         advancedPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         advancedPanel.setLayout(new BoxLayout(advancedPanel, 1));
-
-        pdfImgScaleFactor = new JTextField();
-        pdfImgScaleFactor.setText(String.format("%.2f", this.settings.pdfImgScaleFactor));
-        pdfImgScaleFactor.setToolTipText("Factor de escala al presentar la previsualización de la página de pdf");
-
-
-        pluginsactive = new PluginManagerPlugin();
-        pluginsactive.setPreferredSize(new Dimension(450, 130));
-        advancedPanel.add(pluginsactive);
-
-        pkcs12panel = new Pkcs12ConfigPanel();
-        //pkcs12panel.setPreferredSize(new Dimension(450, 200));
-        pkcs12panel.setList(settings.pkcs12file);
-        advancedPanel.add(pkcs12panel);
-
-        String padesLeveloptions[] = { "T", "LT", "LTA" };
-        padesLevel = new JComboBox<String>(padesLeveloptions);
-        padesLevel.setSelectedItem(settings.padesLevel);
-        addSettingsBox(advancedPanel, "Nivel PAdES:", padesLevel);
-
-
-        String xadesLeveloptions[] = {"T", "LT", "LTA" };
-        xadesLevel = new JComboBox<String>(xadesLeveloptions);
-        xadesLevel.setSelectedItem(settings.xadesLevel);
-        addSettingsBox(advancedPanel, "Nivel XAdES:", xadesLevel);
-
-        String cadesLeveloptions[] = {"T", "LT", "LTA"};
-        cadesLevel = new JComboBox<String>(cadesLeveloptions);
-        cadesLevel.setSelectedItem(settings.cadesLevel);
-        addSettingsBox(advancedPanel, "Nivel CAdES:", cadesLevel);
-        addSettingsBox(advancedPanel, "Escala de previsualización del Pdf", pdfImgScaleFactor);
-
-
-        JPanel pkcs11modulepanel = new JPanel();
-        pkcs11modulepanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        pkcs11modulepanel.setLayout(new BoxLayout(pkcs11modulepanel, 0));
-        pkcs11moduletext = new JTextField();
-        btpkcs11module = new JButton("Elegir");
-        //btimage.setForeground(this.settings.getBackgroundColor());
-        if(this.settings.extrapkcs11Lib != null ) {
-            pkcs11moduletext.setText(this.settings.extrapkcs11Lib);
-
-        }
-        pkcs11modulepanel.add(pkcs11moduletext);
-        pkcs11modulepanel.add(btpkcs11module);
-        btpkcs11module.addActionListener(new ActionListener() {
+        pDFImgScaleFactor = new JTextField();
+        pDFImgScaleFactor.setText(String.format("%.2f", this.settings.pDFImgScaleFactor));
+        pDFImgScaleFactor.setToolTipText("Factor de escala al presentar la previsualización de la página de pdf");
+        pluginsActive = new PluginManagerPlugin();
+        pluginsActive.setPreferredSize(new Dimension(450, 130));
+        advancedPanel.add(pluginsActive);
+        pKCS12Panel = new Pkcs12ConfigPanel();
+        pKCS12Panel.setList(settings.pKCS12File);
+        advancedPanel.add(pKCS12Panel);
+        String pAdESLevelOptions[] = {"T", "LT", "LTA"};
+        pAdESLevel = new JComboBox<String>(pAdESLevelOptions);
+        pAdESLevel.setSelectedItem(settings.pAdESLevel);
+        addSettingsBox(advancedPanel, "Nivel PAdES:", pAdESLevel);
+        String xAdESLevelOptions[] = {"T", "LT", "LTA"};
+        xAdESLevel = new JComboBox<String>(xAdESLevelOptions);
+        xAdESLevel.setSelectedItem(settings.xAdESLevel);
+        addSettingsBox(advancedPanel, "Nivel XAdES:", xAdESLevel);
+        String cAdESLevelOptions[] = {"T", "LT", "LTA"};
+        cAdESLevel = new JComboBox<String>(cAdESLevelOptions);
+        cAdESLevel.setSelectedItem(settings.cAdESLevel);
+        addSettingsBox(advancedPanel, "Nivel CAdES:", cAdESLevel);
+        addSettingsBox(advancedPanel, "Escala de previsualización del Pdf", pDFImgScaleFactor);
+        JPanel pKCS11ModulePanel = new JPanel();
+        pKCS11ModulePanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        pKCS11ModulePanel.setLayout(new BoxLayout(pKCS11ModulePanel, 0));
+        pKCS11ModuleText = new JTextField();
+        btPKCS11Module = new JButton("Elegir");
+        if (this.settings.extraPKCS11Lib != null ) pKCS11ModuleText.setText(this.settings.extraPKCS11Lib);
+        pKCS11ModulePanel.add(pKCS11ModuleText);
+        pKCS11ModulePanel.add(btPKCS11Module);
+        btPKCS11Module.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 String path = getFilePath();
-                if(path != null) {
-                    pkcs11moduletext.setText(path);
-                }
+                if (path != null) pKCS11ModuleText.setText(path);
             }
         });
-
-
-        addSettingsBox(advancedPanel, "Archivo PKCS11", pkcs11modulepanel);
-        advancedPanel.add(new JLabel("El archivo pkcs11 se detecta automáticamente, "));
+        addSettingsBox(advancedPanel, "Archivo PKCS11", pKCS11ModulePanel);
+        advancedPanel.add(new JLabel("El archivo PKCS11 se detecta automáticamente, "));
         advancedPanel.add(new JLabel("pero podrá ser escrito usando el campo anterior"));
-        //settings.pdfImgScaleFactor
-        advancedbottomspace = new JPanel();
-        advancedPanel.add(advancedbottomspace);
+        advancedBottomSpace = new JPanel();
+        advancedPanel.add(advancedBottomSpace);
         changeLTA();
-
     }
     public ConfigPanel() {
         manager = SettingsManager.getInstance();
         settings = manager.getAndCreateSettings();
         setLayout(new BorderLayout(0, 0));
-
-        //JLabel lblValoresPorDefecto = new JLabel("Valores por defecto");
-        //lblValoresPorDefecto.setHorizontalAlignment(SwingConstants.CENTER);
-        //add(lblValoresPorDefecto, BorderLayout.NORTH);
-
         this.createSimpleConfigPanel();
         this.createAdvancedConfigPanel();
-
         JPanel optionswitchpanel = new JPanel();
         add(optionswitchpanel, BorderLayout.NORTH);
-
-        JButton showadvanced = new JButton("Opciones Avanzadas");
+        JButton showadvanced = new JButton("Opciones avanzadas");
         showadvanced.setOpaque(false);
         optionswitchpanel.add(showadvanced);
-
         showadvanced.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                isadvancedoptions = !isadvancedoptions;
-                if(isadvancedoptions) {
+                isAdvancedOptions = !isAdvancedOptions;
+                if (isAdvancedOptions) {
                     showadvanced.setText("Opciones básicas");
-                    //configPanel.getViewport().setVisible(false);
                     configPanel.setViewportView(advancedPanel);
                     simplePanel.setVisible(false);
                     advancedPanel.setVisible(true);
-                }else {
+                } else {
                     showadvanced.setText("Opciones Avanzadas");
-                    //configPanel.getViewport().setVisible(true);
                     configPanel.setViewportView(simplePanel);
-                      advancedPanel.setVisible(false);
+                    advancedPanel.setVisible(false);
                     simplePanel.setVisible(true);
                 }
             }
         });
-
         JPanel btns = new JPanel();
         add(btns, BorderLayout.SOUTH);
-
         JButton restartbtn = new JButton("Reiniciar");
         restartbtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
@@ -493,29 +375,22 @@ public class ConfigPanel extends ScrollableJPanel {
             }
         });
         btns.add(restartbtn);
-
         JButton applywithoutsave = new JButton("Aplicar sin guardar");
         applywithoutsave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 chargeSettings();
-                if(startserver.isSelected()) {
-                    showMessage("Modo remoto no se activará, debe guardar y reiniciar la aplicación.");
-                }
+                if (startServer.isSelected()) showMessage("Modo remoto no se activará, debe guardar y reiniciar la aplicación.");
             }
         });
         btns.add(applywithoutsave);
-
-        JButton btsave = new JButton("Guardar");
-        btsave.addActionListener(new ActionListener() {
+        JButton btSave = new JButton("Guardar");
+        btSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 saveSettings();
-                if(startserver.isSelected()) {
-                    showMessage("El Modo remoto se iniciará al reinicio de la aplicación, puede desactivarlo con el menú contextual obtenido con clic derecho.");
-                }
+                if (startServer.isSelected()) showMessage("El Modo remoto se iniciará al reinicio de la aplicación, puede desactivarlo con el menú contextual obtenido con clic derecho.");
             }
         });
-        btns.add(btsave);
-
+        btns.add(btSave);
     }
     public JLabel addSettingsBox(JPanel panel, String text, JComponent item) {
         return this.addSettingsBox(panel, text, item, new Dimension(150, 30));
@@ -534,98 +409,85 @@ public class ConfigPanel extends ScrollableJPanel {
         return label;
     }
     public void chargeSettings() {
-        settings.withoutvisiblesign = this.withoutvisiblesign.isSelected();
+        settings.withoutVisibleSign = this.withoutVisibleSign.isSelected();
         settings.reason = reason.getText();
         settings.place = place.getText();
         settings.contact = contact.getText();
-        settings.dateformat = this.dateformat.getText();
-        settings.defaultsignmessage = defaultsignmessage.getText();
-        settings.withoutvisiblesign = withoutvisiblesign.isSelected();
-        settings.uselta = uselta.isSelected();
-        settings.showlogs = this.showlogs.isSelected();
-        settings.overwritesourcefile = overwritesourcefile.isSelected();
-        settings.pagenumber = Integer.parseInt(pagenumber.getValue().toString());
-        settings.signwidth = Integer.parseInt(signwidth.getValue().toString());
-        settings.signheight = Integer.parseInt(signheight.getValue().toString());
-        settings.fontsize = Integer.parseInt(fontsize.getValue().toString());
-        settings.signx = Integer.parseInt(signx.getValue().toString());
-        settings.signy = Integer.parseInt(signy.getValue().toString());
+        settings.dateFormat = this.dateFormat.getText();
+        settings.defaultSignMessage = defaultSignMessage.getText();
+        settings.withoutVisibleSign = withoutVisibleSign.isSelected();
+        settings.useLTA = useLTA.isSelected();
+        settings.showLogs = this.showLogs.isSelected();
+        settings.overwriteSourceFile = overwriteSourceFile.isSelected();
+        settings.pageNumber = Integer.parseInt(pageNumber.getValue().toString());
+        settings.signWidth = Integer.parseInt(signWidth.getValue().toString());
+        settings.signHeight = Integer.parseInt(signHeight.getValue().toString());
+        settings.fontSize = Integer.parseInt(fontSize.getValue().toString());
+        settings.signX = Integer.parseInt(signX.getValue().toString());
+        settings.signY = Integer.parseInt(signY.getValue().toString());
         settings.font = font.getSelectedItem().toString();
-        settings.fontalignment = fontposition.getSelectedItem().toString();
-        settings.fontcolor = fontcolor.getText();
-        settings.backgroundcolor = backgroundcolor.getText();
-        settings.image = imagetext.getText();
-        settings.startserver = this.startserver.isSelected();
-        settings.portnumber = Integer.parseInt(portnumber.getValue().toString());
-        settings.padesLevel = padesLevel.getSelectedItem().toString();
-        settings.xadesLevel = xadesLevel.getSelectedItem().toString();
-        settings.cadesLevel = cadesLevel.getSelectedItem().toString();
-        settings.pdfImgScaleFactor = Float.parseFloat(pdfImgScaleFactor.getText().replace(",", "."));
-        settings.pkcs12file = pkcs12panel.getList();
-        settings.extrapkcs11Lib = pkcs11moduletext.getText();
-        if(settings.extrapkcs11Lib.isEmpty()) settings.extrapkcs11Lib = null;
-
-        settings.active_plugins = pluginsactive.getActivePlugin();
+        settings.fontAlignment = fontPosition.getSelectedItem().toString();
+        settings.fontColor = fontColor.getText();
+        settings.backgroundColor = backgroundColor.getText();
+        settings.image = imageText.getText();
+        settings.startServer = this.startServer.isSelected();
+        settings.portNumber = Integer.parseInt(portNumber.getValue().toString());
+        settings.pAdESLevel = pAdESLevel.getSelectedItem().toString();
+        settings.xAdESLevel = xAdESLevel.getSelectedItem().toString();
+        settings.cAdESLevel = cAdESLevel.getSelectedItem().toString();
+        settings.pDFImgScaleFactor = Float.parseFloat(pDFImgScaleFactor.getText().replace(",", "."));
+        settings.pKCS12File = pKCS12Panel.getList();
+        settings.extraPKCS11Lib = pKCS11ModuleText.getText();
+        if (settings.extraPKCS11Lib.isEmpty()) settings.extraPKCS11Lib = null;
+        settings.activePlugins = pluginsActive.getActivePlugin();
         settings.updateConfig();
     }
 
     public void restartSettings() {
         Settings settings = new Settings();
-
-        withoutvisiblesign.setSelected(settings.withoutvisiblesign);
-        uselta.setSelected(settings.uselta);
-        showlogs.setSelected(settings.showlogs);
-        overwritesourcefile.setSelected(settings.overwritesourcefile);
+        withoutVisibleSign.setSelected(settings.withoutVisibleSign);
+        useLTA.setSelected(settings.useLTA);
+        showLogs.setSelected(settings.showLogs);
+        overwriteSourceFile.setSelected(settings.overwriteSourceFile);
         reason.setText(settings.reason);
         place.setText(settings.place);
         contact.setText(settings.contact);
-        dateformat.setText(settings.dateformat);
-        defaultsignmessage.setText(settings.defaultsignmessage);
-        pagenumber.setValue(settings.pagenumber);
-        signwidth.setValue(settings.signwidth);
-        signheight.setValue(settings.signheight);
-        signx.setValue(settings.signx);
-        signy.setValue(settings.signy);
-        fontsize.setValue(settings.fontsize);
+        dateFormat.setText(settings.dateFormat);
+        defaultSignMessage.setText(settings.defaultSignMessage);
+        pageNumber.setValue(settings.pageNumber);
+        signWidth.setValue(settings.signWidth);
+        signHeight.setValue(settings.signHeight);
+        signX.setValue(settings.signX);
+        signY.setValue(settings.signY);
+        fontSize.setValue(settings.fontSize);
         font.setSelectedItem(settings.font);
-        fontcolor.setText(settings.fontcolor);
-        backgroundcolor.setText(settings.backgroundcolor);
-        setIcons(btfontcolor, fontcolor.getText(), this.settings.getFontColor());
-        setIcons(btbackgroundcolor, backgroundcolor.getText(), this.settings.getBackgroundColor());
-        startserver.setSelected(settings.startserver);
-        portnumber.setValue(settings.portnumber);
-        fontposition.setSelectedItem(settings.fontalignment);
-        //btbackgroundcolor.setIcon(createImageIcon(this.settings.getBackgroundColor()));
-        //btfontcolor.setForeground(settings.getFontColor());
-        //btfontcolor.setIcon(createImageIcon(this.settings.getFontColor()));
-
-        padesLevel.setSelectedItem(settings.padesLevel);
-        xadesLevel.setSelectedItem(settings.xadesLevel);
-        cadesLevel.setSelectedItem(settings.cadesLevel);
-        pdfImgScaleFactor.setText(String.format("%.2f", settings.pdfImgScaleFactor));
-        if(settings.image != null) {
-            imagetext.setText(settings.image);
-            btimage.setIcon(this.getIcon(settings.image));
+        fontColor.setText(settings.fontColor);
+        backgroundColor.setText(settings.backgroundColor);
+        setIcons(btFontColor, fontColor.getText(), this.settings.getFontColor());
+        setIcons(btBackgroundColor, backgroundColor.getText(), this.settings.getBackgroundColor());
+        startServer.setSelected(settings.startServer);
+        portNumber.setValue(settings.portNumber);
+        fontPosition.setSelectedItem(settings.fontAlignment);
+        pAdESLevel.setSelectedItem(settings.pAdESLevel);
+        xAdESLevel.setSelectedItem(settings.xAdESLevel);
+        cAdESLevel.setSelectedItem(settings.cAdESLevel);
+        pDFImgScaleFactor.setText(String.format("%.2f", settings.pDFImgScaleFactor));
+        if (settings.image != null) {
+            imageText.setText(settings.image);
+            btImage.setIcon(this.getIcon(settings.image));
         } else {
-            imagetext.setText("");
-            btimage.setIcon(createImageIcon(new Color(255, 255, 255, 0)));
+            imageText.setText("");
+            btImage.setIcon(createImageIcon(new Color(255, 255, 255, 0)));
         }
-
-        if(settings.pkcs12file != null) pkcs12panel.setList(settings.pkcs12file);
-
-        if(settings.extrapkcs11Lib != null) {  pkcs11moduletext.setText(settings.extrapkcs11Lib);
-        }else{ pkcs11moduletext.setText(""); };
-
-        pluginsactive.loadPlugins(settings);
-
+        if (settings.pKCS12File != null) pKCS12Panel.setList(settings.pKCS12File);
+        if (settings.extraPKCS11Lib != null) pKCS11ModuleText.setText(settings.extraPKCS11Lib);
+        else pKCS11ModuleText.setText("");
+        pluginsActive.loadPlugins(settings);
     }
 
     private void setIcons(JButton component, String text, Color color) {
-        if(text.equalsIgnoreCase("transparente")) {
-            component.setIcon(getTransparentImageIcon());
-        } else {
-          component.setIcon(createImageIcon(color));
-        }
+        if (text.equalsIgnoreCase("transparente")) component.setIcon(getTransparentImageIcon());
+        else component.setIcon(createImageIcon(color));
     }
 
     public void saveSettings() {
@@ -636,36 +498,30 @@ public class ConfigPanel extends ScrollableJPanel {
     public void showFontColorPicker() {
         Color newColor = JColorChooser.showDialog(this, "Color del texto", this.settings.getFontColor());
         if (newColor != null) {
-            //btfontcolor.setForeground(newColor);
-            //btfontcolor.setIcon(createImageIcon(newColor));
             String buf = Integer.toHexString(newColor.getRGB());
-            String hex = "#"+buf.substring(buf.length()-6);
-            fontcolor.setText(hex);
+            String hex = "#" + buf.substring(buf.length() - 6);
+            fontColor.setText(hex);
         }
     }
 
     public void showBackgroundColorPicker() {
         Color newColor = JColorChooser.showDialog(this, "Color de fondo", this.settings.getBackgroundColor());
         if (newColor != null) {
-            //btBackgroundcolor.setIcon(createImageIcon(newColor));
             String buf = Integer.toHexString(newColor.getRGB());
-            String hex = "#"+buf.substring(buf.length()-6);
-            backgroundcolor.setText(hex);
+            String hex = "#" + buf.substring(buf.length() - 6);
+            backgroundColor.setText(hex);
         }
     }
 
     public String getFilePath() {
-        String dev = null;
         FileDialog loadDialog = new FileDialog(new JDialog(), "Seleccionar un archivo");
         loadDialog.setMultipleMode(false);
         loadDialog.setLocationRelativeTo(null);
         loadDialog.setVisible(true);
         loadDialog.dispose();
         File[] files = loadDialog.getFiles();
-        if(files.length>=1) {
-            dev=files[0].toString();
-        }
-        return dev;
+        if (files.length > 0) return files[0].toString();
+        else return null;
     }
 
     public void showImagePicker() {
@@ -673,48 +529,38 @@ public class ConfigPanel extends ScrollableJPanel {
         fileChooser.addChoosableFileFilter(new ImageFilter());
         fileChooser.setAcceptAllFileFilterUsed(false);
         int option = fileChooser.showOpenDialog(this);
-        if(option == JFileChooser.APPROVE_OPTION) {
+        if (option == JFileChooser.APPROVE_OPTION) {
            File file = fileChooser.getSelectedFile();
            String path = file.getAbsolutePath();
-           imagetext.setText(path);
-           btimage.setIcon(this.getIcon(path));
+           imageText.setText(path);
+           btImage.setIcon(this.getIcon(path));
         }
     }
 
     public Icon getIcon(String path) {
-        Icon  icon = new ImageIcon(new ImageIcon(path).getImage().getScaledInstance(iconsize, iconsize, Image.SCALE_DEFAULT));
-        return icon;
+        return new ImageIcon(new ImageIcon(path).getImage().getScaledInstance(iconSize, iconSize, Image.SCALE_DEFAULT));
     }
 
     public Icon getTransparentImageIcon() {
-        BufferedImage image = new BufferedImage(iconsize, iconsize, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image = new BufferedImage(iconSize, iconSize, BufferedImage.TYPE_INT_ARGB);
          Graphics2D graphics = image.createGraphics();
-
          graphics.setColor(new Color(0, 0, 0, 100));
-
-         for (int x=4; x<28; x+=8)
-             for (int y=4; y<28; y+=8) graphics.fillRect(x, y, 4, 4);
-
+         for (int x = 4; x < 28; x += 8) for (int y = 4; y < 28; y += 8) graphics.fillRect(x, y, 4, 4);
          graphics.setColor(new Color(130, 130, 130));
-
-         for (int x = 8; x < 28; x += 8)
-             for (int y = 8; y < 28; y += 8) graphics.fillRect(x, y, 4, 4);
-         //graphics.setBackground(new Color(255, 255, 255, 0));
+         for (int x = 8; x < 28; x += 8) for (int y = 8; y < 28; y += 8) graphics.fillRect(x, y, 4, 4);
          return new ImageIcon(image);
     }
 
     public ImageIcon createImageIcon(Color color) {
-        BufferedImage image = new BufferedImage(iconsize, iconsize, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image = new BufferedImage(iconSize, iconSize, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = image.createGraphics();
         graphics.setPaint(new Color(255, 255, 255, 0));
         graphics.setBackground(new Color(255, 255, 255, 0));
-        graphics.fillRect (0, 0, iconsize, iconsize);
-
+        graphics.fillRect(0, 0, iconSize, iconSize);
         graphics.setColor(color);
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        Ellipse2D.Float circle = new Ellipse2D.Float(4F, 6F, iconsize-15, iconsize-15);
+        Ellipse2D.Float circle = new Ellipse2D.Float(4F, 6F, iconSize - 15, iconSize - 15);
         graphics.fill(circle);
-
         return new ImageIcon(image);
     }
 
@@ -732,41 +578,21 @@ class ImageFilter extends FileFilter {
    public final static String TIF = "tif";
    public final static String PNG = "png";
 
-   @Override
    public boolean accept(File f) {
-      if (f.isDirectory()) {
-         return true;
-      }
-
+      if (f.isDirectory()) return true;
       String extension = getExtension(f);
-      if (extension != null) {
-         if (extension.equals(TIFF) ||
-            extension.equals(TIF) ||
-            extension.equals(GIF) ||
-            extension.equals(JPEG) ||
-            extension.equals(JPG) ||
-            extension.equals(PNG)) {
-            return true;
-         } else {
-            return false;
-         }
-      }
+      if (extension != null) if (extension.equals(TIFF) || extension.equals(TIF) || extension.equals(GIF) || extension.equals(JPEG) || extension.equals(JPG) || extension.equals(PNG)) return true;
       return false;
    }
 
-   @Override
    public String getDescription() {
       return "Image Only";
    }
 
    String getExtension(File f) {
-      String ext = null;
       String s = f.getName();
       int i = s.lastIndexOf('.');
-
-      if (i > 0 &&  i < s.length() - 1) {
-         ext = s.substring(i+1).toLowerCase();
-      }
-      return ext;
+      if (i > 0 && i < s.length() - 1) return s.substring(i + 1).toLowerCase();
+      else return null;
    }
 }

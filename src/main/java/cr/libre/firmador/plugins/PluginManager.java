@@ -40,7 +40,7 @@ public class PluginManager implements Runnable {
     }
 
     private void loadPlugins() {
-        for (String name : settings.active_plugins) {
+        for (String name : settings.activePlugins) {
 
             try {
                 Class<?> pluginClass = Class.forName(name, true, Plugin.class.getClassLoader());

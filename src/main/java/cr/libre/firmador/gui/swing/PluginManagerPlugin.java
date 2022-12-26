@@ -54,10 +54,10 @@ public class PluginManagerPlugin extends JPanel {
 
         activeModel.clear();
         availableModel.clear();
-        for(String item: settings.active_plugins){
+        for(String item: settings.activePlugins){
             activeModel.addElement(item);
         }
-        for(String item: settings.available_plugins) {
+        for(String item: settings.availablePlugins) {
             if(!activeModel.contains(item)) {
                 availableModel.addElement(item);
             }

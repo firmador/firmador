@@ -41,7 +41,6 @@ public class CardSignInfo {
     private PasswordProtection pin;
     private int cardType;
 
-
     public CardSignInfo(int cardType, String identification, String firstName, String lastName, String commonName, String organization, String expires,
             String certSerialNumber, String tokenSerialNumber, long slotID) {
         super();

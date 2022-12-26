@@ -238,8 +238,8 @@ public class BaseSwing {
             SpinnerNumberModel model = ((SpinnerNumberModel)signPanel.getPageSpinner().getModel());
             model.setMinimum(1);
             model.setMaximum(pages);
-            if (settings.pagenumber <= pages && settings.pagenumber > 0) {
-                signPanel.getPageSpinner().setValue(settings.pagenumber);
+            if (settings.pageNumber <= pages && settings.pageNumber > 0) {
+                signPanel.getPageSpinner().setValue(settings.pageNumber);
             } else {
                 signPanel.getPageSpinner().setValue(1);
             }

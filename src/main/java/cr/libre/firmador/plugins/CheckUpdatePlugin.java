@@ -35,7 +35,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.NoSuchAlgorithmException;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -52,17 +51,13 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(CheckUpdatePlugin.class);
     public boolean isrunnable = true;
     private Settings settings;
+
     private class ExecutorWorker extends SwingWorker<Void, Void> {
-
-
         protected String getFileDigest(Path jarfile) throws IOException {
             LOG.info("Reading file for sha digest: "+jarfile.toString());
-            Digest digest = new Digest(DigestAlgorithm.SHA256,
-                    DSSUtils.digest(DigestAlgorithm.SHA256, Files.readAllBytes(jarfile)));
-
+            Digest digest = new Digest(DigestAlgorithm.SHA256, DSSUtils.digest(DigestAlgorithm.SHA256, Files.readAllBytes(jarfile)));
             return  digest.getHexValue().toUpperCase();
         }
-
 
         protected Void updateDevelopment() throws IOException, URISyntaxException {
             String remoteHash = getRemoteHash();
@@ -70,20 +65,20 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
             String localHash = getFileDigest(getJarPath());
             LOG.info("Local SHA256: " + localHash);
 
-            if(!remoteHash.contains(localHash)) {
-                String message = "Hay una versión nueva disponible, por favor actualice con prontitud a la nueva versión desde: <br> "+settings.base_url;
+            if (!remoteHash.contains(localHash)) {
+                String message = "Hay una versión nueva disponible, por favor actualice con prontitud a la nueva versión desde: <br> " + settings.baseUrl;
 
-                if(canWritePath()) {
+                if (canWritePath()) {
                     int answer = JOptionPane.showConfirmDialog(null, new CopyableJLabel(message), "Desea descargar la actualización de Firmador disponible", JOptionPane.YES_NO_OPTION);
-                    if(answer== JOptionPane.YES_OPTION) {
+                    if (answer== JOptionPane.YES_OPTION) {
                         try {
                             updateJar();
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             LOG.error(e.getMessage());
                             e.printStackTrace();
                         }
                     }
-                }else {
+                } else {
                     JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Actualización de Firmador disponible", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
@@ -104,24 +99,23 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
             }
             String responseversion = textBuilder.toString();
             String version=settings.getVersion();
-            if(!version.contentEquals(responseversion)) {
-                String message = "Hay una versión nueva disponible, por favor actualice con prontitud a la nueva versión desde: <br> "+settings.base_url;
+            if (!version.contentEquals(responseversion)) {
+                String message = "Hay una versión nueva disponible, por favor actualice con prontitud a la nueva versión desde: <br> " + settings.baseUrl;
 
-                if(canWritePath()) {
+                if (canWritePath()) {
                     int answer = JOptionPane.showConfirmDialog(null, new CopyableJLabel(message), "Desea descargar la actualización de Firmador disponible", JOptionPane.YES_NO_OPTION);
-                    if(answer== JOptionPane.YES_OPTION) {
+                    if (answer == JOptionPane.YES_OPTION) {
                         try {
                             updateJar();
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             LOG.error(e.getMessage());
                             e.printStackTrace();
                         }
                     }
-                }else {
+                } else {
                     JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Actualización de Firmador disponible", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
-
             return null;
         }
 
@@ -130,18 +124,16 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
             //try {
                 //Thread.sleep(10*1000);
             //} catch (InterruptedException e1) { e1.printStackTrace();}
-
             settings = SettingsManager.getInstance().getAndCreateSettings();
             String version=settings.getVersion();
             try {
-                if(version.contains("SNAPSHOT")) {
+                if (version.contains("SNAPSHOT")) {
                     LOG.info("Updating development version");
                     updateDevelopment();
-                }else {
+                } else {
                     LOG.info("Updating release version");
                     updateRelease();
                 }
-
             } catch (IOException e) {
                 LOG.error(e.getMessage());
                 e.printStackTrace();
@@ -159,28 +151,21 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
                 URL url = new URL(settings.getChecksumUrl());
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 StringBuilder textBuilder = new StringBuilder();
-                try (Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),
-                        Charset.forName(StandardCharsets.UTF_8.name())))) {
+                try (Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), Charset.forName(StandardCharsets.UTF_8.name())))) {
                     int c = 0;
-                    while ((c = reader.read()) != -1) {
-                        textBuilder.append((char) c);
-                    }
+                    while ((c = reader.read()) != -1) textBuilder.append((char) c);
                 }
                 hash = textBuilder.toString();
             } catch (MalformedURLException e) {
                 LOG.error(e.toString());
-            }catch (IOException e) {
+            } catch (IOException e) {
                 LOG.error(e.toString());
             }
             return hash.toUpperCase();
         }
 
-        public Path getJarPath() throws URISyntaxException{
-            return Paths.get(getClass()
-              .getProtectionDomain()
-              .getCodeSource()
-              .getLocation()
-              .toURI());
+        public Path getJarPath() throws URISyntaxException {
+            return Paths.get(getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
         }
 
         public boolean canWritePath()  {
@@ -194,9 +179,9 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
                 dev=false;
             }
             return dev;
-
         }
-        public boolean checkHash(Path tmpfile) throws IOException, NoSuchAlgorithmException {
+
+        public boolean checkHash(Path tmpfile) throws IOException {
             String hexsha = getFileDigest(tmpfile);
             LOG.info("Sha256 of Downloaded file "+hexsha);
             String remoteCheck = getRemoteHash();
@@ -208,7 +193,6 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
         public void copyFile(Path source, Path dest) throws IOException {
             byte[] data = Files.readAllBytes(source);
             Files.write(dest, data);
-
         }
 
         public void updateJar() throws Exception {
@@ -217,7 +201,6 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
             LOG.info("Downloading from "+downloadurl);
             URL url = new URL(downloadurl);
             Path tempFile = Files.createTempFile(null, null);
-
             BufferedInputStream in = new BufferedInputStream(url.openStream());
             FileOutputStream fileOutputStream = new FileOutputStream(tempFile.toString());
             byte dataBuffer[] = new byte[1024];
@@ -225,14 +208,10 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
             while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
             }
-
             fileOutputStream.close();
-
-
-            if(checkHash(tempFile)) {
+            if (checkHash(tempFile)) {
                 Path jarfile = getJarPath();
-                LOG.info("Copying downloader file to "+jarfile.toString());
-
+                LOG.info("Copying downloader file to " + jarfile.toString());
                 copyFile(tempFile, jarfile);
                 //Files.copy(tempFile, jarfile, StandardCopyOption.REPLACE_EXISTING);
                 File file = new File(jarfile.toString());
@@ -256,13 +235,14 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
     @Override
     public void stop() {
         LOG.info("Stop CheckUpdatePlugin");
-
     }
+
     @Override
     public void run() {
         ExecutorWorker task = new ExecutorWorker();
         task.execute();
     }
+
     @Override
     public boolean getIsRunnable() {
         return true;
