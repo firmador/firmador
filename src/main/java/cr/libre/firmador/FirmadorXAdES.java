@@ -105,7 +105,7 @@ public class FirmadorXAdES extends CRSigner {
                 String[] receiptTypes = {"FacturaElectronica", "TiqueteElectronico", "NotaDebitoElectronica", "NotaCreditoElectronica", "FacturaElectronicaCompra", "FacturaElectronicaExportacion", "MensajeReceptor"};
                 if (Arrays.asList(receiptTypes).contains(electronicReceipt)) {
                     Policy policy = new Policy(); // Costa Rica tax office electronic receipts signature policy
-                    policy.setId("https://www.hacienda.go.cr/ATV/ComprobanteElectronico/docs/esquemas/2016/v4.3/Resoluci%C3%B3n_General_sobre_disposiciones_t%C3%A9cnicas_comprobantes_electr%C3%B3nicos_para_efectos_tributarios.pdf");
+                    policy.setId("https://atv.hacienda.go.cr/ATV/ComprobanteElectronico/docs/esquemas/2016/v4.3/Resoluci%C3%B3n_General_sobre_disposiciones_t%C3%A9cnicas_comprobantes_electr%C3%B3nicos_para_efectos_tributarios.pdf");
                     policy.setDigestAlgorithm(parameters.getDigestAlgorithm());
                     policy.setDigestValue(Utils.fromBase64("0h7Q3dFHhu0bHbcZEgVc07cEcDlquUeG08HG6Iototo="));
                     parameters.bLevel().setSignaturePolicy(policy);

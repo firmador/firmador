@@ -64,7 +64,7 @@ public class Validator {
             if (Arrays.asList(receiptTypes).contains(electronicReceipt)) {
                 SignaturePolicyProvider signaturePolicyProvider = new SignaturePolicyProvider(); // Custom policy provider for offline policy validation (no PDF download required)
                 Map<String, DSSDocument> signaturePoliciesById = new HashMap<>(); // FIXME support more versions by checking schema version later, not just v4.3
-                String policyId = "https://www.hacienda.go.cr/ATV/ComprobanteElectronico/docs/esquemas/2016/v4.3/Resoluci%C3%B3n_General_sobre_disposiciones_t%C3%A9cnicas_comprobantes_electr%C3%B3nicos_para_efectos_tributarios.pdf";
+                String policyId = "https://atv.hacienda.go.cr/ATV/ComprobanteElectronico/docs/esquemas/2016/v4.3/Resoluci%C3%B3n_General_sobre_disposiciones_t%C3%A9cnicas_comprobantes_electr%C3%B3nicos_para_efectos_tributarios.pdf";
                 DSSDocument policyDocument = new InMemoryDocument(this.getClass().getClassLoader().getResourceAsStream("Resolución_General_sobre_disposiciones_técnicas_comprobantes_electrónicos_para_efectos_tributarios.pdf"));
                 signaturePoliciesById.put(policyId, policyDocument);
                 signaturePolicyProvider.setSignaturePoliciesById(signaturePoliciesById);
