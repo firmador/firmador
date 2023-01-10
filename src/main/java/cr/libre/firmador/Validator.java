@@ -63,10 +63,17 @@ public class Validator {
             String[] receiptTypes = {"FacturaElectronica", "TiqueteElectronico", "NotaDebitoElectronica", "NotaCreditoElectronica", "FacturaElectronicaCompra", "FacturaElectronicaExportacion", "MensajeReceptor"};
             if (Arrays.asList(receiptTypes).contains(electronicReceipt)) {
                 SignaturePolicyProvider signaturePolicyProvider = new SignaturePolicyProvider(); // Custom policy provider for offline policy validation (no PDF download required)
-                Map<String, DSSDocument> signaturePoliciesById = new HashMap<>(); // FIXME support more versions by checking schema version later, not just v4.3
-                String policyId = "https://atv.hacienda.go.cr/ATV/ComprobanteElectronico/docs/esquemas/2016/v4.3/Resoluci%C3%B3n_General_sobre_disposiciones_t%C3%A9cnicas_comprobantes_electr%C3%B3nicos_para_efectos_tributarios.pdf";
-                DSSDocument policyDocument = new InMemoryDocument(this.getClass().getClassLoader().getResourceAsStream("Resolución_General_sobre_disposiciones_técnicas_comprobantes_electrónicos_para_efectos_tributarios.pdf"));
-                signaturePoliciesById.put(policyId, policyDocument);
+                Map<String, DSSDocument> signaturePoliciesById = new HashMap<>();
+                signaturePoliciesById.put("https://atv.hacienda.go.cr/ATV/ComprobanteElectronico/docs/esquemas/2016/v4.3/Resoluci%C3%B3n_General_sobre_disposiciones_t%C3%A9cnicas_comprobantes_electr%C3%B3nicos_para_efectos_tributarios.pdf",
+                    new InMemoryDocument(this.getClass().getClassLoader().getResourceAsStream("dgt/Resolución_General_sobre_disposiciones_técnicas_comprobantes_electrónicos_para_efectos_tributarios.pdf"))); // 4.3 after URL change
+                signaturePoliciesById.put("https://www.hacienda.go.cr/ATV/ComprobanteElectronico/docs/esquemas/2016/v4.3/Resoluci%C3%B3n_General_sobre_disposiciones_t%C3%A9cnicas_comprobantes_electr%C3%B3nicos_para_efectos_tributarios.pdf",
+                    new InMemoryDocument(this.getClass().getClassLoader().getResourceAsStream("dgt/Resolución_General_sobre_disposiciones_técnicas_comprobantes_electrónicos_para_efectos_tributarios.pdf"))); // 4.3 before URL change
+                signaturePoliciesById.put("https://www.hacienda.go.cr/ATV/ComprobanteElectronico/docs/esquemas/2016/v4.2/ResolucionComprobantesElectronicosDGT-R-48-2016_4.2.pdf",
+                    new InMemoryDocument(this.getClass().getClassLoader().getResourceAsStream("dgt/ResolucionComprobantesElectronicosDGT-R-48-2016_4.2.pdf"))); // This copy includes 2017 modifications
+                signaturePoliciesById.put("https://www.hacienda.go.cr/ATV/ComprobanteElectronico/docs/esquemas/2016/v4.1/Resolucion_Comprobantes_Electronicos_DGT-R-48-2016_v4.1.pdf",
+                    new InMemoryDocument(this.getClass().getClassLoader().getResourceAsStream("dgt/Resolucion_Comprobantes_Electronicos_DGT-R-48-2016_v4.1.pdf"))); // This copy includes 2017 modifications
+                signaturePoliciesById.put("https://www.hacienda.go.cr/ATV/ComprobanteElectronico/docs/esquemas/2016/v4/Resolucion%20Comprobantes%20Electronicos%20%20DGT-R-48-2016.pdf",
+                    new InMemoryDocument(this.getClass().getClassLoader().getResourceAsStream("dgt/Resolucion Comprobantes Electronicos  DGT-R-48-2016.pdf")));
                 signaturePolicyProvider.setSignaturePoliciesById(signaturePoliciesById);
                 documentValidator.setSignaturePolicyProvider(signaturePolicyProvider);
             }
