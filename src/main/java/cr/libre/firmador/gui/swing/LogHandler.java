@@ -31,7 +31,7 @@ import java.util.logging.SimpleFormatter;
 
 public class LogHandler extends Handler {
 
-      private LogginFrame writter = null;
+      private LoggingFrame writter = null;
 
       //the singleton instance
       private static LogHandler handler = null;
@@ -40,7 +40,7 @@ public class LogHandler extends Handler {
         configure();
 
       }
-      public void setWritter(LogginFrame writter) {
+      public void setWritter(LoggingFrame writter) {
           this.writter = writter;
       }
 

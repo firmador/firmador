@@ -50,7 +50,7 @@ import cr.libre.firmador.Validator;
 import cr.libre.firmador.gui.swing.CopyableJLabel;
 import cr.libre.firmador.gui.swing.ExecutorWorkerInterface;
 import cr.libre.firmador.gui.swing.LogHandler;
-import cr.libre.firmador.gui.swing.LogginFrame;
+import cr.libre.firmador.gui.swing.LoggingFrame;
 import cr.libre.firmador.gui.swing.RequestPinWindow;
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
@@ -111,7 +111,7 @@ public class BaseSwing {
             this.showError(Throwables.getRootCause(e));
         }
         settings = SettingsManager.getInstance().getAndCreateSettings();
-        LogginFrame loggingFrame = new LogginFrame();
+        LoggingFrame loggingFrame = new LoggingFrame();
         LogHandler handler = LogHandler.getInstance();
         handler.setWritter(loggingFrame);
         handler.register();
