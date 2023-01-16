@@ -64,6 +64,8 @@ public class SmartCardDetector implements  ConfigListener {
         try {
             cards = readListSmartCard();
         } catch (Throwable e) {
+            LOG.info("readListSmartCard thrown", e);
+            e.printStackTrace();
             cards = new ArrayList<CardSignInfo>();
         }
         File f;
@@ -84,11 +86,13 @@ public class SmartCardDetector implements  ConfigListener {
             pInitArgs.flags = CKF_OS_LOCKING_OK;
             pkcs11 = PKCS11.getInstance(lib, functionList, pInitArgs, false);
         } catch (PKCS11Exception e) {
+            LOG.debug("C_GetFunctionList didn't like CKF_OS_LOCKING_OK on pInitArgs", e);
+            e.printStackTrace();
             pInitArgs.flags = 0;
             pkcs11 = PKCS11.getInstance(lib, functionList, pInitArgs, false);
         }
         CK_INFO info = pkcs11.C_GetInfo();
-        LOG.debug("Interface: " + new String(info.libraryDescription).trim());
+        LOG.info("Interface: " + new String(info.libraryDescription).trim());
         Boolean tokenPresent = true;
         for (long slotID : pkcs11.C_GetSlotList(tokenPresent)) {
             CK_SLOT_INFO slotInfo = pkcs11.C_GetSlotInfo(slotID);
@@ -96,7 +100,7 @@ public class SmartCardDetector implements  ConfigListener {
             if ((slotInfo.flags & CKF_TOKEN_PRESENT) != 0) { // Not required if tokenPresent = true, condition could be removed if true, it's just for testing empty slot enumeration
                 try { // TODO: slotID may be reused after switching card! try CK_SESSION_INFO sessionInfo = pkcs11.C_GetSessionInfo(hSession); and catch PCKCS11Exception meaning invalid session instead!
                     CK_TOKEN_INFO tokenInfo = pkcs11.C_GetTokenInfo(slotID);
-                    LOG.debug("Token: " + new String(tokenInfo.label).trim() + " (" + new String(tokenInfo.serialNumber).trim() + ")");
+                    LOG.info("Token: " + new String(tokenInfo.label).trim() + " (" + new String(tokenInfo.serialNumber).trim() + ")");
                     CK_ATTRIBUTE[] pTemplate = { new CK_ATTRIBUTE(CKA_CLASS, CKO_CERTIFICATE) };
                     long ulMaxObjectCount = 32;
                     long hSession = pkcs11.C_OpenSession(slotID, CKF_SERIAL_SESSION, null, null); // TODO verify slot session just after getting PIN but just before login
@@ -141,10 +145,11 @@ public class SmartCardDetector implements  ConfigListener {
                     pkcs11.C_CloseSession(hSession);
                 } catch (PKCS11Exception e) {
                     if (e.getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) {
-                        System.err.println("Slot reports token is present but not recognized by the cryptoki library");
+                        LOG.info("Slot reports token is present but not recognized by the cryptoki library");
+                        e.printStackTrace();
                     } else throw e;
                 }
-            } else System.out.println("No token present in this slot"); // Condition could be removed
+            } else LOG.info("No token present in this slot"); // Condition could be removed
         }
         return cardinfo;
     }

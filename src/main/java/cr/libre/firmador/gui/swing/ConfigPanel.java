@@ -180,6 +180,7 @@ public class ConfigPanel extends ScrollableJPanel {
                     } else btFontColor.setIcon(getTransparentImageIcon());
                 } catch (Exception e) {
                     LOG.error("Error cambiando color de fuente", e);
+                    e.printStackTrace();
                 }
             }
             public void insertUpdate(DocumentEvent e) {
@@ -218,6 +219,7 @@ public class ConfigPanel extends ScrollableJPanel {
                     } else btBackgroundColor.setIcon(getTransparentImageIcon());
                 } catch (Exception e) {
                     LOG.error("Error cambiando color de fondo", e);
+                    e.printStackTrace();
                 }
             }
             public void insertUpdate(DocumentEvent e) {

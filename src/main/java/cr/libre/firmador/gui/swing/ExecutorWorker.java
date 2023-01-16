@@ -72,7 +72,8 @@ public class ExecutorWorker extends Thread implements PropertyChangeListener, Ex
         try {
             Thread.sleep(500); // change the thread to show progress bar.
         } catch (InterruptedException e) {
-            //e.printStackTrace();
+            LOG.debug("Interrupción al correr el estado del progreso", e);
+            e.printStackTrace();
         }
     }
 

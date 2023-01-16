@@ -74,7 +74,7 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
                         try {
                             updateJar();
                         } catch (Throwable e) {
-                            LOG.error(e.getMessage());
+                            LOG.error("Error al actualizar el JAR", e.getMessage());
                             e.printStackTrace();
                         }
                     }
@@ -108,7 +108,7 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
                         try {
                             updateJar();
                         } catch (Throwable e) {
-                            LOG.error(e.getMessage());
+                            LOG.error("Error al actualizar el JAR", e.getMessage());
                             e.printStackTrace();
                         }
                     }
@@ -135,10 +135,10 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
                     updateRelease();
                 }
             } catch (IOException e) {
-                LOG.error(e.getMessage());
+                LOG.error("Error de E/S al actualizar versión", e.getMessage());
                 e.printStackTrace();
             } catch (URISyntaxException e) {
-                LOG.error(e.getMessage());
+                LOG.error("Error en URL al actualizar versión", e.getMessage());
                 e.printStackTrace();
             }
             return null;
@@ -157,9 +157,11 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
                 }
                 hash = textBuilder.toString();
             } catch (MalformedURLException e) {
-                LOG.error(e.toString());
+                LOG.error("Error en URL al obtener hash", e.toString());
+                e.printStackTrace();
             } catch (IOException e) {
-                LOG.error(e.toString());
+                LOG.error("Error de E/S al obtener hash", e.toString());
+                e.printStackTrace();
             }
             return hash.toUpperCase();
         }
@@ -175,7 +177,8 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
                 path = getJarPath();
                 dev= Files.isWritable(path) && !Files.isDirectory(path);
             } catch (URISyntaxException e) {
-                LOG.error(e.getMessage());
+                LOG.error("Error al obtener ruta al JAR", e.getMessage());
+                e.printStackTrace();
                 dev=false;
             }
             return dev;

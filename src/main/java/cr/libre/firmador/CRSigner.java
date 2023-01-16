@@ -61,8 +61,10 @@ public class CRSigner {
             LOG.error("Error " + te.getLocalizedMessage() + " obteniendo manejador de llaves privadas de la tarjeta", e);
             if (te.getLocalizedMessage().equals("CKR_PIN_INCORRECT")) throw e;
             if (te.getLocalizedMessage().equals("CKR_GENERAL_ERROR") && e.getCause().toString().contains("Unable to instantiate PKCS11")) throw e;
-            if (te.getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) return null;
-            else {
+            if (te.getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) {
+                LOG.info(te.getLocalizedMessage() + " (dispositivo de firma no reconocido)", e);
+                return null;
+            } else {
                 if (msg.contains("but token only has 0 slots")) throw e;
                 gui.showError(Throwables.getRootCause(e));
             }

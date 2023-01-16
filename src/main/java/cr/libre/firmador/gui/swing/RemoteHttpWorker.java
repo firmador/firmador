@@ -142,11 +142,10 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
 
                     } catch (URISyntaxException e) {
                         LOG.error("Error URISyntaxException", e);
-                        e.printStackTrace();
                         gui.showError(Throwables.getRootCause(e));
                     } catch (Exception e) {
                         LOG.error("Error procesando petición", e);
-                         e.printStackTrace();
+                        e.printStackTrace();
                     }
                     HttpEntity entity = request.getEntity();
                     response.setCode(HttpStatus.SC_ACCEPTED);

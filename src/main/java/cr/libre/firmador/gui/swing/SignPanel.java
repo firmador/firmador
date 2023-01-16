@@ -243,7 +243,6 @@ public class SignPanel extends JPanel implements ConfigListener{
         imageLabel.setIcon(new ImageIcon(pageImage));
       } catch (Exception ex) {
           LOG.error("Error cambiando cambiando página", ex);
-          ex.printStackTrace();
           gui.showError(Throwables.getRootCause(ex));
       }
       previewSignLabel();
@@ -261,12 +260,11 @@ public class SignPanel extends JPanel implements ConfigListener{
                 bufferedImage = ImageIO.read(new URL(previewimg));
             } catch (Exception e) {
                 LOG.error("Error cargando imagen", e);
-                e.printStackTrace();
                 gui.showError(Throwables.getRootCause(e));
             }
             int previewimgWidth = Math.round((float) bufferedImage.getWidth() * settings.pDFImgScaleFactor / 4);
             int previewimgHeight = Math.round((float) bufferedImage.getHeight() * settings.pDFImgScaleFactor / 4);
-            System.out.println("Imagen: " + bufferedImage.getWidth() + "x" + bufferedImage.getHeight() + " (" + previewimgWidth + "x" + previewimgHeight + ")");
+            LOG.info("Imagen: " + bufferedImage.getWidth() + "x" + bufferedImage.getHeight() + " (" + previewimgWidth + "x" + previewimgHeight + ")");
 
             table = "<table cellpadding=0 cellspacing=0 border=0>";
             if(settings.fontAlignment.contains("BOTTOM")) {
@@ -478,6 +476,7 @@ public class SignPanel extends JPanel implements ConfigListener{
             }
         } catch (Exception e) {
             LOG.error("Error actualizando configuración", e);
+            e.printStackTrace();
             pageSpinner.setValue(0);
         }
     }

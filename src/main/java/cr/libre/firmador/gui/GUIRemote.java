@@ -31,6 +31,7 @@ import javax.swing.JTabbedPane;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.ConfigListener;
@@ -44,6 +45,7 @@ import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.MimeType;
 
 public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener {
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GUIRemote.class);
     public JTabbedPane frameTabbedPane;
     private RemoteHttpWorker<Void, byte[]> remote;
     private RemoteDocInformation docinfo;
@@ -107,6 +109,7 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
             signedDocument.writeTo(docinfo.getData());
             docinfo.setStatus(HttpStatus.SC_SUCCESS);
         } catch (IOException e) {
+            LOG.error("Error escribiendo documento", e);
             e.printStackTrace();
         }
 
@@ -139,6 +142,7 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
                 signPanel.getSignButton().setEnabled(true);
             } else signPanel.shownonPDFButtons();
         } catch (IOException e) {
+            LOG.error("Error cargando documento", e);
             e.printStackTrace();
         }
     }

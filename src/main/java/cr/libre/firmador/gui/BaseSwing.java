@@ -107,7 +107,6 @@ public class BaseSwing {
             }
         } catch (Exception e) {
             LOG.error("Error cargando GUI", e);
-            e.printStackTrace();
             this.showError(Throwables.getRootCause(e));
         }
         settings = SettingsManager.getInstance().getAndCreateSettings();
@@ -152,7 +151,6 @@ public class BaseSwing {
                         extendedDocument.writeTo(outdoc);
                     } catch (IOException e) {
                         LOG.error("Error extendiendo documento", e);
-                        e.printStackTrace();
                         showError(Throwables.getRootCause(e));
                     }
                 }else {
@@ -167,7 +165,6 @@ public class BaseSwing {
 
                         } catch (IOException e) {
                             LOG.error("Error guardando extendido", e);
-                            e.printStackTrace();
                             showError(Throwables.getRootCause(e));
                         }
                     }
@@ -263,7 +260,6 @@ public class BaseSwing {
             mainFrame.setMinimumSize(mainFrame.getSize());
         } catch (Exception e) {
             LOG.error("Error cargando Documento con mimeType", e);
-            e.printStackTrace();
             gui.showError(Throwables.getRootCause(e));
         }
 
@@ -307,6 +303,7 @@ public class BaseSwing {
     }
 
     public void showMessage(String message) {
+        LOG.error("Mensaje de información mostrado:" + message);
         JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", JOptionPane.INFORMATION_MESSAGE);
     }
     public void showError(Throwable error) {
@@ -314,7 +311,6 @@ public class BaseSwing {
     }
 
     public void showError(Throwable error, boolean closed) {
-        error.printStackTrace();
         String message = error.getLocalizedMessage();
         int messageType = JOptionPane.ERROR_MESSAGE;
         String className = error.getClass().getName();
@@ -374,9 +370,10 @@ public class BaseSwing {
                     "para detallar mejor el posible motivo de este error en próximas versiones.";
                 break;
         }
-
+        LOG.error("Mensaje de error mostrado:" + message);
+        error.printStackTrace();
         JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", messageType);
-        if(closed) if (messageType == JOptionPane.ERROR_MESSAGE) System.exit(0);
+        if (closed) if (messageType == JOptionPane.ERROR_MESSAGE) System.exit(0);
     }
 
     public CardSignInfo getPin() {

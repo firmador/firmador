@@ -73,7 +73,8 @@ public class ExecutorWorkerMultipleFiles extends Thread implements PropertyChang
         try {
             Thread.sleep(500); // change the thread to show progress bar.
         } catch (InterruptedException e) {
-            //e.printStackTrace();
+            LOG.debug("Interrupción al correr el estado del progreso con múltiples ficheros", e);
+            e.printStackTrace();
         }
     }
 

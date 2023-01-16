@@ -32,7 +32,7 @@ import com.google.common.base.Throwables;
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
-
+import eu.europa.esig.dss.enumerations.SignaturePackaging;
 
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
@@ -41,8 +41,9 @@ import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 
-import eu.europa.esig.dss.enumerations.SignaturePackaging;
+
 import eu.europa.esig.dss.cades.CAdESSignatureParameters;
+
 
 
 
@@ -55,13 +56,14 @@ import eu.europa.esig.dss.token.SignatureTokenConnection;
 
 import eu.europa.esig.dss.validation.CertificateVerifier;
 
+import org.slf4j.LoggerFactory;
 
 public class FirmadorCAdES extends CRSigner {
-
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(FirmadorCAdES.class);
 
     CAdESSignatureParameters parameters;
-    private Settings settings;
 
+    private Settings settings;
 
     public FirmadorCAdES(GUIInterface gui) {
         super(gui);
@@ -76,36 +78,74 @@ public class FirmadorCAdES extends CRSigner {
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
+        gui.nextStep("Obteniendo servicios de verificación de certificados");
+
         try {
             token = getSignatureConnection(card);
         } catch (DSSException|AlertException|Error e) {
+            LOG.error("Error al conectar con el dispositivo", e);
             gui.showError(Throwables.getRootCause(e));
             return null;
         }
         DSSPrivateKeyEntry privateKey = null;
         try {
             privateKey = getPrivateKey(token);
+            gui.nextStep("Obteniendo manejador de llaves privadas");
         } catch (Exception e) {
+            LOG.error("Error al acceder al objeto de llave del dispositivo", e);
             gui.showError(Throwables.getRootCause(e));
             return null;
         }
         try {
+            gui.nextStep("Obteniendo certificados de la tarjeta");
             CertificateToken certificate = privateKey.getCertificate();
             parameters.setSignatureLevel(settings.getCAdESLevel());
             parameters.setSignaturePackaging(SignaturePackaging.DETACHED);
+
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
 
 
 
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
+            gui.nextStep("Obteniendo servicios TSP");
             service.setTspSource(onlineTSPSource);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
+
+            gui.nextStep("Obteniendo estructura de datos a firmar");
             signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
         } catch (DSSException|Error e) {
+            LOG.error("Error al solicitar firma al dispositivo", e);
             gui.showError(Throwables.getRootCause(e));
         }
 
@@ -113,9 +153,27 @@ public class FirmadorCAdES extends CRSigner {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         try {
+            gui.nextStep("Firmando estructura de datos");
             signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
+
+            gui.nextStep("Firmado del documento completo");
         } catch (Exception e) {
+            LOG.error("Error al procesar información de firma avanzada", e);
             e.printStackTrace();
             gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
                 "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
@@ -126,8 +184,9 @@ public class FirmadorCAdES extends CRSigner {
             parameters.setSignatureLevel(SignatureLevel.CAdES_BASELINE_B);
             try {
                 signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
+
             } catch (Exception ex) {
-                e.printStackTrace();
+                LOG.error("Error al procesar información de firma avanzada en nivel fallback (sin Internet) a AdES-B", e);
                 gui.showError(Throwables.getRootCause(e));
             }
         }
@@ -147,6 +206,7 @@ public class FirmadorCAdES extends CRSigner {
         try {
             extendedDocument = service.extendDocument(document, parameters);
         } catch (Exception e) {
+            LOG.error("Error al procesar información para al ampliar el nivel de firma avanzada a LTA (sello adicional)", e);
             e.printStackTrace();
             gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
                 "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +

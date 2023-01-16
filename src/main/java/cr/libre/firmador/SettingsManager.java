@@ -126,6 +126,7 @@ public class SettingsManager {
             }
         } catch (IOException ex) {
             Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         return loaded;
     }
@@ -139,12 +140,14 @@ public class SettingsManager {
             //writer = new FileWriter(this.getConfigFile());
             props.store(writer, "Firmador Libre settings");
         } catch (IOException ex) {
-            Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, ex); // FIXME using JUL instead of SLF4j, could use just a single logger
+            ex.printStackTrace();
         } finally {
             try {
                 if (writer != null) writer.close();
             } catch (IOException ex) {
                 Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
         }
     }
@@ -199,6 +202,8 @@ public class SettingsManager {
         try {
             fValue = Float.parseFloat(valueTmp);
         } catch (Exception e) {
+            Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, e);
+            e.printStackTrace();
             fValue = 1;
         }
         return fValue;
@@ -253,6 +258,7 @@ public class SettingsManager {
             }
             dev = getSettings();
         } catch (Exception e) {
+            Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, e);
             e.printStackTrace();
             setSettings(dev, true);
         }

@@ -177,7 +177,6 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
                 ok = true;
             } catch (IOException e) {
                 LOG.error("Error Firmando documento", e);
-                e.printStackTrace();
                 showError(Throwables.getRootCause(e));
             }
         }
@@ -274,7 +273,6 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
             } catch (IOException e) {
                 LOG.error("Error Firmando Multiples documentos", e);
                 gui.showError(Throwables.getRootCause(e));
-                e.printStackTrace();
             }
         }
     }

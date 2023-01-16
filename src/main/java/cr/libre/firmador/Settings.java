@@ -23,6 +23,8 @@ import java.awt.Font;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignerTextPosition;
@@ -91,6 +93,8 @@ public class Settings {
         try {
             return this.dateFormat;
         } catch (Exception e) {
+            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, "Error retornando dateFormat: " + e); // FIXME does try-catch make sense here?
+            e.printStackTrace();
             return "dd/MM/yyyy hh:mm:ss a";
         }
     }
@@ -230,6 +234,8 @@ public class Settings {
         try {
             return Color.decode(this.fontColor);
         } catch (Exception e) {
+            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, "Error decodificando fontColor:" + e);
+            e.printStackTrace();
             return new Color(0, 0, 0, 255);
         }
     }
@@ -240,6 +246,8 @@ public class Settings {
         try {
             return Color.decode(this.backgroundColor);
         } catch (Exception e) {
+            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, "Error decodificando backgroundColor: " + e);
+            e.printStackTrace();
             return new Color(255, 255,255, 0);
         }
     }

@@ -23,11 +23,14 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import org.slf4j.LoggerFactory;
+
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
 
 public class PluginManager implements Runnable {
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(PluginManager.class);
     //private GUIInterface gui;
     private Settings settings;
     private List<Plugin> runnablePlugins = new ArrayList<Plugin>();
@@ -55,8 +58,10 @@ public class PluginManager implements Runnable {
                 plugin.start();
 
             } catch (ClassNotFoundException e) {
+                LOG.error("Error al cargar plugin (clase no encontrada)", e.getMessage());
                 e.printStackTrace();
             } catch (Exception e) {
+                LOG.error("Error al cargar plugin", e.getMessage());
                 e.printStackTrace();
             }
         }

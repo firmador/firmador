@@ -117,6 +117,7 @@ public class CardSignInfo {
             pin.destroy();
         } catch (Exception e) {
             LOG.error("Error destruyendo el pin", e);
+            e.printStackTrace();
         }
     }
 
