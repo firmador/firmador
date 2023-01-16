@@ -63,11 +63,11 @@ public class FirmadorOpenDocument extends CRSigner {
 
     ASiCWithXAdESSignatureParameters parameters;
 
-
+    private Settings settings;
 
     public FirmadorOpenDocument(GUIInterface gui) {
         super(gui);
-
+        settings = SettingsManager.getInstance().getAndCreateSettings();
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card) {
@@ -99,7 +99,7 @@ public class FirmadorOpenDocument extends CRSigner {
         try {
             gui.nextStep("Obteniendo certificados de la tarjeta");
             CertificateToken certificate = privateKey.getCertificate();
-            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
+            parameters.setSignatureLevel(settings.getXAdESLevel());
             parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
 
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
