@@ -20,6 +20,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador.gui;
 
 import java.awt.FileDialog;
+import java.awt.HeadlessException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -64,7 +65,12 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         super.loadGUI();
         gui = this;
         settings.addListener(this);
-        mainFrame = new SwingMainWindowFrame("Firmador");
+        try {
+            mainFrame = new SwingMainWindowFrame("Firmador");
+        } catch (HeadlessException e) {
+            LOG.error("No se pudo crear la ventana gráfica. Si se está ejecutando Java en entorno gráfico, verificar que no se ha instalado solamente el paquete headless sino el paquete completo para poder cargar la interfaz gráfica.");
+            throw e;
+        }
         mainFrame.setGUIInterface(this);
         mainFrame.loadGUI();
         signPanel = new SignPanel();
