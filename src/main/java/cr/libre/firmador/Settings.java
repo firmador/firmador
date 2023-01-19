@@ -24,7 +24,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.Logger; // FIXME baseswing uses loghandler based on JUL and other use slf4j, consider unifying all logging stuff
 
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignerTextPosition;
@@ -228,9 +228,7 @@ public class Settings {
         return position;
     }
     public Color getFontColor() {
-        if (this.fontColor.toLowerCase() == "transparente") {
-            return new Color(255, 255, 255, 0);
-        }
+        if (this.fontColor.equalsIgnoreCase("transparente")) return new Color(255, 255, 255, 0);
         try {
             return Color.decode(this.fontColor);
         } catch (Exception e) {
@@ -240,15 +238,13 @@ public class Settings {
         }
     }
     public Color getBackgroundColor() {
-        if (this.backgroundColor.toLowerCase() == "transparente") {
-            return new Color(255, 255,255, 0);
-        }
+        if (this.backgroundColor.equalsIgnoreCase("transparente")) return new Color(255, 255, 255, 0);
         try {
             return Color.decode(this.backgroundColor);
         } catch (Exception e) {
             Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, "Error decodificando backgroundColor: " + e);
             e.printStackTrace();
-            return new Color(255, 255,255, 0);
+            return new Color(255, 255, 255, 0);
         }
     }
 
