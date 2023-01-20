@@ -125,9 +125,7 @@
                     <exclude>META-INF/*.DSA</exclude>
                     <exclude>META-INF/*.RSA</exclude>
                     <exclude>META-INF/DEPENDENCIES</exclude>
-                    <exclude>META-INF/NOTICE*</exclude>
-                    <exclude>META-INF/LICENSE*</exclude>
-                    <exclude>META-INF/*.MF</exclude>
+                    <exclude>META-INF/MANIFEST.MF</exclude>
                     <exclude>META-INF/sun-jaxb.episode</exclude>
                     <exclude>META-INF/services/eu.europa.esig.dss.validation.policy.SignaturePolicyValidator</exclude>
                     <exclude>xsd/binding.xml</exclude>
@@ -137,7 +135,6 @@
                 </filter>
               </filters>
               <transformers>
-                <!-- FIXME add an Apache license transformer to move most jar licenses -->
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <manifestEntries>
                     <Main-Class>Firmador</Main-Class>
@@ -150,6 +147,8 @@
                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                   <resource>META-INF/services/eu.europa.esig.dss.validation.DocumentValidatorFactory</resource>
                 </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer" />
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer" />
               </transformers>
             </configuration>
           </execution>
