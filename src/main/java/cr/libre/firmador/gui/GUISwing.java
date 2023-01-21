@@ -35,7 +35,6 @@ import javax.swing.SwingUtilities;
 
 import com.google.common.base.Throwables;
 import eu.europa.esig.dss.model.FileDocument;
-import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.MimeType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.LoggerFactory;
