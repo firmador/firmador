@@ -69,7 +69,7 @@ public class CRSigner {
                 gui.showError(Throwables.getRootCause(e));
             }
         }
-        // Uses first non-repudiation key available assuming there are no more, keys with the same purpose with the same token.
+        // FIXME: This uses first non-repudiation key available assuming there are no more, keys with the same purpose with the same token.
         // This should work fine with unmodified Firma Digital smart cards but it would be convenient checking there are no corner cases
         // and verify there are no more keys available to allow selecting them.
         if (keys != null) {
@@ -94,8 +94,6 @@ public class CRSigner {
     }
 
     public SignatureTokenConnection getSignatureConnection(CardSignInfo card) {
-        // There should be other ways to find alternative PKCS#11 module configuration settings in the future, operating system specific,
-        // to support other hardware vendors apart of Athena/NXP (mainly  hardware devices for Sello Electrónico).
         SignatureTokenConnection signingToken = null;
         try {
             if (card.getCardType() == CardSignInfo.PKCS12TYPE) signingToken = new Pkcs12SignatureToken(card.getTokenSerialNumber(), card.getPin());
@@ -109,21 +107,21 @@ public class CRSigner {
 
     public CertificateVerifier getCertificateVerifier() {
         CertificateSource trustedCertSource = new CommonTrustedCertificateSource();
-        trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA RAIZ NACIONAL - COSTA RICA v2.crt")));
-        trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA RAIZ NACIONAL COSTA RICA.cer")));
         // Just for testing for now, it should be adviced this Root CA is not trusted and not a part of national official document format policy. It is just for tax office purposes
         //trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA RAIZ MINISTERIO DE HACIENDA.crt")));
+        trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA RAIZ NACIONAL - COSTA RICA v2.crt")));
+        trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA RAIZ NACIONAL COSTA RICA.cer")));
         // For AdES Baseline B signing without Internet connection for fetching intermediates from AIA.
         // Costa Rica smart card certificate store chip from SINPE don't include intermediate certificates. This has been reported. No feedback received so far.
         CertificateSource adjunctCertSource = new CommonCertificateSource();
+        adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA POLITICA PERSONA FISICA - COSTA RICA v2.crt")));
+        adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA POLITICA PERSONA JURIDICA - COSTA RICA v2.crt")));
+        adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA POLITICA SELLADO DE TIEMPO - COSTA RICA v2.crt")));
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA SINPE - PERSONA FISICA v2.cer")));
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA SINPE - PERSONA FISICA v2(1).crt")));
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA SINPE - PERSONA JURIDICA v2.cer")));
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA SINPE - PERSONA JURIDICA v2(1).crt")));
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/TSA SINPE v2.cer")));
-        adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA POLITICA PERSONA FISICA - COSTA RICA v2.crt")));
-        adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA POLITICA PERSONA JURIDICA - COSTA RICA v2.crt")));
-        adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA POLITICA SELLADO DE TIEMPO - COSTA RICA v2.crt")));
         CommonCertificateVerifier cv = new CommonCertificateVerifier();
         cv.setTrustedCertSources(trustedCertSource);
         cv.setAdjunctCertSources(adjunctCertSource);
