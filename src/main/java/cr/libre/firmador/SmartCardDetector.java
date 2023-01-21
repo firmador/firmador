@@ -98,19 +98,19 @@ public class SmartCardDetector implements  ConfigListener {
             CK_SLOT_INFO slotInfo = pkcs11.C_GetSlotInfo(slotID);
             LOG.debug("Slot " + slotID + ": " + new String(slotInfo.slotDescription).trim());
             if ((slotInfo.flags & CKF_TOKEN_PRESENT) != 0) { // Not required if tokenPresent = true, condition could be removed if true, it's just for testing empty slot enumeration
-                try { // TODO: slotID may be reused after switching card! try CK_SESSION_INFO sessionInfo = pkcs11.C_GetSessionInfo(hSession); and catch PCKCS11Exception meaning invalid session instead!
+                try { // FIXME: slotID may be reused after switching card! try CK_SESSION_INFO sessionInfo = pkcs11.C_GetSessionInfo(hSession); and catch PCKCS11Exception meaning invalid session instead!
                     CK_TOKEN_INFO tokenInfo = pkcs11.C_GetTokenInfo(slotID);
                     LOG.info("Token: " + new String(tokenInfo.label).trim() + " (" + new String(tokenInfo.serialNumber).trim() + ")");
                     CK_ATTRIBUTE[] pTemplate = { new CK_ATTRIBUTE(CKA_CLASS, CKO_CERTIFICATE) };
                     long ulMaxObjectCount = 32;
-                    long hSession = pkcs11.C_OpenSession(slotID, CKF_SERIAL_SESSION, null, null); // TODO verify slot session just after getting PIN but just before login
+                    long hSession = pkcs11.C_OpenSession(slotID, CKF_SERIAL_SESSION, null, null); // FIXME: verify slot session just after getting PIN but just before login
                     pkcs11.C_FindObjectsInit(hSession, pTemplate);
                     long[] phObject = pkcs11.C_FindObjects(hSession, ulMaxObjectCount);
                     pkcs11.C_FindObjectsFinal(hSession);
                     for (long object : phObject) {
                         CK_ATTRIBUTE[] pTemplate2 = { new CK_ATTRIBUTE(CKA_VALUE), new CK_ATTRIBUTE(CKA_ID) }; // if you add more attributes, update the iterator jump
                         pkcs11.C_GetAttributeValue(hSession, object, pTemplate2);
-                        for (int i = 0; i < pTemplate2.length; i = i + 2) { // iterator jump value to read just certificates at pTemplate[0], pTemplate[2]... TODO better use pValue filtering
+                        for (int i = 0; i < pTemplate2.length; i = i + 2) { // iterator jump value to read just certificates at pTemplate[0], pTemplate[2]... FIXME: better use pValue filtering
                             X509Certificate certificate = (X509Certificate)CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream((byte[])pTemplate2[i].pValue));
                             boolean[] keyUsage = certificate.getKeyUsage();
                             if (certificate.getBasicConstraints() == -1 && keyUsage[0] && keyUsage[1]) {
@@ -125,7 +125,7 @@ public class SmartCardDetector implements  ConfigListener {
                                 }
                                 String expires = new SimpleDateFormat("yyyy-MM-dd").format(certificate.getNotAfter());
                                 LOG.debug(firstName + " " + lastName + " (" + identification + "), " + organization + ", " + certificate.getSerialNumber().toString(16) + " [Token serial number: " + new String(tokenInfo.serialNumber) + "] (Expires: " + expires+ ")");
-                                Object keyIdentifier = pTemplate2[i + 1]/* .pValue */; // TODO use pValue to get the value for comparison when using it to match with private key!
+                                Object keyIdentifier = pTemplate2[i + 1]/* .pValue */; // FIXME: use pValue to get the value for comparison when using it to match with private key!
                                 LOG.debug("Public/Private key pair identifier: " + keyIdentifier); // After logging in with PIN, find the matching private key pValue. NOTE: Old certificates didn't use "LlaveDeFirma" id/label.
                                 cardinfo.add(new CardSignInfo(CardSignInfo.PKCS11TYPE,
                                     identification,
@@ -139,7 +139,7 @@ public class SmartCardDetector implements  ConfigListener {
                                     slotID
                                 ));
                             }
-                            // TODO Don't assume there's a single valid certificate per token (Persona Jurídica keystores might contain more than 1 usable certificate per token as they are handmade)
+                            // FIXME: Don't assume there's a single valid certificate per token (Persona Jurídica keystores might contain more than 1 usable certificate per token as they are handmade)
                         }
                     }
                     pkcs11.C_CloseSession(hSession);
