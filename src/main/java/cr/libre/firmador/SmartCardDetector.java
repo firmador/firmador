@@ -45,7 +45,6 @@ import static sun.security.pkcs11.wrapper.PKCS11Constants.CKO_CERTIFICATE;
 
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("restriction")
 public class SmartCardDetector implements  ConfigListener {
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SmartCardDetector.class);
     protected Settings settings;
