@@ -46,7 +46,7 @@ public class GUIArgs implements GUIInterface {
     private String documenttosign;
     private String documenttosave;
     //private String pkcs12file = "";
-    //private int slot = -1;
+    private int slot = -1;
     private Boolean timestamp = false;
     private Boolean visibleTimestamp = false;
 
@@ -93,9 +93,9 @@ public class GUIArgs implements GUIInterface {
         List<String> arguments = new ArrayList<String>();
         for (String params : args) {
             if (!params.startsWith("-")) arguments.add(params);
+            else if (params.startsWith("-slot")) slot = Integer.parseInt(params.replace("-slot", ""));
             else if (params.startsWith("-timestamp")) timestamp = true;
             else if (params.startsWith("-visible-timestamp")) visibleTimestamp = true;
-            //else if (params.startsWith("-slot")) slot = Integer.parseInt(params.replace("-slot", ""));
         }
         documenttosign = Paths.get(arguments.get(0)).toAbsolutePath().toString();
         documenttosave = Paths.get(arguments.get(1)).toAbsolutePath().toString();
