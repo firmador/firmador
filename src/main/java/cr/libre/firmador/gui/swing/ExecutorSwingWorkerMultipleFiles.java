@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018, 2022 Firmador authors.
+Copyright (C) Firmador authors.
 
 This file is part of Firmador.
 
@@ -54,7 +54,7 @@ public class ExecutorSwingWorkerMultipleFiles extends SwingWorker<Void, Void> {
             this.progressMonitor.setHeaderTitle("Firmando archivo: "+file.getName());
             try {
                 ((GUISwing) gui).signDocumentByPath(file, card);
-            }catch (Exception e) {
+            } catch (Exception e) {
                 Throwable te = Throwables.getRootCause(e);
                 String msg = te.toString();
                 LOG.error(msg, te);

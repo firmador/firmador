@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018, 2022 Firmador authors.
+Copyright (C) Firmador authors.
 
 This file is part of Firmador.
 
@@ -142,11 +142,10 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
 
                     } catch (URISyntaxException e) {
                         LOG.error("Error URISyntaxException", e);
-                        e.printStackTrace();
                         gui.showError(Throwables.getRootCause(e));
                     } catch (Exception e) {
                         LOG.error("Error procesando petición", e);
-                         e.printStackTrace();
+                        e.printStackTrace();
                     }
                     HttpEntity entity = request.getEntity();
                     response.setCode(HttpStatus.SC_ACCEPTED);
@@ -171,7 +170,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                 }
             };
             Settings settings = SettingsManager.getInstance().getAndCreateSettings();
-            server = ServerBootstrap.bootstrap().setListenerPort(settings.portnumber).setLocalAddress(InetAddress.getLoopbackAddress()).register("*",
+            server = ServerBootstrap.bootstrap().setListenerPort(settings.portNumber).setLocalAddress(InetAddress.getLoopbackAddress()).register("*",
                     new RequestHandler(gui, settings)).create();
             server.start();
             server.awaitTermination(TimeValue.MAX_VALUE);

@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018, 2022 Firmador authors.
+Copyright (C) Firmador authors.
 
 This file is part of Firmador.
 
@@ -24,10 +24,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
-public class LogginFrame extends ScrollableJPanel {
+public class LoggingFrame extends ScrollableJPanel {
     private static final long serialVersionUID = 2015584665968200047L;
     private JTextArea logtext;
-    public LogginFrame() {
+    public LoggingFrame() {
         super();
         logtext = new JTextArea();
         GroupLayout validateLayout = new GroupLayout(this);

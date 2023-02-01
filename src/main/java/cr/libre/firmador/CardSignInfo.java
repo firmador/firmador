@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018, 2022 Firmador authors.
+Copyright (C) Firmador authors.
 
 This file is part of Firmador.
 
@@ -40,7 +40,6 @@ public class CardSignInfo {
     private long slotID = -1;
     private PasswordProtection pin;
     private int cardType;
-
 
     public CardSignInfo(int cardType, String identification, String firstName, String lastName, String commonName, String organization, String expires,
             String certSerialNumber, String tokenSerialNumber, long slotID) {
@@ -118,6 +117,7 @@ public class CardSignInfo {
             pin.destroy();
         } catch (Exception e) {
             LOG.error("Error destruyendo el pin", e);
+            e.printStackTrace();
         }
     }
 

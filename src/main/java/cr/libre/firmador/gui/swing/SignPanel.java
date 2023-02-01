@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018, 2022 Firmador authors.
+Copyright (C) Firmador authors.
 
 This file is part of Firmador.
 
@@ -129,7 +129,7 @@ public class SignPanel extends JPanel implements ConfigListener{
     public SignPanel(){
         super();
         settings = SettingsManager.getInstance().getAndCreateSettings();
-        signatureVisibleCheckBox = new JCheckBox(" Sin firma visible", settings.withoutvisiblesign);
+        signatureVisibleCheckBox = new JCheckBox(" Sin firma visible", settings.withoutVisibleSign);
         signatureVisibleCheckBox.setToolTipText("<html>Marque esta casilla si no desea representar visualmente una firma<br>en una página del documento a la hora de firmarlo.</html>");
         signatureVisibleCheckBox.setOpaque(false);
         reasonLabel = new JLabel("Razón:");
@@ -177,8 +177,8 @@ public class SignPanel extends JPanel implements ConfigListener{
 
         signatureLabel = new JLabel();
         // FIXME partially dead code?
-        signatureLabel.setFont(new Font(settings.getFontName(settings.font, false), settings.getFontStyle(settings.font), settings.fontsize));
-        signatureLabel.setText("<html><span style='font-size: '"+settings.fontsize * settings.pdfImgScaleFactor+"pt'" +
+        signatureLabel.setFont(new Font(settings.getFontName(settings.font, false), settings.getFontStyle(settings.font), settings.fontSize));
+        signatureLabel.setText("<html><span style='font-size: '"+settings.fontSize * settings.pDFImgScaleFactor+"pt'" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIRMA<br>" +
                 "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VISIBLE</span></html>");
         signatureLabel.setForeground(new Color(0, 0, 0, 0));
@@ -188,7 +188,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         imagePanel = new ScrollableJPanel(false, false);
 
         imageLabel = new JLabel();
-        signatureLabel.setBounds((int)((float)settings.signx * settings.pdfImgScaleFactor), (int)((float)settings.signy * settings.pdfImgScaleFactor), (int)((float)settings.signwidth * settings.pdfImgScaleFactor), (int)((float)settings.signheight * settings.pdfImgScaleFactor));
+        signatureLabel.setBounds((int)((float)settings.signX * settings.pDFImgScaleFactor), (int)((float)settings.signY * settings.pDFImgScaleFactor), (int)((float)settings.signWidth * settings.pDFImgScaleFactor), (int)((float)settings.signHeight * settings.pDFImgScaleFactor));
 
         imageLabel.add(signatureLabel);
         imagePanel.add(imageLabel);
@@ -219,11 +219,11 @@ public class SignPanel extends JPanel implements ConfigListener{
     }
 
     public int getPDFVisibleSignatureX() {
-        return (int)((float)signatureLabel.getLocation().x / settings.pdfImgScaleFactor);
+        return (int)((float)signatureLabel.getLocation().x / settings.pDFImgScaleFactor);
     }
 
     public int getPDFVisibleSignatureY() {
-        return (int)((float)signatureLabel.getLocation().y / settings.pdfImgScaleFactor);
+        return (int)((float)signatureLabel.getLocation().y / settings.pDFImgScaleFactor);
     }
 
     public void paintPDFViewer() {
@@ -238,12 +238,11 @@ public class SignPanel extends JPanel implements ConfigListener{
 
     public void renderPDFViewer(int page) {
       try {
-        pageImage = renderer.renderImage(page, settings.pdfImgScaleFactor);
+        pageImage = renderer.renderImage(page, settings.pDFImgScaleFactor);
         imageLabel.setSize(pageImage.getWidth(), pageImage.getHeight());
         imageLabel.setIcon(new ImageIcon(pageImage));
       } catch (Exception ex) {
           LOG.error("Error cambiando cambiando página", ex);
-          ex.printStackTrace();
           gui.showError(Throwables.getRootCause(ex));
       }
       previewSignLabel();
@@ -261,33 +260,32 @@ public class SignPanel extends JPanel implements ConfigListener{
                 bufferedImage = ImageIO.read(new URL(previewimg));
             } catch (Exception e) {
                 LOG.error("Error cargando imagen", e);
-                e.printStackTrace();
                 gui.showError(Throwables.getRootCause(e));
             }
-            int previewimgWidth = Math.round((float) bufferedImage.getWidth() * settings.pdfImgScaleFactor / 4);
-            int previewimgHeight = Math.round((float) bufferedImage.getHeight() * settings.pdfImgScaleFactor / 4);
-            System.out.println("Imagen: " + bufferedImage.getWidth() + "x" + bufferedImage.getHeight() + " (" + previewimgWidth + "x" + previewimgHeight + ")");
+            int previewimgWidth = Math.round((float) bufferedImage.getWidth() * settings.pDFImgScaleFactor / 4);
+            int previewimgHeight = Math.round((float) bufferedImage.getHeight() * settings.pDFImgScaleFactor / 4);
+            LOG.info("Imagen: " + bufferedImage.getWidth() + "x" + bufferedImage.getHeight() + " (" + previewimgWidth + "x" + previewimgHeight + ")");
 
             table = "<table cellpadding=0 cellspacing=0 border=0>";
-            if(settings.fontalignment.contains("BOTTOM")) {
+            if(settings.fontAlignment.contains("BOTTOM")) {
                 table += "<tr><td><img src=\""+settings.getImage()+"\" width=\""+previewimgWidth+"\" height=\""+previewimgHeight+"\"></td></tr>";
-                table += "<tr><td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
+                table += "<tr><td><span style='font-size: "+settings.fontSize * settings.pDFImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
             }
-            else if(settings.fontalignment.contains("LEFT")) {
-                table += "<tr><td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td>";
+            else if(settings.fontAlignment.contains("LEFT")) {
+                table += "<tr><td><span style='font-size: "+settings.fontSize * settings.pDFImgScaleFactor+"pt'>"+getTextExample()+"</span></td>";
                 table += "<td><img src=\""+settings.getImage()+"\" width=\""+previewimgWidth+"\" height=\""+previewimgHeight+"\"></td></tr>";
-            }else if(settings.fontalignment.contains("TOP")) {
-                table += "<tr><td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
+            }else if(settings.fontAlignment.contains("TOP")) {
+                table += "<tr><td><span style='font-size: "+settings.fontSize * settings.pDFImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
                 table += "<tr><td><img src=\""+settings.getImage()+"\" width=\""+previewimgWidth+"\" height=\""+previewimgHeight+"\"></td></tr>";
             }else {
                 table += "<tr><td><img src=\""+settings.getImage()+"\" width=\""+previewimgWidth+"\" height=\""+previewimgHeight+"\"></td>";
-                table += "<td><span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
+                table += "<td><span style='font-size: "+settings.fontSize * settings.pDFImgScaleFactor+"pt'>"+getTextExample()+"</span></td></tr>";
             }
             table += "</table>";
         }else {
-            table ="<span style='font-size: "+settings.fontsize * settings.pdfImgScaleFactor+"pt'>"+getTextExample()+"</span>";
+            table ="<span style='font-size: "+settings.fontSize * settings.pDFImgScaleFactor+"pt'>"+getTextExample()+"</span>";
         }
-        signatureLabel.setFont(new Font(settings.getFontName(settings.font, false), settings.getFontStyle(settings.font), settings.fontsize));
+        signatureLabel.setFont(new Font(settings.getFontName(settings.font, false), settings.getFontStyle(settings.font), settings.fontSize));
         signatureLabel.setText("<html>"+table+"</html>");
            signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
@@ -460,17 +458,17 @@ public class SignPanel extends JPanel implements ConfigListener{
     }
 
     public void updateConfig() {
-        signatureVisibleCheckBox.setSelected(settings.withoutvisiblesign);
+        signatureVisibleCheckBox.setSelected(settings.withoutVisibleSign);
         reasonField.setText(settings.reason);
         locationField.setText(settings.place);
         contactInfoField.setText(settings.contact);
-        signatureLabel.setBounds((int)((float)settings.signx * settings.pdfImgScaleFactor), (int)((float)settings.signy * settings.pdfImgScaleFactor), (int)((float)settings.signwidth * settings.pdfImgScaleFactor), (int)((float)settings.signheight * settings.pdfImgScaleFactor));
+        signatureLabel.setBounds((int)((float)settings.signX * settings.pDFImgScaleFactor), (int)((float)settings.signY * settings.pDFImgScaleFactor), (int)((float)settings.signWidth * settings.pDFImgScaleFactor), (int)((float)settings.signHeight * settings.pDFImgScaleFactor));
 
         try {
              if (doc != null) {
                  int pages = doc.getNumberOfPages();
-                if (settings.pagenumber <= pages && settings.pagenumber > 0) {
-                    pageSpinner.setValue(settings.pagenumber);
+                if (settings.pageNumber <= pages && settings.pageNumber > 0) {
+                    pageSpinner.setValue(settings.pageNumber);
                 } else {
                     pageSpinner.setValue(1);
                 }
@@ -478,6 +476,7 @@ public class SignPanel extends JPanel implements ConfigListener{
             }
         } catch (Exception e) {
             LOG.error("Error actualizando configuración", e);
+            e.printStackTrace();
             pageSpinner.setValue(0);
         }
     }
@@ -631,7 +630,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         String organization="TIPO DE PERSONA";
         SmartCardDetector cardd = new SmartCardDetector();
         List<CardSignInfo> cards = cardd.readSaveListSmartCard();
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(settings.dateformat);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(settings.dateFormat);
         LocalDateTime now = LocalDateTime.now();
         if(!cards.isEmpty()) {
             CardSignInfo card = cards.get(0);

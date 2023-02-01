@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018, 2022 Firmador authors.
+Copyright (C) Firmador authors.
 
 This file is part of Firmador.
 
@@ -25,15 +25,13 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
-
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Throwables;
+import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
@@ -41,16 +39,13 @@ import cr.libre.firmador.gui.GUIInterface;
 
 public class AboutLayout extends GroupLayout {
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(AboutLayout.class);
-
     private GUIInterface swinginterface;
     private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
-
     private Settings settings;
 
     public AboutLayout(Container host) {
         super(host);
         settings = SettingsManager.getInstance().getAndCreateSettings();
-
         JLabel iconLabel = new JLabel(new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
         JLabel descriptionLabel = new JLabel("<html><p align='center'><b>Firmador</b><br><br>" +
             "Versión " + settings.getVersion()  + "<br><br>" +
@@ -64,7 +59,6 @@ public class AboutLayout extends GroupLayout {
                 openProjectWebsite();
             }
         });
-
         this.setAutoCreateGaps(true);
         this.setAutoCreateContainerGaps(true);
         this.setHorizontalGroup(
@@ -80,13 +74,15 @@ public class AboutLayout extends GroupLayout {
                 .addComponent(websiteButton)
         );
     }
+
     public void setInterface(GUIInterface swinginterface){
         this.swinginterface = swinginterface;
     }
+
     private void openProjectWebsite() {
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             try {
-                Desktop.getDesktop().browse(new URI(settings.base_url));
+                Desktop.getDesktop().browse(new URI(settings.baseUrl)); // GTK3 Swing backend has a bug not opening the URL until the app closes
             } catch (Exception e) {
                 LOG.error("Error abriendo url", e);
                 this.swinginterface.showError(Throwables.getRootCause(e));

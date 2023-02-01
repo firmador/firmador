@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018, 2022 Firmador authors.
+Copyright (C) Firmador authors.
 
 This file is part of Firmador.
 
@@ -25,12 +25,8 @@ import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
 
 public class ExecutorSwingWorker extends SwingWorker<Void, Void> {
-
-
     private GUIInterface gui;
     private ProgressDialog progressMonitor;
-
-
 
     public ExecutorSwingWorker(ProgressDialog progressMonitor, GUIInterface gui) {
         super();
@@ -38,16 +34,13 @@ public class ExecutorSwingWorker extends SwingWorker<Void, Void> {
         this.gui = gui;
     }
 
-    @Override
     protected Void doInBackground() throws Exception {
-        ((GUISwing) gui).dosignDocuments();
+        ((GUISwing) gui).doSignDocuments();
         return null;
     }
 
-     @Override
-     public void done() {
-         progressMonitor.setVisible(false);
-
-     }
+    public void done() {
+        progressMonitor.setVisible(false);
+    }
 
 }

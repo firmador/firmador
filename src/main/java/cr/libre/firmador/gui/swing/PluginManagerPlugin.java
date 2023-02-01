@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018, 2022 Firmador authors.
+Copyright (C) Firmador authors.
 
 This file is part of Firmador.
 
@@ -54,10 +54,10 @@ public class PluginManagerPlugin extends JPanel {
 
         activeModel.clear();
         availableModel.clear();
-        for(String item: settings.active_plugins){
+        for(String item: settings.activePlugins){
             activeModel.addElement(item);
         }
-        for(String item: settings.available_plugins) {
+        for(String item: settings.availablePlugins) {
             if(!activeModel.contains(item)) {
                 availableModel.addElement(item);
             }

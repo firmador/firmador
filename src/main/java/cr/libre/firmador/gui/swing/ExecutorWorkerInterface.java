@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018, 2022 Firmador authors.
+Copyright (C) Firmador authors.
 
 This file is part of Firmador.
 
@@ -19,7 +19,6 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui.swing;
 
-public interface ExecutorWorkerInterface   {
-
-	public void nextStep(String msg);
+public interface ExecutorWorkerInterface {
+    public void nextStep(String msg);
 }

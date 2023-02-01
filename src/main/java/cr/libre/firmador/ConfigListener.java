@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018, 2022 Firmador authors.
+Copyright (C) Firmador authors.
 
 This file is part of Firmador.
 
@@ -21,5 +21,4 @@ package cr.libre.firmador;
 
 public interface ConfigListener {
     void updateConfig();
-
 }

@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018, 2022 Firmador authors.
+Copyright (C) Firmador authors.
 
 This file is part of Firmador.
 
@@ -117,7 +117,6 @@ public class GUIArgs implements GUIInterface {
     }
 
     public CardSignInfo getPin() {
-        char[] password = null;
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         char[] input = new char[128];
         try {
@@ -131,7 +130,7 @@ public class GUIArgs implements GUIInterface {
             if (character == '\0' || character == '\r' || character == '\n') break;
             passwordLength++;
         }
-        password = new char[passwordLength];
+        char[] password = new char[passwordLength];
         for (int i = 0; i < passwordLength; i++) password[i] = input[i];
         Arrays.fill(input, '\0');
         PasswordProtection pin = new PasswordProtection(password);
@@ -139,57 +138,34 @@ public class GUIArgs implements GUIInterface {
         return new CardSignInfo(pin);
     }
 
-    @Override
     public void showMessage(String message) {
          System.out.println(message);
     }
 
-
-    @Override
     public void setPluginManager(PluginManager pluginManager) {
-        // TODO Auto-generated method stub
-
     }
 
-    @Override
     public void loadDocument(String fileName) {
-        // TODO Auto-generated method stub
-
     }
 
-    @Override
     public void loadDocument(MimeType mimeType, PDDocument doc) {
-        // TODO Auto-generated method stub
-
     }
 
-    @Override
     public void extendDocument() {
-        // TODO Auto-generated method stub
-
     }
 
-    @Override
     public String getPathToSaveExtended(String extension) {
-        // TODO Auto-generated method stub
         return null;
     }
 
-    @Override
     public boolean signDocuments() {
-        // TODO Auto-generated method stub
         return true;
     }
 
-    @Override
     public void displayFunctionality(String functionality) {
-        // TODO Auto-generated method stub
-
     }
 
-    @Override
     public void nextStep(String msg) {
-        // TODO Auto-generated method stub
-
     }
+
 }

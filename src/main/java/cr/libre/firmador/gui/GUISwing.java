@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018, 2022 Firmador authors.
+Copyright (C) Firmador authors.
 
 This file is part of Firmador.
 
@@ -20,23 +20,24 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador.gui;
 
 import java.awt.FileDialog;
+import java.awt.HeadlessException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
+import com.google.common.base.Throwables;
+import eu.europa.esig.dss.model.FileDocument;
+import eu.europa.esig.dss.model.MimeType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Throwables;
 
 import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.ConfigListener;
@@ -48,9 +49,6 @@ import cr.libre.firmador.gui.swing.ExecutorWorkerMultipleFiles;
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import cr.libre.firmador.gui.swing.ValidatePanel;
-import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.model.FileDocument;
-import eu.europa.esig.dss.model.MimeType;
 
 public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GUISwing.class);
@@ -66,67 +64,54 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         super.loadGUI();
         gui = this;
         settings.addListener(this);
-         mainFrame = new SwingMainWindowFrame("Firmador");
+        try {
+            mainFrame = new SwingMainWindowFrame("Firmador");
+        } catch (HeadlessException e) {
+            LOG.error("No se pudo crear la ventana gráfica. Si se está ejecutando Java en entorno gráfico, verificar que no se ha instalado solamente el paquete headless sino el paquete completo para poder cargar la interfaz gráfica.");
+            throw e;
+        }
         mainFrame.setGUIInterface(this);
         mainFrame.loadGUI();
-
         signPanel = new SignPanel();
         signPanel.setGUI(this);
         signPanel.initializeActions();
         signPanel.hideButtons();
-
         GroupLayout signLayout = new GroupLayout(signPanel);
         signPanel.signLayout(signLayout, signPanel);
         settings.addListener(signPanel);
-
         validatePanel = new ValidatePanel();
         validatePanel.setGUI(this);
         validatePanel.initializeActions();
         validatePanel.hideButtons();
-
         JPanel aboutPanel = new JPanel();
         GroupLayout aboutLayout = new AboutLayout(aboutPanel);
         ((AboutLayout) aboutLayout).setInterface(this);
-
         aboutPanel.setLayout(aboutLayout);
         aboutPanel.setOpaque(false);
-
         JPanel configPanel = new ConfigPanel();
         configPanel.setOpaque(false);
         frameTabbedPane = new JTabbedPane();
         frameTabbedPane.addTab("Firmar", signPanel);
-        frameTabbedPane.setToolTipTextAt(0,
-                "<html>En esta pestaña se muestran las opciones<br>para firmar el documento seleccionado.</html>");
+        frameTabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran las opciones<br>para firmar el documento seleccionado.</html>");
         frameTabbedPane.addTab("Validación", validatePanel.getValidateScrollPane());
-        frameTabbedPane.setToolTipTextAt(1,
-                "<html>En esta pestaña se muestra información de validación<br>de las firmas digitales del documento seleccionado.</html>");
+        frameTabbedPane.setToolTipTextAt(1, "<html>En esta pestaña se muestra información de validación<br>de las firmas digitales del documento seleccionado.</html>");
         frameTabbedPane.addTab("Configuración", configPanel);
         frameTabbedPane.setToolTipTextAt(2, "<html>En esta estaña se configura<br>aspectos de este programa.</html>");
         frameTabbedPane.addTab("Acerca de", aboutPanel);
-        frameTabbedPane.setToolTipTextAt(3,
-                "<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
-        if(settings.showlogs) {
-            this.showLogs(frameTabbedPane);
-        }
+        frameTabbedPane.setToolTipTextAt(3, "<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
+        if (settings.showLogs) this.showLogs(frameTabbedPane);
         docSelector = new DocumentSelectionGroupLayout(mainFrame.getContentPane(), frameTabbedPane, mainFrame);
         docSelector.setGUI(this);
         docSelector.initializeActions();
-
-        if (!isRemote)
-            mainFrame.getContentPane().setLayout(docSelector);
-        else
-            mainFrame.getContentPane().setLayout(signLayout);
-
+        if (!isRemote) mainFrame.getContentPane().setLayout(docSelector);
+        else mainFrame.getContentPane().setLayout(signLayout);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.pack();
         mainFrame.setMinimumSize(mainFrame.getSize());
         mainFrame.setLocationByPlatform(true);
         mainFrame.setVisible(true);
-
-        if (documenttosign != null)
-            loadDocument(documenttosign);
+        if (documenttosign != null) loadDocument(documenttosign);
     }
-
 
     public void loadDocument(String fileName) {
         gui.nextStep("Cargando el documento");
@@ -134,12 +119,8 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         docSelector.setLastFile(fileName);
         docSelector.fileField.setText(Paths.get(fileName).getFileName().toString());
         FileDocument mimeDocument = new FileDocument(fileName);
-
-
         try {
-            if (mimeDocument.getMimeType() == MimeType.PDF) {
-                doc = PDDocument.load(new File(fileName));
-            }
+            if (mimeDocument.getMimeType() == MimeType.PDF) doc = PDDocument.load(new File(fileName));
             loadDocument(mimeDocument.getMimeType(), doc);
         } catch (IOException e) {
             LOG.error("Error Leyendo el archivo", e);
@@ -163,38 +144,27 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         // Muchas cosas mas acá
     }
 
-
-
     public String getExtension() {
         String extension = "";
         if (toSignDocument != null) {
             MimeType mimeType = toSignDocument.getMimeType();
-            if (mimeType == MimeType.XML) {
-                extension = ".xml";
-            } else if (mimeType != MimeType.PDF && !(mimeType == MimeType.ODG || mimeType == MimeType.ODP
-                    || mimeType == MimeType.ODS || mimeType == MimeType.ODT)) {
-                extension = ".p7s"; // p7s detached, p7m enveloping
-            }
+            if (mimeType == MimeType.XML) extension = ".xml";
+            else if (mimeType != MimeType.PDF && !(mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT)) extension = ".p7s"; // p7s detached, p7m enveloping
         }
-
         return extension;
-
     }
 
     /**
      * Invoked when task's progress property changes.
      */
-
-
     public boolean signDocuments() {
         worker = new ExecutorWorker(this);
         SwingUtilities.invokeLater((Runnable) worker);
         Thread.yield();
-
         return true;
     }
 
-    public boolean dosignDocuments() {
+    public boolean doSignDocuments() {
         boolean ok = false;
         fileName = getDocumentToSign();
         toSignDocument = new FileDocument(fileName);
@@ -212,32 +182,23 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
                 ok = true;
             } catch (IOException e) {
                 LOG.error("Error Firmando documento", e);
-                e.printStackTrace();
                 showError(Throwables.getRootCause(e));
             }
-
         }
         return ok;
     }
 
     public void extendDocument() {
-        if(fileName == null)fileName = getDocumentToSign();
-        if (fileName != null) {
-            DSSDocument toExtendDocument = new FileDocument(fileName);
-            extendDocument(toExtendDocument, false, null);
-        }
+        if (fileName == null)fileName = getDocumentToSign();
+        if (fileName != null) extendDocument(new FileDocument(fileName), false, null);
     }
 
     public String getDocumentToSign() {
-
-
         return docSelector.getLastFile();
-
-
     }
 
     public String getPathToSave(String extension) {
-        if (settings.overwritesourcefile)
+        if (settings.overwriteSourceFile)
             return getDocumentToSign();
         if (documenttosave != null)
             return documenttosave;
@@ -246,7 +207,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
     }
 
     public String getPathToSaveExtended(String extension) {
-        if (settings.overwritesourcefile)
+        if (settings.overwriteSourceFile)
             return getDocumentToSign();
         String pathToExtend = showSaveDialog("-sellado", extension);
         return pathToExtend;
@@ -265,8 +226,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         if (extension != "") {
             suffix = ""; // XMLs could reuse same files, however
             dotExtension = extension;
-        } else if (lastDot >= 0)
-            dotExtension = lastFile.substring(lastDot);
+        } else if (lastDot >= 0) dotExtension = lastFile.substring(lastDot);
 
         Path path = Paths.get(lastFile);
         lastFile=path.getFileName().toString();
@@ -295,14 +255,13 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
             documenttosave = Paths.get(arguments.get(1)).toAbsolutePath().toString();
     }
 
-
     private String addSuffixToFilePath(String name, String suffix) {
         String dotExtension = "";
-        String newname=name+suffix;
+        String newname = name + suffix;
         int lastDot = name.lastIndexOf(".");
-        if(lastDot >= 0) {
+        if (lastDot >= 0) {
             dotExtension = name.substring(lastDot);
-            newname=name.substring(0, name.lastIndexOf(".")) + suffix + dotExtension;
+            newname = name.substring(0, name.lastIndexOf(".")) + suffix + dotExtension;
         }
         return newname;
     }
@@ -311,16 +270,14 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         documenttosign = file.toString();
         loadDocument(documenttosign);
         toSignDocument = new FileDocument(documenttosign);
-
         this.signDocument(card, !signPanel.getSignatureVisibleCheckBox().isSelected(), false);
-        if(signedDocument != null) {
+        if (signedDocument != null) {
             fileName = addSuffixToFilePath(documenttosign, "-firmado");
             try {
                 signedDocument.save(fileName);
             } catch (IOException e) {
                 LOG.error("Error Firmando Multiples documentos", e);
                 gui.showError(Throwables.getRootCause(e));
-                e.printStackTrace();
             }
         }
     }
@@ -332,23 +289,13 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
     }
 
     public void displayFunctionality(String functionality) {
-        if (functionality.equalsIgnoreCase("sign")) {
-            frameTabbedPane.setSelectedIndex(0);
-        } else if (functionality.equalsIgnoreCase("validator")) {
-            frameTabbedPane.setSelectedIndex(1);
-        }
+        if (functionality.equalsIgnoreCase("sign")) frameTabbedPane.setSelectedIndex(0);
+        else if (functionality.equalsIgnoreCase("validator")) frameTabbedPane.setSelectedIndex(1);
     }
 
-    @Override
     public void updateConfig() {
-        if(this.settings.showlogs) {
-            showLogs(this.frameTabbedPane);
-        }else {
-            hideLogs(this.frameTabbedPane);
-        }
-
+        if (this.settings.showLogs) showLogs(this.frameTabbedPane);
+        else hideLogs(this.frameTabbedPane);
     }
-
-
 
 }

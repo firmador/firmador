@@ -1,6 +1,6 @@
 /* Firmador is a program to sign documents using AdES standards.
 
-Copyright (C) 2018, 2022 Firmador authors.
+Copyright (C) Firmador authors.
 
 This file is part of Firmador.
 
@@ -23,6 +23,8 @@ import java.awt.Font;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger; // FIXME baseswing uses loghandler based on JUL and other use slf4j, consider unifying all logging stuff
 
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignerTextPosition;
@@ -32,65 +34,67 @@ import java.awt.Color;
 public class Settings {
     private List<ConfigListener> listeners = new ArrayList<ConfigListener>();
 
-    public String release_url_check = "https://firmador.libre.cr/version.txt";
-    public String base_url = "https://firmador.libre.cr";
-    public String release_url = "https://firmador.libre.cr/firmador.jar";
-    public String release_snapshot_url = "https://firmador.libre.cr/firmador-en-pruebas.jar";
-    public String checksum_url = "https://firmador.libre.cr/firmador.jar.sha256";
-    public String checksum_snapshot_url = "https://firmador.libre.cr/firmador-en-pruebas.jar.sha256";
+    public String releaseUrlCheck = "https://firmador.libre.cr/version.txt";
+    public String baseUrl = "https://firmador.libre.cr";
+    public String releaseUrl = "https://firmador.libre.cr/firmador.jar";
+    public String releaseSnapshotUrl = "https://firmador.libre.cr/firmador-en-pruebas.jar";
+    public String checksumUrl = "https://firmador.libre.cr/firmador.jar.sha256";
+    public String checksumSnapshotUrl = "https://firmador.libre.cr/firmador-en-pruebas.jar.sha256";
 
 
-    public String defaultdevelopmentversion = "Desarrollo";
-    public boolean withoutvisiblesign = false;
-    public boolean uselta = true;
-    public boolean overwritesourcefile = false;
+    public String defaultDevelopmentVersion = "Desarrollo";
+    public boolean withoutVisibleSign = false;
+    public boolean useLTA = true;
+    public boolean overwriteSourceFile = false;
     public String reason = "";
     public String place = "";
     public String contact = "";
-    public String dateformat = "dd/MM/yyyy hh:mm:ss a";
-    public String defaultsignmessage = "Esta es una representación gráfica únicamente,\nverifique la validez de la firma.";
-    public Integer signwidth = 133;
-    public Integer signheight = 33;
-    public Integer fontsize = 7;
+    public String dateFormat = "dd/MM/yyyy hh:mm:ss a";
+    public String defaultSignMessage = "Esta es una representación gráfica únicamente,\nverifique la validez de la firma.";
+    public Integer signWidth = 133;
+    public Integer signHeight = 33;
+    public Integer fontSize = 7;
     public String font = Font.SANS_SERIF;
-    public String fontcolor = "#000000";
-    public String backgroundcolor = "transparente";
-    public String extrapkcs11Lib = null;
-    public Integer signx = 198;
-    public Integer signy = 0;
+    public String fontColor = "#000000";
+    public String backgroundColor = "transparente";
+    public String extraPKCS11Lib = null;
+    public Integer signX = 198;
+    public Integer signY = 0;
     public String image = null;
-    public boolean startserver = false;
-    public String fontalignment = "RIGHT";
-    public boolean showlogs = false;
+    public boolean startServer = false;
+    public String fontAlignment = "RIGHT";
+    public boolean showLogs = false;
 
-    public Integer pagenumber = 1;
-    public Integer portnumber = 3516;
-    public String padesLevel = "LTA";
-    public String xadesLevel = "LTA";
-    public String cadesLevel = "LTA";
-    public List<String> pkcs12file = new ArrayList<String>();
+    public Integer pageNumber = 1;
+    public Integer portNumber = 3516;
+    public String pAdESLevel = "LTA";
+    public String xAdESLevel = "LTA";
+    public String cAdESLevel = "LTA";
+    public List<String> pKCS12File = new ArrayList<String>();
 
 
-    public List<String> active_plugins = new ArrayList<String>();
-    public List<String> available_plugins = new ArrayList<String>();
+    public List<String> activePlugins = new ArrayList<String>();
+    public List<String> availablePlugins = new ArrayList<String>();
 
-    public float pdfImgScaleFactor = 1;
+    public float pDFImgScaleFactor = 1;
 
     public Settings() {
-        active_plugins.add("cr.libre.firmador.plugins.DummyPlugin");
-        active_plugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
-        available_plugins.add("cr.libre.firmador.plugins.DummyPlugin");
-        available_plugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
+        activePlugins.add("cr.libre.firmador.plugins.DummyPlugin");
+        activePlugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
+        availablePlugins.add("cr.libre.firmador.plugins.DummyPlugin");
+        availablePlugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
     }
 
     public String getDefaultSignMessage() {
-        return this.defaultsignmessage;
+        return this.defaultSignMessage;
     }
 
     public String getDateFormat() {
         try {
-            return this.dateformat;
+            return this.dateFormat;
         } catch (Exception e) {
+            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, "Error retornando dateFormat: " + e); // FIXME does try-catch make sense here?
+            e.printStackTrace();
             return "dd/MM/yyyy hh:mm:ss a";
         }
     }
@@ -204,7 +208,7 @@ public class Settings {
 
     public SignerTextPosition getFontAlignment() {
         SignerTextPosition position = SignerTextPosition.RIGHT;
-        switch (this.fontalignment) {
+        switch (this.fontAlignment) {
         case "RIGHT":
             position = SignerTextPosition.RIGHT;
             break;
@@ -224,23 +228,23 @@ public class Settings {
         return position;
     }
     public Color getFontColor() {
-        if (this.fontcolor.toLowerCase() == "transparente") {
-            return new Color(255, 255, 255, 0);
-        }
+        if (this.fontColor.equalsIgnoreCase("transparente")) return new Color(255, 255, 255, 0);
         try {
-            return Color.decode(this.fontcolor);
+            return Color.decode(this.fontColor);
         } catch (Exception e) {
+            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, "Error decodificando fontColor:" + e);
+            e.printStackTrace();
             return new Color(0, 0, 0, 255);
         }
     }
     public Color getBackgroundColor() {
-        if (this.backgroundcolor.toLowerCase() == "transparente") {
-            return new Color(255, 255,255, 0);
-        }
+        if (this.backgroundColor.equalsIgnoreCase("transparente")) return new Color(255, 255, 255, 0);
         try {
-            return Color.decode(this.backgroundcolor);
+            return Color.decode(this.backgroundColor);
         } catch (Exception e) {
-            return new Color(255, 255,255, 0);
+            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, "Error decodificando backgroundColor: " + e);
+            e.printStackTrace();
+            return new Color(255, 255, 255, 0);
         }
     }
 
@@ -252,7 +256,7 @@ public class Settings {
         return null;
     }
     public boolean isRemote() {
-        if (this.startserver) return true;
+        if (this.startServer) return true;
         String origin = System.getProperty("jnlp.remoteOrigin");
         boolean isRemote = (origin != null);
         return isRemote;
@@ -268,7 +272,7 @@ public class Settings {
 
     public SignatureLevel getPAdESLevel() {
         SignatureLevel level = SignatureLevel.PAdES_BASELINE_LTA;
-        switch (padesLevel) {
+        switch (pAdESLevel) {
             case "T": level=SignatureLevel.PAdES_BASELINE_T; break;
             case "LT": level=SignatureLevel.PAdES_BASELINE_LT; break;
             case "LTA": level=SignatureLevel.PAdES_BASELINE_LTA; break;
@@ -279,7 +283,7 @@ public class Settings {
 
     public SignatureLevel getXAdESLevel() {
         SignatureLevel level = SignatureLevel.XAdES_BASELINE_LTA;
-        switch (xadesLevel) {
+        switch (xAdESLevel) {
             case "T": level=SignatureLevel.XAdES_BASELINE_T; break;
             case "LT": level=SignatureLevel.XAdES_BASELINE_LT; break;
             case "LTA": level=SignatureLevel.XAdES_BASELINE_LTA; break;
@@ -289,7 +293,7 @@ public class Settings {
     }
     public SignatureLevel getCAdESLevel() {
         SignatureLevel level = SignatureLevel.CAdES_BASELINE_LTA;
-        switch (cadesLevel) {
+        switch (cAdESLevel) {
             case "T": level=SignatureLevel.CAdES_BASELINE_T; break;
             case "LT": level=SignatureLevel.CAdES_BASELINE_LT; break;
             case "LTA": level=SignatureLevel.CAdES_BASELINE_LTA; break;
@@ -299,32 +303,29 @@ public class Settings {
     }
 
     public String getVersion() {
-        String versionstr = getClass().getPackage().getSpecificationVersion();
-        if(versionstr == null) versionstr=this.defaultdevelopmentversion;
-        return versionstr;
-
+        String versionStr = getClass().getPackage().getSpecificationVersion();
+        if (versionStr == null) versionStr = this.defaultDevelopmentVersion;
+        return versionStr;
     }
 
     public String getReleaseUrl() {
         String version = getVersion();
-        if(version.contains("SNAPSHOT")) {
-            return this.release_snapshot_url;
-        }
-        return this.release_url;
+        if (version.contains("SNAPSHOT")) return this.releaseSnapshotUrl;
+        return this.releaseUrl;
     }
     public String getReleaseCheckUrl() {
         String version = getVersion();
         if(version.contains("SNAPSHOT")) {
             return "";
         }
-        return this.release_url_check;
+        return this.releaseUrlCheck;
     }
     public String getChecksumUrl() {
         String version = getVersion();
         if(version.contains("SNAPSHOT")) {
-            return this.checksum_snapshot_url;
+            return this.checksumSnapshotUrl;
         }
-        return this.checksum_url;
+        return this.checksumUrl;
     }
 
 }
