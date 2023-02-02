@@ -92,7 +92,7 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
         loadDialog.dispose();
 
         File[] files = loadDialog.getFiles();
-        if(files.length>1) {
+        if(files.length>1) { // FIXME prompt if we want to sign or validate first //ggui.validateMultipleDocuments(files);
             GUISwing ggui = (GUISwing) gui;
             ggui.signMultipleDocuments(files);
         }else if( files.length==1) {

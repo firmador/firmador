@@ -95,7 +95,7 @@ public class SwingMainWindowFrame extends JFrame {
                     List<File> droppedFiles = (List<File>) e.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
                     File[] files = new File[droppedFiles.size()];
                     droppedFiles.toArray(files);
-                    if (files.length > 1) {
+                    if (files.length > 1) { // FIXME prompt if we want to sign or validate first //ggui.validateMultipleDocuments(files);
                         GUISwing ggui = (GUISwing) gui;
                         ggui.signMultipleDocuments(files);
                     } else if (files.length == 1) gui.loadDocument(files[0].toString());

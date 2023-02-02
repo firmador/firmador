@@ -46,6 +46,7 @@ import cr.libre.firmador.gui.swing.ConfigPanel;
 import cr.libre.firmador.gui.swing.DocumentSelectionGroupLayout;
 import cr.libre.firmador.gui.swing.ExecutorWorker;
 import cr.libre.firmador.gui.swing.ExecutorWorkerMultipleFiles;
+import cr.libre.firmador.gui.swing.ExecutorWorkerMultipleFilesValidator;
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import cr.libre.firmador.gui.swing.ValidatePanel;
@@ -284,6 +285,16 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 
     public void signMultipleDocuments(File[] files) {
         worker = new ExecutorWorkerMultipleFiles(this, files);
+        SwingUtilities.invokeLater((Runnable) worker);
+        Thread.yield();
+    }
+
+    public void validateDocumentByPath(File file) {
+        validateDocument(file.toString());
+    }
+
+    public void validateMultipleDocuments(File[] files) {
+        worker = new ExecutorWorkerMultipleFilesValidator(this, files);
         SwingUtilities.invokeLater((Runnable) worker);
         Thread.yield();
     }
