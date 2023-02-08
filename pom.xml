@@ -140,6 +140,12 @@
                     <exclude>xsd/catalog.cat</exclude>
                   </excludes>
                 </filter>
+                <filter>
+                  <artifact>eu.europa.ec.joinup.sd-dss:dss-policy-jaxb</artifact>
+                  <excludes>
+                    <exclude>policy/constraint.xml</exclude>
+                  </excludes>
+                </filter>
               </filters>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
