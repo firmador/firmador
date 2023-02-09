@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import eu.europa.esig.dss.enumerations.TokenExtractionStrategy;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
@@ -58,6 +59,7 @@ public class Validator {
         FileDocument fileDocument = new FileDocument(fileName);
         documentValidator = SignedDocumentValidator.fromDocument(fileDocument);
         documentValidator.setCertificateVerifier(cv);
+        documentValidator.setTokenExtractionStrategy(TokenExtractionStrategy.EXTRACT_ALL);
         if (fileDocument.getMimeType() == MimeType.XML) {
             String electronicReceipt = new XMLDocumentValidator(fileDocument).getRootElement().getDocumentElement().getTagName();
             String[] receiptTypes = {"FacturaElectronica", "TiqueteElectronico", "NotaDebitoElectronica", "NotaCreditoElectronica", "FacturaElectronicaCompra", "FacturaElectronicaExportacion", "MensajeReceptor"};
