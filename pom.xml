@@ -72,6 +72,7 @@
             <addMavenDescriptor>false</addMavenDescriptor>
             <manifest>
               <addDefaultEntries>false</addDefaultEntries>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
           </archive>
         </configuration>
