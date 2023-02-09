@@ -38,6 +38,7 @@ import eu.europa.esig.dss.validation.CertificateVerifier;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 import eu.europa.esig.dss.validation.SignaturePolicyProvider;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
+import eu.europa.esig.dss.validation.UserFriendlyIdentifierProvider;
 import eu.europa.esig.dss.validation.reports.Reports;
 import eu.europa.esig.dss.xades.validation.XMLDocumentValidator;
 
@@ -60,6 +61,7 @@ public class Validator {
         documentValidator = SignedDocumentValidator.fromDocument(fileDocument);
         documentValidator.setCertificateVerifier(cv);
         documentValidator.setTokenExtractionStrategy(TokenExtractionStrategy.EXTRACT_ALL);
+        documentValidator.setTokenIdentifierProvider(new UserFriendlyIdentifierProvider());
         if (fileDocument.getMimeType() == MimeType.XML) {
             String electronicReceipt = new XMLDocumentValidator(fileDocument).getRootElement().getDocumentElement().getTagName();
             String[] receiptTypes = {"FacturaElectronica", "TiqueteElectronico", "NotaDebitoElectronica", "NotaCreditoElectronica", "FacturaElectronicaCompra", "FacturaElectronicaExportacion", "MensajeReceptor"};
