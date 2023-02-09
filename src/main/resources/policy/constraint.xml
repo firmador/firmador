@@ -88,7 +88,7 @@
 				<Signature Level="FAIL" />
 				<NotExpired Level="FAIL" />
 				<RevocationDataAvailable Level="FAIL" />
-				<AcceptableRevocationDataFound Level="FAIL" />
+				<AcceptableRevocationDataFound Level="IGNORE" />
 				<CRLNextUpdatePresent Level="WARN" />
 				<RevocationFreshness Level="IGNORE" Unit="DAYS" Value="0" />
 				<NotRevoked Level="FAIL" />
@@ -275,7 +275,7 @@
 				<Signature Level="FAIL" />
 				<NotExpired Level="FAIL" />
 				<RevocationDataAvailable Level="WARN" />
-				<AcceptableRevocationDataFound Level="WARN" />
+				<AcceptableRevocationDataFound Level="IGNORE" />
 				<CRLNextUpdatePresent Level="WARN" />
 				<RevocationFreshness Level="IGNORE" Unit="DAYS" Value="0" />
 				<NotRevoked Level="FAIL" />
