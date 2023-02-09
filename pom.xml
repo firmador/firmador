@@ -108,6 +108,7 @@
               <compileSourceRoots>
                 <compileSourceRoot>${project.basedir}/src/main/java9</compileSourceRoot>
               </compileSourceRoots>
+              <outputDirectory>${project.build.outputDirectory}/META-INF/versions/9</outputDirectory>
             </configuration>
           </execution>
         </executions>
