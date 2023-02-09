@@ -179,7 +179,7 @@ public class BaseSwing {
         }
         try {
             Report report = new Report(validator.getReports());
-            validatePanel.reportLabel.setText(report.getReport());
+            validatePanel.reportLabel.setText(report.getReport()); // FIXME don't overwrite previous report
         } catch (Exception e) {
             LOG.error("Validando documento", e);
             e.printStackTrace();

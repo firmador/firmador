@@ -303,7 +303,7 @@ public class Settings {
     }
 
     public String getVersion() {
-        String versionStr = getClass().getPackage().getSpecificationVersion();
+        String versionStr = getClass().getPackage().getImplementationVersion();
         if (versionStr == null) versionStr = this.defaultDevelopmentVersion;
         return versionStr;
     }

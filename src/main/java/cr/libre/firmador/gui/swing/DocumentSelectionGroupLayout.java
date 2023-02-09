@@ -85,14 +85,14 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
     }
 
     private void showLoadDialog() {
-        loadDialog = new FileDialog(frame, "Seleccionar documento a firmar");
+        loadDialog = new FileDialog(frame, "Seleccionar documento a firmar o validar");
         loadDialog.setMultipleMode(true);
         loadDialog.setLocationRelativeTo(null);
         loadDialog.setVisible(true);
         loadDialog.dispose();
 
         File[] files = loadDialog.getFiles();
-        if(files.length>1) {
+        if(files.length>1) { // FIXME prompt if we want to sign or validate first //ggui.validateMultipleDocuments(files);
             GUISwing ggui = (GUISwing) gui;
             ggui.signMultipleDocuments(files);
         }else if( files.length==1) {
@@ -102,18 +102,9 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
 
         }
     }
-    public void clean() {
-        lastFile="";
-        lastDirectory="";
-        loadDialog = null;
-    }
 
     public String getLastDirectory() {
         return lastDirectory;
-    }
-
-    public void setLastDirectory(String lastDirectory) {
-        this.lastDirectory = lastDirectory;
     }
 
     public String getLastFile() {
@@ -126,21 +117,8 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
         this.lastDirectory = path.getParent().toString();
     }
 
-
-
     public FileDialog getLoadDialog() {
-
-        if(loadDialog == null) {
-            loadDialog = new FileDialog(frame, "Seleccionar documento a firmar");
-            loadDialog.setMultipleMode(true);
-            loadDialog.setLocationRelativeTo(null);
-        }
-
         return loadDialog;
-    }
-
-    public static void setLoadDialog(FileDialog loadDialog) {
-        DocumentSelectionGroupLayout.loadDialog = loadDialog;
     }
 
 }
