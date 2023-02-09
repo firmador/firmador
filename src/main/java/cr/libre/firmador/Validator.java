@@ -62,6 +62,7 @@ public class Validator {
         documentValidator.setCertificateVerifier(cv);
         documentValidator.setTokenExtractionStrategy(TokenExtractionStrategy.EXTRACT_ALL);
         documentValidator.setTokenIdentifierProvider(new UserFriendlyIdentifierProvider());
+        //documentValidator.setIncludeSemantics(true);
         if (fileDocument.getMimeType() == MimeType.XML) {
             String electronicReceipt = new XMLDocumentValidator(fileDocument).getRootElement().getDocumentElement().getTagName();
             String[] receiptTypes = {"FacturaElectronica", "TiqueteElectronico", "NotaDebitoElectronica", "NotaCreditoElectronica", "FacturaElectronicaCompra", "FacturaElectronicaExportacion", "MensajeReceptor"};
