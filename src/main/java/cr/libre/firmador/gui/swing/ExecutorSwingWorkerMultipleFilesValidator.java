@@ -23,9 +23,8 @@ import java.io.File;
 import javax.swing.SwingWorker;
 
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Throwables;
 
-
+import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
 
@@ -55,7 +54,7 @@ public class ExecutorSwingWorkerMultipleFilesValidator extends SwingWorker<Void,
             try {
                 ((GUISwing) gui).validateDocumentByPath(file);
             } catch (Exception e) {
-                Throwable te = Throwables.getRootCause(e);
+                Throwable te = FirmadorUtils.getRootCause(e);
                 String msg = te.toString();
                 LOG.error(msg, te);
 

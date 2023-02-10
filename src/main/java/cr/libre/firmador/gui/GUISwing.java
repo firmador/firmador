@@ -33,7 +33,6 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
-import com.google.common.base.Throwables;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.MimeType;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -41,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.ConfigListener;
+import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.gui.swing.AboutLayout;
 import cr.libre.firmador.gui.swing.ConfigPanel;
 import cr.libre.firmador.gui.swing.DocumentSelectionGroupLayout;
@@ -183,7 +183,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
                 ok = true;
             } catch (IOException e) {
                 LOG.error("Error Firmando documento", e);
-                showError(Throwables.getRootCause(e));
+                showError(FirmadorUtils.getRootCause(e));
             }
         }
         return ok;
@@ -278,7 +278,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
                 signedDocument.save(fileName);
             } catch (IOException e) {
                 LOG.error("Error Firmando Multiples documentos", e);
-                gui.showError(Throwables.getRootCause(e));
+                gui.showError(FirmadorUtils.getRootCause(e));
             }
         }
     }

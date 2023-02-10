@@ -27,8 +27,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.gui.GUIInterface;
-import com.google.common.base.Throwables;
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -84,7 +84,7 @@ public class FirmadorPAdES extends CRSigner {
             token = getSignatureConnection(card);
         } catch (DSSException|AlertException|Error e) {
             LOG.error("Error al conectar con el dispositivo", e);
-            gui.showError(Throwables.getRootCause(e));
+            gui.showError(FirmadorUtils.getRootCause(e));
             return null;
         }
         DSSPrivateKeyEntry privateKey = null;
@@ -93,7 +93,7 @@ public class FirmadorPAdES extends CRSigner {
             gui.nextStep("Obteniendo manejador de llaves privadas");
         } catch (Exception e) {
             LOG.error("Error al acceder al objeto de llave del dispositivo", e);
-            gui.showError(Throwables.getRootCause(e));
+            gui.showError(FirmadorUtils.getRootCause(e));
             return null;
         }
         try {
@@ -145,7 +145,7 @@ public class FirmadorPAdES extends CRSigner {
             gui.nextStep("Obteniendo estructura de datos a firmar");
             signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
         } catch (DSSException|AlertException|Error e) {
-            if (Throwables.getRootCause(e).getLocalizedMessage().equals("The new signature field position overlaps with an existing annotation!")) {
+            if (FirmadorUtils.getRootCause(e).getLocalizedMessage().equals("The new signature field position overlaps with an existing annotation!")) {
                 LOG.error("Error al firmar (traslape de firma)", e);
                 e.printStackTrace();
                 gui.showMessage("No se puede firmar: el campo de firma está solapándose sobre otra firma o anotación existente.<br>" +
@@ -153,17 +153,17 @@ public class FirmadorPAdES extends CRSigner {
                 return null;
             } else {
                 LOG.error("Error al solicitar firma al dispositivo", e);
-                gui.showError(Throwables.getRootCause(e));
+                gui.showError(FirmadorUtils.getRootCause(e));
             }
         } catch (IllegalArgumentException e) {
-            if (Throwables.getRootCause(e).getMessage().contains("is expired")) {
+            if (FirmadorUtils.getRootCause(e).getMessage().contains("is expired")) {
                 LOG.warn("El cetificado seleccionado para firmar ha vencido", e);
                 e.printStackTrace();
                 gui.showMessage("Certificado vencido, no se puede realizar la firma");
                 return null;
             } else {
                 LOG.error("Error al solicitar firma al dispositivo", e);
-                gui.showError(Throwables.getRootCause(e));
+                gui.showError(FirmadorUtils.getRootCause(e));
             }
         }
 
@@ -177,7 +177,7 @@ public class FirmadorPAdES extends CRSigner {
             e.printStackTrace();
             gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
                 "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
-                "Detalle del error: " + Throwables.getRootCause(e) + "<br><br>" +
+                "Detalle del error: " + FirmadorUtils.getRootCause(e) + "<br><br>" +
                 "Se ha agregado una firma básica solamente. No obstante, si el sello de tiempo resultara importante<br>" +
                 "para este documento, debería agregarse lo antes posible antes de enviarlo al destinatario.<br><br>" +
                 "Si lo prefiere, puede cancelar el guardado del documento firmado e intentar firmarlo más tarde.<br>");
@@ -187,7 +187,7 @@ public class FirmadorPAdES extends CRSigner {
 
             } catch (Exception ex) {
                 LOG.error("Error al procesar información de firma avanzada en nivel fallback (sin Internet) a AdES-B", e);
-                gui.showError(Throwables.getRootCause(e));
+                gui.showError(FirmadorUtils.getRootCause(e));
             }
         }
         return signedDocument;
@@ -210,7 +210,7 @@ public class FirmadorPAdES extends CRSigner {
             e.printStackTrace();
             gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
                 "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
-                "Detalle del error: " + Throwables.getRootCause(e) + "<br><br>" +
+                "Detalle del error: " + FirmadorUtils.getRootCause(e) + "<br><br>" +
                 "Inténtelo de nuevo más tarde. Si el problema persiste, compruebe su conexión o verifique<br>" +
                 "que no se trata de un problema de los servidores de Firma Digital o de un error de este programa.<br>");
         }
@@ -226,7 +226,7 @@ public class FirmadorPAdES extends CRSigner {
             service.setTspSource(onlineTSPSource);
         } catch (DSSException|Error e) {
             LOG.error("Error al preparar el servicio de sello de tiempo)", e);
-            gui.showError(Throwables.getRootCause(e));
+            gui.showError(FirmadorUtils.getRootCause(e));
         }
         try {
             PAdESTimestampParameters timestampParameters = new PAdESTimestampParameters();
@@ -253,7 +253,7 @@ public class FirmadorPAdES extends CRSigner {
             timestampedDocument = service.timestamp(documentToTimestamp, timestampParameters);
         } catch (Exception e) {
             LOG.error("Error al procesar información para al agregar un sello de tiempo independiente)", e);
-            gui.showError(Throwables.getRootCause(e));
+            gui.showError(FirmadorUtils.getRootCause(e));
         }
         return timestampedDocument;
     }

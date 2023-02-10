@@ -34,14 +34,14 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.slf4j.LoggerFactory;
 import com.apple.eawt.Application;
-import com.google.common.base.Throwables;
+import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.FirmadorCAdES;
 import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
+import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.FirmadorXAdES;
 import cr.libre.firmador.Report;
 import cr.libre.firmador.Settings;
@@ -102,7 +102,7 @@ public class BaseSwing {
             }
         } catch (Exception e) {
             LOG.error("Error cargando GUI", e);
-            this.showError(Throwables.getRootCause(e));
+            this.showError(FirmadorUtils.getRootCause(e));
         }
         settings = SettingsManager.getInstance().getAndCreateSettings();
         LoggingFrame loggingFrame = new LoggingFrame();
@@ -146,7 +146,7 @@ public class BaseSwing {
                         extendedDocument.writeTo(outdoc);
                     } catch (IOException e) {
                         LOG.error("Error extendiendo documento", e);
-                        showError(Throwables.getRootCause(e));
+                        showError(FirmadorUtils.getRootCause(e));
                     }
                 } else {
                     if (fileName == null) fileName = gui.getPathToSaveExtended("");
@@ -157,7 +157,7 @@ public class BaseSwing {
                             gui.loadDocument(fileName);
                         } catch (IOException e) {
                             LOG.error("Error guardando extendido", e);
-                            showError(Throwables.getRootCause(e));
+                            showError(FirmadorUtils.getRootCause(e));
                         }
                     }
                 }
@@ -240,7 +240,7 @@ public class BaseSwing {
             mainFrame.setMinimumSize(mainFrame.getSize());
         } catch (Exception e) {
             LOG.error("Error cargando Documento con mimeType", e);
-            gui.showError(Throwables.getRootCause(e));
+            gui.showError(FirmadorUtils.getRootCause(e));
         }
     }
 

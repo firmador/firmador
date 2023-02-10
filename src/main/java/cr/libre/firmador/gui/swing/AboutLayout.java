@@ -30,11 +30,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
-import com.google.common.base.Throwables;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
+import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.gui.GUIInterface;
 
 public class AboutLayout extends GroupLayout {
@@ -85,7 +85,7 @@ public class AboutLayout extends GroupLayout {
                 Desktop.getDesktop().browse(new URI(settings.baseUrl)); // GTK3 Swing backend has a bug not opening the URL until the app closes
             } catch (Exception e) {
                 LOG.error("Error abriendo url", e);
-                this.swinginterface.showError(Throwables.getRootCause(e));
+                this.swinginterface.showError(FirmadorUtils.getRootCause(e));
             }
         }
     }

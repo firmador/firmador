@@ -46,8 +46,7 @@ import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.util.TimeValue;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Throwables;
-
+import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
@@ -142,7 +141,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
 
                     } catch (URISyntaxException e) {
                         LOG.error("Error URISyntaxException", e);
-                        gui.showError(Throwables.getRootCause(e));
+                        gui.showError(FirmadorUtils.getRootCause(e));
                     } catch (Exception e) {
                         LOG.error("Error procesando petición", e);
                         e.printStackTrace();

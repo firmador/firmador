@@ -56,10 +56,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Throwables;
-
 import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.ConfigListener;
+import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.SmartCardDetector;
@@ -243,7 +242,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         imageLabel.setIcon(new ImageIcon(pageImage));
       } catch (Exception ex) {
           LOG.error("Error cambiando cambiando página", ex);
-          gui.showError(Throwables.getRootCause(ex));
+          gui.showError(FirmadorUtils.getRootCause(ex));
       }
       previewSignLabel();
     }
@@ -260,7 +259,7 @@ public class SignPanel extends JPanel implements ConfigListener{
                 bufferedImage = ImageIO.read(new URL(previewimg));
             } catch (Exception e) {
                 LOG.error("Error cargando imagen", e);
-                gui.showError(Throwables.getRootCause(e));
+                gui.showError(FirmadorUtils.getRootCause(e));
             }
             int previewimgWidth = Math.round((float) bufferedImage.getWidth() * settings.pDFImgScaleFactor / 4);
             int previewimgHeight = Math.round((float) bufferedImage.getHeight() * settings.pDFImgScaleFactor / 4);
