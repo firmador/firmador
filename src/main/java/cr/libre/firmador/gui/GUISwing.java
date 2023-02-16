@@ -232,7 +232,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         Path path = Paths.get(lastFile);
         lastFile=path.getFileName().toString();
         saveDialog.setFile(lastFile.substring(0, lastFile.lastIndexOf(".")) + suffix + dotExtension);
-        saveDialog.setFilenameFilter(docSelector.getLoadDialog().getFilenameFilter());
+        //saveDialog.setFilenameFilter(docSelector.getLoadDialog().getFilenameFilter()); // FIXME use filter based on file type containing the signature
         saveDialog.setLocationRelativeTo(null);
         saveDialog.setVisible(true);
         saveDialog.dispose();
