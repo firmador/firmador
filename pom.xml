@@ -209,7 +209,7 @@
     </dependency>
     <dependency>
       <groupId>eu.europa.ec.joinup.sd-dss</groupId>
-      <artifactId>dss-utils-google-guava</artifactId>
+      <artifactId>dss-utils-apache-commons</artifactId>
     </dependency>
 <!--
     <dependency>

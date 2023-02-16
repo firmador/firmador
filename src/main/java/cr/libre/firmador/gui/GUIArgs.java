@@ -33,9 +33,9 @@ import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
 import cr.libre.firmador.FirmadorXAdES;
+import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.plugins.PluginManager;
 
-import com.google.common.base.Throwables;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.MimeType;
@@ -83,7 +83,7 @@ public class GUIArgs implements GUIInterface {
                     signedDocument.save(fileName);
                     showMessage("Documento guardado satisfactoriamente en " + fileName);
                 } catch (IOException e) {
-                    showError(Throwables.getRootCause(e));
+                    showError(FirmadorUtils.getRootCause(e));
                 }
             }
         }
@@ -123,7 +123,7 @@ public class GUIArgs implements GUIInterface {
             while (reader.read(input, 0, input.length) != -1);
             reader.close();
         } catch (IOException e) {
-            showError(Throwables.getRootCause(e));
+            showError(FirmadorUtils.getRootCause(e));
         }
         int passwordLength = 0;
         for (char character: input) {

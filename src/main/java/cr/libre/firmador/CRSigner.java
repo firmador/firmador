@@ -21,7 +21,6 @@ package cr.libre.firmador;
 
 import java.util.List;
 
-import com.google.common.base.Throwables;
 import eu.europa.esig.dss.alert.LogOnStatusAlert;
 import eu.europa.esig.dss.enumerations.KeyUsageBit;
 import eu.europa.esig.dss.service.crl.OnlineCRLSource;
@@ -41,6 +40,7 @@ import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 
+import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.gui.GUIInterface;
 
 public class CRSigner {
@@ -58,7 +58,7 @@ public class CRSigner {
         try {
             keys = signingToken.getKeys();
         } catch (Throwable e) {
-            Throwable te = Throwables.getRootCause(e);
+            Throwable te = FirmadorUtils.getRootCause(e);
             String msg = e.getCause().toString();
             LOG.error("Error " + te.getLocalizedMessage() + " obteniendo manejador de llaves privadas de la tarjeta", e);
             if (te.getLocalizedMessage().equals("CKR_PIN_INCORRECT")) throw e;
@@ -68,7 +68,7 @@ public class CRSigner {
                 return null;
             } else {
                 if (msg.contains("but token only has 0 slots")) throw e;
-                gui.showError(Throwables.getRootCause(e));
+                gui.showError(FirmadorUtils.getRootCause(e));
             }
         }
         // FIXME: This uses first non-repudiation key available assuming there are no more, keys with the same purpose with the same token.
@@ -102,7 +102,7 @@ public class CRSigner {
             else signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), card.getPin() /* new PrefilledPasswordCallback(card.getPin()) */, card.getSlotID());
         } catch (Throwable e) {
             LOG.error("Error al obtener la conexión de firma", e);
-            gui.showError(Throwables.getRootCause(e));
+            gui.showError(FirmadorUtils.getRootCause(e));
         }
         return signingToken;
     }
