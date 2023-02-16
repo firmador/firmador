@@ -583,7 +583,7 @@ class ImageFilter extends FileFilter {
    public boolean accept(File f) {
       if (f.isDirectory()) return true;
       String extension = getExtension(f);
-      if (extension != null) if (extension.equals(TIFF) || extension.equals(TIF) || extension.equals(GIF) || extension.equals(JPEG) || extension.equals(JPG) || extension.equals(PNG)) return true;
+      if (extension != null) if (extension.equalsIgnoreCase(TIFF) || extension.equalsIgnoreCase(TIF) || extension.equalsIgnoreCase(GIF) || extension.equalsIgnoreCase(JPEG) || extension.equalsIgnoreCase(JPG) || extension.equalsIgnoreCase(PNG)) return true;
       return false;
    }
 
