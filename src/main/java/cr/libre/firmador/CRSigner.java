@@ -133,6 +133,7 @@ public class CRSigner {
         cv.setOcspSource(new OnlineOCSPSource());
         cv.setAIASource(new DefaultAIASource());
         cv.setAlertOnMissingRevocationData(new LogOnStatusAlert(Level.WARN));
+        cv.setRevocationFallback(true);
         return cv;
     }
 
