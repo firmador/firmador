@@ -171,7 +171,7 @@ public class SettingsManager {
             conf.place = props.getProperty("place", conf.place);
             conf.contact = props.getProperty("contact", conf.contact);
             conf.dateFormat = props.getProperty("dateformat", conf.dateFormat);
-            conf.defaultSignMessage = new String(props.getProperty("defaultsignmessage", conf.defaultSignMessage).getBytes(StandardCharsets.UTF_8));
+            conf.defaultSignMessage = props.getProperty("defaultsignmessage", conf.defaultSignMessage);
             conf.pageNumber = Integer.parseInt(props.getProperty("pagenumber", conf.pageNumber.toString()));
             conf.signWidth = Integer.parseInt(props.getProperty("signwidth", conf.signWidth.toString()));
             conf.signHeight = Integer.parseInt(props.getProperty("signheight", conf.signHeight.toString()));
