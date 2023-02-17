@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cr.libre.firmador</groupId>
   <artifactId>firmador</artifactId>
-  <version>1.9.2</version>
+  <version>1.9.3</version>
   <name>firmador</name>
   <url>https://firmador.libre.cr</url>
   <properties>
@@ -56,12 +56,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M8</version>
+        <version>3.0.0-M9</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>3.0.0-M8</version>
+        <version>3.0.0-M9</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -146,6 +146,12 @@
                   <artifact>eu.europa.ec.joinup.sd-dss:dss-policy-jaxb</artifact>
                   <excludes>
                     <exclude>policy/constraint.xml</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>eu.europa.ec.joinup.sd-dss:dss-i18n</artifact>
+                  <excludes>
+                    <exclude>dss-messages.properties</exclude>
                   </excludes>
                 </filter>
               </filters>
