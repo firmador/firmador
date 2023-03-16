@@ -21,7 +21,6 @@ package cr.libre.firmador;
 
 import java.util.List;
 
-import eu.europa.esig.dss.alert.LogOnStatusAlert;
 import eu.europa.esig.dss.enumerations.KeyUsageBit;
 import eu.europa.esig.dss.service.crl.OnlineCRLSource;
 import eu.europa.esig.dss.service.ocsp.OnlineOCSPSource;
@@ -132,8 +131,6 @@ public class CRSigner {
         cv.setCrlSource(new OnlineCRLSource());
         cv.setOcspSource(new OnlineOCSPSource());
         cv.setAIASource(new DefaultAIASource());
-        cv.setAlertOnMissingRevocationData(new LogOnStatusAlert(Level.WARN));
-        cv.setRevocationFallback(true);
         return cv;
     }
 
