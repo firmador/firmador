@@ -22,6 +22,7 @@ package cr.libre.firmador;
 
 
 
+import java.lang.invoke.MethodHandles;
 
 
 import java.util.Arrays;
@@ -56,10 +57,11 @@ import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 //import eu.europa.esig.dss.validation.SignedDocumentValidator; // Electronic receipts v4.4 proposal
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FirmadorXAdES extends CRSigner {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(FirmadorXAdES.class);
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     //XAdESCounterSignatureParameters parameters; // Electronic receipts v4.4 proposal
     XAdESSignatureParameters parameters;
 

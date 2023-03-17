@@ -23,6 +23,7 @@ import java.awt.FileDialog;
 import java.awt.HeadlessException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.model.FileDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.CardSignInfo;
@@ -53,7 +55,7 @@ import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import cr.libre.firmador.gui.swing.ValidatePanel;
 
 public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GUISwing.class);
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private Boolean isRemote = false;
     public JTabbedPane frameTabbedPane;
     private String documenttosign = null;

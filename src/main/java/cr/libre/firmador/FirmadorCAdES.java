@@ -22,6 +22,7 @@ package cr.libre.firmador;
 
 
 
+import java.lang.invoke.MethodHandles;
 
 
 
@@ -56,10 +57,11 @@ import eu.europa.esig.dss.token.SignatureTokenConnection;
 
 import eu.europa.esig.dss.validation.CertificateVerifier;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FirmadorCAdES extends CRSigner {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(FirmadorCAdES.class);
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     CAdESSignatureParameters parameters;
 

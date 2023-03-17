@@ -21,8 +21,8 @@ package cr.libre.firmador.gui;
 
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
-
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -34,6 +34,7 @@ import eu.europa.esig.dss.model.InMemoryDocument;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.CardSignInfo;
@@ -46,7 +47,7 @@ import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 
 public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GUIRemote.class);
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     public JTabbedPane frameTabbedPane;
     private RemoteHttpWorker<Void, byte[]> remote;
     private RemoteDocInformation docinfo;

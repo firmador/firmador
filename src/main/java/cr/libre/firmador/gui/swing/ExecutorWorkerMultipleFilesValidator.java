@@ -23,18 +23,19 @@ import java.awt.Toolkit;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
 
 public class ExecutorWorkerMultipleFilesValidator extends Thread implements PropertyChangeListener, ExecutorWorkerInterface  {
-
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private ProgressDialog progressMonitor;
     private GUIInterface gui;
     private ExecutorSwingWorkerMultipleFilesValidator task;
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GUISwing.class);
     private Integer progressStatus = 0;
     private File[] files;
 

@@ -18,6 +18,9 @@ You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador.plugins;
 
+import java.lang.invoke.MethodHandles;
+
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.Settings;
@@ -25,7 +28,7 @@ import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUISwing;
 
 public class DummyPlugin implements Plugin {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GUISwing.class);
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     public void start() {
         LOG.info("Stating DummyPlugin");
     }
