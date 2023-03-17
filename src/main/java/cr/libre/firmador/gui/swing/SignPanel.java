@@ -29,11 +29,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
 import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
@@ -54,6 +54,7 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.CardSignInfo;
@@ -66,8 +67,8 @@ import cr.libre.firmador.gui.GUIInterface;
 
 
 public class SignPanel extends JPanel implements ConfigListener{
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final long serialVersionUID = 945116850482545687L;
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SignPanel.class);
 
     private JScrollPane imgScroll;
     private ScrollableJPanel imagePanel;

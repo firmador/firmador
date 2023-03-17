@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.plugins;
-import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.invoke.MethodHandles;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -35,20 +36,21 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import eu.europa.esig.dss.model.Digest;
+import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.swing.CopyableJLabel;
-import eu.europa.esig.dss.model.Digest;
-import eu.europa.esig.dss.spi.DSSUtils;
 
 public class CheckUpdatePlugin implements Plugin, Runnable {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(CheckUpdatePlugin.class);
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     public boolean isrunnable = true;
     private Settings settings;
 

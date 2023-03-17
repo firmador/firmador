@@ -35,6 +35,7 @@ import java.awt.event.ItemListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -59,12 +60,14 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 
 public class ConfigPanel extends ScrollableJPanel {
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     JTextArea defaultSignMessage;
     Settings settings;
     SettingsManager manager;
@@ -81,7 +84,6 @@ public class ConfigPanel extends ScrollableJPanel {
     private ScrollableJPanel simplePanel, advancedPanel;
     private boolean isAdvancedOptions = false;
     private static final long serialVersionUID = 1L;
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ConfigPanel.class);
 
     private void createSimpleConfigPanel() {
         simplePanel = new ScrollableJPanel();

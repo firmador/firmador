@@ -30,6 +30,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -38,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.Settings;
@@ -46,7 +48,7 @@ import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
 
 public class SwingMainWindowFrame extends JFrame {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SwingMainWindowFrame.class);
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     public GUIInterface gui;
     public JTabbedPane optionsTabbedPane;
     public static final long serialVersionUID = -7495851994719690589L;

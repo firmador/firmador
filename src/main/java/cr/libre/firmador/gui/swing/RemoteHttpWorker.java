@@ -23,6 +23,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.apache.hc.core5.http.protocol.HttpContext;
 //import org.apache.hc.core5.io.CloseMode;
 import org.apache.hc.core5.util.TimeValue;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.FirmadorUtils;
@@ -53,126 +55,126 @@ import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUIRemote;
 
 public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
-        private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(RemoteHttpWorker.class);
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-        protected GUIInterface gui;
-        private HttpServer server;
-        private String requestFileName;
+    protected GUIInterface gui;
+    private HttpServer server;
+    private String requestFileName;
 
-        protected HashMap<String, RemoteDocInformation> docInformation = new HashMap<>();
+    protected HashMap<String, RemoteDocInformation> docInformation = new HashMap<>();
 
-        public RemoteHttpWorker(GUIInterface gui) {
-            super();
-            this.gui=gui;
+    public RemoteHttpWorker(GUIInterface gui) {
+        super();
+        this.gui=gui;
 
-        }
-
-
-        public HashMap<String, RemoteDocInformation> getDocInformation() {
-            return docInformation;
-        }
+    }
 
 
-        public void setDocInformation(HashMap<String, RemoteDocInformation> docInformation) {
-            this.docInformation = docInformation;
-        }
+    public HashMap<String, RemoteDocInformation> getDocInformation() {
+        return docInformation;
+    }
 
 
-        protected T doInBackground() throws IOException, InterruptedException {
-            class RequestHandler implements HttpRequestHandler {
-                protected Settings settings;
-                protected GUIInterface gui;
+    public void setDocInformation(HashMap<String, RemoteDocInformation> docInformation) {
+        this.docInformation = docInformation;
+    }
 
 
-                public RequestHandler(GUIInterface gui, Settings settings) {
-                    super();
-                    this.settings = settings;
-                    this.gui=gui;
-                    ((GUIRemote) gui).getMainFrame().addWindowListener(new WindowAdapter() {
-                        @Override
-                        public void windowClosing(WindowEvent arg0) {
-                            server.stop();
-                        }
-                    });
-
-                }
+    protected T doInBackground() throws IOException, InterruptedException {
+        class RequestHandler implements HttpRequestHandler {
+            protected Settings settings;
+            protected GUIInterface gui;
 
 
-                public void processSign(String name, RemoteDocInformation data) {
-                    gui.loadDocument(name);
-                }
-
-                public void handle(final ClassicHttpRequest request, final ClassicHttpResponse response, final HttpContext context) throws HttpException, IOException {
-                    response.setHeader("Access-Control-Allow-Origin", settings.getOrigin());
-                    response.setHeader("Vary", "Origin");
-                    try {
-                        if (request.getUri().getPath().equals("/close")) {
-                            response.setCode(HttpStatus.SC_OK);
-                            //response.setEntity(new StringEntity("Closing..."));
-                            LOG.trace("Closing...");
-                            response.close();
-
-                             SwingUtilities.invokeLater(new Runnable() {
-                                 public void run() {
-                                     try {
-                                        Thread.sleep(1000);
-                                    } catch (InterruptedException e) {
-                                        LOG.error("Interrupción al correr servidor", e);
-                                        e.printStackTrace();
-                                    }
-                                     ((GUIRemote) gui).close();
-
-                                 }
-                             });
-                            return;
-                        }
-
-                        requestFileName = request.getUri().getPath().substring(1);
-
-                        if(request.getMethod().contains("DELETE") ) {
-                            if(docInformation.containsKey(requestFileName)) {
-                                docInformation.remove(requestFileName);
-                                response.setCode(HttpStatus.SC_SUCCESS);
-                                return;
-                            }
-                            response.setCode(HttpStatus.SC_NOT_FOUND);
-                            return;
-                        }
-
-                    } catch (URISyntaxException e) {
-                        LOG.error("Error URISyntaxException", e);
-                        gui.showError(FirmadorUtils.getRootCause(e));
-                    } catch (Exception e) {
-                        LOG.error("Error procesando petición", e);
-                        e.printStackTrace();
+            public RequestHandler(GUIInterface gui, Settings settings) {
+                super();
+                this.settings = settings;
+                this.gui=gui;
+                ((GUIRemote) gui).getMainFrame().addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent arg0) {
+                        server.stop();
                     }
-                    HttpEntity entity = request.getEntity();
-                    response.setCode(HttpStatus.SC_ACCEPTED);
-                    RemoteDocInformation docinfo;
-                    if(!docInformation.containsKey(requestFileName)) {
-                        docinfo = new RemoteDocInformation(requestFileName, new ByteArrayOutputStream(), HttpStatus.SC_ACCEPTED);
-                        if (entity.getContentLength() > 0) {
-                            docinfo.setInputdata(entity.getContent());
-                            publish();
-                            docInformation.put(requestFileName, docinfo);
-                            processSign(requestFileName, docinfo);
-                        }else {
-                            docinfo.setStatus(HttpStatus.SC_NO_CONTENT);
+                });
+
+            }
+
+
+            public void processSign(String name, RemoteDocInformation data) {
+                gui.loadDocument(name);
+            }
+
+            public void handle(final ClassicHttpRequest request, final ClassicHttpResponse response, final HttpContext context) throws HttpException, IOException {
+                response.setHeader("Access-Control-Allow-Origin", settings.getOrigin());
+                response.setHeader("Vary", "Origin");
+                try {
+                    if (request.getUri().getPath().equals("/close")) {
+                        response.setCode(HttpStatus.SC_OK);
+                        //response.setEntity(new StringEntity("Closing..."));
+                        LOG.trace("Closing...");
+                        response.close();
+
+                         SwingUtilities.invokeLater(new Runnable() {
+                             public void run() {
+                                 try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    LOG.error("Interrupción al correr servidor", e);
+                                    e.printStackTrace();
+                                }
+                                 ((GUIRemote) gui).close();
+
+                             }
+                         });
+                        return;
+                    }
+
+                    requestFileName = request.getUri().getPath().substring(1);
+
+                    if(request.getMethod().contains("DELETE") ) {
+                        if(docInformation.containsKey(requestFileName)) {
+                            docInformation.remove(requestFileName);
+                            response.setCode(HttpStatus.SC_SUCCESS);
+                            return;
                         }
+                        response.setCode(HttpStatus.SC_NOT_FOUND);
+                        return;
+                    }
+
+                } catch (URISyntaxException e) {
+                    LOG.error("Error URISyntaxException", e);
+                    gui.showError(FirmadorUtils.getRootCause(e));
+                } catch (Exception e) {
+                    LOG.error("Error procesando petición", e);
+                    e.printStackTrace();
+                }
+                HttpEntity entity = request.getEntity();
+                response.setCode(HttpStatus.SC_ACCEPTED);
+                RemoteDocInformation docinfo;
+                if(!docInformation.containsKey(requestFileName)) {
+                    docinfo = new RemoteDocInformation(requestFileName, new ByteArrayOutputStream(), HttpStatus.SC_ACCEPTED);
+                    if (entity.getContentLength() > 0) {
+                        docinfo.setInputdata(entity.getContent());
+                        publish();
+                        docInformation.put(requestFileName, docinfo);
+                        processSign(requestFileName, docinfo);
                     }else {
-                        docinfo = docInformation.get(requestFileName);
+                        docinfo.setStatus(HttpStatus.SC_NO_CONTENT);
                     }
-
-                    response.setEntity(new ByteArrayEntity(docinfo.getData().toByteArray(), ContentType.DEFAULT_TEXT));
-                    response.setCode(docinfo.getStatus());
-
+                }else {
+                    docinfo = docInformation.get(requestFileName);
                 }
-            };
-            Settings settings = SettingsManager.getInstance().getAndCreateSettings();
-            server = ServerBootstrap.bootstrap().setListenerPort(settings.portNumber).setLocalAddress(InetAddress.getLoopbackAddress()).register("*",
-                    new RequestHandler(gui, settings)).create();
-            server.start();
-            server.awaitTermination(TimeValue.MAX_VALUE);
-            return null;
-        }
+
+                response.setEntity(new ByteArrayEntity(docinfo.getData().toByteArray(), ContentType.DEFAULT_TEXT));
+                response.setCode(docinfo.getStatus());
+
+            }
+        };
+        Settings settings = SettingsManager.getInstance().getAndCreateSettings();
+        server = ServerBootstrap.bootstrap().setListenerPort(settings.portNumber).setLocalAddress(InetAddress.getLoopbackAddress()).register("*",
+                new RequestHandler(gui, settings)).create();
+        server.start();
+        server.awaitTermination(TimeValue.MAX_VALUE);
+        return null;
+    }
 }

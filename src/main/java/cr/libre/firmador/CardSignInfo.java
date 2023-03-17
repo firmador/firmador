@@ -19,15 +19,17 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador;
 
+import java.lang.invoke.MethodHandles;
 import java.security.KeyStore.PasswordProtection;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CardSignInfo {
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     public static int PKCS11TYPE=1;
     public static int PKCS12TYPE=2;
     public static int ONLYPIN=3;
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(CardSignInfo.class);
     private String identification;
     private String firstName;
     private String lastName;

@@ -22,6 +22,7 @@ package cr.libre.firmador;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -56,10 +57,11 @@ import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FirmadorPAdES extends CRSigner {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(FirmadorCAdES.class);
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private int page = 1, x, y;
     PAdESSignatureParameters parameters;
     private boolean visibleSignature = true;

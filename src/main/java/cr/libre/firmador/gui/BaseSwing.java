@@ -24,6 +24,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -38,6 +39,7 @@ import eu.europa.esig.dss.model.DSSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import com.apple.eawt.Application;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.CardSignInfo;
@@ -61,8 +63,8 @@ import cr.libre.firmador.gui.swing.ValidatePanel;
 import cr.libre.firmador.plugins.PluginManager;
 
 public class BaseSwing {
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     protected Settings settings;
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(BaseSwing.class);
     protected Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     protected DSSDocument toSignDocument;
     protected DSSDocument signedDocument;
