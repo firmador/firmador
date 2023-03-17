@@ -36,9 +36,10 @@ import cr.libre.firmador.FirmadorXAdES;
 import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.plugins.PluginManager;
 
+import eu.europa.esig.dss.enumerations.MimeType;
+import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
-import eu.europa.esig.dss.model.MimeType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 public class GUIArgs implements GUIInterface {
@@ -58,13 +59,13 @@ public class GUIArgs implements GUIInterface {
             if (!timestamp && !visibleTimestamp) {
                 CardSignInfo card = getPin();
                 MimeType mimeType = toSignDocument.getMimeType();
-                if (mimeType == MimeType.PDF) {
+                if (mimeType == MimeTypeEnum.PDF) {
                     FirmadorPAdES firmador = new FirmadorPAdES(this);
                     signedDocument = firmador.sign(toSignDocument, card, null, null, null, null, null);
-                } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
+                } else if (mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
                     FirmadorOpenDocument firmador = new FirmadorOpenDocument(this);
                     signedDocument = firmador.sign(toSignDocument, card);
-                } else if (mimeType == MimeType.XML) {
+                } else if (mimeType == MimeTypeEnum.XML) {
                     FirmadorXAdES firmador = new FirmadorXAdES(this);
                     signedDocument = firmador.sign(toSignDocument, card);
                 } else {

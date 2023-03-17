@@ -33,14 +33,14 @@ import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
-
+import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
-import eu.europa.esig.dss.model.MimeType;
+
 import eu.europa.esig.dss.model.Policy;
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
 import eu.europa.esig.dss.xades.reference.DSSReference;
@@ -112,7 +112,7 @@ public class FirmadorXAdES extends CRSigner {
             service.setTspSource(onlineTSPSource);
 
             // This doesn't apply for counter-signature (Electronic receipts v4.4 proposal)
-            if (toSignDocument.getMimeType() == MimeType.XML) {
+            if (toSignDocument.getMimeType() == MimeTypeEnum.XML) {
                 parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
                 parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
                 String electronicReceipt = new XMLDocumentValidator(toSignDocument).getRootElement().getDocumentElement().getTagName();

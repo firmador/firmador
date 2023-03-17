@@ -19,11 +19,11 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui;
 
+import eu.europa.esig.dss.enumerations.MimeType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.plugins.PluginManager;
-import eu.europa.esig.dss.model.MimeType;
 
 public interface GUIInterface {
 
