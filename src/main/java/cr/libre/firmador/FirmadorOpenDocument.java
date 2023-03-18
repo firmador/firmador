@@ -28,7 +28,6 @@ import java.lang.invoke.MethodHandles;
 
 
 
-import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.gui.GUIInterface;
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;

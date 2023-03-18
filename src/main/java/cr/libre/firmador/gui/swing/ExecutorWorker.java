@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.gui.GUIInterface;
-import cr.libre.firmador.gui.GUISwing;
 
 public class ExecutorWorker extends Thread implements PropertyChangeListener, ExecutorWorkerInterface  {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
