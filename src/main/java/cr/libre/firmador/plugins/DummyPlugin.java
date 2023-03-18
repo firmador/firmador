@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
-import cr.libre.firmador.gui.GUISwing;
 
 public class DummyPlugin implements Plugin {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
