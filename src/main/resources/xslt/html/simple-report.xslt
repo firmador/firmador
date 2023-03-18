@@ -55,7 +55,7 @@
 						<xsl:variable name="index" select="position()"/>
 						<xsl:choose>
 							<xsl:when test="$index = 1">
-								<xsl:value-of select="dss:qualifiedName"/>
+								<xsl:value-of select="dss:QualifiedName"/>
 							</xsl:when>
 						</xsl:choose>
 					</xsl:for-each>

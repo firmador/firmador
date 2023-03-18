@@ -20,8 +20,10 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador.gui.swing;
 
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import javax.swing.SwingWorker;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.CardSignInfo;
@@ -30,7 +32,7 @@ import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
 
 public class ExecutorSwingWorkerMultipleFiles extends SwingWorker<Void, Void> {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ExecutorSwingWorkerMultipleFiles.class);
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private ProgressDialog progressMonitor;
     private GUIInterface gui;
     private File[] files;

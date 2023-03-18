@@ -21,6 +21,7 @@ package cr.libre.firmador;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
@@ -43,10 +44,12 @@ import static sun.security.pkcs11.wrapper.PKCS11Constants.CKF_SERIAL_SESSION;
 import static sun.security.pkcs11.wrapper.PKCS11Constants.CKF_TOKEN_PRESENT;
 import static sun.security.pkcs11.wrapper.PKCS11Constants.CKO_CERTIFICATE;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("restriction")
 public class SmartCardDetector implements  ConfigListener {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SmartCardDetector.class);
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     protected Settings settings;
     private String lib;
 

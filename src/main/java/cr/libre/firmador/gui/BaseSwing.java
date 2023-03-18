@@ -24,6 +24,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -32,9 +33,13 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import eu.europa.esig.dss.enumerations.MimeType;
+import eu.europa.esig.dss.enumerations.MimeTypeEnum;
+import eu.europa.esig.dss.model.DSSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import com.apple.eawt.Application;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.CardSignInfo;
@@ -56,12 +61,10 @@ import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import cr.libre.firmador.gui.swing.ValidatePanel;
 import cr.libre.firmador.plugins.PluginManager;
-import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.model.MimeType;
 
 public class BaseSwing {
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     protected Settings settings;
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(BaseSwing.class);
     protected Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     protected DSSDocument toSignDocument;
     protected DSSDocument signedDocument;
@@ -126,13 +129,13 @@ public class BaseSwing {
             DSSDocument extendedDocument = null;
             ByteArrayOutputStream outdoc = null;
             MimeType mimeType = toExtendDocument.getMimeType();
-            if (mimeType == MimeType.PDF) {
+            if (mimeType == MimeTypeEnum.PDF) {
                 FirmadorPAdES firmador = new FirmadorPAdES(gui);
                 extendedDocument = firmador.extend(toExtendDocument);
-            } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
+            } else if (mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
                 FirmadorOpenDocument firmador = new FirmadorOpenDocument(gui);
                 extendedDocument = firmador.extend(toExtendDocument);
-            } else if (mimeType == MimeType.XML) {
+            } else if (mimeType == MimeTypeEnum.XML) {
                 FirmadorXAdES firmador = new FirmadorXAdES(gui);
                 extendedDocument = firmador.extend(toExtendDocument);
             } else {
@@ -232,10 +235,10 @@ public class BaseSwing {
         signPanel.getSignButton().setEnabled(true);
         try {
             signPanel.docHideButtons();
-            if (mimeType == MimeType.PDF) loadDocumentPDF(doc);
+            if (mimeType == MimeTypeEnum.PDF) loadDocumentPDF(doc);
             else signPanel.shownonPDFButtons();
-            //else if (mimeType == MimeType.XML) { /* Nothing for now */ }
-            //else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) { /* Nothing for now */ }
+            //else if (mimeType == MimeTypeEnum.XML) { /* Nothing for now */ }
+            //else if (mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) { /* Nothing for now */ }
             mainFrame.pack();
             mainFrame.setMinimumSize(mainFrame.getSize());
         } catch (Exception e) {
@@ -247,16 +250,16 @@ public class BaseSwing {
     protected void signDocument(CardSignInfo card, Boolean visibleSignature) {
         signedDocument = null;
         MimeType mimeType = toSignDocument.getMimeType();
-        if (mimeType == MimeType.PDF) {
+        if (mimeType == MimeTypeEnum.PDF) {
             FirmadorPAdES firmador = new FirmadorPAdES(gui);
             firmador.setVisibleSignature(visibleSignature);
             firmador.addVisibleSignature((int)signPanel.getPageSpinner().getValue(), signPanel.calculateSignatureRectangle());
             signedDocument = firmador.sign(toSignDocument, card, signPanel.getReasonField().getText(), signPanel.getLocationField().getText(),
                 signPanel.getContactInfoField().getText(), System.getProperty("jnlp.signatureImage"), Boolean.getBoolean("jnlp.hideSignatureAdvice"));
-        } else if (mimeType == MimeType.ODG || mimeType == MimeType.ODP || mimeType == MimeType.ODS || mimeType == MimeType.ODT) {
+        } else if (mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
             FirmadorOpenDocument firmador = new FirmadorOpenDocument(gui);
             signedDocument = firmador.sign(toSignDocument, card);
-        } else if (mimeType == MimeType.XML || signPanel.getAdESFormatButtonGroup().getSelection().getActionCommand().equals("XAdES")) {
+        } else if (mimeType == MimeTypeEnum.XML || signPanel.getAdESFormatButtonGroup().getSelection().getActionCommand().equals("XAdES")) {
             FirmadorXAdES firmador = new FirmadorXAdES(gui);
             signedDocument = firmador.sign(toSignDocument, card);
         } else {

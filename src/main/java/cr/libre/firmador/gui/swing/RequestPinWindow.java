@@ -27,6 +27,7 @@ import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.invoke.MethodHandles;
 import java.security.KeyStore.PasswordProtection;
 //import javax.swing.ComboBoxModel;
 import javax.swing.GroupLayout;
@@ -44,18 +45,18 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import java.util.List;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.SmartCardDetector;
 
 public class RequestPinWindow extends JFrame {
-
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final long serialVersionUID = -8464569433812264362L;
     private JPanel contentPane;
     private JPasswordField pinField = new JPasswordField(50);
     protected CardSignInfo card;
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(RequestPinWindow.class);
     protected JComboBox<String> comboBox;
     private JLabel label;
     private JLabel lblNewLabel;

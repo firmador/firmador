@@ -24,12 +24,14 @@ import java.awt.Desktop;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.Settings;
@@ -38,7 +40,7 @@ import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.gui.GUIInterface;
 
 public class AboutLayout extends GroupLayout {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(AboutLayout.class);
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private GUIInterface swinginterface;
     private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     private Settings settings;

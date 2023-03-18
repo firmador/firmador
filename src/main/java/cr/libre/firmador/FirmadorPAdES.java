@@ -22,12 +22,12 @@ package cr.libre.firmador;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.gui.GUIInterface;
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
@@ -56,10 +56,11 @@ import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FirmadorPAdES extends CRSigner {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(FirmadorCAdES.class);
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private int page = 1, x, y;
     PAdESSignatureParameters parameters;
     private boolean visibleSignature = true;
@@ -100,7 +101,7 @@ public class FirmadorPAdES extends CRSigner {
             gui.nextStep("Obteniendo certificados de la tarjeta");
             CertificateToken certificate = privateKey.getCertificate();
             parameters.setSignatureLevel(settings.getPAdESLevel());
-            parameters.setAppName("Firmador " + getClass().getPackage().getSpecificationVersion() + ", https://firmador.libre.cr");
+            parameters.setAppName("Firmador " + settings.getVersion() + ", https://firmador.libre.cr");
             parameters.setContentSize(13312);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
@@ -248,7 +249,7 @@ public class FirmadorPAdES extends CRSigner {
                 imageParameters.setTextParameters(textParameters);
                 imageParameters.getFieldParameters().setPage(1);
                 timestampParameters.setImageParameters(imageParameters);
-                timestampParameters.setAppName("Firmador " + getClass().getPackage().getSpecificationVersion() + ", https://firmador.libre.cr");
+                timestampParameters.setAppName("Firmador " + settings.getVersion() + ", https://firmador.libre.cr");
             }
             timestampedDocument = service.timestamp(documentToTimestamp, timestampParameters);
         } catch (Exception e) {

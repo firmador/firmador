@@ -18,11 +18,12 @@ You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador.plugins;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.SwingUtilities;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.Settings;
@@ -30,7 +31,7 @@ import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
 
 public class PluginManager implements Runnable {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(PluginManager.class);
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     //private GUIInterface gui;
     private Settings settings;
     private List<Plugin> runnablePlugins = new ArrayList<Plugin>();

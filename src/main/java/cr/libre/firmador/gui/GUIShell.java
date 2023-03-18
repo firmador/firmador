@@ -41,9 +41,9 @@ import cr.libre.firmador.FirmadorUtils;
 //import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.plugins.PluginManager;
 
+import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
-import eu.europa.esig.dss.model.MimeType;
 
 public class GUIShell implements GUIInterface {
 

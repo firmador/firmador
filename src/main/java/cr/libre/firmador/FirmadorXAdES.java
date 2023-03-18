@@ -22,25 +22,25 @@ package cr.libre.firmador;
 
 
 
+import java.lang.invoke.MethodHandles;
 
 
 import java.util.Arrays;
 
 
-import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.gui.GUIInterface;
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
-
+import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
-import eu.europa.esig.dss.model.MimeType;
+
 import eu.europa.esig.dss.model.Policy;
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
 import eu.europa.esig.dss.xades.reference.DSSReference;
@@ -56,10 +56,11 @@ import eu.europa.esig.dss.token.SignatureTokenConnection;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 //import eu.europa.esig.dss.validation.SignedDocumentValidator; // Electronic receipts v4.4 proposal
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FirmadorXAdES extends CRSigner {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(FirmadorXAdES.class);
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     //XAdESCounterSignatureParameters parameters; // Electronic receipts v4.4 proposal
     XAdESSignatureParameters parameters;
 
@@ -112,7 +113,7 @@ public class FirmadorXAdES extends CRSigner {
             service.setTspSource(onlineTSPSource);
 
             // This doesn't apply for counter-signature (Electronic receipts v4.4 proposal)
-            if (toSignDocument.getMimeType() == MimeType.XML) {
+            if (toSignDocument.getMimeType() == MimeTypeEnum.XML) {
                 parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
                 parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
                 String electronicReceipt = new XMLDocumentValidator(toSignDocument).getRootElement().getDocumentElement().getTagName();
