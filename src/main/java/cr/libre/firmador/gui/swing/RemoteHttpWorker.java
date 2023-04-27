@@ -165,7 +165,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                     docinfo = docInformation.get(requestFileName);
                 }
 
-                response.setEntity(new ByteArrayEntity(docinfo.getData().toByteArray(), ContentType.DEFAULT_TEXT));
+                if (docinfo.getStatus() != HttpStatus.SC_NO_CONTENT) response.setEntity(new ByteArrayEntity(docinfo.getData().toByteArray(), ContentType.DEFAULT_TEXT));
                 response.setCode(docinfo.getStatus());
 
             }
