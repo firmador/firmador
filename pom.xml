@@ -51,7 +51,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>3.3.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -167,7 +167,7 @@
     <dependencies>
       <dependency>
         <groupId>eu.europa.ec.joinup.sd-dss</groupId>
-        <version>5.12.RC1</version>
+        <version>5.12</version>
         <artifactId>dss-bom</artifactId>
         <type>pom</type>
         <scope>import</scope>
@@ -220,7 +220,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
-      <version>2.0.6</version>
+      <version>2.0.7</version>
     </dependency>
     <dependency>
       <groupId>com.apple</groupId>
