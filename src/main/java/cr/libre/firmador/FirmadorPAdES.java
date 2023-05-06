@@ -105,9 +105,9 @@ public class FirmadorPAdES extends CRSigner {
             parameters.setContentSize(13312);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
-            if (reason != null && !reason.trim().isEmpty()) parameters.setReason(reason);
-            if (location != null && !location.trim().isEmpty()) parameters.setLocation(location);
-            if (contactInfo != null && !contactInfo .trim().isEmpty()) parameters.setContactInfo(contactInfo);
+            if (reason != null && !reason.trim().isEmpty()) parameters.setReason(reason.replaceAll("\t", " "));
+            if (location != null && !location.trim().isEmpty()) parameters.setLocation(location.replaceAll("\t", " "));
+            if (contactInfo != null && !contactInfo .trim().isEmpty()) parameters.setContactInfo(contactInfo.replaceAll("\t", " "));
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             gui.nextStep("Obteniendo servicios TSP");
             service.setTspSource(onlineTSPSource);
@@ -316,7 +316,7 @@ public class FirmadorPAdES extends CRSigner {
             if (hasReason || hasLocation) additionalText += "  Contacto: " + contactInfo;
             else additionalText = "Contacto: " + contactInfo;
         }
-        textParameters.setText(cn + "\n" + o + ", " + sn + ".\nFecha declarada: " + fecha.format(date) + "\n" + additionalText);
+        textParameters.setText(cn + "\n" + o + ", " + sn + ".\nFecha declarada: " + fecha.format(date) + "\n" + additionalText.replaceAll("\t", " "));
         textParameters.setTextColor(settings.getFontColor());
         textParameters.setBackgroundColor(settings.getBackgroundColor());
 
