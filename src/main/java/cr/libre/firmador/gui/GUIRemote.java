@@ -20,6 +20,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador.gui;
 
 import java.awt.event.WindowEvent;
+import java.awt.HeadlessException;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
