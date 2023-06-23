@@ -20,6 +20,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador.gui;
 
 import java.awt.event.WindowEvent;
+import java.awt.HeadlessException;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
@@ -54,10 +55,14 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
 
     public void loadGUI() {
         super.loadGUI();
-
         gui = this;
         settings.addListener(this);
-        mainFrame = new SwingMainWindowFrame("Firmador Remoto");
+        try {
+            mainFrame = new SwingMainWindowFrame("Firmador Remoto");
+        } catch (HeadlessException e) {
+            LOG.error("No se pudo crear la ventana gráfica. Si se está ejecutando Java en entorno gráfico, verificar que no se ha instalado solamente el paquete headless sino el paquete completo para poder cargar la interfaz gráfica.");
+            throw e;
+        }
         mainFrame.setGUIInterface(this);
         mainFrame.loadGUI();
 
