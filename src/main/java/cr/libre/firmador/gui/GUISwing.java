@@ -131,7 +131,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
             e.printStackTrace();
             clearElements();
         }
-        gui.nextStep("Validando formas dentro del documento");
+        gui.nextStep("Validando firmas dentro del documento");
         validateDocument(fileName);
     }
 
