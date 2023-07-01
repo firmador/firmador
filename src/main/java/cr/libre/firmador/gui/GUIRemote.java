@@ -21,13 +21,18 @@ package cr.libre.firmador.gui;
 
 import java.awt.event.WindowEvent;
 import java.awt.HeadlessException;
+
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+
 import java.util.HashMap;
+
+
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+
 
 import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
@@ -40,18 +45,31 @@ import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.ConfigListener;
+
 import cr.libre.firmador.gui.swing.AboutLayout;
 import cr.libre.firmador.gui.swing.ConfigPanel;
 import cr.libre.firmador.gui.swing.RemoteDocInformation;
 import cr.libre.firmador.gui.swing.RemoteHttpWorker;
+
+
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 
+
 public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     public JTabbedPane frameTabbedPane;
+
     private RemoteHttpWorker<Void, byte[]> remote;
+
     private RemoteDocInformation docinfo;
+
+
+    GUIRemote() {
+        super();
+        setTabnumber(3);
+    }
 
     public void loadGUI() {
         super.loadGUI();
@@ -78,6 +96,9 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
         signPanel.signLayout(signLayout, signPanel);
         settings.addListener(signPanel);
 
+
+
+
         JPanel aboutPanel = new JPanel();
         GroupLayout aboutLayout = new AboutLayout(aboutPanel);
         ((AboutLayout) aboutLayout).setInterface(this);
@@ -90,23 +111,47 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
         frameTabbedPane = new JTabbedPane();
         frameTabbedPane.addTab("Firmar", signPanel);
         frameTabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran las opciones<br>para firmar el documento seleccionado.</html>");
+
+
         frameTabbedPane.addTab("Configuración", configPanel);
         frameTabbedPane.setToolTipTextAt(1, "<html>En esta estaña se configura<br>aspectos de este programa.</html>");
         frameTabbedPane.addTab("Acerca de", aboutPanel);
         frameTabbedPane.setToolTipTextAt(2, "<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
         if (settings.showLogs) this.showLogs(frameTabbedPane);
         mainFrame.add(frameTabbedPane);
+
+
+
+
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.pack();
         mainFrame.setMinimumSize(mainFrame.getSize());
         mainFrame.setLocationByPlatform(true);
         mainFrame.setVisible(true);
+
     }
 
-    GUIRemote() {
-        super();
-        setTabnumber(3);
+    public void loadDocument(String fileName) {
+        HashMap<String, RemoteDocInformation> docmap = remote.getDocInformation();
+        docinfo = docmap.get(fileName);
+        PDDocument doc;
+        try {
+            byte[] data =IOUtils.toByteArray( docinfo.getInputdata());
+            toSignDocument = new InMemoryDocument(data, fileName);
+            MimeType mimeType = toSignDocument.getMimeType();
+            if (MimeTypeEnum.PDF == mimeType) {
+                doc = PDDocument.load(data);
+                loadDocument(mimeType, doc);
+            } else if (mimeType == MimeTypeEnum.XML || mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
+                showMessage("Está intentando firmar un documento XML o un openDocument que no posee visualización");
+                signPanel.getSignButton().setEnabled(true);
+            } else signPanel.shownonPDFButtons();
+        } catch (IOException e) {
+            LOG.error("Error cargando documento", e);
+            e.printStackTrace();
+        }
     }
+
 
     public boolean signDocuments() {
         CardSignInfo card = getPin();
@@ -125,6 +170,21 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
 
     public void setArgs(String[] args) {}
 
+
+
+
+
+
+
+
+
+
+
+    public void extendDocument() {}
+
+
+
+
     public String getDocumentToSign() {
         return null;
     }
@@ -133,42 +193,30 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
         return null;
     }
 
-    public void loadDocument(String fileName) {
-        HashMap<String, RemoteDocInformation> docmap = remote.getDocInformation();
-        docinfo = docmap.get(fileName);
-        PDDocument doc;
-        try {
-            byte[] data =IOUtils.toByteArray( docinfo.getInputdata());
-            toSignDocument = new InMemoryDocument(data, fileName);
-            MimeType mimeType = toSignDocument.getMimeType();
-            if(MimeTypeEnum.PDF == mimeType) {
-                doc = PDDocument.load(data);
-                loadDocument(mimeType, doc);
-            } else if (mimeType == MimeTypeEnum.XML || mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
-                showMessage("Está intentando firmar un documento XML o un openDocument que no posee visualización");
-                signPanel.getSignButton().setEnabled(true);
-            } else signPanel.shownonPDFButtons();
-        } catch (IOException e) {
-            LOG.error("Error cargando documento", e);
-            e.printStackTrace();
-        }
-    }
 
-    public void extendDocument() {}
+
+
+
 
     public String getPathToSaveExtended(String extension) {
         return null;
     }
 
+
+
+
     public void displayFunctionality(String functionality) {}
 
-    public void close() {
-        mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
-    }
+
+
 
     public void updateConfig() {
         if (this.settings.showLogs) showLogs(this.frameTabbedPane);
         else hideLogs(this.frameTabbedPane);
+    }
+
+    public void close() {
+        mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
     }
 
 }

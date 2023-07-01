@@ -37,6 +37,8 @@ import javax.swing.SwingUtilities;
 import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.model.FileDocument;
+
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +66,11 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
     private PDDocument doc;
     private String fileName;
 
+
+
+
+
+
     public void loadGUI() {
         super.loadGUI();
         gui = this;
@@ -76,10 +83,15 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         }
         mainFrame.setGUIInterface(this);
         mainFrame.loadGUI();
+
+
+
+
         signPanel = new SignPanel();
         signPanel.setGUI(this);
         signPanel.initializeActions();
         signPanel.hideButtons();
+
         GroupLayout signLayout = new GroupLayout(signPanel);
         signPanel.signLayout(signLayout, signPanel);
         settings.addListener(signPanel);
@@ -90,15 +102,17 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         JPanel aboutPanel = new JPanel();
         GroupLayout aboutLayout = new AboutLayout(aboutPanel);
         ((AboutLayout) aboutLayout).setInterface(this);
+
         aboutPanel.setLayout(aboutLayout);
         aboutPanel.setOpaque(false);
+
         JPanel configPanel = new ConfigPanel();
         configPanel.setOpaque(false);
         frameTabbedPane = new JTabbedPane();
         frameTabbedPane.addTab("Firmar", signPanel);
         frameTabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran las opciones<br>para firmar el documento seleccionado.</html>");
         frameTabbedPane.addTab("Validación", validatePanel.getValidateScrollPane());
-        frameTabbedPane.setToolTipTextAt(1, "<html>En esta pestaña se muestra información de validación<br>de las firmas digitales del documento seleccionado.</html>");
+        frameTabbedPane.setToolTipTextAt(1, "<html>En esta pestaña se muestra información de validación<br>de las firmas digitales.</html>");
         frameTabbedPane.addTab("Configuración", configPanel);
         frameTabbedPane.setToolTipTextAt(2, "<html>En esta estaña se configura<br>aspectos de este programa.</html>");
         frameTabbedPane.addTab("Acerca de", aboutPanel);
@@ -123,6 +137,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         docSelector.setLastFile(fileName);
         docSelector.fileField.setText(Paths.get(fileName).getFileName().toString());
         FileDocument mimeDocument = new FileDocument(fileName);
+
         try {
             if (mimeDocument.getMimeType() == MimeTypeEnum.PDF) doc = PDDocument.load(new File(fileName));
             loadDocument(mimeDocument.getMimeType(), doc);
@@ -135,29 +150,6 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         validateDocument(fileName);
     }
 
-    public void clearElements() {
-        docSelector.fileField.setText("");
-        if (doc != null) {
-            try {
-                doc.close();
-            } catch (IOException e) {
-                LOG.error("Error cerrando archivo", e);
-                e.printStackTrace();
-            }
-        }
-        // Muchas cosas mas acá
-    }
-
-    public String getExtension() {
-        String extension = "";
-        if (toSignDocument != null) {
-            MimeType mimeType = toSignDocument.getMimeType();
-            if (mimeType == MimeTypeEnum.XML) extension = ".xml";
-            else if (mimeType != MimeTypeEnum.PDF && !(mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT)) extension = ".p7s"; // p7s detached, p7m enveloping
-        }
-        return extension;
-    }
-
     /**
      * Invoked when task's progress property changes.
      */
@@ -168,28 +160,24 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         return true;
     }
 
-    public boolean doSignDocuments() {
-        boolean ok = false;
-        fileName = getDocumentToSign();
-        toSignDocument = new FileDocument(fileName);
-        CardSignInfo card = getPin();
-        this.signDocument(card, !signPanel.getSignatureVisibleCheckBox().isSelected(), true);
 
-        if (signedDocument != null) {
-            try {
-                fileName = getPathToSave(getExtension());
-                if (fileName != null) {
-                    signedDocument.save(fileName);
-                    showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
-                    loadDocument(fileName);
-                }
-                ok = true;
-            } catch (IOException e) {
-                LOG.error("Error Firmando documento", e);
-                showError(FirmadorUtils.getRootCause(e));
-            }
+
+
+
+
+
+
+
+    public void setArgs(String[] args) {
+        List<String> arguments = new ArrayList<String>();
+        for (String params : args) {
+            if (!params.startsWith("-"))
+                arguments.add(params);
         }
-        return ok;
+        if (arguments.size() > 1)
+            documenttosign = Paths.get(arguments.get(0)).toAbsolutePath().toString();
+        if (arguments.size() > 2)
+            documenttosave = Paths.get(arguments.get(1)).toAbsolutePath().toString();
     }
 
     public void extendDocument() {
@@ -215,6 +203,52 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
             return getDocumentToSign();
         String pathToExtend = showSaveDialog("-sellado", extension);
         return pathToExtend;
+    }
+
+    public void displayFunctionality(String functionality) {
+        if (functionality.equalsIgnoreCase("sign")) frameTabbedPane.setSelectedIndex(0);
+        else if (functionality.equalsIgnoreCase("validator")) frameTabbedPane.setSelectedIndex(1);
+    }
+
+    public void updateConfig() {
+        if (this.settings.showLogs) showLogs(this.frameTabbedPane);
+        else hideLogs(this.frameTabbedPane);
+    }
+
+    private String addSuffixToFilePath(String name, String suffix) {
+        String dotExtension = "";
+        String newname = name + suffix;
+        int lastDot = name.lastIndexOf(".");
+        if (lastDot >= 0) {
+            dotExtension = name.substring(lastDot);
+            newname = name.substring(0, name.lastIndexOf(".")) + suffix + dotExtension;
+        }
+        return newname;
+    }
+
+
+    public boolean doSignDocuments() {
+        boolean ok = false;
+        fileName = getDocumentToSign();
+        toSignDocument = new FileDocument(fileName);
+        CardSignInfo card = getPin();
+        this.signDocument(card, !signPanel.getSignatureVisibleCheckBox().isSelected(), true);
+
+        if (signedDocument != null) {
+            try {
+                fileName = getPathToSave(getExtension());
+                if (fileName != null) {
+                    signedDocument.save(fileName);
+                    showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
+                    loadDocument(fileName);
+                }
+                ok = true;
+            } catch (IOException e) {
+                LOG.error("Error Firmando documento", e);
+                showError(FirmadorUtils.getRootCause(e));
+            }
+        }
+        return ok;
     }
 
     public String showSaveDialog(String suffix, String extension) {
@@ -245,29 +279,6 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
             lastFile = saveDialog.getFile();
         }
         return fileName;
-    }
-
-    public void setArgs(String[] args) {
-        List<String> arguments = new ArrayList<String>();
-        for (String params : args) {
-            if (!params.startsWith("-"))
-                arguments.add(params);
-        }
-        if (arguments.size() > 1)
-            documenttosign = Paths.get(arguments.get(0)).toAbsolutePath().toString();
-        if (arguments.size() > 2)
-            documenttosave = Paths.get(arguments.get(1)).toAbsolutePath().toString();
-    }
-
-    private String addSuffixToFilePath(String name, String suffix) {
-        String dotExtension = "";
-        String newname = name + suffix;
-        int lastDot = name.lastIndexOf(".");
-        if (lastDot >= 0) {
-            dotExtension = name.substring(lastDot);
-            newname = name.substring(0, name.lastIndexOf(".")) + suffix + dotExtension;
-        }
-        return newname;
     }
 
     public void signDocumentByPath(File file, CardSignInfo card) {
@@ -302,14 +313,27 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         Thread.yield();
     }
 
-    public void displayFunctionality(String functionality) {
-        if (functionality.equalsIgnoreCase("sign")) frameTabbedPane.setSelectedIndex(0);
-        else if (functionality.equalsIgnoreCase("validator")) frameTabbedPane.setSelectedIndex(1);
+    public void clearElements() {
+        docSelector.fileField.setText("");
+        if (doc != null) {
+            try {
+                doc.close();
+            } catch (IOException e) {
+                LOG.error("Error cerrando archivo", e);
+                e.printStackTrace();
+            }
+        }
+        // Muchas cosas mas acá
     }
 
-    public void updateConfig() {
-        if (this.settings.showLogs) showLogs(this.frameTabbedPane);
-        else hideLogs(this.frameTabbedPane);
+    public String getExtension() {
+        String extension = "";
+        if (toSignDocument != null) {
+            MimeType mimeType = toSignDocument.getMimeType();
+            if (mimeType == MimeTypeEnum.XML) extension = ".xml";
+            else if (mimeType != MimeTypeEnum.PDF && !(mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT)) extension = ".p7s"; // p7s detached, p7m enveloping
+        }
+        return extension;
     }
 
 }
