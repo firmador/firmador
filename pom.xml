@@ -46,7 +46,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.3.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -91,8 +91,8 @@
           <showWarnings>true</showWarnings>
           <source>8</source>
           <target>8</target>
-          <compilerArgument>-Xlint:all</compilerArgument>
           <forceJavacCompilerUse>true</forceJavacCompilerUse>
+          <compilerArgument>-Xlint:all</compilerArgument>
           <compilerArgument>-Xdiags:verbose</compilerArgument>
         </configuration>
         <executions>
@@ -116,7 +116,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.4.1</version>
+        <version>3.5.0</version>
         <executions>
           <execution>
             <goals>
@@ -132,7 +132,6 @@
                     <exclude>META-INF/versions/9/module-info.class</exclude>
                     <exclude>META-INF/*.SF</exclude>
                     <exclude>META-INF/*.DSA</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
                     <exclude>META-INF/DEPENDENCIES</exclude>
                     <exclude>META-INF/MANIFEST.MF</exclude>
                     <exclude>META-INF/sun-jaxb.episode</exclude>
