@@ -19,14 +19,16 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui;
 
-import java.awt.event.WindowEvent;
+
 import java.awt.HeadlessException;
+import java.awt.event.WindowEvent;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-import java.util.HashMap;
 
+
+import java.util.HashMap;
 
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
@@ -36,6 +38,7 @@ import javax.swing.JTabbedPane;
 
 import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
+
 import eu.europa.esig.dss.model.InMemoryDocument;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.pdfbox.io.IOUtils;
@@ -48,10 +51,12 @@ import cr.libre.firmador.ConfigListener;
 
 import cr.libre.firmador.gui.swing.AboutLayout;
 import cr.libre.firmador.gui.swing.ConfigPanel;
+
+
+
+
 import cr.libre.firmador.gui.swing.RemoteDocInformation;
 import cr.libre.firmador.gui.swing.RemoteHttpWorker;
-
-
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 
@@ -61,10 +66,12 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
 
     public JTabbedPane frameTabbedPane;
 
-    private RemoteHttpWorker<Void, byte[]> remote;
+
+
+
 
     private RemoteDocInformation docinfo;
-
+    private RemoteHttpWorker<Void, byte[]> remote;
 
     GUIRemote() {
         super();
@@ -99,6 +106,8 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
 
 
 
+
+
         JPanel aboutPanel = new JPanel();
         GroupLayout aboutLayout = new AboutLayout(aboutPanel);
         ((AboutLayout) aboutLayout).setInterface(this);
@@ -113,10 +122,14 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
         frameTabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran las opciones<br>para firmar el documento seleccionado.</html>");
 
 
+
+
+
+
         frameTabbedPane.addTab("Configuración", configPanel);
-        frameTabbedPane.setToolTipTextAt(1, "<html>En esta estaña se configura<br>aspectos de este programa.</html>");
+        frameTabbedPane.setToolTipTextAt(1,           "<html>En esta pestaña se configura<br>aspectos de este programa.</html>");
         frameTabbedPane.addTab("Acerca de", aboutPanel);
-        frameTabbedPane.setToolTipTextAt(2, "<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
+        frameTabbedPane.setToolTipTextAt(2,               "<html>En esta pestaña se muestra información<br>acerca de este programa.</html>");
         if (settings.showLogs) this.showLogs(frameTabbedPane);
         mainFrame.add(frameTabbedPane);
 

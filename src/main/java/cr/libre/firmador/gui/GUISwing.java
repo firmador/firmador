@@ -21,12 +21,14 @@ package cr.libre.firmador.gui;
 
 import java.awt.FileDialog;
 import java.awt.HeadlessException;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
@@ -37,8 +39,9 @@ import javax.swing.SwingUtilities;
 import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.model.FileDocument;
-
-
+import eu.europa.esig.dss.model.InMemoryDocument;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +55,8 @@ import cr.libre.firmador.gui.swing.DocumentSelectionGroupLayout;
 import cr.libre.firmador.gui.swing.ExecutorWorker;
 import cr.libre.firmador.gui.swing.ExecutorWorkerMultipleFiles;
 import cr.libre.firmador.gui.swing.ExecutorWorkerMultipleFilesValidator;
+import cr.libre.firmador.gui.swing.RemoteDocInformation;
+import cr.libre.firmador.gui.swing.RemoteHttpWorker;
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import cr.libre.firmador.gui.swing.ValidatePanel;
@@ -65,6 +70,8 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
     private DocumentSelectionGroupLayout docSelector;
     private PDDocument doc;
     private String fileName;
+    private RemoteDocInformation docinfo;
+    private RemoteHttpWorker<Void, byte[]> remote;
 
 
 
@@ -76,7 +83,7 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         gui = this;
         settings.addListener(this);
         try {
-            mainFrame = new SwingMainWindowFrame("Firmador");
+            mainFrame = new SwingMainWindowFrame(isRemote ? "Firmador remoto" : "Firmador");
         } catch (HeadlessException e) {
             LOG.error("No se pudo crear la ventana gráfica. Si se está ejecutando Java en entorno gráfico, verificar que no se ha instalado solamente el paquete headless sino el paquete completo para poder cargar la interfaz gráfica.");
             throw e;
@@ -84,8 +91,8 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         mainFrame.setGUIInterface(this);
         mainFrame.loadGUI();
 
-
-
+        remote = new RemoteHttpWorker<Void, byte[]>(gui);
+        remote.execute();
 
         signPanel = new SignPanel();
         signPanel.setGUI(this);
@@ -95,10 +102,12 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         GroupLayout signLayout = new GroupLayout(signPanel);
         signPanel.signLayout(signLayout, signPanel);
         settings.addListener(signPanel);
-        validatePanel = new ValidatePanel();
-        validatePanel.setGUI(this);
-        validatePanel.initializeActions();
-        validatePanel.hideButtons();
+        if (!isRemote) {// TODO add setting for toggling validation tab
+            validatePanel = new ValidatePanel();
+            validatePanel.setGUI(this);
+            validatePanel.initializeActions();
+            validatePanel.hideButtons();
+        }
         JPanel aboutPanel = new JPanel();
         GroupLayout aboutLayout = new AboutLayout(aboutPanel);
         ((AboutLayout) aboutLayout).setInterface(this);
@@ -111,12 +120,16 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
         frameTabbedPane = new JTabbedPane();
         frameTabbedPane.addTab("Firmar", signPanel);
         frameTabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran las opciones<br>para firmar el documento seleccionado.</html>");
-        frameTabbedPane.addTab("Validación", validatePanel.getValidateScrollPane());
-        frameTabbedPane.setToolTipTextAt(1, "<html>En esta pestaña se muestra información de validación<br>de las firmas digitales.</html>");
+        int tabPosition = 1;
+        if (!isRemote) {// TODO add setting for toggling validation tab
+            frameTabbedPane.addTab("Validación", validatePanel.getValidateScrollPane());
+            frameTabbedPane.setToolTipTextAt(tabPosition, "<html>En esta pestaña se muestra información de validación<br>de las firmas digitales.</html>");
+            tabPosition++;
+        }
         frameTabbedPane.addTab("Configuración", configPanel);
-        frameTabbedPane.setToolTipTextAt(2, "<html>En esta estaña se configura<br>aspectos de este programa.</html>");
+        frameTabbedPane.setToolTipTextAt(tabPosition, "<html>En esta pestaña se configura<br>aspectos de este programa.</html>");
         frameTabbedPane.addTab("Acerca de", aboutPanel);
-        frameTabbedPane.setToolTipTextAt(3, "<html>En esta estaña se muestra información<br>acerca de este programa.</html>");
+        frameTabbedPane.setToolTipTextAt(tabPosition + 1, "<html>En esta pestaña se muestra información<br>acerca de este programa.</html>");
         if (settings.showLogs) this.showLogs(frameTabbedPane);
         docSelector = new DocumentSelectionGroupLayout(mainFrame.getContentPane(), frameTabbedPane, mainFrame);
         docSelector.setGUI(this);
