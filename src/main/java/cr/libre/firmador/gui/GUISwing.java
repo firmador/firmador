@@ -146,40 +146,63 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
 
     public void loadDocument(String fileName) {
         gui.nextStep("Cargando el documento");
-        clearElements();
-        docSelector.setLastFile(fileName);
-        docSelector.fileField.setText(Paths.get(fileName).getFileName().toString());
-        FileDocument mimeDocument = new FileDocument(fileName);
-
-        try {
-            if (mimeDocument.getMimeType() == MimeTypeEnum.PDF) doc = PDDocument.load(new File(fileName));
-            loadDocument(mimeDocument.getMimeType(), doc);
-        } catch (IOException e) {
-            LOG.error("Error Leyendo el archivo", e);
-            e.printStackTrace();
+        if (!isRemote) {
             clearElements();
+            docSelector.setLastFile(fileName);
+            docSelector.fileField.setText(Paths.get(fileName).getFileName().toString());
+            FileDocument mimeDocument = new FileDocument(fileName);
+
+            try {
+                if (mimeDocument.getMimeType() == MimeTypeEnum.PDF) doc = PDDocument.load(new File(fileName));
+                loadDocument(mimeDocument.getMimeType(), doc);
+            } catch (IOException e) {
+                LOG.error("Error Leyendo el archivo", e);
+                e.printStackTrace();
+                clearElements();
+            }
+            gui.nextStep("Validando firmas dentro del documento");
+            validateDocument(fileName);
+        } else {
+            HashMap<String, RemoteDocInformation> docmap = remote.getDocInformation();
+            docinfo = docmap.get(fileName);
+            PDDocument doc;
+            try {
+                byte[] data =IOUtils.toByteArray( docinfo.getInputdata());
+                toSignDocument = new InMemoryDocument(data, fileName);
+                MimeType mimeType = toSignDocument.getMimeType();
+                if (MimeTypeEnum.PDF == mimeType) {
+                    doc = PDDocument.load(data);
+                    loadDocument(mimeType, doc);
+                } else if (mimeType == MimeTypeEnum.XML || mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
+                    showMessage("Está intentando firmar un documento XML o un openDocument que no posee visualización");
+                    signPanel.getSignButton().setEnabled(true);
+                } else signPanel.shownonPDFButtons();
+            } catch (IOException e) {
+                LOG.error("Error cargando documento", e);
+                e.printStackTrace();
+            }
         }
-        gui.nextStep("Validando firmas dentro del documento");
-        validateDocument(fileName);
     }
 
-    /**
-     * Invoked when task's progress property changes.
-     */
     public boolean signDocuments() {
-        worker = new ExecutorWorker(this);
-        SwingUtilities.invokeLater((Runnable) worker);
-        Thread.yield();
-        return true;
+        if (!isRemote) {
+            worker = new ExecutorWorker(this);
+            SwingUtilities.invokeLater((Runnable) worker);
+            Thread.yield();
+            return true;
+        } else {
+            CardSignInfo card = getPin();
+            super.signDocument(card, true);
+            try {
+                signedDocument.writeTo(docinfo.getData());
+                docinfo.setStatus(HttpStatus.SC_SUCCESS);
+            } catch (IOException e) {
+                LOG.error("Error escribiendo documento", e);
+                e.printStackTrace();
+            }
+            return signedDocument != null;
+        }
     }
-
-
-
-
-
-
-
-
 
     public void setArgs(String[] args) {
         List<String> arguments = new ArrayList<String>();
@@ -226,6 +249,10 @@ public class GUISwing extends BaseSwing implements GUIInterface, ConfigListener{
     public void updateConfig() {
         if (this.settings.showLogs) showLogs(this.frameTabbedPane);
         else hideLogs(this.frameTabbedPane);
+    }
+
+    public void close() {
+        mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
     }
 
     private String addSuffixToFilePath(String name, String suffix) {

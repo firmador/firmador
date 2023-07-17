@@ -145,40 +145,63 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
     }
 
     public void loadDocument(String fileName) {
-        HashMap<String, RemoteDocInformation> docmap = remote.getDocInformation();
-        docinfo = docmap.get(fileName);
-        PDDocument doc;
-        try {
-            byte[] data =IOUtils.toByteArray( docinfo.getInputdata());
-            toSignDocument = new InMemoryDocument(data, fileName);
-            MimeType mimeType = toSignDocument.getMimeType();
-            if (MimeTypeEnum.PDF == mimeType) {
-                doc = PDDocument.load(data);
-                loadDocument(mimeType, doc);
-            } else if (mimeType == MimeTypeEnum.XML || mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
-                showMessage("Está intentando firmar un documento XML o un openDocument que no posee visualización");
-                signPanel.getSignButton().setEnabled(true);
-            } else signPanel.shownonPDFButtons();
-        } catch (IOException e) {
-            LOG.error("Error cargando documento", e);
-            e.printStackTrace();
-        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            HashMap<String, RemoteDocInformation> docmap = remote.getDocInformation();
+            docinfo = docmap.get(fileName);
+            PDDocument doc;
+            try {
+                byte[] data =IOUtils.toByteArray( docinfo.getInputdata());
+                toSignDocument = new InMemoryDocument(data, fileName);
+                MimeType mimeType = toSignDocument.getMimeType();
+                if (MimeTypeEnum.PDF == mimeType) {
+                    doc = PDDocument.load(data);
+                    loadDocument(mimeType, doc);
+                } else if (mimeType == MimeTypeEnum.XML || mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
+                    showMessage("Está intentando firmar un documento XML o un openDocument que no posee visualización");
+                    signPanel.getSignButton().setEnabled(true);
+                } else signPanel.shownonPDFButtons();
+            } catch (IOException e) {
+                LOG.error("Error cargando documento", e);
+                e.printStackTrace();
+            }
+
     }
 
-
     public boolean signDocuments() {
-        CardSignInfo card = getPin();
-        super.signDocument(card, true);
 
-        try {
-            signedDocument.writeTo(docinfo.getData());
-            docinfo.setStatus(HttpStatus.SC_SUCCESS);
-        } catch (IOException e) {
-            LOG.error("Error escribiendo documento", e);
-            e.printStackTrace();
-        }
 
-        return signedDocument != null;
+
+
+
+
+            CardSignInfo card = getPin();
+            super.signDocument(card, true);
+            try {
+                signedDocument.writeTo(docinfo.getData());
+                docinfo.setStatus(HttpStatus.SC_SUCCESS);
+            } catch (IOException e) {
+                LOG.error("Error escribiendo documento", e);
+                e.printStackTrace();
+            }
+            return signedDocument != null;
+
     }
 
     public void setArgs(String[] args) {}
@@ -231,5 +254,4 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
     public void close() {
         mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
     }
-
 }
