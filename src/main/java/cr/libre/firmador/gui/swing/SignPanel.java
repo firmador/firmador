@@ -325,7 +325,7 @@ public class SignPanel extends JPanel implements ConfigListener{
 
     }
 
-    public void signLayout(GroupLayout signLayout, JPanel signPanel) {
+    public void createLayout(GroupLayout signLayout, JPanel signPanel) {
         this.setLayout(signLayout);
         signLayout.setAutoCreateGaps(true);
         signLayout.setAutoCreateContainerGaps(true);

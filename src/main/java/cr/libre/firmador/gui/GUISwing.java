@@ -151,7 +151,7 @@ public class GUISwing implements GUIInterface, ConfigListener{
         signPanel.hideButtons();
 
         GroupLayout signLayout = new GroupLayout(signPanel);
-        signPanel.signLayout(signLayout, signPanel);
+        signPanel.createLayout(signLayout, signPanel);
         settings.addListener(signPanel);
         if (!isRemote) {// TODO add setting for toggling validation tab
             validatePanel = new ValidatePanel();
@@ -186,7 +186,6 @@ public class GUISwing implements GUIInterface, ConfigListener{
         docSelector.setGUI(this);
         docSelector.initializeActions();
         if (!isRemote) mainFrame.getContentPane().setLayout(docSelector);
-        else mainFrame.getContentPane().setLayout(signLayout);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.pack();
         mainFrame.setMinimumSize(mainFrame.getSize());
