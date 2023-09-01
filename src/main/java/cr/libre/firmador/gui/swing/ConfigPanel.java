@@ -260,8 +260,8 @@ public class ConfigPanel extends ScrollableJPanel {
         imagePanel.add(btImage);
         imagePanel.add(imageText);
         portNumber = new JSpinner();
-        portNumber.setModel(new SpinnerNumberModel(this.settings.portNumber, 2000, null, 1));
-        portNumber.setEditor(new JSpinner.NumberEditor(portNumber, "0000"));
+        portNumber.setModel(new SpinnerNumberModel((int) this.settings.portNumber, 1024, 65535, 1));
+        portNumber.setEditor(new JSpinner.NumberEditor(portNumber, "0"));
         addSettingsBox(simplePanel, "Razón:", reason);
         addSettingsBox(simplePanel, "Lugar:", place);
         addSettingsBox(simplePanel, "Contacto:", contact);
