@@ -27,6 +27,7 @@ import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.KeyboardFocusManager;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,6 +37,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.lang.invoke.MethodHandles;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -55,6 +57,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -69,6 +72,7 @@ import cr.libre.firmador.SettingsManager;
 public class ConfigPanel extends ScrollableJPanel {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     JTextArea defaultSignMessage;
+    JScrollPane scrollableDefaultSignMessage;
     Settings settings;
     SettingsManager manager;
     private Integer iconSize = 32;
@@ -131,7 +135,17 @@ public class ConfigPanel extends ScrollableJPanel {
         dateFormat.setToolTipText("Debe ser compatible con formatos de fecha de java");
         defaultSignMessage = new JTextArea();
         defaultSignMessage.setText(this.settings.getDefaultSignMessage());
-        defaultSignMessage.setOpaque(false);
+        defaultSignMessage.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, /* forward traversal textarea with tab */
+            KeyboardFocusManager.getCurrentKeyboardFocusManager().getDefaultFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
+        defaultSignMessage.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, /* reverse traversal textarea with shift+tab */
+            KeyboardFocusManager.getCurrentKeyboardFocusManager().getDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS));
+        scrollableDefaultSignMessage = new JScrollPane(defaultSignMessage);
+        if (UIManager.getLookAndFeel().getClass().getName().contains("GTKLookAndFeel")) {
+            defaultSignMessage.setBorder(reason.getBorder()); // Add text margins like in text fields for GTK
+            scrollableDefaultSignMessage.setViewportBorder(BorderFactory.createTitledBorder("")); // Add border to textarea for GTK
+        }
+        if (UIManager.getLookAndFeel().getClass().getName().contains("WindowsLookAndFeel"))
+            defaultSignMessage.setFont(reason.getFont()); // Windows defaults to fixed width font (Courier), use same as jTextField
         pageNumber = new JSpinner();
         pageNumber.setModel(new SpinnerNumberModel(this.settings.pageNumber, null, null, 1));
         signWidth = new JSpinner();
@@ -252,7 +266,7 @@ public class ConfigPanel extends ScrollableJPanel {
         addSettingsBox(simplePanel, "Lugar:", place);
         addSettingsBox(simplePanel, "Contacto:", contact);
         addSettingsBox(simplePanel, "Formato de fecha:", dateFormat);
-        addSettingsBox(simplePanel, "Mensaje de firma:", defaultSignMessage, new Dimension(150, 50));
+        addSettingsBox(simplePanel, "Mensaje de firma:", scrollableDefaultSignMessage, new Dimension(150, 50));
         addSettingsBox(simplePanel, "Página inicial:", pageNumber);
         addSettingsBox(simplePanel, "Ancho de firma:", signWidth);
         addSettingsBox(simplePanel, "Largo de firma:", signHeight);
