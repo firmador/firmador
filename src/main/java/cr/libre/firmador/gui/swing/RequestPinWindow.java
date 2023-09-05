@@ -96,6 +96,7 @@ public class RequestPinWindow extends JFrame {
             }
         });
         comboBox.setBounds(121, 111, 315, 36);
+        comboBox.setOpaque(false);
 
         label = new JLabel("Ingrese su PIN:");
 

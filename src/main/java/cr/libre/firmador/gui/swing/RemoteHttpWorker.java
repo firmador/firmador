@@ -52,7 +52,7 @@ import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
-import cr.libre.firmador.gui.GUIRemote;
+import cr.libre.firmador.gui.GUISwing;
 
 public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -89,8 +89,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
             public RequestHandler(GUIInterface gui, Settings settings) {
                 super();
                 this.settings = settings;
-                this.gui=gui;
-                ((GUIRemote) gui).getMainFrame().addWindowListener(new WindowAdapter() {
+                ((GUISwing) gui).getMainFrame().addWindowListener(new WindowAdapter() {
                     @Override
                     public void windowClosing(WindowEvent arg0) {
                         server.stop();
@@ -122,7 +121,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                                     LOG.error("Interrupción al correr servidor", e);
                                     e.printStackTrace();
                                 }
-                                 ((GUIRemote) gui).close();
+                                ((GUISwing) gui).close();
 
                              }
                          });

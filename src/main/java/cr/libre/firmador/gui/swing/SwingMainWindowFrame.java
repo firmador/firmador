@@ -58,37 +58,6 @@ public class SwingMainWindowFrame extends JFrame {
 
     public void setGUIInterface(GUIInterface gui) {
         this.gui = gui;
-    }
-
-    public void startInterface() {
-        JPanel pdfOptionsPanel = new JPanel();
-        JPanel advancedOptionsPanel = new JPanel();
-        optionsTabbedPane = new JTabbedPane();
-        optionsTabbedPane.addTab("Opciones PDF", pdfOptionsPanel);
-        optionsTabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran opciones específicas<br>para documentos en formato PDF.</html>");
-        optionsTabbedPane.addTab("Opciones avanzadas", advancedOptionsPanel);
-        optionsTabbedPane.setToolTipTextAt(1, "<html>En esta pestaña se muestran opciones avanzadas<br>relacionadas con la creación de la firma.</html>");
-    }
-
-    @SuppressWarnings("serial")
-    public void loadGUI() {
-        settings = SettingsManager.getInstance().getAndCreateSettings();
-        menu = new JPopupMenu();
-        JMenuItem mAll = new JMenuItem("Deseleccionar modo remoto");
-        menu.add(mAll);
-        mAll.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                settings.startServer = false;
-                SettingsManager.getInstance().setSettings(settings, true);
-                gui.showMessage("Debe reiniciar la aplicación para que los cambios tengan efecto");
-            }
-        });
-        this.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON3) menu.show(null, e.getX(), e.getY()); // Aparece el menú contextual
-            }
-        });
-        this.setIconImage(image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
         this.setDropTarget(new DropTarget() {
             public synchronized void drop(DropTargetDropEvent e) {
                 try {
@@ -107,6 +76,39 @@ public class SwingMainWindowFrame extends JFrame {
                 }
             }
         });
+    }
+
+    public void startInterface() {
+        JPanel pdfOptionsPanel = new JPanel();
+        JPanel advancedOptionsPanel = new JPanel();
+        optionsTabbedPane = new JTabbedPane();
+        optionsTabbedPane.addTab("Opciones PDF", pdfOptionsPanel);
+        optionsTabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran opciones específicas<br>para documentos en formato PDF.</html>");
+        optionsTabbedPane.addTab("Opciones avanzadas", advancedOptionsPanel);
+        optionsTabbedPane.setToolTipTextAt(1, "<html>En esta pestaña se muestran opciones avanzadas<br>relacionadas con la creación de la firma.</html>");
+    }
+
+    @SuppressWarnings("serial")
+    public void loadGUI() {
+        settings = SettingsManager.getInstance().getAndCreateSettings();
+/*
+        menu = new JPopupMenu();
+        JMenuItem mAll = new JMenuItem("Deseleccionar modo remoto");
+        menu.add(mAll);
+        mAll.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                settings.startServer = false;
+                SettingsManager.getInstance().setSettings(settings, true);
+                gui.showMessage("Debe reiniciar la aplicación para que los cambios tengan efecto");
+            }
+        });
+        this.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON3) menu.show(null, e.getX(), e.getY()); // Aparece el menú contextual
+            }
+        });
+*/
+        this.setIconImage(image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
         startInterface();
     }
 
