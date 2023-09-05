@@ -164,7 +164,7 @@ public class SettingsManager {
         boolean loaded = this.loadConfig();
         if (loaded) {
             conf.withoutVisibleSign = Boolean.parseBoolean(props.getProperty("withoutvisiblesign", String.valueOf(conf.withoutVisibleSign)));
-            conf.useLTA = Boolean.parseBoolean(props.getProperty("uselta", String.valueOf(conf.useLTA)));
+            //conf.useLTA = Boolean.parseBoolean(props.getProperty("uselta", String.valueOf(conf.useLTA)));
             conf.showLogs = Boolean.parseBoolean(props.getProperty("showlogs", String.valueOf(conf.showLogs)));
             conf.overwriteSourceFile = Boolean.parseBoolean(props.getProperty("overwritesourcefile", String.valueOf(conf.overwriteSourceFile)));
             conf.reason = props.getProperty("reason", conf.reason);
@@ -182,7 +182,7 @@ public class SettingsManager {
             conf.signX = Integer.parseInt(props.getProperty("singx", conf.signX.toString()));
             conf.signY = Integer.parseInt(props.getProperty("singy", conf.signY.toString()));
             conf.image = props.getProperty("image");
-            conf.startServer = Boolean.parseBoolean(props.getProperty("startserver", String.valueOf(conf.startServer)));
+            //conf.startServer = Boolean.parseBoolean(props.getProperty("startserver", String.valueOf(conf.startServer)));
             conf.fontAlignment =  props.getProperty("fontalignment", conf.fontAlignment);
             conf.portNumber = Integer.parseInt(props.getProperty("portnumber", conf.portNumber.toString()));
             conf.pAdESLevel = props.getProperty("padesLevel", conf.pAdESLevel);
@@ -215,7 +215,7 @@ public class SettingsManager {
 
     public void setSettings(Settings conf, boolean save) {
         setProperty("withoutvisiblesign", String.valueOf(conf.withoutVisibleSign));
-        setProperty("uselta", String.valueOf(conf.useLTA));
+        //setProperty("uselta", String.valueOf(conf.useLTA));
         setProperty("overwritesourcefile", String.valueOf(conf.overwriteSourceFile));
         setProperty("reason", conf.reason);
         setProperty("place", conf.place);
@@ -231,7 +231,7 @@ public class SettingsManager {
         setProperty("backgroundcolor", conf.backgroundColor);
         setProperty("singx", conf.signX.toString());
         setProperty("singy", conf.signY.toString());
-        setProperty("startserver", String.valueOf(conf.startServer));
+        //setProperty("startserver", String.valueOf(conf.startServer));
         setProperty("fontalignment", conf.fontAlignment.toString());
         setProperty("portnumber", conf.portNumber.toString());
         setProperty("showlogs", String.valueOf(conf.showLogs));

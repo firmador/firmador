@@ -91,6 +91,7 @@ public class SwingMainWindowFrame extends JFrame {
     @SuppressWarnings("serial")
     public void loadGUI() {
         settings = SettingsManager.getInstance().getAndCreateSettings();
+/*
         menu = new JPopupMenu();
         JMenuItem mAll = new JMenuItem("Deseleccionar modo remoto");
         menu.add(mAll);
@@ -106,6 +107,7 @@ public class SwingMainWindowFrame extends JFrame {
                 if (e.getButton() == MouseEvent.BUTTON3) menu.show(null, e.getX(), e.getY()); // Aparece el menú contextual
             }
         });
+*/
         this.setIconImage(image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
         startInterface();
     }
