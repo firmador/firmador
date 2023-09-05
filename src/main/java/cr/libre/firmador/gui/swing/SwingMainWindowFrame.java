@@ -58,6 +58,24 @@ public class SwingMainWindowFrame extends JFrame {
 
     public void setGUIInterface(GUIInterface gui) {
         this.gui = gui;
+        this.setDropTarget(new DropTarget() {
+            public synchronized void drop(DropTargetDropEvent e) {
+                try {
+                    e.acceptDrop(DnDConstants.ACTION_COPY);
+                    @SuppressWarnings("unchecked")
+                    List<File> droppedFiles = (List<File>) e.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    File[] files = new File[droppedFiles.size()];
+                    droppedFiles.toArray(files);
+                    if (files.length > 1) { // FIXME prompt if we want to sign or validate first //ggui.validateMultipleDocuments(files);
+                        GUISwing ggui = (GUISwing) gui;
+                        ggui.signMultipleDocuments(files);
+                    } else if (files.length == 1) gui.loadDocument(files[0].toString());
+                } catch (Exception ex) {
+                    LOG.error("Error cerrando archivo", ex);
+                    ex.printStackTrace();
+                }
+            }
+        });
     }
 
     public void startInterface() {
@@ -89,24 +107,6 @@ public class SwingMainWindowFrame extends JFrame {
             }
         });
         this.setIconImage(image.getScaledInstance(256, 256, Image.SCALE_SMOOTH));
-        this.setDropTarget(new DropTarget() {
-            public synchronized void drop(DropTargetDropEvent e) {
-                try {
-                    e.acceptDrop(DnDConstants.ACTION_COPY);
-                    @SuppressWarnings("unchecked")
-                    List<File> droppedFiles = (List<File>) e.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-                    File[] files = new File[droppedFiles.size()];
-                    droppedFiles.toArray(files);
-                    if (files.length > 1) { // FIXME prompt if we want to sign or validate first //ggui.validateMultipleDocuments(files);
-                        GUISwing ggui = (GUISwing) gui;
-                        ggui.signMultipleDocuments(files);
-                    } else if (files.length == 1) gui.loadDocument(files[0].toString());
-                } catch (Exception ex) {
-                    LOG.error("Error cerrando archivo", ex);
-                    ex.printStackTrace();
-                }
-            }
-        });
         startInterface();
     }
 
