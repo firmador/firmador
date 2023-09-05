@@ -77,7 +77,7 @@ public class ConfigPanel extends ScrollableJPanel {
     SettingsManager manager;
     private Integer iconSize = 32;
     private JButton btFontColor, btBackgroundColor, btImage, btPKCS11Module;
-    private JCheckBox withoutVisibleSign, useLTA, overwriteSourceFile, startServer, showLogs;
+    private JCheckBox withoutVisibleSign,/* useLTA,*/ overwriteSourceFile,/* startServer,*/ showLogs;
     private JComboBox<String> font, fontPosition, pAdESLevel, xAdESLevel, cAdESLevel;
     private JPanel advancedBottomSpace;
     private JScrollPane configPanel;
@@ -95,35 +95,28 @@ public class ConfigPanel extends ScrollableJPanel {
         simplePanel.setLayout(new BoxLayout(simplePanel, 1));
         JPanel checkpanel = new JPanel();
         checkpanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        checkpanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        checkpanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         checkpanel.setLayout(new BoxLayout(checkpanel, 0));
-        withoutVisibleSign = new JCheckBox("Sin Firma Visible             ", this.settings.withoutVisibleSign);
+        withoutVisibleSign = new JCheckBox("Sin firma visible        ", this.settings.withoutVisibleSign);
         checkpanel.add(withoutVisibleSign);
+        /*
         useLTA = new JCheckBox("Usar LTA automático", this.settings.useLTA);
         checkpanel.add(useLTA);
-        checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
         useLTA.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent arg0) {
                 changeLTA();
             }
         });
-        showLogs = new JCheckBox("Ver bitácoras", this.settings.showLogs);
+        */
+        showLogs = new JCheckBox("Ver bitácoras        ", this.settings.showLogs);
         checkpanel.add(showLogs);
-        checkpanel.add(Box.createRigidArea(new Dimension(5, 0)));
         simplePanel.add(checkpanel);
-        simplePanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        JPanel checkpanelserver = new JPanel();
-        checkpanelserver.setPreferredSize(new Dimension(450, 30));
-        checkpanelserver.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        checkpanelserver.setBorder(new EmptyBorder(0, 0, 0, 0));
-        checkpanelserver.setLayout(new BoxLayout(checkpanelserver, 0));
-        overwriteSourceFile = new JCheckBox("Sobreescribir archivo original               ", this.settings.overwriteSourceFile);
-        checkpanelserver.add(overwriteSourceFile);
-        checkpanelserver.add(Box.createRigidArea(new Dimension(5, 0)));
+        overwriteSourceFile = new JCheckBox("Sobrescribir archivo original", this.settings.overwriteSourceFile);
+        checkpanel.add(overwriteSourceFile);
+        /*
         startServer = new JCheckBox("Inicializar firmado remoto", this.settings.startServer);
-        checkpanelserver.add(startServer);
-        simplePanel.add(checkpanelserver);
-        simplePanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        checkpanel.add(startServer);
+        */
         reason = new JTextField();
         reason.setText(this.settings.reason);
         place = new JTextField();
@@ -178,8 +171,10 @@ public class ConfigPanel extends ScrollableJPanel {
         else fonts = new String[] {Font.SANS_SERIF, Font.SERIF, Font.MONOSPACED};
         font = new JComboBox<String>(fonts);
         font.setSelectedItem(settings.font);
+        font.setOpaque(false);
         fontPosition = new JComboBox<String>(new String[]{"RIGHT", "LEFT", "BOTTOM", "TOP"});
         fontPosition.setSelectedItem(settings.fontAlignment);
+        fontPosition.setOpaque(false);
         JPanel fontColorPanel = new JPanel();
         fontColorPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         fontColorPanel.setLayout(new BoxLayout(fontColorPanel, 0));
@@ -301,7 +296,7 @@ public class ConfigPanel extends ScrollableJPanel {
         configPanel.getViewport().setOpaque(false);
         add(configPanel, BorderLayout.CENTER);
     }
-
+/*
     private void changeLTA() {
         if (useLTA.isSelected()){
             pAdESLevel.setSelectedItem("LTA");
@@ -309,7 +304,7 @@ public class ConfigPanel extends ScrollableJPanel {
             cAdESLevel.setSelectedItem("LTA");
         }
     }
-
+*/
     private void createAdvancedConfigPanel() {
         advancedPanel = new ScrollableJPanel();
         advancedPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -326,14 +321,17 @@ public class ConfigPanel extends ScrollableJPanel {
         String pAdESLevelOptions[] = {"T", "LT", "LTA"};
         pAdESLevel = new JComboBox<String>(pAdESLevelOptions);
         pAdESLevel.setSelectedItem(settings.pAdESLevel);
+        pAdESLevel.setOpaque(false);
         addSettingsBox(advancedPanel, "Nivel PAdES:", pAdESLevel);
         String xAdESLevelOptions[] = {"T", "LT", "LTA"};
         xAdESLevel = new JComboBox<String>(xAdESLevelOptions);
         xAdESLevel.setSelectedItem(settings.xAdESLevel);
+        xAdESLevel.setOpaque(false);
         addSettingsBox(advancedPanel, "Nivel XAdES:", xAdESLevel);
         String cAdESLevelOptions[] = {"T", "LT", "LTA"};
         cAdESLevel = new JComboBox<String>(cAdESLevelOptions);
         cAdESLevel.setSelectedItem(settings.cAdESLevel);
+        cAdESLevel.setOpaque(false);
         addSettingsBox(advancedPanel, "Nivel CAdES:", cAdESLevel);
         addSettingsBox(advancedPanel, "Escala de previsualización del Pdf", pDFImgScaleFactor);
         JPanel pKCS11ModulePanel = new JPanel();
@@ -355,7 +353,7 @@ public class ConfigPanel extends ScrollableJPanel {
         advancedPanel.add(new JLabel("pero podrá ser escrito usando el campo anterior"));
         advancedBottomSpace = new JPanel();
         advancedPanel.add(advancedBottomSpace);
-        changeLTA();
+        //changeLTA();
     }
     public ConfigPanel() {
         manager = SettingsManager.getInstance();
@@ -397,7 +395,7 @@ public class ConfigPanel extends ScrollableJPanel {
         applywithoutsave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 chargeSettings();
-                if (startServer.isSelected()) showMessage("Modo remoto no se activará, debe guardar y reiniciar la aplicación.");
+                //if (startServer.isSelected()) showMessage("Modo remoto no se activará, debe guardar y reiniciar la aplicación.");
             }
         });
         btns.add(applywithoutsave);
@@ -405,7 +403,7 @@ public class ConfigPanel extends ScrollableJPanel {
         btSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 saveSettings();
-                if (startServer.isSelected()) showMessage("El Modo remoto se iniciará al reinicio de la aplicación, puede desactivarlo con el menú contextual obtenido con clic derecho.");
+                //if (startServer.isSelected()) showMessage("El Modo remoto se iniciará al reinicio de la aplicación, puede desactivarlo con el menú contextual obtenido con clic derecho.");
             }
         });
         btns.add(btSave);
@@ -434,7 +432,7 @@ public class ConfigPanel extends ScrollableJPanel {
         settings.dateFormat = this.dateFormat.getText();
         settings.defaultSignMessage = defaultSignMessage.getText();
         settings.withoutVisibleSign = withoutVisibleSign.isSelected();
-        settings.useLTA = useLTA.isSelected();
+        //settings.useLTA = useLTA.isSelected();
         settings.showLogs = this.showLogs.isSelected();
         settings.overwriteSourceFile = overwriteSourceFile.isSelected();
         settings.pageNumber = Integer.parseInt(pageNumber.getValue().toString());
@@ -448,7 +446,7 @@ public class ConfigPanel extends ScrollableJPanel {
         settings.fontColor = fontColor.getText();
         settings.backgroundColor = backgroundColor.getText();
         settings.image = imageText.getText();
-        settings.startServer = this.startServer.isSelected();
+        //settings.startServer = this.startServer.isSelected();
         settings.portNumber = Integer.parseInt(portNumber.getValue().toString());
         settings.pAdESLevel = pAdESLevel.getSelectedItem().toString();
         settings.xAdESLevel = xAdESLevel.getSelectedItem().toString();
@@ -464,7 +462,7 @@ public class ConfigPanel extends ScrollableJPanel {
     public void restartSettings() {
         Settings settings = new Settings();
         withoutVisibleSign.setSelected(settings.withoutVisibleSign);
-        useLTA.setSelected(settings.useLTA);
+        //useLTA.setSelected(settings.useLTA);
         showLogs.setSelected(settings.showLogs);
         overwriteSourceFile.setSelected(settings.overwriteSourceFile);
         reason.setText(settings.reason);
@@ -483,7 +481,7 @@ public class ConfigPanel extends ScrollableJPanel {
         backgroundColor.setText(settings.backgroundColor);
         setIcons(btFontColor, fontColor.getText(), this.settings.getFontColor());
         setIcons(btBackgroundColor, backgroundColor.getText(), this.settings.getBackgroundColor());
-        startServer.setSelected(settings.startServer);
+        //startServer.setSelected(settings.startServer);
         portNumber.setValue(settings.portNumber);
         fontPosition.setSelectedItem(settings.fontAlignment);
         pAdESLevel.setSelectedItem(settings.pAdESLevel);

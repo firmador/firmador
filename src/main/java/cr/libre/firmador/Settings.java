@@ -44,7 +44,7 @@ public class Settings {
 
     public String defaultDevelopmentVersion = "Desarrollo";
     public boolean withoutVisibleSign = false;
-    public boolean useLTA = true;
+    //public boolean useLTA = true;
     public boolean overwriteSourceFile = false;
     public String reason = "";
     public String place = "";
@@ -61,7 +61,7 @@ public class Settings {
     public Integer signX = 198;
     public Integer signY = 0;
     public String image = null;
-    public boolean startServer = false;
+    //public boolean startServer = false;
     public String fontAlignment = "RIGHT";
     public boolean showLogs = false;
 
@@ -256,7 +256,7 @@ public class Settings {
         return null;
     }
     public boolean isRemote() {
-        if (this.startServer) return true;
+        //if (this.startServer) return true;
         String origin = System.getProperty("jnlp.remoteOrigin");
         boolean isRemote = (origin != null);
         return isRemote;
