@@ -222,7 +222,9 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
                 File file = new File(jarfile.toString());
                 file.setExecutable(true);
                 file.setWritable(true);
-                String message="Nueva versión ha sido descargada con éxito, debe reiniciar la aplicación";
+                String message="Nueva versión ha sido descargada con éxito, debe reiniciar la aplicación.";
+                if (System.getProperty("os.name").toLowerCase().contains("mac"))
+                    message += "\nRecuerde que tras descargar el jar, la primera vez debe hacer control+clic para poder abrirlo.";
                 JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Actualización exitosa", JOptionPane.INFORMATION_MESSAGE);
             }
 

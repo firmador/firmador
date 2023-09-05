@@ -150,7 +150,9 @@ public class FirmadorPAdES extends CRSigner {
                 LOG.error("Error al firmar (traslape de firma)", e);
                 e.printStackTrace();
                 gui.showMessage("No se puede firmar: el campo de firma está solapándose sobre otra firma o anotación existente.<br>" +
-                    "Debe mover la firma para ubicarla en otra posición que no tape las existentes.");
+                    "Debe mover la firma para ubicarla en otra posición que no tape las existentes.<br><br>" +
+                    "Si no contiene firmas previas, puede abrir el PDF con un visor de documentos e imprimirlo como fichero PDF.<br>" +
+                    "El PDF resultante quedará 'aplanado' y podrá firmarse sin problemas.");
                 return null;
             } else {
                 LOG.error("Error al solicitar firma al dispositivo", e);
