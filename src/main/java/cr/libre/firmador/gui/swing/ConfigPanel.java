@@ -31,11 +31,10 @@ import java.awt.KeyboardFocusManager;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.lang.invoke.MethodHandles;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -47,8 +46,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -57,11 +55,11 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileFilter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -530,7 +528,7 @@ public class ConfigPanel extends ScrollableJPanel {
     }
 
     public String getFilePath() {
-        FileDialog loadDialog = new FileDialog(new JDialog(), "Seleccionar un archivo");
+        FileDialog loadDialog = new FileDialog((JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this), "Seleccionar un archivo");
         loadDialog.setMultipleMode(false);
         loadDialog.setLocationRelativeTo(null);
         loadDialog.setVisible(true);
@@ -541,15 +539,20 @@ public class ConfigPanel extends ScrollableJPanel {
     }
 
     public void showImagePicker() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.addChoosableFileFilter(new ImageFilter());
-        fileChooser.setAcceptAllFileFilterUsed(false);
-        int option = fileChooser.showOpenDialog(this);
-        if (option == JFileChooser.APPROVE_OPTION) {
-           File file = fileChooser.getSelectedFile();
-           String path = file.getAbsolutePath();
-           imageText.setText(path);
-           btImage.setIcon(this.getIcon(path));
+        FileDialog imageDialog = new FileDialog((JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this), "Seleccionar una imagen");
+        imageDialog.setFilenameFilter(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.toLowerCase().endsWith(".png") || name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".jpeg")
+                    || name.toLowerCase().endsWith(".gif") || name.toLowerCase().endsWith(".tif") || name.toLowerCase().endsWith(".tiff");
+            }
+        });
+        imageDialog.setFile("*.png;*.jpg;*.jpeg;*.gif;*.tif;*.tiff");
+        imageDialog.setLocationRelativeTo(null);
+        imageDialog.setVisible(true);
+        imageDialog.dispose();
+        if (imageDialog.getFile() != null) {
+            imageText.setText(imageDialog.getDirectory() + imageDialog.getFile());
+            btImage.setIcon(this.getIcon(imageText.getText()));
         }
     }
 
@@ -584,31 +587,4 @@ public class ConfigPanel extends ScrollableJPanel {
         JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", JOptionPane.INFORMATION_MESSAGE);
     }
 
-}
-
-class ImageFilter extends FileFilter {
-   public final static String JPEG = "jpeg";
-   public final static String JPG = "jpg";
-   public final static String GIF = "gif";
-   public final static String TIFF = "tiff";
-   public final static String TIF = "tif";
-   public final static String PNG = "png";
-
-   public boolean accept(File f) {
-      if (f.isDirectory()) return true;
-      String extension = getExtension(f);
-      if (extension != null) if (extension.equalsIgnoreCase(TIFF) || extension.equalsIgnoreCase(TIF) || extension.equalsIgnoreCase(GIF) || extension.equalsIgnoreCase(JPEG) || extension.equalsIgnoreCase(JPG) || extension.equalsIgnoreCase(PNG)) return true;
-      return false;
-   }
-
-   public String getDescription() {
-      return "Image Only";
-   }
-
-   String getExtension(File f) {
-      String s = f.getName();
-      int i = s.lastIndexOf('.');
-      if (i > 0 && i < s.length() - 1) return s.substring(i + 1).toLowerCase();
-      else return null;
-   }
 }
