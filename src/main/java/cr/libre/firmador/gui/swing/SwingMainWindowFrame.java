@@ -25,16 +25,11 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
@@ -56,7 +51,8 @@ public class SwingMainWindowFrame extends JFrame {
     protected JPopupMenu menu;
     protected Settings settings;
 
-    public void setGUIInterface(GUIInterface gui) {
+    @SuppressWarnings("serial")
+	public void setGUIInterface(GUIInterface gui) {
         this.gui = gui;
         this.setDropTarget(new DropTarget() {
             public synchronized void drop(DropTargetDropEvent e) {
@@ -88,7 +84,6 @@ public class SwingMainWindowFrame extends JFrame {
         optionsTabbedPane.setToolTipTextAt(1, "<html>En esta pestaña se muestran opciones avanzadas<br>relacionadas con la creación de la firma.</html>");
     }
 
-    @SuppressWarnings("serial")
     public void loadGUI() {
         settings = SettingsManager.getInstance().getAndCreateSettings();
 /*

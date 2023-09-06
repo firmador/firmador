@@ -19,7 +19,6 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui;
 
-import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 
 public class GUISelector {
@@ -39,7 +38,7 @@ public class GUISelector {
 
     public GUIInterface getInterface(String name) {
         GUIInterface gui = null;
-        Settings settings = SettingsManager.getInstance().getAndCreateSettings();
+        SettingsManager.getInstance().getAndCreateSettings();
         if (name.equals("args")) gui = new GUIArgs();
         else if (name.equals("shell")) gui = new GUIShell();
         else gui = new GUISwing();

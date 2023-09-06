@@ -102,7 +102,8 @@ public class GUISwing implements GUIInterface, ConfigListener{
     private DSSDocument toSignDocument;
     private DSSDocument signedDocument;
     private SwingMainWindowFrame mainFrame;
-    private PDFRenderer renderer;
+    @SuppressWarnings("unused")
+	private PDFRenderer renderer;
     private SignPanel signPanel;
     private ValidatePanel validatePanel;
     private GUIInterface gui;
@@ -347,7 +348,7 @@ public class GUISwing implements GUIInterface, ConfigListener{
         String lastFile = docSelector.getLastFile();
         String fileName = null;
         FileDialog saveDialog = null;
-        saveDialog = new FileDialog(saveDialog, "Guardar documento", FileDialog.SAVE);
+        saveDialog = new FileDialog(mainFrame, "Guardar documento", FileDialog.SAVE);
         saveDialog.setDirectory(lastDirectory);
         String dotExtension = "";
         int lastDot = lastFile.lastIndexOf(".");
