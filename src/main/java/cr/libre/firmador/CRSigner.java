@@ -61,23 +61,22 @@ public class CRSigner {
             String msg = e.getCause().toString();
             LOG.error("Error " + te.getLocalizedMessage() + " obteniendo manejador de llaves privadas de la tarjeta", e);
             if (e.getCause().toString().contains("need 'arm64e'")) {
-                throw e;
-                gui.showError("El firmador ha detectado que estaría utilizando una versión de Java para ARM.\n" +
+                gui.showMessage("El firmador ha detectado que estaría utilizando una versión de Java para ARM.\n" +
                     "Aunque su computadora disponga de procesador ARM, debe desinstalar la versión de Java para ARM e instalar Java para Intel.\n" +
                     "Esto es debido a que el fabricante de las tarjetas solo provee un controlador para Intel\n" +
                     "y la versión de Java instalada solo puede cargar un controlador de la misma arquitectura.\n\n" +
                     "Una vez haya desinstalado Java para ARM, instalado Java para Intel y reiniciado el firmador,\n" +
-                    "el sistema operativo utilizará un emulador para Intel y el firmador y detectará la tarjeta.\n");
+                    "el sistema operativo utilizará un emulador para Intel y el firmador y detectará la tarjeta.");
+                return null;
+            }
+            if (te.getLocalizedMessage().equals("CKR_PIN_INCORRECT")) throw e;
+            if (te.getLocalizedMessage().equals("CKR_GENERAL_ERROR") && e.getCause().toString().contains("Unable to instantiate PKCS11")) throw e;
+            if (te.getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) {
+                LOG.info(te.getLocalizedMessage() + " (dispositivo de firma no reconocido)", e);
+                return null;
             } else {
-                if (te.getLocalizedMessage().equals("CKR_PIN_INCORRECT")) throw e;
-                if (te.getLocalizedMessage().equals("CKR_GENERAL_ERROR") && e.getCause().toString().contains("Unable to instantiate PKCS11")) throw e;
-                if (te.getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) {
-                    LOG.info(te.getLocalizedMessage() + " (dispositivo de firma no reconocido)", e);
-                    return null;
-                } else {
-                    if (msg.contains("but token only has 0 slots")) throw e;
-                    gui.showError(FirmadorUtils.getRootCause(e));
-                }
+                if (msg.contains("but token only has 0 slots")) throw e;
+                gui.showError(FirmadorUtils.getRootCause(e));
             }
         }
         // FIXME: This uses first non-repudiation key available assuming there are no more, keys with the same purpose with the same token.
