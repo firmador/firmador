@@ -60,7 +60,7 @@ public class CRSigner {
             Throwable te = FirmadorUtils.getRootCause(e);
             String msg = e.getCause().toString();
             LOG.error("Error " + te.getLocalizedMessage() + " obteniendo manejador de llaves privadas de la tarjeta", e);
-            if (e.getCause().toString().contains("need 'arm64e'") {
+            if (e.getCause().toString().contains("need 'arm64e'")) {
                 throw e;
                 gui.showError("El firmador ha detectado que estaría utilizando una versión de Java para ARM.\n" +
                     "Aunque su computadora disponga de procesador ARM, debe desinstalar la versión de Java para ARM e instalar Java para Intel.\n" +
