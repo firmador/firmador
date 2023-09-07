@@ -600,7 +600,7 @@ public class GUISwing implements GUIInterface, ConfigListener{
     }
 
     public void showMessage(String message) {
-        LOG.error("Mensaje de información mostrado:" + message);
+        LOG.info("Mensaje de información mostrado: " + message);
         JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -668,7 +668,7 @@ public class GUISwing implements GUIInterface, ConfigListener{
                     "para detallar mejor el posible motivo de este error en próximas versiones.";
                 break;
         }
-        LOG.error("Mensaje de error mostrado:" + message);
+        LOG.error("Mensaje de error mostrado: " + message);
         error.printStackTrace();
         JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", messageType);
         if (closed) if (messageType == JOptionPane.ERROR_MESSAGE) System.exit(0);
