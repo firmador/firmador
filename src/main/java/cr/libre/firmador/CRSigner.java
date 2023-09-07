@@ -60,6 +60,15 @@ public class CRSigner {
             Throwable te = FirmadorUtils.getRootCause(e);
             String msg = e.getCause().toString();
             LOG.error("Error " + te.getLocalizedMessage() + " obteniendo manejador de llaves privadas de la tarjeta", e);
+            if (e.getCause().toString().contains("need 'arm64e'")) {
+                gui.showMessage("El firmador ha detectado que estaría utilizando una versión de Java para ARM.\n" +
+                    "Aunque su computadora disponga de procesador ARM, debe desinstalar la versión de Java para ARM e instalar Java para Intel.\n" +
+                    "Esto es debido a que el fabricante de las tarjetas solo provee un controlador para Intel\n" +
+                    "y la versión de Java instalada solo puede cargar un controlador de la misma arquitectura.\n\n" +
+                    "Una vez haya desinstalado Java para ARM, instalado Java para Intel y reiniciado el firmador,\n" +
+                    "el sistema operativo utilizará un emulador para Intel y el firmador y detectará la tarjeta.");
+                return null;
+            }
             if (te.getLocalizedMessage().equals("CKR_PIN_INCORRECT")) throw e;
             if (te.getLocalizedMessage().equals("CKR_GENERAL_ERROR") && e.getCause().toString().contains("Unable to instantiate PKCS11")) throw e;
             if (te.getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) {

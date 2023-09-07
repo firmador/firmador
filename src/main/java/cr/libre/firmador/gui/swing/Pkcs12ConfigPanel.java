@@ -32,6 +32,7 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -39,6 +40,7 @@ import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
@@ -60,7 +62,7 @@ public class Pkcs12ConfigPanel extends JPanel {
     public String getFilePath() {
         String dev = null;
 
-        FileDialog loadDialog = new FileDialog(new JDialog(), "Seleccionar un archivo");
+        FileDialog loadDialog = new FileDialog((JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this), "Seleccionar un archivo");
         loadDialog.setMultipleMode(false);
         loadDialog.setLocationRelativeTo(null);
         loadDialog.setVisible(true);
