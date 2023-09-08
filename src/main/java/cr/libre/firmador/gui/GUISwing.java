@@ -103,7 +103,7 @@ public class GUISwing implements GUIInterface, ConfigListener{
     private DSSDocument signedDocument;
     private SwingMainWindowFrame mainFrame;
     @SuppressWarnings("unused")
-	private PDFRenderer renderer;
+    private PDFRenderer renderer;
     private SignPanel signPanel;
     private ValidatePanel validatePanel;
     private GUIInterface gui;
