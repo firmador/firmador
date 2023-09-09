@@ -45,6 +45,7 @@ public class ValidatePanel extends ScrollableJPanel {
         extendButton = new JButton("Agregar sello de tiempo al documento");
         extendButton.setToolTipText(
                 "<html>Este botón permite que el documento firmado que está cargado actualmente<br>agregue un nuevo sello de tiempo a nivel documento, con el propósito de<br>archivado longevo. También permite ampliar el nivel de firma a AdES-LTA<br>si el documento tiene un nivel de firma avanzada inferior.</html>");
+        extendButton.setOpaque(false);
 
         GroupLayout validateLayout = new GroupLayout(this);
         validateLayout.setAutoCreateGaps(true);

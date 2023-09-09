@@ -85,29 +85,36 @@ public class PluginManagerPlugin extends JPanel {
         JPanel pavailable = new JPanel(new BorderLayout(2, 2));
         JLabel lavailable = new JLabel("Plugins disponibles");
         lavailable.setAlignmentX(CENTER_ALIGNMENT);
+        pavailable.setOpaque(false);
         pavailable.add(lavailable, BorderLayout.CENTER);
         listAvailable = new JList<String>(availableModel);
         listAvailable.setBorder(new LineBorder(new Color(0, 0, 0)));
         addactive = new JButton(">>");
+        addactive.setOpaque(false);
         pavailable.add(addactive, BorderLayout.LINE_END);
+        mainpavailable.setOpaque(false);
         mainpavailable.add(pavailable, BorderLayout.NORTH);
         mainpavailable.add(listAvailable, BorderLayout.CENTER);
 
         JPanel mainpactive = new JPanel(new BorderLayout(2, 2));
         JPanel pactive = new JPanel(new BorderLayout(2, 2));
         JLabel lactive = new JLabel("   Plugins activos");
+        pactive.setOpaque(false);
         pactive.add(lactive, BorderLayout.CENTER);
         rmactive = new JButton("<<");
+        rmactive.setOpaque(false);
 
         pactive.add(rmactive, BorderLayout.LINE_START);
         listActive = new JList<String>(activeModel);
         listActive.setBorder(new LineBorder(new Color(0, 0, 0)));
+        mainpactive.setOpaque(false);
         mainpactive.add(pactive, BorderLayout.NORTH);
         mainpactive.add(listActive, BorderLayout.CENTER);
 
         JSplitPane sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mainpavailable, mainpactive);
         sp.setOneTouchExpandable(true);
         sp.setResizeWeight(0.5);
+        sp.setOpaque(false);
         this.add(sp, BorderLayout.CENTER);
         this.setOpaque(false);
         rmactive.addActionListener(new ActionListener() {

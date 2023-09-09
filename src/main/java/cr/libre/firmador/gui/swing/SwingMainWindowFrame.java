@@ -76,7 +76,9 @@ public class SwingMainWindowFrame extends JFrame {
 
     public void startInterface() {
         JPanel pdfOptionsPanel = new JPanel();
+        pdfOptionsPanel.setOpaque(false);
         JPanel advancedOptionsPanel = new JPanel();
+        advancedOptionsPanel.setOpaque(false);
         optionsTabbedPane = new JTabbedPane();
         optionsTabbedPane.addTab("Opciones PDF", pdfOptionsPanel);
         optionsTabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran opciones específicas<br>para documentos en formato PDF.</html>");

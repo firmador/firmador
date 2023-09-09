@@ -56,6 +56,7 @@ public class AboutLayout extends GroupLayout {
             "Política de Formatos Oficiales de los Documentos Electrónicos<br>" +
             "Firmados Digitalmente de Costa Rica.<br><br></p></html>", JLabel.CENTER);
         JButton websiteButton = new JButton("Visitar sitio web del proyecto");
+        websiteButton.setOpaque(false);
         websiteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 openProjectWebsite();

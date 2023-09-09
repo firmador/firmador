@@ -60,6 +60,7 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
         fileButton = new JButton("Elegir...");
         fileButton.setToolTipText(
             "<html>Haga clic en este botón para seleccionar uno o<br>varios ficheros a firmar, o un fichero a validar.</html>");
+        fileButton.setOpaque(false);
 
         this.setAutoCreateGaps(true);
         this.setAutoCreateContainerGaps(true);
