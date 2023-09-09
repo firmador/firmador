@@ -83,6 +83,7 @@ public class Pkcs12ConfigPanel extends JPanel {
         setLayout(new BorderLayout(0, 0));
         Border margin = new EmptyBorder(20, 10,20,10);
         setBorder(margin);
+        setOpaque(false);
 
         pk12Model = new DefaultListModel<String>();
         pk12list  = new JList<String>(pk12Model);
@@ -93,11 +94,14 @@ public class Pkcs12ConfigPanel extends JPanel {
         add(ltitle, BorderLayout.NORTH);
 
         JPanel panel = new JPanel();
+        panel.setOpaque(false);
         add(panel, BorderLayout.EAST);
 
         JButton addbtn = new JButton("+");
+        addbtn.setOpaque(false);
 
         JButton rmbtn = new JButton("-");
+        rmbtn.setOpaque(false);
         GroupLayout glPanel = new GroupLayout(panel);
         glPanel.setHorizontalGroup(
             glPanel.createParallelGroup(Alignment.LEADING)

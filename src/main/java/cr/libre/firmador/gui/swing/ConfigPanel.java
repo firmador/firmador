@@ -95,11 +95,14 @@ public class ConfigPanel extends ScrollableJPanel {
         checkpanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
         checkpanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         checkpanel.setLayout(new BoxLayout(checkpanel, 0));
+        checkpanel.setOpaque(false);
         withoutVisibleSign = new JCheckBox("Sin firma visible        ", this.settings.withoutVisibleSign);
+        withoutVisibleSign.setOpaque(false);
         checkpanel.add(withoutVisibleSign);
         /*
         useLTA = new JCheckBox("Usar LTA automático", this.settings.useLTA);
         checkpanel.add(useLTA);
+        checkpanel.setOpaque(false);
         useLTA.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent arg0) {
                 changeLTA();
@@ -107,12 +110,15 @@ public class ConfigPanel extends ScrollableJPanel {
         });
         */
         showLogs = new JCheckBox("Ver bitácoras        ", this.settings.showLogs);
+        showLogs.setOpaque(false);
         checkpanel.add(showLogs);
         simplePanel.add(checkpanel);
         overwriteSourceFile = new JCheckBox("Sobrescribir archivo original", this.settings.overwriteSourceFile);
+        overwriteSourceFile.setOpaque(false);
         checkpanel.add(overwriteSourceFile);
         /*
         startServer = new JCheckBox("Inicializar firmado remoto", this.settings.startServer);
+        startServer.setOpaque(false);
         checkpanel.add(startServer);
         */
         reason = new JTextField();
@@ -176,6 +182,7 @@ public class ConfigPanel extends ScrollableJPanel {
         JPanel fontColorPanel = new JPanel();
         fontColorPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         fontColorPanel.setLayout(new BoxLayout(fontColorPanel, 0));
+        fontColorPanel.setOpaque(false);
         fontColor = new JTextField();
         fontColor.setToolTipText("Use la palabra 'transparente' si no desea un color");
         fontColor.setText(this.settings.fontColor);
@@ -210,6 +217,7 @@ public class ConfigPanel extends ScrollableJPanel {
         JPanel backgroundColorPanel = new JPanel();
         backgroundColorPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         backgroundColorPanel.setLayout(new BoxLayout(backgroundColorPanel, 0));
+        backgroundColorPanel.setOpaque(false);
         backgroundColor = new JTextField();
         backgroundColor.setToolTipText("Use la palabra 'transparente' si no desea un color de fondo");
         backgroundColor.setText(this.settings.backgroundColor);
@@ -244,6 +252,7 @@ public class ConfigPanel extends ScrollableJPanel {
         JPanel imagePanel = new JPanel();
         imagePanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         imagePanel.setLayout(new BoxLayout(imagePanel, 0));
+        imagePanel.setOpaque(false);
         imageText = new JTextField();
         btImage = new JButton("Elegir");
         if (this.settings.image != null) {
@@ -331,10 +340,11 @@ public class ConfigPanel extends ScrollableJPanel {
         cAdESLevel.setSelectedItem(settings.cAdESLevel);
         cAdESLevel.setOpaque(false);
         addSettingsBox(advancedPanel, "Nivel CAdES:", cAdESLevel);
-        addSettingsBox(advancedPanel, "Escala de previsualización del Pdf", pDFImgScaleFactor);
+        addSettingsBox(advancedPanel, "Escala de previsualización PDF", pDFImgScaleFactor);
         JPanel pKCS11ModulePanel = new JPanel();
         pKCS11ModulePanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         pKCS11ModulePanel.setLayout(new BoxLayout(pKCS11ModulePanel, 0));
+        pKCS11ModulePanel.setOpaque(false);
         pKCS11ModuleText = new JTextField();
         btPKCS11Module = new JButton("Elegir");
         if (this.settings.extraPKCS11Lib != null ) pKCS11ModuleText.setText(this.settings.extraPKCS11Lib);
@@ -346,10 +356,11 @@ public class ConfigPanel extends ScrollableJPanel {
                 if (path != null) pKCS11ModuleText.setText(path);
             }
         });
-        addSettingsBox(advancedPanel, "Archivo PKCS11", pKCS11ModulePanel);
+        addSettingsBox(advancedPanel, "Archivo PKCS11", pKCS11ModulePanel); // FIXME prefill with default paths when unset
         advancedPanel.add(new JLabel("El archivo PKCS11 se detecta automáticamente, "));
         advancedPanel.add(new JLabel("pero podrá ser escrito usando el campo anterior"));
         advancedBottomSpace = new JPanel();
+        advancedBottomSpace.setOpaque(false);
         advancedPanel.add(advancedBottomSpace);
         //changeLTA();
     }
@@ -363,6 +374,7 @@ public class ConfigPanel extends ScrollableJPanel {
         add(optionswitchpanel, BorderLayout.NORTH);
         JButton showadvanced = new JButton("Opciones avanzadas");
         showadvanced.setOpaque(false);
+        optionswitchpanel.setOpaque(false);
         optionswitchpanel.add(showadvanced);
         showadvanced.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
@@ -381,6 +393,7 @@ public class ConfigPanel extends ScrollableJPanel {
             }
         });
         JPanel btns = new JPanel();
+        btns.setOpaque(false);
         add(btns, BorderLayout.SOUTH);
         JButton restartbtn = new JButton("Reiniciar");
         restartbtn.addActionListener(new ActionListener() {
@@ -415,6 +428,7 @@ public class ConfigPanel extends ScrollableJPanel {
         label.setPreferredSize(new Dimension(150, 30));
         itempanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         itempanel.setLayout(new BoxLayout(itempanel, 0));
+        itempanel.setOpaque(false);
         itempanel.add(label);
         itempanel.add(item);
         panel.add(itempanel);

@@ -113,6 +113,7 @@ public class RequestPinWindow extends JFrame {
         });
         btnNewButton.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("refresh.png")));
         btnNewButton.setToolTipText("Refrescar tarjetas");
+        btnNewButton.setOpaque(false);
         GroupLayout glContentPane = new GroupLayout(contentPane);
         glContentPane.setHorizontalGroup(
             glContentPane.createParallelGroup(Alignment.LEADING)
