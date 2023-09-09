@@ -196,6 +196,7 @@ public class SignPanel extends JPanel implements ConfigListener{
 
         signButton = new JButton("Firmar documento");
         signButton.setToolTipText("<html>Este botón permite firmar el documento seleccionado.<br>Requiere dispositivo de Firma Digital al cual se le<br>solicitará ingresar el PIN.</html>");
+        signButton.setOpaque(false);
 
 
         //signatureLabel.setToolTipText("<html>Esta etiqueta es un recuadro arrastrable que representa<br>la ubicación de la firma visible en la página seleccionada.<br><br>Se puede cambiar su posición haciendo clic sobre el recuadro<br>y moviendo el mouse sin soltar el botón de clic<br>hasta soltarlo en la posición deseada.</html>");
@@ -326,6 +327,7 @@ public class SignPanel extends JPanel implements ConfigListener{
     }
 
     public void signLayout(GroupLayout signLayout, JPanel signPanel) {
+        this.setOpaque(false);
         this.setLayout(signLayout);
         signLayout.setAutoCreateGaps(true);
         signLayout.setAutoCreateContainerGaps(true);

@@ -54,6 +54,7 @@ public class ProgressDialog extends JDialog {
         setBounds(100, 100, 450, 300);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        contentPanel.setOpaque(false);
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         setIconImage(image);
         setTitle("Progreso de firmado");
@@ -101,6 +102,7 @@ public class ProgressDialog extends JDialog {
                 });
 
                 okButton.setActionCommand("OK");
+                okButton.setOpaque(false);
                 buttonPane.add(okButton);
                 getRootPane().setDefaultButton(okButton);
             }

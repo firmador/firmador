@@ -31,12 +31,14 @@ public class ScrollableJPanel extends JPanel implements Scrollable {
 
     public ScrollableJPanel() {
         super();
+        this.setOpaque(false);
     }
 
     public ScrollableJPanel(boolean widthTrackScrollable, boolean heigthTrackScrollable) {
         super();
         this.widthTrackScrollable = widthTrackScrollable;
         this.heigthTrackScrollable = heigthTrackScrollable;
+        this.setOpaque(false);
     }
 
     public Dimension getPreferredScrollableViewportSize() {
