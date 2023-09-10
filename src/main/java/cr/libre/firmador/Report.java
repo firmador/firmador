@@ -27,20 +27,25 @@ import javax.xml.transform.stream.StreamSource;
 
 import eu.europa.esig.dss.DSSXmlErrorListener;
 import eu.europa.esig.dss.DomUtils;
+import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.validation.reports.Reports;
 
 public class Report {
 
     private StringWriter writer = new StringWriter();
+    private String annotationChanges = new String();
 
     public Report(Reports reports) throws Exception {
         Transformer transformer = DomUtils.getSecureTransformerFactory().newTemplates(new StreamSource(this.getClass().getResourceAsStream("/xslt/html/simple-report.xslt"))).newTransformer();
         transformer.setErrorListener(new DSSXmlErrorListener());
         transformer.transform(new StreamSource(new StringReader(reports.getXmlSimpleReport())), new StreamResult(writer));
+        for (SignatureWrapper wrapper : reports.getDiagnosticData().getSignatures())
+            if (!wrapper.getPdfAnnotationChanges().isEmpty())
+                annotationChanges = "<p><b>Aviso importante:</b> el siguiente documento firmado tiene modificaciones (anotaciones) añadidas después de haberse firmado.</p>";
     }
 
     public String getReport() {
-        return "<html>" + writer.toString() + "</html>";
+        return "<html>" + annotationChanges + writer.toString() + "</html>";
     }
 
 }
