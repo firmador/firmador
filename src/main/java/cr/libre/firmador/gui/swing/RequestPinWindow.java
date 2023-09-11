@@ -200,16 +200,28 @@ public class RequestPinWindow extends JFrame {
     }
 
     public void inspectCardInfo() throws Throwable {
-        SmartCardDetector cardd = new SmartCardDetector();
-        cards= cardd.readSaveListSmartCard();
-        comboBox.removeAllItems();
-        //ComboBoxModel model = comboBox.getModel();
+        try {
+            SmartCardDetector cardd = new SmartCardDetector();
+            cards= cardd.readSaveListSmartCard();
+            comboBox.removeAllItems();
+            //ComboBoxModel model = comboBox.getModel();
 
-        for(int x=0; x<cards.size(); x++ ) {
-            comboBox.addItem(cards.get(x).getDisplayInfo());
+            for(int x=0; x<cards.size(); x++ ) {
+                comboBox.addItem(cards.get(x).getDisplayInfo());
+            }
+
+            updateSelected();
+        } catch (Throwable er) {
+            JOptionPane.showMessageDialog(null,
+            "El firmador ha detectado que estaría utilizando una versión de Java para ARM.\n" +
+            "Aunque su computadora disponga de procesador ARM, debe desinstalar la versión de\n" +
+            "Java para ARM e instalar Java para Intel.\n" +
+            "Esto es debido a que el fabricante de las tarjetas solo provee un controlador para Intel\n" +
+            "y la versión de Java instalada solo puede cargar un controlador de la misma arquitectura.\n\n" +
+            "Una vez haya desinstalado Java para ARM, instalado Java para Intel y reiniciado el firmador,\n" +
+            "el sistema operativo utilizará un emulador para Intel y el firmador y detectará la tarjeta.",
+            "Error al cargar librería", JOptionPane.WARNING_MESSAGE);
         }
-
-        updateSelected();
     }
     public PasswordProtection getPassword() {
         return new PasswordProtection(pinField.getPassword());
