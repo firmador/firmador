@@ -630,17 +630,20 @@ public class SignPanel extends JPanel implements ConfigListener{
         String commonName="NOMBRE DE LA PERSONA (TIPO DE CERTIFICADO)";
         String identification="XXX-XXXXXXXXXXXX";
         String organization="TIPO DE PERSONA";
-        SmartCardDetector cardd = new SmartCardDetector();
-        List<CardSignInfo> cards = cardd.readSaveListSmartCard();
+        String additionalText = new String();
+        try {
+            SmartCardDetector cardd = new SmartCardDetector();
+            List<CardSignInfo> cards = cardd.readSaveListSmartCard();
+            if(!cards.isEmpty()) {
+                CardSignInfo card = cards.get(0);
+                commonName = card.getCommonName();
+                organization = card.getOrganization();
+                identification = card.getIdentification();
+            }
+        } catch (Throwable te) {}
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(settings.dateFormat);
         LocalDateTime now = LocalDateTime.now();
-        if(!cards.isEmpty()) {
-            CardSignInfo card = cards.get(0);
-            commonName = card.getCommonName();
-            organization = card.getOrganization();
-            identification = card.getIdentification();
-        }
-        String additionalText = commonName+"<br>"+organization+", "+identification+".<br>Fecha declarada: "+dtf.format(now)+"<br>";
+        additionalText = commonName+"<br>"+organization+", "+identification+".<br>Fecha declarada: "+dtf.format(now)+"<br>";
         if (reason != null && !reason.trim().isEmpty()) {
             hasReason = true;
             additionalText += "Razón: " + reason + "\n";
