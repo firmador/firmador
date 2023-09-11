@@ -61,13 +61,13 @@ public class SmartCardDetector implements  ConfigListener {
         lib = CRSigner.getPkcs11Lib();
     }
 
-    public List<CardSignInfo> readSaveListSmartCard(){
+    public List<CardSignInfo> readSaveListSmartCard() throws Throwable {
         List<CardSignInfo> cards;
         try {
             cards = readListSmartCard();
         } catch (Throwable e) {
             LOG.info("readListSmartCard thrown", e);
-            e.printStackTrace();
+            if (e.getCause().toString().contains("need 'arm64e'")) throw e;
             cards = new ArrayList<CardSignInfo>();
         }
         File f;
@@ -89,7 +89,6 @@ public class SmartCardDetector implements  ConfigListener {
             pkcs11 = PKCS11.getInstance(lib, functionList, pInitArgs, false);
         } catch (PKCS11Exception e) {
             LOG.debug("C_GetFunctionList didn't like CKF_OS_LOCKING_OK on pInitArgs", e);
-            e.printStackTrace();
             pInitArgs.flags = 0;
             pkcs11 = PKCS11.getInstance(lib, functionList, pInitArgs, false);
         }
@@ -147,8 +146,7 @@ public class SmartCardDetector implements  ConfigListener {
                     pkcs11.C_CloseSession(hSession);
                 } catch (PKCS11Exception e) {
                     if (e.getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) {
-                        LOG.info("Slot reports token is present but not recognized by the cryptoki library");
-                        e.printStackTrace();
+                        LOG.info("Slot reports token is present but not recognized by the cryptoki library", e);
                     } else throw e;
                 }
             } else LOG.info("No token present in this slot"); // Condition could be removed
