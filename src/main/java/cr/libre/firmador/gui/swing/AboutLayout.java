@@ -85,7 +85,7 @@ public class AboutLayout extends GroupLayout {
     private void openProjectWebsite() {
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             try {
-                Desktop.getDesktop().browse(new URI(settings.baseUrl)); // GTK3 Swing backend has a bug not opening the URL until the app closes
+                Desktop.getDesktop().browse(new URI(settings.baseUrl));
             } catch (Exception e) {
                 LOG.error("Error abriendo url", e);
                 this.swinginterface.showError(FirmadorUtils.getRootCause(e));
