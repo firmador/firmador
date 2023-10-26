@@ -62,12 +62,15 @@ import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.ConfigListener;
 import cr.libre.firmador.FirmadorCAdES;
 import cr.libre.firmador.FirmadorOpenDocument;
+import cr.libre.firmador.FirmadorOpenXmlFormat;
 import cr.libre.firmador.FirmadorPAdES;
 import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.FirmadorXAdES;
+import cr.libre.firmador.MimeTypeDetector;
 import cr.libre.firmador.Report;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
+import cr.libre.firmador.SupportedMimeTypeEnum;
 import cr.libre.firmador.Validator;
 import cr.libre.firmador.gui.swing.AboutLayout;
 import cr.libre.firmador.gui.swing.ConfigPanel;
@@ -111,6 +114,7 @@ public class GUISwing implements GUIInterface, ConfigListener{
     private JScrollPane loggingPane;
     private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     private int tabPosition;
+    private SupportedMimeTypeEnum currentMimetype;
 
     public void loadGUI() {
         try {
@@ -201,11 +205,10 @@ public class GUISwing implements GUIInterface, ConfigListener{
             clearElements();
             docSelector.setLastFile(fileName);
             docSelector.fileField.setText(Paths.get(fileName).getFileName().toString());
-            FileDocument mimeDocument = new FileDocument(fileName);
-
+            currentMimetype=MimeTypeDetector.detect(fileName);
             try {
-                if (mimeDocument.getMimeType() == MimeTypeEnum.PDF) doc = PDDocument.load(new File(fileName));
-                loadDocument(mimeDocument.getMimeType(), doc);
+                if (currentMimetype == SupportedMimeTypeEnum.PDF) doc = PDDocument.load(new File(fileName));
+                loadDocument(currentMimetype, doc);
             } catch (IOException e) {
                 LOG.error("Error Leyendo el archivo", e);
                 e.printStackTrace();
@@ -220,11 +223,12 @@ public class GUISwing implements GUIInterface, ConfigListener{
             try {
                 byte[] data =IOUtils.toByteArray( docinfo.getInputdata());
                 toSignDocument = new InMemoryDocument(data, fileName);
-                MimeType mimeType = toSignDocument.getMimeType();
-                if (MimeTypeEnum.PDF == mimeType) {
+                currentMimetype=MimeTypeDetector.detect(data, fileName);
+                
+                if (SupportedMimeTypeEnum.PDF == currentMimetype) {
                     doc = PDDocument.load(data);
-                    loadDocument(mimeType, doc);
-                } else if (mimeType == MimeTypeEnum.XML || mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
+                    loadDocument(currentMimetype, doc);
+                } else if (currentMimetype.withoutVisualization()) {
                     showMessage("Está intentando firmar un documento XML o un openDocument que no posee visualización");
                     signPanel.getSignButton().setEnabled(true);
                 } else signPanel.shownonPDFButtons();
@@ -448,16 +452,19 @@ public class GUISwing implements GUIInterface, ConfigListener{
             if (toExtendDocument == null) return null;
             DSSDocument extendedDocument = null;
             ByteArrayOutputStream outdoc = null;
-            MimeType mimeType = toExtendDocument.getMimeType();
-            if (mimeType == MimeTypeEnum.PDF) {
+             
+            if (currentMimetype == SupportedMimeTypeEnum.PDF) {
                 FirmadorPAdES firmador = new FirmadorPAdES(gui);
                 extendedDocument = firmador.extend(toExtendDocument);
-            } else if (mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
+            } else if (currentMimetype.isOpenDocument()) {
                 FirmadorOpenDocument firmador = new FirmadorOpenDocument(gui);
                 extendedDocument = firmador.extend(toExtendDocument);
-            } else if (mimeType == MimeTypeEnum.XML) {
+            } else if (currentMimetype == SupportedMimeTypeEnum.XML) {
                 FirmadorXAdES firmador = new FirmadorXAdES(gui);
                 extendedDocument = firmador.extend(toExtendDocument);
+            }else if(currentMimetype.isOpenxmlformats()) {
+            	FirmadorOpenXmlFormat firmador = new FirmadorOpenXmlFormat(gui);
+            	extendedDocument = firmador.extend(toExtendDocument);
             } else {
                 FirmadorCAdES firmador = new FirmadorCAdES(gui);
                 extendedDocument = firmador.extend(toExtendDocument);
@@ -550,13 +557,14 @@ public class GUISwing implements GUIInterface, ConfigListener{
         signPanel.showSignButtons();
     }
 
-    public void loadDocument(MimeType mimeType, PDDocument doc) {
+    public void loadDocument(SupportedMimeTypeEnum mimeType, PDDocument doc) {
         signPanel.setDoc(doc);
         signPanel.getSignButton().setEnabled(true);
         try {
             signPanel.docHideButtons();
-            if (mimeType == MimeTypeEnum.PDF) loadDocumentPDF(doc);
-            else signPanel.shownonPDFButtons();
+            if (mimeType == SupportedMimeTypeEnum.PDF) { loadDocumentPDF(doc);}
+            else if(mimeType.isOpenxmlformats()) {signPanel.showOpenFormatButtons();}
+            else {signPanel.shownonPDFButtons();}
             //else if (mimeType == MimeTypeEnum.XML) { /* Nothing for now */ }
             //else if (mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) { /* Nothing for now */ }
             mainFrame.pack();
@@ -569,17 +577,20 @@ public class GUISwing implements GUIInterface, ConfigListener{
 
     protected void signDocument(CardSignInfo card, Boolean visibleSignature) {
         signedDocument = null;
-        MimeType mimeType = toSignDocument.getMimeType();
-        if (mimeType == MimeTypeEnum.PDF) {
+
+        if (currentMimetype == SupportedMimeTypeEnum.PDF) {
             FirmadorPAdES firmador = new FirmadorPAdES(gui);
             firmador.setVisibleSignature(visibleSignature);
             firmador.addVisibleSignature((int)signPanel.getPageSpinner().getValue(), signPanel.calculateSignatureRectangle());
             signedDocument = firmador.sign(toSignDocument, card, signPanel.getReasonField().getText(), signPanel.getLocationField().getText(),
                 signPanel.getContactInfoField().getText(), System.getProperty("jnlp.signatureImage"), Boolean.getBoolean("jnlp.hideSignatureAdvice"));
-        } else if (mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
+        } else if (currentMimetype.isOpenDocument()) {
             FirmadorOpenDocument firmador = new FirmadorOpenDocument(gui);
             signedDocument = firmador.sign(toSignDocument, card);
-        } else if (mimeType == MimeTypeEnum.XML || signPanel.getAdESFormatButtonGroup().getSelection().getActionCommand().equals("XAdES")) {
+        }if(currentMimetype.isOpenxmlformats()){
+        	FirmadorOpenXmlFormat firmador = new FirmadorOpenXmlFormat(gui);
+        	signedDocument = firmador.sign(toSignDocument, card);
+        } else if (currentMimetype == SupportedMimeTypeEnum.XML || signPanel.getAdESFormatButtonGroup().getSelection().getActionCommand().equals("XAdES")) {
             FirmadorXAdES firmador = new FirmadorXAdES(gui);
             signedDocument = firmador.sign(toSignDocument, card);
         } else {

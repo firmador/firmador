@@ -94,6 +94,10 @@ public class CardSignInfo {
         return (int) slotID;
     }
 
+    public Long getSlotLongID() {
+        return  slotID;
+    }
+    
     public void setSlotID(long slotID) {
         this.slotID = slotID;
     }

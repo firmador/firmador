@@ -36,6 +36,7 @@ import cr.libre.firmador.CardSignInfo;
 //import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
 import cr.libre.firmador.FirmadorUtils;
+import cr.libre.firmador.SupportedMimeTypeEnum;
 //import cr.libre.firmador.FirmadorXAdES;
 //import cr.libre.firmador.Settings;
 //import cr.libre.firmador.SettingsManager;
@@ -154,7 +155,7 @@ public class GUIShell implements GUIInterface {
     }
 
     @Override
-    public void loadDocument(MimeType mimeType, PDDocument doc) {
+    public void loadDocument(SupportedMimeTypeEnum mimeType, PDDocument doc) {
     }
 
     @Override

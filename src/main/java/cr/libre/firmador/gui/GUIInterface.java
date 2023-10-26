@@ -23,6 +23,7 @@ import eu.europa.esig.dss.enumerations.MimeType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import cr.libre.firmador.CardSignInfo;
+import cr.libre.firmador.SupportedMimeTypeEnum;
 import cr.libre.firmador.plugins.PluginManager;
 
 public interface GUIInterface {
@@ -36,7 +37,7 @@ public interface GUIInterface {
     CardSignInfo getPin();
     void setPluginManager(PluginManager pluginManager);
     public void loadDocument(String fileName);
-    public void loadDocument(MimeType mimeType, PDDocument doc);
+    public void loadDocument(SupportedMimeTypeEnum mimeType, PDDocument doc);
     public void extendDocument();
     String getPathToSaveExtended(String extension);
     public boolean signDocuments();

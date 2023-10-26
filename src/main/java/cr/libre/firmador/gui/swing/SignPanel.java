@@ -437,6 +437,10 @@ public class SignPanel extends JPanel implements ConfigListener{
          levelLTAButton.setVisible(false);
          signButton.setEnabled(true);
     }
+    
+    public void showOpenFormatButtons() {
+    	signButton.setEnabled(true);
+    }
 
     public void docHideButtons() {
          imagePanel.setVisible(false);

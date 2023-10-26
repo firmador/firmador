@@ -33,6 +33,7 @@ import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
 import cr.libre.firmador.FirmadorXAdES;
+import cr.libre.firmador.SupportedMimeTypeEnum;
 import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.plugins.PluginManager;
 
@@ -150,7 +151,7 @@ public class GUIArgs implements GUIInterface {
     public void loadDocument(String fileName) {
     }
 
-    public void loadDocument(MimeType mimeType, PDDocument doc) {
+    public void loadDocument(SupportedMimeTypeEnum mimeType, PDDocument doc) {
     }
 
     public void extendDocument() {
