@@ -54,6 +54,8 @@ import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.model.x509.revocation.ocsp.OCSP;
+
 import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.Security;
@@ -65,6 +67,7 @@ import eu.europa.esig.dss.cades.signature.CAdESService;
 
 import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
+import eu.europa.esig.dss.spi.x509.revocation.RevocationSource;
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
 
@@ -158,6 +161,9 @@ public class FirmadorOpenXmlFormat extends CRSigner {
     private DSSDocument sign_ooxlm(DSSDocument toSignDocument, CardSignInfo card) throws Throwable {
         // System.setProperty("jsr105Provider",
         // "org.jcp.xml.dsig.internal.dom.XMLDSigRI");
+        CertificateVerifier verifier = this.getCertificateVerifier();
+        RevocationSource<OCSP> source = verifier.getOcspSource();
+
         Security.removeProvider("SunRsaSign");
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
@@ -187,7 +193,7 @@ public class FirmadorOpenXmlFormat extends CRSigner {
         signatureConfig.setSignatureDescription("Esto es una firma con firmador libre");
 
         TimeStampServiceCR timestampService = new TimeStampServiceCR(pkcs11manager.getProvider(),
-                pkcs11manager.getCertificateChainTSA(), pkcs11manager);
+                pkcs11manager.getCertificateChainTSA(), pkcs11manager, verifier);
 //
         signatureConfig.setTspService(timestampService);
         signatureConfig.setTspUrl(TSA_URL);
@@ -217,7 +223,7 @@ public class FirmadorOpenXmlFormat extends CRSigner {
         // RevocationDataService revocationservice =
         // signatureConfig.getRevocationDataService();
         RevocationData revocationData = new RevocationData();
-        // timestampService.AddCertificateRevocation(signatureConfig, revocationData);
+        timestampService.AddCertificateRevocation(signatureConfig, revocationData);
 
         RevocationDataService revocationDataService = revocationChain -> revocationData;
         signatureConfig.setRevocationDataService(revocationDataService);

@@ -283,9 +283,9 @@ public class PKCS11Manager {
             addCertificateToMap(parseX509("certs/CA POLITICA PERSONA FISICA - COSTA RICA v2.crt"));
             addCertificateToMap(parseX509("certs/CA POLITICA PERSONA JURIDICA - COSTA RICA v2.crt"));
             addCertificateToMap(parseX509("certs/CA POLITICA SELLADO DE TIEMPO - COSTA RICA v2.crt"));
-            addCertificateToMap(parseX509("certs/CA SINPE - PERSONA FISICA v2.cer"));
+            // addCertificateToMap(parseX509("certs/CA SINPE - PERSONA FISICA v2.cer"));
             addCertificateToMap(parseX509("certs/CA SINPE - PERSONA FISICA v2(1).crt"));
-            addCertificateToMap(parseX509("certs/CA SINPE - PERSONA FISICA v2(2).crt"));
+            // addCertificateToMap(parseX509("certs/CA SINPE - PERSONA FISICA v2(2).crt"));
             addCertificateToMap(parseX509("certs/CA SINPE - PERSONA JURIDICA v2.cer"));
             addCertificateToMap(parseX509("certs/CA SINPE - PERSONA JURIDICA v2(1).crt"));
             addCertificateToMap(parseX509("certs/CA SINPE - PERSONA JURIDICA v2(2).crt"));
