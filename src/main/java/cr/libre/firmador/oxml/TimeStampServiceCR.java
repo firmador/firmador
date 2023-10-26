@@ -109,7 +109,6 @@ public class TimeStampServiceCR extends TSPTimeStampService {
 
         List<X509Certificate> chain = signatureConfig.getSigningCertificateChain();
 
-        pkcs11manager.getCertByCN(null);
         RevocationSource<OCSP> oscpsource = verifier.getOcspSource();
         RevocationToken<OCSP> token = oscpsource.getRevocationToken(new CertificateToken(chain.get(0)),
                 new CertificateToken(chain.get(1)));
@@ -135,64 +134,51 @@ public class TimeStampServiceCR extends TSPTimeStampService {
         }
     }
 
-//    public void AddTPSRevocation(SignatureConfig signatureConfig, RevocationData revocationData) {
-//        List<X509Certificate> chain = signatureConfig.getSigningCertificateChain();
-//        X509Certificate certificate;
-//        X509Certificate issuerCertificate;
-//        List<CertificateToken> chaindss = new ArrayList<>();
-//        for (X509Certificate x : chain) {
-//            chaindss.add(new CertificateToken(x));
-//        }
-//
-//        for (int pos = certchain.size() - 1; pos > 0; pos--) {
-//            certificate = certchain.get(pos);
-//            issuerCertificate = certchain.get(pos - 1);
-//            try {
-//                getCRLList(certificate, issuerCertificate, revocationData);
-//
-//            } catch (Throwable e) {
-//                // TODO Auto-generated catch block
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        // issuerCertificate = this.pkcs11manager.getCertByCN("CA SINPE - PERSONA FISICA
-//        // v2");
-//        try {
-//
-//            certificate = chain.get(0);
-//            issuerCertificate = chain.get(1);
-//            createOcspResp(certificate, issuerCertificate, revocationData);
-//
-//            List<X509Certificate> revchain = this.pkcs11manager.getCertificateChain(issuerCertificate);
-//            for (X509Certificate c : revchain)
-//                revocationData.addCertificate(c);
-//        } catch (Throwable e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//
-//    }
-
     public void AddCertificateRevocation(SignatureConfig signatureConfig, RevocationData revocationData)
             throws Throwable {
-        AddTPSRevocation(signatureConfig, revocationData);
+        // AddTPSRevocation(signatureConfig, revocationData);
         // for (X509Certificate c : certchain)
         // revocationData.addCertificate(c);
+        // "CA RAIZ NACIONAL - COSTA RICA v2"
+        RevocationSource<CRL> crlsource = verifier.getCrlSource();
+        CertificateToken certificate;
+        CertificateToken issuerCertificate;
+        certificate = new CertificateToken(this.pkcs11manager.getCertByCN("CA SINPE - PERSONA FISICA v2"));
+        issuerCertificate = new CertificateToken(
+                this.pkcs11manager.getCertByCN("CA POLITICA PERSONA FISICA - COSTA RICA v2"));
+        RevocationToken<CRL> crltoken;
+        try {
+            crltoken = crlsource.getRevocationToken(certificate, issuerCertificate);
+            revocationData.addCRL(crltoken.getEncoded());
+
+        } catch (Throwable e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        certificate = new CertificateToken(
+                this.pkcs11manager.getCertByCN("CA POLITICA PERSONA FISICA - COSTA RICA v2"));
+        issuerCertificate = new CertificateToken(this.pkcs11manager.getCertByCN("CA RAIZ NACIONAL - COSTA RICA v2"));
+
+        try {
+            crltoken = crlsource.getRevocationToken(certificate, issuerCertificate);
+            revocationData.addCRL(crltoken.getEncoded());
+
+        } catch (Throwable e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        List<X509Certificate> chain = signatureConfig.getSigningCertificateChain();
+
+        RevocationSource<OCSP> oscpsource = verifier.getOcspSource();
+        RevocationToken<OCSP> token = oscpsource.getRevocationToken(new CertificateToken(chain.get(0)),
+                new CertificateToken(chain.get(1)));
+        revocationData.addOCSP(token.getEncoded());
+
 
     }
-//    private void getCRLList(X509Certificate certificate, X509Certificate issuerCertificate,
-//            RevocationData revocationData) throws Throwable {
-//        OnlineCRLSource onlineCRLSource = new OnlineCRLSource();
-//
-//        CertificateToken certificateToken = new CertificateToken(certificate);
-//        CertificateToken issuerToken=new CertificateToken(issuerCertificate);
-//
-//
-//        RevocationTokenAndUrl<CRL> source = onlineCRLSource.getRevocationTokenAndUrl(certificateToken, issuerToken);
-//        if (source != null)
-//            revocationData.addCRL(source.getRevocationToken().getEncoded());
-//    }
+
 
     public void createOcspResp(X509Certificate certificate, X509Certificate issuerCertificate,
             RevocationData revocationData) throws Throwable {

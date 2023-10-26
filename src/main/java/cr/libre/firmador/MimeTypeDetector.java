@@ -29,7 +29,7 @@ public class MimeTypeDetector {
 		return selected;
 	}
 	public static SupportedMimeTypeEnum detect(byte [] data,  String name) {
-		SupportedMimeTypeEnum selected=null;
+        SupportedMimeTypeEnum selected = SupportedMimeTypeEnum.BINARY;
 		 Tika tika = new Tika();
 		   String mimeType= null;
 		   String current_mimetype;
