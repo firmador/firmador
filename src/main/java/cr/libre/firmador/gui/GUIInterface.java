@@ -22,8 +22,8 @@ package cr.libre.firmador.gui;
 import eu.europa.esig.dss.enumerations.MimeType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
-import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.SupportedMimeTypeEnum;
+import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.plugins.PluginManager;
 
 public interface GUIInterface {

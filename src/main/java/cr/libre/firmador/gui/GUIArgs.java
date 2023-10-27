@@ -28,12 +28,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import cr.libre.firmador.CardSignInfo;
 //import cr.libre.firmador.FirmadorCAdES;
 import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
 import cr.libre.firmador.FirmadorXAdES;
 import cr.libre.firmador.SupportedMimeTypeEnum;
+import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.plugins.PluginManager;
 

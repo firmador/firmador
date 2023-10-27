@@ -17,35 +17,23 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package cr.libre.firmador;
+package cr.libre.firmador.cards;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.lang.invoke.MethodHandles;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
-import sun.security.pkcs11.wrapper.CK_ATTRIBUTE;
-import sun.security.pkcs11.wrapper.CK_C_INITIALIZE_ARGS;
-import sun.security.pkcs11.wrapper.CK_INFO;
-import sun.security.pkcs11.wrapper.CK_SLOT_INFO;
-import sun.security.pkcs11.wrapper.CK_TOKEN_INFO;
-import sun.security.pkcs11.wrapper.PKCS11;
-import sun.security.pkcs11.wrapper.PKCS11Exception;
-import static sun.security.pkcs11.wrapper.PKCS11Constants.CKA_CLASS;
-import static sun.security.pkcs11.wrapper.PKCS11Constants.CKA_ID;
-import static sun.security.pkcs11.wrapper.PKCS11Constants.CKA_VALUE;
-import static sun.security.pkcs11.wrapper.PKCS11Constants.CKF_OS_LOCKING_OK;
-import static sun.security.pkcs11.wrapper.PKCS11Constants.CKF_SERIAL_SESSION;
-import static sun.security.pkcs11.wrapper.PKCS11Constants.CKF_TOKEN_PRESENT;
-import static sun.security.pkcs11.wrapper.PKCS11Constants.CKO_CERTIFICATE;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cr.libre.firmador.CRSigner;
+import cr.libre.firmador.ConfigListener;
+import cr.libre.firmador.Settings;
+import cr.libre.firmador.SettingsManager;
 
 @SuppressWarnings("restriction")
 public class SmartCardDetector implements  ConfigListener {

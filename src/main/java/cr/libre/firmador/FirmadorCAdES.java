@@ -24,10 +24,7 @@ package cr.libre.firmador;
 
 import java.lang.invoke.MethodHandles;
 
-
-
-
-
+import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.gui.GUIInterface;
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
@@ -106,9 +103,40 @@ public class FirmadorCAdES extends CRSigner {
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
 
+
+
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             gui.nextStep("Obteniendo servicios TSP");
             service.setTspSource(onlineTSPSource);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
 

@@ -40,6 +40,7 @@ import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.gui.GUIInterface;
 
 public class CRSigner {

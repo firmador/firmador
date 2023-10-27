@@ -31,12 +31,12 @@ import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
-import cr.libre.firmador.CardSignInfo;
 //import cr.libre.firmador.FirmadorCAdES;
 //import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
 import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.SupportedMimeTypeEnum;
+import cr.libre.firmador.cards.CardSignInfo;
 //import cr.libre.firmador.FirmadorXAdES;
 //import cr.libre.firmador.Settings;
 //import cr.libre.firmador.SettingsManager;
