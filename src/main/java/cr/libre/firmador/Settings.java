@@ -23,6 +23,8 @@ import java.awt.Font;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -77,6 +79,12 @@ public class Settings {
     public List<String> availablePlugins = new ArrayList<String>();
 
     public float pDFImgScaleFactor = 1;
+
+    public String language = "es";
+    public String country = "CR";
+    public Locale locale = new Locale(language, country);
+
+    public ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
 
     public Settings() {
         activePlugins.add("cr.libre.firmador.plugins.DummyPlugin");

@@ -178,9 +178,9 @@ public class GUISwing implements GUIInterface, ConfigListener{
             frameTabbedPane.setToolTipTextAt(tabPosition, "<html>En esta pestaña se muestra información de validación<br>de las firmas digitales.</html>");
             tabPosition++;
         }
-        frameTabbedPane.addTab("Configuración", configPanel);
+        frameTabbedPane.addTab(settings.bundle.getString("settings"), configPanel);
         frameTabbedPane.setToolTipTextAt(tabPosition, "<html>En esta pestaña se configura<br>aspectos de este programa.</html>");
-        frameTabbedPane.addTab("Acerca de", aboutPanel);
+        frameTabbedPane.addTab(settings.bundle.getString("about"), aboutPanel);
         frameTabbedPane.setToolTipTextAt(tabPosition + 1, "<html>En esta pestaña se muestra información<br>acerca de este programa.</html>");
         if (settings.showLogs) showLogs(frameTabbedPane);
         docSelector = new DocumentSelectionGroupLayout(mainFrame.getContentPane(), frameTabbedPane, mainFrame);
@@ -229,7 +229,7 @@ public class GUISwing implements GUIInterface, ConfigListener{
                     signPanel.getSignButton().setEnabled(true);
                 } else signPanel.shownonPDFButtons();
             } catch (IOException e) {
-                LOG.error("Error cargando documento", e);
+                LOG.error(settings.bundle.getString("error_loading_document"), e);
                 e.printStackTrace();
             }
         }
@@ -248,7 +248,7 @@ public class GUISwing implements GUIInterface, ConfigListener{
                 signedDocument.writeTo(docinfo.getData());
                 docinfo.setStatus(HttpStatus.SC_SUCCESS);
             } catch (IOException e) {
-                LOG.error("Error escribiendo documento", e);
+                LOG.error(settings.bundle.getString("error_writing_document"), e);
                 e.printStackTrace();
             }
             return signedDocument != null;
@@ -330,12 +330,12 @@ public class GUISwing implements GUIInterface, ConfigListener{
                 fileName = getPathToSave(getExtension());
                 if (fileName != null) {
                     signedDocument.save(fileName);
-                    showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
+                    showMessage(settings.bundle.getString("saved_document_successfully_in")+"<br>" + fileName);
                     loadDocument(fileName);
                 }
                 ok = true;
             } catch (IOException e) {
-                LOG.error("Error Firmando documento", e);
+                LOG.error(settings.bundle.getString("error_signing_document"), e);
                 showError(FirmadorUtils.getRootCause(e));
             }
         }
@@ -343,12 +343,12 @@ public class GUISwing implements GUIInterface, ConfigListener{
     }
 
     public String showSaveDialog(String suffix, String extension) {
-        gui.nextStep("Obteniendo ruta de guardado");
+        gui.nextStep(settings.bundle.getString("getting_saved_route"));
         String lastDirectory = docSelector.getLastDirectory();
         String lastFile = docSelector.getLastFile();
         String fileName = null;
         FileDialog saveDialog = null;
-        saveDialog = new FileDialog(mainFrame, "Guardar documento", FileDialog.SAVE);
+        saveDialog = new FileDialog(mainFrame, settings.bundle.getString("save_document"), FileDialog.SAVE);
         saveDialog.setDirectory(lastDirectory);
         String dotExtension = "";
         int lastDot = lastFile.lastIndexOf(".");

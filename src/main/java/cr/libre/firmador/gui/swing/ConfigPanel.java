@@ -36,6 +36,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.invoke.MethodHandles;
+import java.util.ResourceBundle;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -67,6 +68,7 @@ import org.slf4j.LoggerFactory;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 
+
 public class ConfigPanel extends ScrollableJPanel {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     JTextArea defaultSignMessage;
@@ -96,7 +98,7 @@ public class ConfigPanel extends ScrollableJPanel {
         checkpanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         checkpanel.setLayout(new BoxLayout(checkpanel, 0));
         checkpanel.setOpaque(false);
-        withoutVisibleSign = new JCheckBox("Sin firma visible        ", this.settings.withoutVisibleSign);
+        withoutVisibleSign = new JCheckBox(settings.bundle.getString("without_visible_signature")+"        ", this.settings.withoutVisibleSign);
         withoutVisibleSign.setOpaque(false);
         checkpanel.add(withoutVisibleSign);
         /*
@@ -109,11 +111,12 @@ public class ConfigPanel extends ScrollableJPanel {
             }
         });
         */
-        showLogs = new JCheckBox("Ver bitácoras        ", this.settings.showLogs);
+        showLogs = new JCheckBox(settings.bundle.getString("view_binnacles")+"        ", this.settings.showLogs);
         showLogs.setOpaque(false);
         checkpanel.add(showLogs);
         simplePanel.add(checkpanel);
-        overwriteSourceFile = new JCheckBox("Sobrescribir archivo original", this.settings.overwriteSourceFile);
+
+        overwriteSourceFile = new JCheckBox(settings.bundle.getString("rewrite_original_file"), this.settings.overwriteSourceFile);
         overwriteSourceFile.setOpaque(false);
         checkpanel.add(overwriteSourceFile);
         /*
@@ -129,7 +132,7 @@ public class ConfigPanel extends ScrollableJPanel {
         contact.setText(this.settings.contact);
         dateFormat = new JTextField();
         dateFormat.setText(this.settings.dateFormat);
-        dateFormat.setToolTipText("Debe ser compatible con formatos de fecha de java");
+        dateFormat.setToolTipText(settings.bundle.getString("must_be_compatible_with_java_date_formats"));
         defaultSignMessage = new JTextArea();
         defaultSignMessage.setText(this.settings.getDefaultSignMessage());
         defaultSignMessage.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, /* forward traversal textarea with tab */
@@ -184,18 +187,18 @@ public class ConfigPanel extends ScrollableJPanel {
         fontColorPanel.setLayout(new BoxLayout(fontColorPanel, 0));
         fontColorPanel.setOpaque(false);
         fontColor = new JTextField();
-        fontColor.setToolTipText("Use la palabra 'transparente' si no desea un color");
+        fontColor.setToolTipText(settings.bundle.getString("use_the_word_transparent_if_you_do_not_want_a_color"));
         fontColor.setText(this.settings.fontColor);
         fontColor.getDocument().addDocumentListener(new DocumentListener() {
             public void updateIcon(DocumentEvent edoc) {
                 try {
                     String text = fontColor.getText();
-                    if (!text.isEmpty() && ! text.equalsIgnoreCase("transparente")) {
+                    if (!text.isEmpty() && ! text.equalsIgnoreCase(settings.bundle.getString("transparent"))) {
                         Color color = Color.decode(text);
                         btFontColor.setIcon(createImageIcon(color));
                     } else btFontColor.setIcon(getTransparentImageIcon());
                 } catch (Exception e) {
-                    LOG.error("Error cambiando color de fuente", e);
+                    LOG.error(settings.bundle.getString("source_color_change_error"), e);
                     e.printStackTrace();
                 }
             }
@@ -209,7 +212,7 @@ public class ConfigPanel extends ScrollableJPanel {
                 updateIcon(e);
             }
         });
-        btFontColor = new JButton("Elegir");
+        btFontColor = new JButton(settings.bundle.getString("choose"));
         btFontColor.setOpaque(false);
         setIcons(btFontColor, this.settings.fontColor, this.settings.getFontColor());
         fontColorPanel.add(btFontColor);
@@ -219,9 +222,9 @@ public class ConfigPanel extends ScrollableJPanel {
         backgroundColorPanel.setLayout(new BoxLayout(backgroundColorPanel, 0));
         backgroundColorPanel.setOpaque(false);
         backgroundColor = new JTextField();
-        backgroundColor.setToolTipText("Use la palabra 'transparente' si no desea un color de fondo");
+        backgroundColor.setToolTipText(settings.bundle.getString("use_the_word_transparent_if_you_do_not_want_a_background_color"));
         backgroundColor.setText(this.settings.backgroundColor);
-        btBackgroundColor = new JButton("Elegir");
+        btBackgroundColor = new JButton(settings.bundle.getString("choose"));
         btBackgroundColor.setOpaque(false);
         setIcons(btBackgroundColor, this.settings.backgroundColor, this.settings.getBackgroundColor());
         backgroundColorPanel.add(btBackgroundColor);
@@ -230,12 +233,12 @@ public class ConfigPanel extends ScrollableJPanel {
             public void updateIcon(DocumentEvent edoc) {
                 try {
                     String text = backgroundColor.getText();
-                    if (!text.isEmpty() && ! text.equalsIgnoreCase("transparente")) {
+                    if (!text.isEmpty() && ! text.equalsIgnoreCase(settings.bundle.getString("transparent"))) {
                         Color color = Color.decode(text);
                         btBackgroundColor.setIcon(createImageIcon(color));
                     } else btBackgroundColor.setIcon(getTransparentImageIcon());
                 } catch (Exception e) {
-                    LOG.error("Error cambiando color de fondo", e);
+                    LOG.error(settings.bundle.getString("background_color_change_error"), e);
                     e.printStackTrace();
                 }
             }
@@ -254,7 +257,7 @@ public class ConfigPanel extends ScrollableJPanel {
         imagePanel.setLayout(new BoxLayout(imagePanel, 0));
         imagePanel.setOpaque(false);
         imageText = new JTextField();
-        btImage = new JButton("Elegir");
+        btImage = new JButton(settings.bundle.getString("choose"));
         if (this.settings.image != null) {
             imageText.setText(this.settings.image);
             btImage.setIcon(this.getIcon(this.settings.image));
@@ -264,23 +267,23 @@ public class ConfigPanel extends ScrollableJPanel {
         portNumber = new JSpinner();
         portNumber.setModel(new SpinnerNumberModel((int) this.settings.portNumber, 1024, 65535, 1));
         portNumber.setEditor(new JSpinner.NumberEditor(portNumber, "0"));
-        addSettingsBox(simplePanel, "Razón:", reason);
-        addSettingsBox(simplePanel, "Lugar:", place);
-        addSettingsBox(simplePanel, "Contacto:", contact);
-        addSettingsBox(simplePanel, "Formato de fecha:", dateFormat);
-        addSettingsBox(simplePanel, "Mensaje de firma:", scrollableDefaultSignMessage, new Dimension(150, 50));
-        addSettingsBox(simplePanel, "Página inicial:", pageNumber);
-        addSettingsBox(simplePanel, "Ancho de firma:", signWidth);
-        addSettingsBox(simplePanel, "Largo de firma:", signHeight);
-        addSettingsBox(simplePanel, "Posición inicial X:", signX);
-        addSettingsBox(simplePanel, "Posición inicial Y:", signY);
-        addSettingsBox(simplePanel, "Tamaño de fuente:", fontSize);
-        addSettingsBox(simplePanel, "Fuente:", font);
-        addSettingsBox(simplePanel, "Posición de fuente:", fontPosition);
-        addSettingsBox(simplePanel, "Color de fuente:", fontColorPanel);
-        addSettingsBox(simplePanel, "Color de fondo:", backgroundColorPanel);
-        addSettingsBox(simplePanel, "Imagen de firma:", imagePanel);
-        addSettingsBox(simplePanel, "Puerto de escucha:", portNumber);
+        addSettingsBox(simplePanel, settings.bundle.getString("reason")+":", reason);
+        addSettingsBox(simplePanel, settings.bundle.getString("place")+":", place);
+        addSettingsBox(simplePanel, settings.bundle.getString("contact")+":", contact);
+        addSettingsBox(simplePanel, settings.bundle.getString("date_format")+":", dateFormat);
+        addSettingsBox(simplePanel, settings.bundle.getString("signature_message")+":", scrollableDefaultSignMessage, new Dimension(150, 50));
+        addSettingsBox(simplePanel, settings.bundle.getString("initial_page")+":", pageNumber);
+        addSettingsBox(simplePanel, settings.bundle.getString("signature_width")+":", signWidth);
+        addSettingsBox(simplePanel, settings.bundle.getString("signature_long")+":", signHeight);
+        addSettingsBox(simplePanel, settings.bundle.getString("x_initial_position")+":", signX);
+        addSettingsBox(simplePanel, settings.bundle.getString("y_initial_position")+":", signY);
+        addSettingsBox(simplePanel, settings.bundle.getString("font_size")+":", fontSize);
+        addSettingsBox(simplePanel, settings.bundle.getString("source")+":", font);
+        addSettingsBox(simplePanel, settings.bundle.getString("source_position")+":", fontPosition);
+        addSettingsBox(simplePanel, settings.bundle.getString("source_color")+":", fontColorPanel);
+        addSettingsBox(simplePanel, settings.bundle.getString("background_color")+":", backgroundColorPanel);
+        addSettingsBox(simplePanel, settings.bundle.getString("signature_image")+":", imagePanel);
+        addSettingsBox(simplePanel, settings.bundle.getString("listening_port")+":", portNumber);
         btFontColor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 showFontColorPicker();
@@ -318,7 +321,7 @@ public class ConfigPanel extends ScrollableJPanel {
         advancedPanel.setLayout(new BoxLayout(advancedPanel, 1));
         pDFImgScaleFactor = new JTextField();
         pDFImgScaleFactor.setText(String.format("%.2f", this.settings.pDFImgScaleFactor));
-        pDFImgScaleFactor.setToolTipText("Factor de escala al presentar la previsualización de la página de pdf");
+        pDFImgScaleFactor.setToolTipText(settings.bundle.getString("scale_factor_to_present_the_pdf_page_preview"));
         pluginsActive = new PluginManagerPlugin();
         pluginsActive.setPreferredSize(new Dimension(450, 130));
         advancedPanel.add(pluginsActive);
@@ -329,24 +332,24 @@ public class ConfigPanel extends ScrollableJPanel {
         pAdESLevel = new JComboBox<String>(pAdESLevelOptions);
         pAdESLevel.setSelectedItem(settings.pAdESLevel);
         pAdESLevel.setOpaque(false);
-        addSettingsBox(advancedPanel, "Nivel PAdES:", pAdESLevel);
+        addSettingsBox(advancedPanel, settings.bundle.getString("level")+" PAdES:", pAdESLevel);
         String xAdESLevelOptions[] = {"T", "LT", "LTA"};
         xAdESLevel = new JComboBox<String>(xAdESLevelOptions);
         xAdESLevel.setSelectedItem(settings.xAdESLevel);
         xAdESLevel.setOpaque(false);
-        addSettingsBox(advancedPanel, "Nivel XAdES:", xAdESLevel);
+        addSettingsBox(advancedPanel, settings.bundle.getString("level")+" XAdES:", xAdESLevel);
         String cAdESLevelOptions[] = {"T", "LT", "LTA"};
         cAdESLevel = new JComboBox<String>(cAdESLevelOptions);
         cAdESLevel.setSelectedItem(settings.cAdESLevel);
         cAdESLevel.setOpaque(false);
-        addSettingsBox(advancedPanel, "Nivel CAdES:", cAdESLevel);
-        addSettingsBox(advancedPanel, "Escala de previsualización PDF", pDFImgScaleFactor);
+        addSettingsBox(advancedPanel, settings.bundle.getString("level")+" CAdES:", cAdESLevel);
+        addSettingsBox(advancedPanel, settings.bundle.getString("pdf_preview_scale"), pDFImgScaleFactor);
         JPanel pKCS11ModulePanel = new JPanel();
         pKCS11ModulePanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         pKCS11ModulePanel.setLayout(new BoxLayout(pKCS11ModulePanel, 0));
         pKCS11ModulePanel.setOpaque(false);
         pKCS11ModuleText = new JTextField();
-        btPKCS11Module = new JButton("Elegir");
+        btPKCS11Module = new JButton(settings.bundle.getString("choose"));
         if (this.settings.extraPKCS11Lib != null ) pKCS11ModuleText.setText(this.settings.extraPKCS11Lib);
         pKCS11ModulePanel.add(pKCS11ModuleText);
         pKCS11ModulePanel.add(btPKCS11Module);
@@ -356,9 +359,9 @@ public class ConfigPanel extends ScrollableJPanel {
                 if (path != null) pKCS11ModuleText.setText(path);
             }
         });
-        addSettingsBox(advancedPanel, "Archivo PKCS11", pKCS11ModulePanel); // FIXME prefill with default paths when unset
-        advancedPanel.add(new JLabel("El archivo PKCS11 se detecta automáticamente, "));
-        advancedPanel.add(new JLabel("pero podrá ser escrito usando el campo anterior"));
+        addSettingsBox(advancedPanel, settings.bundle.getString("file")+" PKCS11", pKCS11ModulePanel); // FIXME prefill with default paths when unset
+        advancedPanel.add(new JLabel(settings.bundle.getString("the_file")+" PKCS11 "+settings.bundle.getString("is_automatic_detected")+", "));
+        advancedPanel.add(new JLabel(settings.bundle.getString("but_could_be_write_using_the_previous_field")));
         advancedBottomSpace = new JPanel();
         advancedBottomSpace.setOpaque(false);
         advancedPanel.add(advancedBottomSpace);
@@ -372,7 +375,7 @@ public class ConfigPanel extends ScrollableJPanel {
         this.createAdvancedConfigPanel();
         JPanel optionswitchpanel = new JPanel();
         add(optionswitchpanel, BorderLayout.NORTH);
-        JButton showadvanced = new JButton("Opciones avanzadas");
+        JButton showadvanced = new JButton(settings.bundle.getString("advanced_options"));
         showadvanced.setOpaque(false);
         optionswitchpanel.setOpaque(false);
         optionswitchpanel.add(showadvanced);
@@ -380,12 +383,12 @@ public class ConfigPanel extends ScrollableJPanel {
             public void actionPerformed(ActionEvent arg0) {
                 isAdvancedOptions = !isAdvancedOptions;
                 if (isAdvancedOptions) {
-                    showadvanced.setText("Opciones básicas");
+                    showadvanced.setText(settings.bundle.getString("basic_options"));
                     configPanel.setViewportView(advancedPanel);
                     simplePanel.setVisible(false);
                     advancedPanel.setVisible(true);
                 } else {
-                    showadvanced.setText("Opciones Avanzadas");
+                    showadvanced.setText(settings.bundle.getString("advanced_options"));
                     configPanel.setViewportView(simplePanel);
                     advancedPanel.setVisible(false);
                     simplePanel.setVisible(true);
@@ -395,14 +398,14 @@ public class ConfigPanel extends ScrollableJPanel {
         JPanel btns = new JPanel();
         btns.setOpaque(false);
         add(btns, BorderLayout.SOUTH);
-        JButton restartbtn = new JButton("Reiniciar");
+        JButton restartbtn = new JButton(settings.bundle.getString("restart"));
         restartbtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 restartSettings();
             }
         });
         btns.add(restartbtn);
-        JButton applywithoutsave = new JButton("Aplicar sin guardar");
+        JButton applywithoutsave = new JButton(settings.bundle.getString("apply_without_saving"));
         applywithoutsave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 chargeSettings();
@@ -410,7 +413,7 @@ public class ConfigPanel extends ScrollableJPanel {
             }
         });
         btns.add(applywithoutsave);
-        JButton btSave = new JButton("Guardar");
+        JButton btSave = new JButton(settings.bundle.getString("save"));
         btSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 saveSettings();
@@ -514,7 +517,7 @@ public class ConfigPanel extends ScrollableJPanel {
     }
 
     private void setIcons(JButton component, String text, Color color) {
-        if (text.equalsIgnoreCase("transparente")) component.setIcon(getTransparentImageIcon());
+        if (text.equalsIgnoreCase(settings.bundle.getString("transparent"))) component.setIcon(getTransparentImageIcon());
         else component.setIcon(createImageIcon(color));
     }
 
@@ -524,7 +527,7 @@ public class ConfigPanel extends ScrollableJPanel {
     }
 
     public void showFontColorPicker() {
-        Color newColor = JColorChooser.showDialog(this, "Color del texto", this.settings.getFontColor());
+        Color newColor = JColorChooser.showDialog(this, settings.bundle.getString("text_color"), this.settings.getFontColor());
         if (newColor != null) {
             String buf = Integer.toHexString(newColor.getRGB());
             String hex = "#" + buf.substring(buf.length() - 6);
@@ -533,7 +536,7 @@ public class ConfigPanel extends ScrollableJPanel {
     }
 
     public void showBackgroundColorPicker() {
-        Color newColor = JColorChooser.showDialog(this, "Color de fondo", this.settings.getBackgroundColor());
+        Color newColor = JColorChooser.showDialog(this, settings.bundle.getString("background_color"), this.settings.getBackgroundColor());
         if (newColor != null) {
             String buf = Integer.toHexString(newColor.getRGB());
             String hex = "#" + buf.substring(buf.length() - 6);
@@ -542,7 +545,7 @@ public class ConfigPanel extends ScrollableJPanel {
     }
 
     public String getFilePath() {
-        FileDialog loadDialog = new FileDialog((JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this), "Seleccionar un archivo");
+        FileDialog loadDialog = new FileDialog((JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this), settings.bundle.getString("select_a_file"));
         loadDialog.setMultipleMode(false);
         loadDialog.setLocationRelativeTo(null);
         loadDialog.setVisible(true);
@@ -553,7 +556,7 @@ public class ConfigPanel extends ScrollableJPanel {
     }
 
     public void showImagePicker() {
-        FileDialog imageDialog = new FileDialog((JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this), "Seleccionar una imagen");
+        FileDialog imageDialog = new FileDialog((JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this), settings.bundle.getString("select_a_image"));
         imageDialog.setFilenameFilter(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.toLowerCase().endsWith(".png") || name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".jpeg")
@@ -598,7 +601,7 @@ public class ConfigPanel extends ScrollableJPanel {
     }
 
     public void showMessage(String message) {
-        JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, new CopyableJLabel(message), settings.bundle.getString("signer_message"), JOptionPane.INFORMATION_MESSAGE);
     }
 
 }
