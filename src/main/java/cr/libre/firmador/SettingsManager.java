@@ -44,6 +44,12 @@ public class SettingsManager {
     private Properties props;
     private Settings settings = null;
 
+    private SettingsManager() {
+        super();
+        this.path = null;
+        this.props = new Properties();
+    }
+
     public Path getConfigDir() throws IOException {
         String osName = System.getProperty("os.name").toLowerCase();
         String homepath = System.getProperty("user.home");
@@ -53,20 +59,20 @@ public class SettingsManager {
             suffixpath = "firmadorlibre";
         }
         // Se asegura que siempre exista el directorio de configuracion
-        path = FileSystems.getDefault().getPath(homepath, suffixpath);
-        if (!Files.isDirectory(path)) {
-            Files.createDirectories(path);
-            if (osName.contains("windows")) Files.setAttribute(path, "dos:hidden", true);
+        this.path = FileSystems.getDefault().getPath(homepath, suffixpath);
+        if (!Files.isDirectory(this.path)) {
+            Files.createDirectories(this.path);
+            if (osName.contains("windows")) Files.setAttribute(this.path, "dos:hidden", true);
         }
-        return path;
+        return this.path;
     }
 
     public Path getPathConfigFile(String name) throws IOException{
-        if (path == null) {
-            path = this.getConfigDir();
-            path = path.getFileSystem().getPath(path.toString(), name);
+        if (this.path == null) {
+            this.path = this.getConfigDir();
+            this.path = this.path.getFileSystem().getPath(this.path.toString(), name);
         }
-        return path;
+        return this.path;
     }
 
     public String getConfigFile(String name) throws IOException{
@@ -74,7 +80,7 @@ public class SettingsManager {
     }
 
     public Path getPath() {
-        return path;
+        return this.path;
     }
 
     public void setPath(Path path) {
@@ -85,23 +91,16 @@ public class SettingsManager {
         this.path = FileSystems.getDefault().getPath(path);
     }
 
-    private SettingsManager() {
-        super();
-        this.path = null;
-        props = new Properties();
-    }
-
     public static SettingsManager getInstance() {
-        return cm; // return unique instance
+        return cm; // it always returns the same unique instance
     }
 
     public String getProperty(String key) {
-        return props.getProperty(key, "");
+        return this.props.getProperty(key, "");
     }
 
     public void setProperty(String key, String value) {
-        props.setProperty(key, value);
-
+        this.props.setProperty(key, value);
     }
 
     private String getConfigFile() throws IOException {
@@ -119,7 +118,7 @@ public class SettingsManager {
             if (configFile.exists()) {
                 InputStream inputStream = new FileInputStream(configFile);
                 Reader reader = new InputStreamReader(inputStream, "UTF-8");
-                props.load(reader);
+                this.props.load(reader);
                 reader.close();
                 inputStream.close();
                 loaded = true;
@@ -138,7 +137,7 @@ public class SettingsManager {
         try {
             writer = new OutputStreamWriter(new FileOutputStream(this.getConfigFile()), StandardCharsets.UTF_8);
             //writer = new FileWriter(this.getConfigFile());
-            props.store(writer, "Firmador Libre settings");
+            this.props.store(writer, "Firmador Libre settings");
         } catch (IOException ex) {
             Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, ex); // FIXME using JUL instead of SLF4j, could use just a single logger
             ex.printStackTrace();
@@ -241,10 +240,10 @@ public class SettingsManager {
         setProperty("cadesLevel", conf.cAdESLevel);
         setProperty("plugins", getListRepr(conf.activePlugins));
         if (conf.extraPKCS11Lib != null && conf.extraPKCS11Lib != "") setProperty("extrapkcs11Lib", conf.extraPKCS11Lib);
-        else if (props.get("extrapkcs11Lib") != null) props.remove("extrapkcs11Lib");
+        else if (this.props.get("extrapkcs11Lib") != null) this.props.remove("extrapkcs11Lib");
         setProperty("pkcs12file", getListRepr(conf.pKCS12File));
         if (conf.image != null) setProperty("image", conf.image);
-        else if (props.get("image") != null) props.remove("image");
+        else if (this.props.get("image") != null) this.props.remove("image");
         if (save) saveConfig();
     }
 
