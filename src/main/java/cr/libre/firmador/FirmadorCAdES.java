@@ -72,13 +72,12 @@ public class FirmadorCAdES extends CRSigner {
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card) {
-        CertificateVerifier verifier = this.getCertificateVerifier();
-        CAdESService service = new CAdESService(verifier);
-
         parameters = new CAdESSignatureParameters();
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
+        CertificateVerifier verifier = null;
+        CAdESService service = null;
         gui.nextStep("Obteniendo servicios de verificación de certificados");
 
         try {
@@ -89,6 +88,7 @@ public class FirmadorCAdES extends CRSigner {
             return null;
         }
         DSSPrivateKeyEntry privateKey = null;
+        CertificateToken certificate = null;
         try {
             privateKey = getPrivateKey(token);
             gui.nextStep("Obteniendo manejador de llaves privadas");
@@ -99,75 +99,26 @@ public class FirmadorCAdES extends CRSigner {
         }
         try {
             gui.nextStep("Obteniendo certificados de la tarjeta");
-            CertificateToken certificate = privateKey.getCertificate();
+            certificate = privateKey.getCertificate();
             parameters.setSignatureLevel(settings.getCAdESLevel());
             parameters.setSignaturePackaging(SignaturePackaging.DETACHED);
 
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
-
-
-
-            OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
-            gui.nextStep("Obteniendo servicios TSP");
-            service.setTspSource(onlineTSPSource);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
-
-            gui.nextStep("Obteniendo estructura de datos a firmar");
-            signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
-        } catch (DSSException|Error e) {
+        } catch (DSSException | Error e) {
             LOG.error("Error al solicitar firma al dispositivo", e);
             gui.showError(FirmadorUtils.getRootCause(e));
+            return null;
         }
+        OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
+        gui.nextStep("Obteniendo servicios TSP");
+        verifier = this.getCertificateVerifier(certificate);
+        service = new CAdESService(verifier);
+        service.setTspSource(onlineTSPSource);
+        ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        gui.nextStep("Obteniendo estructura de datos a firmar");
+        signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
         try {
             gui.nextStep("Firmando estructura de datos");
             signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);

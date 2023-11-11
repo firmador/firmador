@@ -3,6 +3,7 @@ package cr.libre.firmador;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSUtils;
@@ -11,7 +12,9 @@ import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonTrustedCertificateSource;
 
 public class CertificateManager {
+    private static final int MAXDEPTH = 20;
     private CertificateSource certSource = new CommonCertificateSource();
+
 
     public CertificateManager() {
         ClassLoader loaderclass = this.getClass().getClassLoader();
@@ -59,8 +62,33 @@ public class CertificateManager {
          * Return a certificate chain of certificate emitted by trusted CR CA. If
          * Certificate is not a CR certificate return Null.
          */
+        int counter = 0;
 
-        return null;
+        List<CertificateToken> certchain = new ArrayList<CertificateToken>();
+        Set<CertificateToken> ct = certSource.getBySubject(subjectCertificate.getIssuer());
+        CertificateToken currentCert = subjectCertificate;
+        while (currentCert != null && !ct.isEmpty() && counter < this.MAXDEPTH) {
+            counter += 1; // prevent infinite cycles
+            for (CertificateToken c : ct) {
+                if (currentCert.isSignedBy(c)) {
+                    currentCert = c;
+                    if (!certchain.contains(currentCert)) {
+                        certchain.add(0, currentCert);
+                        ct = certSource.getBySubject(currentCert.getIssuer());
+                        if (ct.isEmpty()) {
+                            currentCert = null;
+                        }
+                        break;
+                    } else {
+                        currentCert = null; // Root CA is self-signed so this break recursion
+                    }
+                }
+            }
+        }
+        if (certchain.isEmpty())
+            return null;
+
+        return certchain;
     }
 
     public List<X509Certificate> getX509CertificateChain(CertificateToken subjectCertificate) {

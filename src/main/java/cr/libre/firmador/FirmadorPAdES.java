@@ -72,9 +72,8 @@ public class FirmadorPAdES extends CRSigner {
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
-        CertificateVerifier verifier = this.getCertificateVerifier();
-        PAdESService service = new PAdESService(verifier);
-        service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
+        CertificateVerifier verifier = null;
+        PAdESService service = null;
         parameters = new PAdESSignatureParameters();
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
@@ -110,36 +109,14 @@ public class FirmadorPAdES extends CRSigner {
             if (contactInfo != null && !contactInfo .trim().isEmpty()) parameters.setContactInfo(contactInfo.replaceAll("\t", " "));
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             gui.nextStep("Obteniendo servicios TSP");
+            verifier = this.getCertificateVerifier(certificate);
+            service = new PAdESService(verifier);
+            service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
             service.setTspSource(onlineTSPSource);
             Date date = new Date();
             if (visibleSignature) appendVisibleSignature(certificate, date, reason, location, contactInfo, image, hideSignatureAdvice);
             gui.nextStep("Agregando representación gráfica de la firma");
             parameters.bLevel().setSigningDate(date);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
 

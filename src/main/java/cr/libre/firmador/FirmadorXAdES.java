@@ -72,8 +72,8 @@ public class FirmadorXAdES extends CRSigner {
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card) {
-        CertificateVerifier verifier = this.getCertificateVerifier();
-        XAdESService service = new XAdESService(verifier);
+
+        XAdESService service = null;
         //parameters = new XAdESCounterSignatureParameters(); // Electronic receipts v4.4 proposal
         parameters = new XAdESSignatureParameters();
         SignatureValue signatureValue = null;
@@ -110,6 +110,8 @@ public class FirmadorXAdES extends CRSigner {
 
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             gui.nextStep("Obteniendo servicios TSP");
+
+            service = new XAdESService(this.getCertificateVerifier(certificate));
             service.setTspSource(onlineTSPSource);
 
             // This doesn't apply for counter-signature (Electronic receipts v4.4 proposal)
@@ -149,24 +151,6 @@ public class FirmadorXAdES extends CRSigner {
             LOG.error("Error al solicitar firma al dispositivo", e);
             gui.showError(FirmadorUtils.getRootCause(e));
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         try {
             gui.nextStep("Firmando estructura de datos");

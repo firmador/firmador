@@ -72,8 +72,7 @@ public class FirmadorOpenDocument extends CRSigner {
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card) {
-        CertificateVerifier verifier = this.getCertificateVerifier();
-        ASiCWithXAdESService service = new ASiCWithXAdESService(verifier);
+        ASiCWithXAdESService service = null;
 
         parameters = new ASiCWithXAdESSignatureParameters();
         SignatureValue signatureValue = null;
@@ -110,33 +109,11 @@ public class FirmadorOpenDocument extends CRSigner {
 
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             gui.nextStep("Obteniendo servicios TSP");
+
+            service = new ASiCWithXAdESService(this.getCertificateVerifier(certificate));
+
             service.setTspSource(onlineTSPSource);
             parameters.aSiC().setContainerType(ASiCContainerType.ASiC_E);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             parameters.setEn319132(false);
 
@@ -149,24 +126,6 @@ public class FirmadorOpenDocument extends CRSigner {
             LOG.error("Error al solicitar firma al dispositivo", e);
             gui.showError(FirmadorUtils.getRootCause(e));
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         try {
             gui.nextStep("Firmando estructura de datos");

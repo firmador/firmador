@@ -23,6 +23,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import eu.europa.esig.dss.enumerations.KeyUsageBit;
+import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.service.crl.OnlineCRLSource;
 import eu.europa.esig.dss.service.ocsp.OnlineOCSPSource;
 import eu.europa.esig.dss.spi.DSSUtils;
@@ -135,6 +136,19 @@ public class CRSigner {
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA SINPE - PERSONA JURIDICA v2(2).crt")));
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/TSA SINPE v2.cer")));
         CommonCertificateVerifier cv = new CommonCertificateVerifier();
+        cv.setTrustedCertSources(trustedCertSource);
+        cv.setAdjunctCertSources(adjunctCertSource);
+        cv.setCrlSource(new OnlineCRLSource());
+        cv.setOcspSource(new OnlineOCSPSource());
+        cv.setAIASource(new DefaultAIASource());
+        return cv;
+    }
+
+    public CertificateVerifier getCertificateVerifier(CertificateToken subjectCertificate) {
+        CommonCertificateVerifier cv = new CommonCertificateVerifier();
+        CertificateManager certmanager = new CertificateManager();
+        CertificateSource trustedCertSource = certmanager.getTrustedCertificateSource(subjectCertificate);
+        CertificateSource adjunctCertSource = certmanager.getAdjunctCertSource(subjectCertificate);
         cv.setTrustedCertSources(trustedCertSource);
         cv.setAdjunctCertSources(adjunctCertSource);
         cv.setCrlSource(new OnlineCRLSource());
