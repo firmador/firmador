@@ -51,6 +51,8 @@ import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
+import eu.europa.esig.dss.validation.reports.Reports;
+
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -65,10 +67,13 @@ import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
 import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.FirmadorXAdES;
+import cr.libre.firmador.MimeTypeDetector;
 import cr.libre.firmador.Report;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
-import cr.libre.firmador.Validator;
+import cr.libre.firmador.SupportedMimeTypeEnum;
+import cr.libre.firmador.validators.Validator;
+import cr.libre.firmador.validators.ValidatorFactory;
 import cr.libre.firmador.gui.swing.AboutLayout;
 import cr.libre.firmador.gui.swing.ConfigPanel;
 import cr.libre.firmador.gui.swing.CopyableJLabel;
@@ -201,11 +206,13 @@ public class GUISwing implements GUIInterface, ConfigListener{
             clearElements();
             docSelector.setLastFile(fileName);
             docSelector.fileField.setText(Paths.get(fileName).getFileName().toString());
-            FileDocument mimeDocument = new FileDocument(fileName);
 
+            // FileDocument mimeDocument = new FileDocument(fileName);
+            SupportedMimeTypeEnum mimetype = MimeTypeDetector.detect(fileName);
             try {
-                if (mimeDocument.getMimeType() == MimeTypeEnum.PDF) doc = PDDocument.load(new File(fileName));
-                loadDocument(mimeDocument.getMimeType(), doc);
+                if (mimetype.isPDF())
+                    doc = PDDocument.load(new File(fileName));
+                loadDocument(mimetype, doc);
             } catch (IOException e) {
                 LOG.error("Error Leyendo el archivo", e);
                 e.printStackTrace();
@@ -220,14 +227,30 @@ public class GUISwing implements GUIInterface, ConfigListener{
             try {
                 byte[] data =IOUtils.toByteArray( docinfo.getInputdata());
                 toSignDocument = new InMemoryDocument(data, fileName);
-                MimeType mimeType = toSignDocument.getMimeType();
-                if (MimeTypeEnum.PDF == mimeType) {
+                SupportedMimeTypeEnum mimeType = MimeTypeDetector.detect(data, fileName);
+                String message = "";
+                boolean showSignBtn = true;
+               
+                if (mimeType.isPDF()) {
                     doc = PDDocument.load(data);
                     loadDocument(mimeType, doc);
-                } else if (mimeType == MimeTypeEnum.XML || mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
-                    showMessage("Está intentando firmar un documento XML o un openDocument que no posee visualización");
+                    signPanel.shownonPDFButtons();
+                    showSignBtn = false;
+                } else if (mimeType.isOpenDocument()) {
+                    message = "Está intentando firmar un openDocument que no posee visualización";
+                }else if(mimeType.isOpenxmlformats()){
+                    message = "Está intentando firmar un documento MS Office que no posee visualización";
+                } else if (mimeType.isXML()) {
+                    message = "Está intentando firmar un documento XML que no posee visualización";
+                } else {
+                    message = "Está intentando firmar un documento utilizando un archivo PKCS7";
+                }
+                        
+                if (showSignBtn)
                     signPanel.getSignButton().setEnabled(true);
-                } else signPanel.shownonPDFButtons();
+
+                if (message.isEmpty())
+                    showMessage(message);
             } catch (IOException e) {
                 LOG.error("Error cargando documento", e);
                 e.printStackTrace();
@@ -500,9 +523,16 @@ public class GUISwing implements GUIInterface, ConfigListener{
             gui.displayFunctionality("sign");
             return false;
         }
+
         try {
-            Report report = new Report(validator.getReports());
-            validatePanel.reportLabel.setText(report.getReport()); // FIXME don't overwrite previous report
+            Reports validatorReports = validator.getReports();
+            if (validatorReports != null) {
+                Report report = new Report(validatorReports);
+                validatePanel.reportLabel.setText(report.getReport()); // FIXME don't overwrite previous report
+            }
+            if (validator.hasStringReport()) {
+                validatePanel.reportLabel.setText(validator.getStringReport());
+            }
         } catch (Exception e) {
             LOG.error("Validando documento", e);
             e.printStackTrace();
@@ -517,7 +547,7 @@ public class GUISwing implements GUIInterface, ConfigListener{
     public void validateDocument(String fileName) {
         Validator validator = null;
         try {
-            validator = new Validator(fileName);
+            validator = ValidatorFactory.getValidator(fileName);
             if (validator != null) validateDocument(validator);
         } catch (UnsupportedOperationException e) {
             LOG.error("Error documento inválido " + fileName, e);

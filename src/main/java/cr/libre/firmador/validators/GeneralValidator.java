@@ -1,23 +1,4 @@
-/* Firmador is a program to sign documents using AdES standards.
-
-Copyright (C) Firmador authors.
-
-This file is part of Firmador.
-
-Firmador is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Firmador is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
-
-package cr.libre.firmador;
+package cr.libre.firmador.validators;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,11 +23,10 @@ import eu.europa.esig.dss.validation.UserFriendlyIdentifierProvider;
 import eu.europa.esig.dss.validation.reports.Reports;
 import eu.europa.esig.dss.xades.validation.XMLDocumentValidator;
 
-public class Validator {
-
+public class GeneralValidator implements Validator {
     private SignedDocumentValidator documentValidator;
 
-    public Validator(String fileName) {
+    public void loadDocumentPath(String fileName) {
         CertificateSource trustedCertSource = new CommonTrustedCertificateSource();
         trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA RAIZ NACIONAL - COSTA RICA v2.crt")));
         trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA RAIZ NACIONAL COSTA RICA.cer")));
@@ -62,6 +42,8 @@ public class Validator {
         documentValidator.setCertificateVerifier(cv);
         documentValidator.setTokenExtractionStrategy(TokenExtractionStrategy.EXTRACT_ALL);
         documentValidator.setTokenIdentifierProvider(new UserFriendlyIdentifierProvider());
+        // List<AdvancedSignature> signatures = documentValidator.getSignatures();
+
         //documentValidator.setIncludeSemantics(true);
         if (fileDocument.getMimeType() == MimeTypeEnum.XML) {
             String electronicReceipt = new XMLDocumentValidator(fileDocument).getRootElement().getDocumentElement().getTagName();
@@ -94,4 +76,13 @@ public class Validator {
         return !documentValidator.getSignatures().isEmpty();
     }
 
+    @Override
+    public boolean hasStringReport() {
+        return false;
+    }
+
+    @Override
+    public String getStringReport() {
+        return "";
+    }
 }

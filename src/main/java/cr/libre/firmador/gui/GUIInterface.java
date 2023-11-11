@@ -36,6 +36,7 @@ public interface GUIInterface {
     CardSignInfo getPin();
     void setPluginManager(PluginManager pluginManager);
     public void loadDocument(String fileName);
+
     public void loadDocument(MimeType mimeType, PDDocument doc);
     public void extendDocument();
     String getPathToSaveExtended(String extension);
