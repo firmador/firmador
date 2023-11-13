@@ -232,4 +232,9 @@ public class PKCS11Manager extends CertificateBaseManager implements CardManager
         this.settings = settings;
 
     }
+
+    @Override
+    public void setSerialNumber(String serialnumber) {
+        // this is not required on pkcs11, only works for pkcs12
+    }
 }

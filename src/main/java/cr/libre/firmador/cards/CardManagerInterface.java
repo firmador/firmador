@@ -30,4 +30,6 @@ public interface CardManagerInterface {
     X509Certificate getCertByCN(String cn);
 
     void setSettings(Settings settings);
+
+    void setSerialNumber(String serialnumber);
 }
