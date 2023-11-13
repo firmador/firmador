@@ -237,4 +237,11 @@ public class PKCS11Manager extends CertificateBaseManager implements CardManager
     public void setSerialNumber(String serialnumber) {
         // this is not required on pkcs11, only works for pkcs12
     }
+
+    @Override
+    public CardSignInfo loadTokens(CardSignInfo card, KeyStore keystore) {
+        // this is not required on pkcs11, only works for pkcs12
+        return card;
+    }
+
 }

@@ -4,9 +4,11 @@ import java.io.FileInputStream;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStore.PasswordProtection;
+import java.security.KeyStoreException;
 import java.security.Provider;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import cr.libre.firmador.Settings;
@@ -88,5 +90,22 @@ public class PKCS12Manager extends CertificateBaseManager implements CardManager
         locationFile = serialnumber;
         keyStore = null;
     }
+
+    @Override
+    public CardSignInfo loadTokens(CardSignInfo card, KeyStore keystore) {
+
+        try {
+            Enumeration<String> enumeration = keystore.aliases();
+            if (enumeration.hasMoreElements()) {
+                String alias = enumeration.nextElement();
+                card.setTokenSerialNumber(alias);
+            }
+        } catch (KeyStoreException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return card;
+    }
+
 
 }

@@ -32,4 +32,6 @@ public interface CardManagerInterface {
     void setSettings(Settings settings);
 
     void setSerialNumber(String serialnumber);
+
+    public CardSignInfo loadTokens(CardSignInfo card, KeyStore keystore);
 }

@@ -24,7 +24,7 @@ import eu.europa.esig.dss.validation.CertificateVerifier;
 public class TimeStampServiceCR extends TSPTimeStampService {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	private List<X509Certificate> certchain;
-    CardManagerInterface cardmanager;
+
     private CertificateVerifier verifier;
     private CertificateManager certManager;
 
@@ -34,7 +34,7 @@ public class TimeStampServiceCR extends TSPTimeStampService {
         } catch (Throwable e) {
             LOG.error("Error obteniendo la cadena de certificados de sello en el tiempo", e);
         }
-        this.cardmanager = cardmanager;
+
         certManager = new CertificateManager();
         this.verifier = verifier;
 	}
@@ -44,16 +44,16 @@ public class TimeStampServiceCR extends TSPTimeStampService {
 		byte[] datastamped = super.timeStamp(signatureInfo, data,  revocationData);
 
         X509Certificate certificate;
-        List<X509Certificate> revchain;
+
         SignatureConfig signatureConfig = signatureInfo.getSignatureConfig();
         AddTPSRevocation(signatureConfig, revocationData);
         List<X509Certificate> revocationchain = revocationData.getX509chain();
         if (revocationchain.size() > 0) {
             certificate = revocationchain.get(0);
             try {
-                revchain = this.cardmanager.getCertificateChain(certificate);
-                for (X509Certificate c : revchain)
-                    revocationData.addCertificate(c);
+                List<CertificateToken> revchain = certManager.getCertificateChain(new CertificateToken(certificate));
+                for (CertificateToken c : revchain)
+                    revocationData.addCertificate(c.getCertificate());
             } catch (Throwable e) {
                 LOG.warn("Error identificando la cadena de certificados la cadena de certificados", e);
             }

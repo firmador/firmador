@@ -92,9 +92,10 @@ public class FirmadorOpenXmlFormat extends CRSigner {
             Security.removeProvider("SunRsaSign");
         }
         CardManagerInterface cardmanager = CardManager.getCartdManager(card, settings);
-        String tokenstr = card.getTokenSerialNumber();
-
+        cardmanager.setSerialNumber(card.getTokenSerialNumber());
         KeyStore keystore = cardmanager.getKeyStore(card.getSlotLongID(), card.getPin());
+        card = cardmanager.loadTokens(card, keystore);
+        String tokenstr = card.getTokenSerialNumber(); // second change get real aliases on pkcs1
         Key key = keystore.getKey(tokenstr, card.getPin().getPassword());
 
         signatureConfig = new SignatureConfig();
