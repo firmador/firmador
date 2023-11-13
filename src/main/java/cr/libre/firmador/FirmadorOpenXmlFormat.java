@@ -126,6 +126,7 @@ public class FirmadorOpenXmlFormat extends CRSigner {
         signatureConfig.setExecutionTime(nowtime.getTime());
         signatureConfig.setXadesDigestAlgo(HashAlgorithm.sha256);
         signatureConfig.setDigestAlgo(HashAlgorithm.sha256);
+        signatureConfig.setAllowMultipleSignatures(true);
         
         List<X509Certificate> certchain = certManager.getX509CertificateChain(certificate);
         certchain.add(0, x509);

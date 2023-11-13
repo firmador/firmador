@@ -1,41 +1,42 @@
 package cr.libre.firmador.validators;
 
-import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import javax.naming.InvalidNameException;
+
+import cr.libre.firmador.Settings;
+import cr.libre.firmador.SettingsManager;
+
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
+import org.apache.poi.ooxml.util.XPathHelper;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackageAccess;
+import org.apache.poi.poifs.crypt.HashAlgorithm;
 import org.apache.poi.poifs.crypt.dsig.SignatureConfig;
 import org.apache.poi.poifs.crypt.dsig.SignatureInfo;
 import org.apache.poi.poifs.crypt.dsig.SignaturePart;
-import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3.x2000.x09.xmldsig.SignatureDocument;
 import org.w3.x2000.x09.xmldsig.SignatureType;
-import org.w3.x2000.x09.xmldsig.SignedInfoType;
 
-import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.validation.reports.Reports;
 
 public class OOXMLValidator implements Validator {
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private OPCPackage documentooxml = null;
     private boolean isSignedDocument = false;
     private SignatureConfig signatureConfig = null;
@@ -50,6 +51,13 @@ public class OOXMLValidator implements Validator {
         try {
             documentooxml = OPCPackage.open(fileName, PackageAccess.READ);
             signatureConfig = new SignatureConfig();
+            signatureConfig.setSecureValidation(false); // Set false because pptx has problems to validate
+            signatureConfig.setAllowCRLDownload(true);
+            signatureConfig.setTspUrl(cr.libre.firmador.CRSigner.TSA_URL);
+            // signatureConfig.setTspOldProtocol(false);
+            signatureConfig.setXadesDigestAlgo(HashAlgorithm.sha256);
+            signatureConfig.setDigestAlgo(HashAlgorithm.sha256);
+            signatureConfig.setAllowMultipleSignatures(true);
             signatureInfo = new SignatureInfo();
             signatureInfo.setOpcPackage(documentooxml);
             signatureInfo.setSignatureConfig(signatureConfig);
@@ -59,12 +67,9 @@ public class OOXMLValidator implements Validator {
             if (!signParts.isEmpty()) {
                 isSignedDocument = true;
             }
-        } catch (InvalidOperationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvalidFormatException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Throwable e) {
+            LOG.error("Documento no pudo ser analizado para su firma", e);
+
         }
 
     }
@@ -96,14 +101,16 @@ public class OOXMLValidator implements Validator {
         return true;
     }
 
-    private String validaRevocacion(Document document) {
+    private String validaRevocacion(X509Certificate signer, SignatureType signatureType) throws Throwable {
         boolean tspvalido = true;
+        XPath xpath = XPathHelper.getFactory().newXPath();
         return tspvalido ? "Válido" : "Inválido";
     }
 
 
     @Override
     public String getStringReport() {
+        Settings settings = SettingsManager.getInstance().getAndCreateSettings();
         String report="";
         int position = 0;
         for (SignaturePart part : signParts.keySet()) {
@@ -120,11 +127,16 @@ public class OOXMLValidator implements Validator {
                  Element signtime = document.getElementById("idSignatureTime");
                  NodeList timevalue = signtime.getElementsByTagName("mdssi:Value");
 
-                 for (int i = 0; i < timevalue.getLength(); i++) {
-                     Element e = (Element) timevalue.item(i);
-                     signdate = e.getFirstChild().getNodeValue();
+                 if (timevalue.getLength() > 0) {
+                     signdate = timevalue.item(0).getFirstChild().getNodeValue();
+                     Instant signatureinstance = Instant.parse(signdate);
+                     LocalDateTime local = LocalDateTime.from(signatureinstance.atZone(ZoneId.systemDefault()));
+                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern(settings.dateFormat);
+                     signdate = dtf.format(local);
                  }
-                 String revocaentiempo = validaRevocacion(document);
+
+
+                 String revocaentiempo = validaRevocacion(signer, signatureDocument.getSignature());
 
             boolean[] keyUsage = signer.getKeyUsage();
             if (signer.getBasicConstraints() == -1 && keyUsage[0] && keyUsage[1]) {
@@ -139,17 +151,19 @@ public class OOXMLValidator implements Validator {
                 }
             
                 String expires = new SimpleDateFormat("yyyy-MM-dd").format(signer.getNotAfter());
-
-                report += position + ". Firmante: " + firstName + " " + lastName + " (" + identification + "), "
-                        + organization + "<br>\n&nbsp;&nbsp;&nbsp; Fecha oficial de la firma: " + signdate
+                String name = firstName + " " + lastName;
+                if (firstName.isEmpty() && lastName.isEmpty())
+                    name = commonName;
+                report += position + ". Firmante: " + name + " (" + identification + "), "
+                        + organization + "<br>\n&nbsp;&nbsp;&nbsp; Fecha declarada de la firma: " + signdate
                         + "<br>&nbsp;&nbsp;&nbsp; Garantía de integridad y autenticidad: " + signok
                         + " (Certificado expira: " + expires + ")"
                         + "<br>&nbsp;&nbsp;&nbsp; Garantía de validez en el tiempo: " + revocaentiempo;
+                report += "<br>";
             }
 
             } catch (Throwable e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.warn("Firma no pudo ser interpretada para mostrarse", e);
             }
 
 
