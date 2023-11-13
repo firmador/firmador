@@ -48,8 +48,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cr.libre.firmador.CardSignInfo;
-import cr.libre.firmador.SmartCardDetector;
+import cr.libre.firmador.cards.CardSignInfo;
+import cr.libre.firmador.cards.SmartCardDetector;
 
 public class RequestPinWindow extends JFrame {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

@@ -73,7 +73,7 @@ public class CertificateManager {
                 if (currentCert.isSignedBy(c)) {
                     currentCert = c;
                     if (!certchain.contains(currentCert)) {
-                        certchain.add(0, currentCert);
+                        certchain.add(currentCert);
                         ct = certSource.getBySubject(currentCert.getIssuer());
                         if (ct.isEmpty()) {
                             currentCert = null;

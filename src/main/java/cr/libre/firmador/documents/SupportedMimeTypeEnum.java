@@ -1,4 +1,4 @@
-package cr.libre.firmador;
+package cr.libre.firmador.documents;
 
 import eu.europa.esig.dss.enumerations.MimeType;
 

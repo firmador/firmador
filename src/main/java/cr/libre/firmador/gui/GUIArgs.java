@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import cr.libre.firmador.CardSignInfo;
+import cr.libre.firmador.cards.CardSignInfo;
+import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 //import cr.libre.firmador.FirmadorCAdES;
 import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
@@ -150,7 +151,7 @@ public class GUIArgs implements GUIInterface {
     public void loadDocument(String fileName) {
     }
 
-    public void loadDocument(MimeType mimeType, PDDocument doc) {
+    public void loadDocument(SupportedMimeTypeEnum mimeType, PDDocument doc) {
     }
 
     public void extendDocument() {

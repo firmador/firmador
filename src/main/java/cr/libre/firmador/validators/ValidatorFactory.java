@@ -1,7 +1,7 @@
 package cr.libre.firmador.validators;
 
-import cr.libre.firmador.MimeTypeDetector;
-import cr.libre.firmador.SupportedMimeTypeEnum;
+import cr.libre.firmador.documents.MimeTypeDetector;
+import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 
 public class ValidatorFactory {
     public static Validator getValidator(String fileName) {

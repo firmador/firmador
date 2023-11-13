@@ -31,7 +31,8 @@ import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
-import cr.libre.firmador.CardSignInfo;
+import cr.libre.firmador.cards.CardSignInfo;
+import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 //import cr.libre.firmador.FirmadorCAdES;
 //import cr.libre.firmador.FirmadorOpenDocument;
 import cr.libre.firmador.FirmadorPAdES;
@@ -41,7 +42,7 @@ import cr.libre.firmador.FirmadorUtils;
 //import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.plugins.PluginManager;
 
-import eu.europa.esig.dss.enumerations.MimeType;
+
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 
@@ -154,7 +155,7 @@ public class GUIShell implements GUIInterface {
     }
 
     @Override
-    public void loadDocument(MimeType mimeType, PDDocument doc) {
+    public void loadDocument(SupportedMimeTypeEnum mimeType, PDDocument doc) {
     }
 
     @Override

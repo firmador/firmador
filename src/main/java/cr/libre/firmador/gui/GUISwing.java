@@ -60,18 +60,20 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cr.libre.firmador.CardSignInfo;
+import cr.libre.firmador.cards.CardSignInfo;
+import cr.libre.firmador.documents.Document;
+import cr.libre.firmador.documents.MimeTypeDetector;
+import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 import cr.libre.firmador.ConfigListener;
 import cr.libre.firmador.FirmadorCAdES;
 import cr.libre.firmador.FirmadorOpenDocument;
+import cr.libre.firmador.FirmadorOpenXmlFormat;
 import cr.libre.firmador.FirmadorPAdES;
 import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.FirmadorXAdES;
-import cr.libre.firmador.MimeTypeDetector;
 import cr.libre.firmador.Report;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
-import cr.libre.firmador.SupportedMimeTypeEnum;
 import cr.libre.firmador.validators.Validator;
 import cr.libre.firmador.validators.ValidatorFactory;
 import cr.libre.firmador.gui.swing.AboutLayout;
@@ -202,11 +204,12 @@ public class GUISwing implements GUIInterface, ConfigListener{
 
     public void loadDocument(String fileName) {
         gui.nextStep("Cargando el documento");
+
         if (!isRemote) {
             clearElements();
             docSelector.setLastFile(fileName);
             docSelector.fileField.setText(Paths.get(fileName).getFileName().toString());
-
+            // Document document = new Document(fileName);
             // FileDocument mimeDocument = new FileDocument(fileName);
             SupportedMimeTypeEnum mimetype = MimeTypeDetector.detect(fileName);
             try {
@@ -242,6 +245,8 @@ public class GUISwing implements GUIInterface, ConfigListener{
                     message = "Está intentando firmar un documento MS Office que no posee visualización";
                 } else if (mimeType.isXML()) {
                     message = "Está intentando firmar un documento XML que no posee visualización";
+                    signPanel.docHideButtons();
+                    signPanel.showSignButtons();
                 } else {
                     message = "Está intentando firmar un documento utilizando un archivo PKCS7";
                 }
@@ -443,9 +448,13 @@ public class GUISwing implements GUIInterface, ConfigListener{
     public String getExtension() {
         String extension = "";
         if (toSignDocument != null) {
-            MimeType mimeType = toSignDocument.getMimeType();
-            if (mimeType == MimeTypeEnum.XML) extension = ".xml";
-            else if (mimeType != MimeTypeEnum.PDF && !(mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT)) extension = ".p7s"; // p7s detached, p7m enveloping
+            SupportedMimeTypeEnum mimeType = MimeTypeDetector.detect(toSignDocument);
+            if (mimeType.isXML()) extension = ".xml";
+            else if (mimeType.isPDF() || mimeType.isOpenDocument() || mimeType.isOpenxmlformats()) {
+                extension="."+ mimeType.getExtension().toLowerCase();
+            } else {
+                extension = ".p7s";
+            }
         }
         return extension;
     }
@@ -580,15 +589,18 @@ public class GUISwing implements GUIInterface, ConfigListener{
         signPanel.showSignButtons();
     }
 
-    public void loadDocument(MimeType mimeType, PDDocument doc) {
+
+    public void loadDocument(SupportedMimeTypeEnum mimeType, PDDocument doc) {
         signPanel.setDoc(doc);
         signPanel.getSignButton().setEnabled(true);
         try {
             signPanel.docHideButtons();
-            if (mimeType == MimeTypeEnum.PDF) loadDocumentPDF(doc);
-            else signPanel.shownonPDFButtons();
-            //else if (mimeType == MimeTypeEnum.XML) { /* Nothing for now */ }
-            //else if (mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) { /* Nothing for now */ }
+            if (mimeType.isPDF()) {
+                loadDocumentPDF(doc);
+            } else if (mimeType.isOpenxmlformats()) {
+                signPanel.getSignButton().setEnabled(true);
+            } else
+                signPanel.shownonPDFButtons();
             mainFrame.pack();
             mainFrame.setMinimumSize(mainFrame.getSize());
         } catch (Exception e) {
@@ -599,17 +611,23 @@ public class GUISwing implements GUIInterface, ConfigListener{
 
     protected void signDocument(CardSignInfo card, Boolean visibleSignature) {
         signedDocument = null;
-        MimeType mimeType = toSignDocument.getMimeType();
-        if (mimeType == MimeTypeEnum.PDF) {
+        SupportedMimeTypeEnum mimeType = MimeTypeDetector.detect(toSignDocument);
+
+        if (mimeType.isPDF()) {
             FirmadorPAdES firmador = new FirmadorPAdES(gui);
             firmador.setVisibleSignature(visibleSignature);
             firmador.addVisibleSignature((int)signPanel.getPageSpinner().getValue(), signPanel.calculateSignatureRectangle());
             signedDocument = firmador.sign(toSignDocument, card, signPanel.getReasonField().getText(), signPanel.getLocationField().getText(),
                 signPanel.getContactInfoField().getText(), System.getProperty("jnlp.signatureImage"), Boolean.getBoolean("jnlp.hideSignatureAdvice"));
-        } else if (mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
+        } else if (mimeType.isOpenDocument()) {
             FirmadorOpenDocument firmador = new FirmadorOpenDocument(gui);
             signedDocument = firmador.sign(toSignDocument, card);
-        } else if (mimeType == MimeTypeEnum.XML || signPanel.getAdESFormatButtonGroup().getSelection().getActionCommand().equals("XAdES")) {
+        } else if (mimeType.isOpenxmlformats()) {
+            FirmadorOpenXmlFormat firmador = new FirmadorOpenXmlFormat(gui);
+            signedDocument = firmador.sign(toSignDocument, card);
+
+        } else if (mimeType.isXML()
+                || signPanel.getAdESFormatButtonGroup().getSelection().getActionCommand().equals("XAdES")) {
             FirmadorXAdES firmador = new FirmadorXAdES(gui);
             signedDocument = firmador.sign(toSignDocument, card);
         } else {
