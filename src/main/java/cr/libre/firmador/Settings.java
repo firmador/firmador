@@ -70,6 +70,7 @@ public class Settings {
     public String pAdESLevel = "LTA";
     public String xAdESLevel = "LTA";
     public String cAdESLevel = "LTA";
+    public String sofficePath = "/usr/bin/soffice";
     public List<String> pKCS12File = new ArrayList<String>();
 
 

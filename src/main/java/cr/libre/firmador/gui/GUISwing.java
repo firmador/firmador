@@ -63,6 +63,8 @@ import org.slf4j.LoggerFactory;
 import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.documents.MimeTypeDetector;
+import cr.libre.firmador.documents.PreviewerInterface;
+import cr.libre.firmador.documents.PreviewerManager;
 import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 import cr.libre.firmador.ConfigListener;
 import cr.libre.firmador.FirmadorCAdES;
@@ -118,6 +120,7 @@ public class GUISwing implements GUIInterface, ConfigListener{
     private JScrollPane loggingPane;
     private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     private int tabPosition;
+    private PreviewerInterface preview;
 
     public void loadGUI() {
         try {
@@ -213,10 +216,13 @@ public class GUISwing implements GUIInterface, ConfigListener{
             // FileDocument mimeDocument = new FileDocument(fileName);
             SupportedMimeTypeEnum mimetype = MimeTypeDetector.detect(fileName);
             try {
-                if (mimetype.isPDF())
-                    doc = PDDocument.load(new File(fileName));
-                loadDocument(mimetype, doc);
-            } catch (IOException e) {
+                if (preview != null)
+                    preview.closePreview();
+                preview = PreviewerManager.getPreviewManager(mimetype);
+                preview.loadDocument(fileName);
+                // doc = PDDocument.load(new File(fileName));
+                loadDocument(mimetype, preview);
+            } catch (Throwable e) {
                 LOG.error("Error Leyendo el archivo", e);
                 e.printStackTrace();
                 clearElements();
@@ -235,8 +241,9 @@ public class GUISwing implements GUIInterface, ConfigListener{
                 boolean showSignBtn = true;
                
                 if (mimeType.isPDF()) {
-                    doc = PDDocument.load(data);
-                    loadDocument(mimeType, doc);
+                    preview = PreviewerManager.getPreviewManager(mimeType);
+                    // doc = PDDocument.load(data);
+                    loadDocument(mimeType, preview);
                     signPanel.shownonPDFButtons();
                     showSignBtn = false;
                 } else if (mimeType.isOpenDocument()) {
@@ -573,30 +580,29 @@ public class GUISwing implements GUIInterface, ConfigListener{
         }
     }
 
-    public void loadDocumentPDF(PDDocument doc) throws IOException {
+    public void loadPreview(PreviewerInterface preview) {
         signPanel.getSignButton().setEnabled(true);
         signPanel.docHideButtons();
-        int pages = doc.getNumberOfPages();
-        renderer = signPanel.getRender(doc);
+        int pages = preview.getNumberOfPages();
         if (pages > 0) {
-            SpinnerNumberModel model = ((SpinnerNumberModel)signPanel.getPageSpinner().getModel());
+            SpinnerNumberModel model = ((SpinnerNumberModel) signPanel.getPageSpinner().getModel());
             model.setMinimum(1);
             model.setMaximum(pages);
-            if (settings.pageNumber <= pages && settings.pageNumber > 0) signPanel.getPageSpinner().setValue(settings.pageNumber);
-            else signPanel.getPageSpinner().setValue(1);
+            if (settings.pageNumber <= pages && settings.pageNumber > 0)
+                signPanel.getPageSpinner().setValue(settings.pageNumber);
+            else
+                signPanel.getPageSpinner().setValue(1);
             signPanel.paintPDFViewer();
         }
-        signPanel.showSignButtons();
     }
 
-
-    public void loadDocument(SupportedMimeTypeEnum mimeType, PDDocument doc) {
-        signPanel.setDoc(doc);
+    public void loadDocument(SupportedMimeTypeEnum mimeType, PreviewerInterface preview) {
+        signPanel.setPreview(preview);
         signPanel.getSignButton().setEnabled(true);
+        loadPreview(preview);
         try {
-            signPanel.docHideButtons();
             if (mimeType.isPDF()) {
-                loadDocumentPDF(doc);
+                signPanel.showSignButtons();
             } else if (mimeType.isOpenxmlformats()) {
                 signPanel.getSignButton().setEnabled(true);
             } else
@@ -740,6 +746,12 @@ public class GUISwing implements GUIInterface, ConfigListener{
 
     public void nextStep(String msg) {
         if (worker != null) worker.nextStep(msg);
+    }
+
+    @Override
+    public void loadDocument(SupportedMimeTypeEnum mimeType, PDDocument doc) {
+        // TODO Auto-generated method stub
+
     }
 
 }

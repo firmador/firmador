@@ -52,8 +52,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +61,7 @@ import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.cards.SmartCardDetector;
+import cr.libre.firmador.documents.PreviewerInterface;
 import cr.libre.firmador.gui.GUIInterface;
 
 
@@ -94,24 +93,16 @@ public class SignPanel extends JPanel implements ConfigListener{
     private JRadioButton levelLTAButton;
     private ButtonGroup AdESLevelButtonGroup;
     protected Settings settings;
-    private PDDocument doc;
-    public BufferedImage pageImage;
-    private PDFRenderer renderer;
     public GUIInterface gui;
     private SmartCardDetector smartCardDetector;
+    private PreviewerInterface preview;
 
     public void setGUI(GUIInterface gui) {
         this.gui=gui;
     }
 
-    public PDFRenderer getRender(PDDocument doc) {
-        renderer = new PDFRenderer(doc);
-        return renderer;
-    }
-
-    public void setDoc(PDDocument doc){
-        this.doc = doc;
-
+    public void setPreview(PreviewerInterface preview) {
+        this.preview = preview;
     }
 
     public JScrollPane getImageScrollPane(ScrollableJPanel panel) {
@@ -231,23 +222,25 @@ public class SignPanel extends JPanel implements ConfigListener{
     public void paintPDFViewer() {
         int page = (int)pageSpinner.getValue();
         if (page > 0) {
-            renderPDFViewer(page - 1);
+            renderPreviewViewer(page - 1);
             //setMinimumSize(getSize());
-
-
         }
     }
 
-    public void renderPDFViewer(int page) {
-      try {
-        pageImage = renderer.renderImage(page, settings.pDFImgScaleFactor);
-        imageLabel.setSize(pageImage.getWidth(), pageImage.getHeight());
-        imageLabel.setIcon(new ImageIcon(pageImage));
-      } catch (Exception ex) {
-          LOG.error("Error cambiando cambiando página", ex);
-          gui.showError(FirmadorUtils.getRootCause(ex));
-      }
-      previewSignLabel();
+    public void renderPreviewViewer(int page) {
+        if (preview != null) {
+            try {
+                BufferedImage pageImage = preview.getPageImage(page);
+                imageLabel.setSize(pageImage.getWidth(), pageImage.getHeight());
+                imageLabel.setIcon(new ImageIcon(pageImage));
+            } catch (Throwable ex) {
+                LOG.error("Error cambiando cambiando página", ex);
+                gui.showError(FirmadorUtils.getRootCause(ex));
+            }
+            // if (preview.showSignLabelPreview())
+            previewSignLabel();
+            showPreviewButtons();
+        }
     }
 
 
@@ -289,7 +282,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         }
         signatureLabel.setFont(new Font(settings.getFontName(settings.font, false), settings.getFontStyle(settings.font), settings.fontSize));
         signatureLabel.setText("<html>"+table+"</html>");
-           signatureLabel.setForeground(new Color(0, 0, 0, 0));
+        signatureLabel.setForeground(new Color(0, 0, 0, 0));
         signatureLabel.setBackground(new Color(127, 127, 127, 127));
         signatureLabel.setOpaque(true);
         signatureLabel.setSize(signatureLabel.getPreferredSize());
@@ -407,11 +400,16 @@ public class SignPanel extends JPanel implements ConfigListener{
 
     }
 
-    public void showSignButtons() {
+    public void showPreviewButtons() {
         imagePanel.setVisible(true);
         imageLabel.setVisible(true);
         pageLabel.setVisible(true);
         pageSpinner.setVisible(true);
+        imagePanel.setBorder(new LineBorder(Color.BLACK));
+    }
+
+    public void showSignButtons() {
+        showPreviewButtons();
         signatureVisibleCheckBox.setVisible(true);
         reasonLabel.setVisible(true);
         reasonField.setVisible(true);
@@ -419,7 +417,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         locationField.setVisible(true);
         contactInfoLabel.setVisible(true);
         contactInfoField.setVisible(true);
-        imagePanel.setBorder(new LineBorder(Color.BLACK));
+
 /*
         AdESLevelLabel.setVisible(true);
         levelTButton.setVisible(true);
@@ -468,8 +466,8 @@ public class SignPanel extends JPanel implements ConfigListener{
         signatureLabel.setBounds((int)((float)settings.signX * settings.pDFImgScaleFactor), (int)((float)settings.signY * settings.pDFImgScaleFactor), (int)((float)settings.signWidth * settings.pDFImgScaleFactor), (int)((float)settings.signHeight * settings.pDFImgScaleFactor));
 
         try {
-             if (doc != null) {
-                 int pages = doc.getNumberOfPages();
+            if (preview != null) {
+                int pages = preview.getNumberOfPages();
                 if (settings.pageNumber <= pages && settings.pageNumber > 0) {
                     pageSpinner.setValue(settings.pageNumber);
                 } else {
@@ -562,22 +560,6 @@ public class SignPanel extends JPanel implements ConfigListener{
 
     public void setLevelLTAButton(JRadioButton levelLTAButton) {
         this.levelLTAButton = levelLTAButton;
-    }
-
-    public BufferedImage getPageImage() {
-        return pageImage;
-    }
-
-    public void setPageImage(BufferedImage pageImage) {
-        this.pageImage = pageImage;
-    }
-
-    public PDFRenderer getRenderer() {
-        return renderer;
-    }
-
-    public void setRenderer(PDFRenderer renderer) {
-        this.renderer = renderer;
     }
 
     public JLabel getImageLabel() {
