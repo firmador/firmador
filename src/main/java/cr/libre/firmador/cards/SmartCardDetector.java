@@ -41,6 +41,8 @@ public class SmartCardDetector implements  ConfigListener {
     protected Settings settings;
     private String lib;
 
+    private PKCS11Manager pkcs11manager = null;
+
     public SmartCardDetector() {
         settings = SettingsManager.getInstance().getAndCreateSettings();
         //settings.addListener(this);
@@ -69,10 +71,11 @@ public class SmartCardDetector implements  ConfigListener {
     public List<CardSignInfo> readListSmartCard() throws Throwable {
         List<CardSignInfo> cardinfo = new ArrayList<CardSignInfo>();
         // TODO: Replace with PKCS11 Manager
-        PKCS11Manager manager= new PKCS11Manager();
+        if (pkcs11manager == null)
+            pkcs11manager = new PKCS11Manager();
         String expires;
         String serialnumber;
-        for(X509Certificate certificate: manager.getCertificates()) {
+        for (X509Certificate certificate : pkcs11manager.getCertificates()) {
             boolean[] keyUsage = certificate.getKeyUsage();
             if (certificate.getBasicConstraints() == -1 && keyUsage[0] && keyUsage[1]) {
                 LdapName ldapName = new LdapName(certificate.getSubjectX500Principal().getName("RFC1779"));
@@ -85,7 +88,7 @@ public class SmartCardDetector implements  ConfigListener {
                     if (rdn.getType().equals("O")) organization = rdn.getValue().toString();
                 }
                 expires = new SimpleDateFormat("yyyy-MM-dd").format(certificate.getNotAfter());
-                serialnumber=new String(manager.getTokenByCert(certificate));
+                serialnumber = new String(pkcs11manager.getTokenByCert(certificate));
                 LOG.debug(firstName + " " + lastName + " (" + identification + "), " + organization + ", " + certificate.getSerialNumber().toString(16) + " [Token serial number: " + serialnumber + "] (Expires: " + expires+ ")");
                 cardinfo.add(new CardSignInfo(CardSignInfo.PKCS11TYPE,
                     identification,
@@ -96,7 +99,7 @@ public class SmartCardDetector implements  ConfigListener {
                     expires,
                     certificate.getSerialNumber().toString(16),
                     serialnumber,
-                    manager.getSlotByCert(certificate)
+                        pkcs11manager.getSlotByCert(certificate)
                 ));
             }
         	
@@ -106,5 +109,11 @@ public class SmartCardDetector implements  ConfigListener {
 
     @Override
     public void updateConfig() {}
+
+    public void invalideCache() {
+        if (pkcs11manager != null)
+            pkcs11manager.invalideCache();
+
+    }
 
 }

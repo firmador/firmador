@@ -75,6 +75,9 @@ public class PKCS11Manager extends CertificateBaseManager implements CardManager
     private String lib;
     Map<BigInteger, Long> slot_by_cert = new HashMap<>();
     Map<BigInteger, char[]> token_by_cert = new HashMap<>();
+    private long defaultExpirationTime = 30000;
+    private long lastExpirationTime = 0;
+    private List<X509Certificate> cachedListCertificates;
 
     
     private Provider provider;
@@ -108,7 +111,25 @@ public class PKCS11Manager extends CertificateBaseManager implements CardManager
         }
         return pkcs11;
 	}
-	public List<X509Certificate> getCertificates() throws Throwable {	
+
+    public boolean isCacheIsValid() {
+        return System.currentTimeMillis() < lastExpirationTime + defaultExpirationTime;
+    }
+    public List<X509Certificate> getCertificates() throws Throwable {
+        /*
+         * Return the list of certificates on pkcs11 devices This function is cached
+         * because is used on getText function on signPanel, and for this functionality
+         * is not necessary to search on device every time.
+         **/
+        if (cachedListCertificates != null && !cachedListCertificates.isEmpty() && isCacheIsValid())
+            return cachedListCertificates;
+
+        lastExpirationTime=System.currentTimeMillis();
+        cachedListCertificates = searchCertificates();
+        return cachedListCertificates;
+    }
+
+    public List<X509Certificate> searchCertificates() throws Throwable {
 			List<X509Certificate> certlist = new ArrayList<X509Certificate>();
 			PKCS11 pkcs11 = this.initialize();
 			char[] keyIdentifier;
@@ -244,4 +265,7 @@ public class PKCS11Manager extends CertificateBaseManager implements CardManager
         return card;
     }
 
+    public void invalideCache() {
+        cachedListCertificates = null;
+    }
 }

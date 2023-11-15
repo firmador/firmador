@@ -98,6 +98,7 @@ public class SignPanel extends JPanel implements ConfigListener{
     public BufferedImage pageImage;
     private PDFRenderer renderer;
     public GUIInterface gui;
+    private SmartCardDetector smartCardDetector;
 
     public void setGUI(GUIInterface gui) {
         this.gui=gui;
@@ -632,8 +633,9 @@ public class SignPanel extends JPanel implements ConfigListener{
         String organization="TIPO DE PERSONA";
         String additionalText = new String();
         try {
-            SmartCardDetector cardd = new SmartCardDetector();
-            List<CardSignInfo> cards = cardd.readSaveListSmartCard();
+            if (smartCardDetector == null)
+                smartCardDetector = new SmartCardDetector();
+            List<CardSignInfo> cards = smartCardDetector.readSaveListSmartCard();
             if(!cards.isEmpty()) {
                 CardSignInfo card = cards.get(0);
                 commonName = card.getCommonName();
