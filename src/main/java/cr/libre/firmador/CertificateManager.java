@@ -1,5 +1,6 @@
 package cr.libre.firmador;
 
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,10 @@ public class CertificateManager {
 
 
     public CertificateManager() {
+        loadCertifcatesSources();
+    }
+
+    protected void loadCertifcatesSources() {
         ClassLoader loaderclass = this.getClass().getClassLoader();
         certSource.addCertificate(DSSUtils.loadCertificate(
                 loaderclass.getResourceAsStream("certs/CA POLITICA PERSONA FISICA - COSTA RICA v2.crt")));
@@ -43,6 +48,29 @@ public class CertificateManager {
         certSource.addCertificate(DSSUtils.loadCertificate(
                 loaderclass.getResourceAsStream("certs/CA RAIZ NACIONAL COSTA RICA.cer")));
 
+    }
+    public CertificateManager(boolean loadcertificates) {
+        if (loadcertificates)
+            loadCertifcatesSources();
+    }
+
+    public List<X509Certificate> getCertificateChainTSA() throws CertificateException {
+        List<X509Certificate> certlist = new ArrayList<X509Certificate>();
+        ClassLoader loaderclass = this.getClass().getClassLoader();
+        
+        CertificateToken ca_nacional = DSSUtils.loadCertificate(
+                loaderclass.getResourceAsStream("certs/CA RAIZ NACIONAL - COSTA RICA v2.crt"));
+        
+        CertificateToken ca_politica = DSSUtils.loadCertificate(
+                loaderclass.getResourceAsStream("certs/CA POLITICA SELLADO DE TIEMPO - COSTA RICA v2.crt"));
+        CertificateToken tsa_sinpe = DSSUtils
+                .loadCertificate(loaderclass.getResourceAsStream("certs/TSA SINPE v2.cer"));
+
+        certlist.add(ca_nacional.getCertificate());
+        certlist.add(ca_politica.getCertificate());
+        certlist.add(tsa_sinpe.getCertificate());
+
+        return certlist;
     }
 
     public CertificateSource getCertificateChainCertificateSource(CertificateToken subjectCertificate) {

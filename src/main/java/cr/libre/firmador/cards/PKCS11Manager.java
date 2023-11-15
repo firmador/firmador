@@ -66,10 +66,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-public class PKCS11Manager extends CertificateBaseManager implements CardManagerInterface {
+public class PKCS11Manager implements CardManagerInterface {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String PKCS11_PROVIDER_NAME = "SunPKCS11";
-    protected Settings settings;
+
     KeyStore keystore = null;
     Long lastSlotID = null;
     private String lib;
@@ -241,18 +241,6 @@ public class PKCS11Manager extends CertificateBaseManager implements CardManager
 		return cert;
 		
 	}
-
-    public List<X509Certificate> getSignCertificates() throws Throwable {
-        List<X509Certificate> certlist = new ArrayList<X509Certificate>();
-        this.getPersonaFisicaCerts(certlist);
-        return certlist;
-    }
-
-    @Override
-    public void setSettings(Settings settings) {
-        this.settings = settings;
-
-    }
 
     @Override
     public void setSerialNumber(String serialnumber) {

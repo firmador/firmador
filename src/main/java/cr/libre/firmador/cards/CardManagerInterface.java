@@ -21,15 +21,6 @@ public interface CardManagerInterface {
 
     X509Certificate getCertificate(String token, Long slotID, PasswordProtection password) throws Throwable;
 
-    List<X509Certificate> getSignCertificates() throws Throwable;
-
-    List<X509Certificate> getCertificateChainTSA() throws Throwable;
-
-    List<X509Certificate> getCertificateChain(X509Certificate certificate) throws Throwable;
-
-    X509Certificate getCertByCN(String cn);
-
-    void setSettings(Settings settings);
 
     void setSerialNumber(String serialnumber);
 

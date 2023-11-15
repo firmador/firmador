@@ -9,10 +9,8 @@ public class CardManager {
         CardManagerInterface cardmanager = null;
         if (CardSignInfo.PKCS12TYPE==card.getCardType()) {
             cardmanager = new PKCS12Manager();
-            cardmanager.setSettings(settings);
         } else if (CardSignInfo.PKCS11TYPE == card.getCardType()) {
             cardmanager = new PKCS11Manager();
-            cardmanager.setSettings(settings);
         }
         return cardmanager;
     }

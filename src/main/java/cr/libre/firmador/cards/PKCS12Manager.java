@@ -13,10 +13,10 @@ import java.util.List;
 
 import cr.libre.firmador.Settings;
 
-public class PKCS12Manager extends CertificateBaseManager implements CardManagerInterface {
+public class PKCS12Manager implements CardManagerInterface {
     private String locationFile;
     private KeyStore keyStore;
-    private Settings settings;
+
     @Override
     public Provider getProvider() {
         // TODO Auto-generated method stub
@@ -58,32 +58,6 @@ public class PKCS12Manager extends CertificateBaseManager implements CardManager
         return certificate;
     }
 
-    @Override
-    public List<X509Certificate> getSignCertificates() throws Throwable {
-        List<X509Certificate> certlist = new ArrayList<X509Certificate>();
-        this.getPersonaJuridicaCerts(certlist);
-        return certlist;
-    }
-
-
-
-    @Override
-    public List<X509Certificate> getCertificateChain(X509Certificate certificate) throws Throwable {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void setSettings(Settings settings) {
-        this.settings = settings;
-
-    }
-
-    @Override
-    public X509Certificate getCertByCN(String cn) {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     public void setSerialNumber(String serialnumber) {
@@ -106,6 +80,7 @@ public class PKCS12Manager extends CertificateBaseManager implements CardManager
         }
         return card;
     }
+
 
 
 }

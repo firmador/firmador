@@ -29,13 +29,12 @@ public class TimeStampServiceCR extends TSPTimeStampService {
     private CertificateManager certManager;
 
     public TimeStampServiceCR(CardManagerInterface cardmanager, CertificateVerifier verifier) {
+        certManager = new CertificateManager();
         try {
-            this.certchain = cardmanager.getCertificateChainTSA();
+            this.certchain = certManager.getCertificateChainTSA();
         } catch (Throwable e) {
             LOG.error("Error obteniendo la cadena de certificados de sello en el tiempo", e);
         }
-
-        certManager = new CertificateManager();
         this.verifier = verifier;
 	}
 	
