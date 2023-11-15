@@ -108,7 +108,7 @@ public class CertificateManager {
         List<CertificateToken> certs = this.getCertificateChain(subjectCertificate);
         if (certs != null && certs.size() > 0) {
             commonTrustedCertificateSource = new CommonTrustedCertificateSource();
-            commonTrustedCertificateSource.addCertificate(certs.get(0));
+            commonTrustedCertificateSource.addCertificate(certs.get(certs.size() - 1));
         }
         return commonTrustedCertificateSource;
     }
