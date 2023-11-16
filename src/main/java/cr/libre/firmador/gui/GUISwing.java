@@ -79,6 +79,7 @@ import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.validators.Validator;
 import cr.libre.firmador.validators.ValidatorFactory;
 import cr.libre.firmador.gui.swing.AboutLayout;
+import cr.libre.firmador.gui.swing.BuilderPreviewWorker;
 import cr.libre.firmador.gui.swing.ConfigPanel;
 import cr.libre.firmador.gui.swing.CopyableJLabel;
 import cr.libre.firmador.gui.swing.DocumentSelectionGroupLayout;
@@ -121,6 +122,7 @@ public class GUISwing implements GUIInterface, ConfigListener{
     private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     private int tabPosition;
     private PreviewerInterface preview;
+    private BuilderPreviewWorker builderpreview;
 
     public void loadGUI() {
         try {
@@ -205,6 +207,18 @@ public class GUISwing implements GUIInterface, ConfigListener{
         if (documenttosign != null) loadDocument(documenttosign);
     }
 
+    public SignPanel getSignPanel() {
+        return signPanel;
+    }
+    public void initializePreviewBuilder(String fileName, SupportedMimeTypeEnum mimetype) throws Throwable {
+        if (preview != null)
+            preview.closePreview();
+        preview = PreviewerManager.getPreviewManager(mimetype);
+        builderpreview = new BuilderPreviewWorker(this, preview, fileName);
+        SwingUtilities.invokeLater((Runnable) builderpreview);
+        Thread.yield();
+    }
+
     public void loadDocument(String fileName) {
         gui.nextStep("Cargando el documento");
 
@@ -216,11 +230,7 @@ public class GUISwing implements GUIInterface, ConfigListener{
             // FileDocument mimeDocument = new FileDocument(fileName);
             SupportedMimeTypeEnum mimetype = MimeTypeDetector.detect(fileName);
             try {
-                if (preview != null)
-                    preview.closePreview();
-                preview = PreviewerManager.getPreviewManager(mimetype);
-                preview.loadDocument(fileName);
-                // doc = PDDocument.load(new File(fileName));
+                initializePreviewBuilder(fileName, mimetype);
                 loadDocument(mimetype, preview);
             } catch (Throwable e) {
                 LOG.error("Error Leyendo el archivo", e);
@@ -232,7 +242,6 @@ public class GUISwing implements GUIInterface, ConfigListener{
         } else {
             HashMap<String, RemoteDocInformation> docmap = remote.getDocInformation();
             docinfo = docmap.get(fileName);
-            PDDocument doc;
             try {
                 byte[] data =IOUtils.toByteArray( docinfo.getInputdata());
                 toSignDocument = new InMemoryDocument(data, fileName);
@@ -241,8 +250,7 @@ public class GUISwing implements GUIInterface, ConfigListener{
                 boolean showSignBtn = true;
                
                 if (mimeType.isPDF()) {
-                    preview = PreviewerManager.getPreviewManager(mimeType);
-                    // doc = PDDocument.load(data);
+                    initializePreviewBuilder(fileName, mimeType);
                     loadDocument(mimeType, preview);
                     signPanel.shownonPDFButtons();
                     showSignBtn = false;
@@ -263,7 +271,7 @@ public class GUISwing implements GUIInterface, ConfigListener{
 
                 if (message.isEmpty())
                     showMessage(message);
-            } catch (IOException e) {
+            } catch (Throwable e) {
                 LOG.error("Error cargando documento", e);
                 e.printStackTrace();
             }
@@ -583,17 +591,6 @@ public class GUISwing implements GUIInterface, ConfigListener{
     public void loadPreview(PreviewerInterface preview) {
         signPanel.getSignButton().setEnabled(true);
         signPanel.docHideButtons();
-        int pages = preview.getNumberOfPages();
-        if (pages > 0) {
-            SpinnerNumberModel model = ((SpinnerNumberModel) signPanel.getPageSpinner().getModel());
-            model.setMinimum(1);
-            model.setMaximum(pages);
-            if (settings.pageNumber <= pages && settings.pageNumber > 0)
-                signPanel.getPageSpinner().setValue(settings.pageNumber);
-            else
-                signPanel.getPageSpinner().setValue(1);
-            signPanel.paintPDFViewer();
-        }
     }
 
     public void loadDocument(SupportedMimeTypeEnum mimeType, PreviewerInterface preview) {

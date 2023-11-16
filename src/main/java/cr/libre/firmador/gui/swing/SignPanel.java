@@ -103,6 +103,17 @@ public class SignPanel extends JPanel implements ConfigListener{
 
     public void setPreview(PreviewerInterface preview) {
         this.preview = preview;
+        int pages = preview.getNumberOfPages();
+        if (pages > 0) {
+            SpinnerNumberModel model = ((SpinnerNumberModel) this.getPageSpinner().getModel());
+            model.setMinimum(1);
+            model.setMaximum(pages);
+            if (settings.pageNumber <= pages && settings.pageNumber > 0)
+                this.getPageSpinner().setValue(settings.pageNumber);
+            else
+                this.getPageSpinner().setValue(1);
+            // signPanel.paintPDFViewer();
+        }
     }
 
     public JScrollPane getImageScrollPane(ScrollableJPanel panel) {
@@ -224,6 +235,8 @@ public class SignPanel extends JPanel implements ConfigListener{
         if (page > 0) {
             renderPreviewViewer(page - 1);
             //setMinimumSize(getSize());
+        } else if (preview.getNumberOfPages() > 0) {
+            renderPreviewViewer(1);
         }
     }
 
@@ -237,8 +250,11 @@ public class SignPanel extends JPanel implements ConfigListener{
                 LOG.error("Error cambiando cambiando página", ex);
                 gui.showError(FirmadorUtils.getRootCause(ex));
             }
-            // if (preview.showSignLabelPreview())
-            previewSignLabel();
+            if (preview.showSignLabelPreview()) {
+                previewSignLabel();
+            } else {
+                signatureLabel.setVisible(false);
+            }
             showPreviewButtons();
         }
     }

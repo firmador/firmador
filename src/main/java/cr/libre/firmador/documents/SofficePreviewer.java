@@ -27,8 +27,6 @@ public class SofficePreviewer implements PreviewerInterface {
 
         File importfile = new File(fileName);
 
-        System.out.println();
-
         String separator = FileSystems.getDefault().getSeparator();
         String guestFilename = FilenameUtils.removeExtension(importfile.getName()) + ".pdf";
         String tmpdir = Files.createTempDirectory("firmadorlibre").toFile().getAbsolutePath();
@@ -76,7 +74,7 @@ public class SofficePreviewer implements PreviewerInterface {
     }
 
     public boolean showSignLabelPreview() {
-        return true;
+        return false;
     }
 
     @Override
