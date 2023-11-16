@@ -104,7 +104,7 @@ public class SettingsManager {
     }
 
     private String getConfigFile() throws IOException {
-        // Retorna el archivo de configuracion
+        // Returns the configuration file
         if (this.path == null) return this.getConfigFile("config.properties");
         else return this.path.toString();
     }
@@ -150,9 +150,10 @@ public class SettingsManager {
             }
         }
     }
+
     private List<String> getListFromString(String data, List<String> defaultdata){
         // Si no se tienen settings activados se ponen los que se definan por defecto en el código
-        if (data.isEmpty() && defaultdata != null && defaultdata.size() > 0) return defaultdata;
+        if (data.isEmpty() && defaultdata != null && !defaultdata.isEmpty()) return defaultdata;
         List<String> plugins = new ArrayList<String>();
         for (String item : Arrays.asList(data.split("\\|"))) if (!item.isEmpty()) plugins.add(item);
         return plugins;
@@ -203,7 +204,6 @@ public class SettingsManager {
         } catch (Exception e) {
             Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, e);
             e.printStackTrace();
-            fValue = 1;
         }
         return fValue;
     }
@@ -264,5 +264,11 @@ public class SettingsManager {
         this.settings = dev;
         return dev;
     }
+
+    public Properties getProps(){ return this.props; }
+
+    public void setProps(Properties props){ this.props = props; }
+
+    public void nullifySettingsVariable(){ this.settings = null; }
 
 }
