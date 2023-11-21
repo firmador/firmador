@@ -50,7 +50,7 @@ public class TestSettingsManager {
     private final String defaultHomePath = this.osName.contains("windows") ? System.getenv("APPDATA") : System.getProperty("user.home");
     private final String testHomePath = FileSystems.getDefault().getPath(defaultHomePath, "unit-tests").toString();
     private final String homePropertyName = this.osName.contains("windows") ? "APPDATA" : "user.home";
-    private final String configDirPathEnding = ".config/firmadorlibre";
+    private final String configDirPathEnding = this.osName.contains("windows") ? "firmadorlibre" : ".config/firmadorlibre";
     private final SettingsManager settingsManager = SettingsManager.getInstance();
 
     @RegisterExtension
@@ -70,7 +70,7 @@ public class TestSettingsManager {
     }
 
     private  HashMap<String, Object> getConfigFieldValuesForTesting() {
-        HashMap<String, Object> fieldValues = new HashMap<String, Object>() {
+        return new HashMap<String, Object>() {
             {
                 put("withoutVisibleSign", true);
                 put("overwriteSourceFile", true);
@@ -92,7 +92,6 @@ public class TestSettingsManager {
                 put("activePlugins", new ArrayList<String>(List.of("cr.libre.firmador.plugins.DummyPlugin")));
             }
         };
-        return fieldValues;
     }
 
     private Settings createNewConfigForTesting(HashMap<String, Object> fieldValues){
@@ -108,16 +107,24 @@ public class TestSettingsManager {
         return newConfig;
     }
 
+    private void setHomePath(String value){
+        if(this.osName.contains("windows")){
+            TestUtils.getModifiableEnvironment().put(this.homePropertyName, value);
+        }else {
+            System.setProperty(this.homePropertyName, value);
+        }
+    }
+
     @BeforeEach
     public void setTestHomePathAndResetSettingsManagerPathAndProps(){
-        System.setProperty(this.homePropertyName, this.testHomePath);
+        this.setHomePath(this.testHomePath);
         this.settingsManager.setPath((Path) null);
         this.settingsManager.setProps(new Properties());
     }
 
     @AfterEach
     public void deleteTestHomePathDirAndResetHomePath() {
-        System.setProperty(this.homePropertyName, this.defaultHomePath);
+        this.setHomePath(this.defaultHomePath);
         TestUtils.deleteDir(this.testHomePath);
     }
 
@@ -153,7 +160,7 @@ public class TestSettingsManager {
         String nonDirectoryTestPath = FileSystems.getDefault().getPath(this.testHomePath, "non-existent").toString();
         assertFalse(Files.exists(FileSystems.getDefault().getPath(nonDirectoryTestPath)));  // the directory does not exist yet
 
-        System.setProperty("user.home",  nonDirectoryTestPath);
+        this.setHomePath(nonDirectoryTestPath);
         AtomicReference<Path> resultPath = new AtomicReference<>();
         assertDoesNotThrow(() -> resultPath.set(this.settingsManager.getConfigDir()));
 
@@ -167,11 +174,11 @@ public class TestSettingsManager {
     void testGetConfigDirThrowsIOException(){
         AtomicReference<Path> resultPath = new AtomicReference<>();
         IOException exceptionThrown = assertThrows(IOException.class, () -> {
-            System.setProperty("user.home",  "/root/");  // so it will throw an exception because of permissions
+            this.setHomePath("/root/");  // so it will throw an exception because of permissions
             resultPath.set(this.settingsManager.getConfigDir());
         });
 
-        assertEquals("java.nio.file.AccessDeniedException: /root/.config", exceptionThrown.toString());
+        assertTrue(exceptionThrown.toString().contains("java.nio.file.AccessDeniedException: /root/"));
         assertNull(resultPath.get());  // it is null since it died before returning
     }
 
@@ -211,11 +218,11 @@ public class TestSettingsManager {
         String fileName = "testGetPathConfigFileThrowsIOException.config";
         AtomicReference<Path> resultPath = new AtomicReference<>();
         IOException exceptionThrown = assertThrows(IOException.class, () -> {
-            System.setProperty("user.home",  "/root/");  // so it will throw an exception because of permissions
+            this.setHomePath("/root/");  // so it will throw an exception because of permissions
             resultPath.set(this.settingsManager.getPathConfigFile(fileName));
         });
 
-        assertEquals("java.nio.file.AccessDeniedException: /root/.config", exceptionThrown.toString());
+        assertTrue(exceptionThrown.toString().contains("java.nio.file.AccessDeniedException: /root/"));
         assertNull(resultPath.get());  // it is null since it died before returning
     }
 
@@ -241,11 +248,11 @@ public class TestSettingsManager {
         String fileName = "testGetConfigFileWithNameParamThrowsIOException.config";
         AtomicReference<String> resultPath = new AtomicReference<>();
         IOException exceptionThrown = assertThrows(IOException.class, () -> {
-            System.setProperty("user.home",  "/root/");  // so it will throw an exception because of permissions
+            this.setHomePath("/root/"); // so it will throw an exception because of permissions
             resultPath.set(this.settingsManager.getConfigFile(fileName));
         });
 
-        assertEquals("java.nio.file.AccessDeniedException: /root/.config", exceptionThrown.toString());
+        assertTrue(exceptionThrown.toString().contains("java.nio.file.AccessDeniedException: /root/"));
         assertNull(resultPath.get());  // it is null since it died before returning
     }
 
@@ -376,14 +383,14 @@ public class TestSettingsManager {
         AtomicReference<String> resultPath = new AtomicReference<>();
         // it is expecting this kind of exception since it uses a special way to call the private method
         InvocationTargetException exceptionThrown = assertThrows(InvocationTargetException.class, () -> {
-            System.setProperty("user.home",  "/root/");  // so it will throw an exception because of permissions
+            this.setHomePath("/root/");  // so it will throw an exception because of permissions
             Method getConfigFilePrivateMethod = SettingsManager.class.getDeclaredMethod("getConfigFile");  // do this since it is a private method
             getConfigFilePrivateMethod.setAccessible(true);
             resultPath.set((String) getConfigFilePrivateMethod.invoke(this.settingsManager));
         });
 
         assertInstanceOf(IOException.class, exceptionThrown.getTargetException());  // the method threw the right type of exception at the end
-        assertEquals("java.nio.file.AccessDeniedException: /root/.config", exceptionThrown.getTargetException().toString());
+        assertTrue(exceptionThrown.getTargetException().toString().contains("java.nio.file.AccessDeniedException: /root/"));
         assertNull(resultPath.get());  // it is null since it died before returning
     }
 
@@ -426,13 +433,13 @@ public class TestSettingsManager {
 
         AtomicReference<Boolean> resultBoolean = new AtomicReference<>();
         assertDoesNotThrow(() -> {
-            System.setProperty("user.home",  "/root/");  // so it will throw an exception because of permissions
+            this.setHomePath("/root/");  // so it will throw an exception because of permissions
             resultBoolean.set(this.settingsManager.loadConfig());
         });
 
         assertFalse(this.settingsManagerLog.getEvents().isEmpty());  // something was logged
         LoggingEvent logEntry = this.settingsManagerLog.getEvents().get(0);
-        assertEquals("java.nio.file.AccessDeniedException: /root/.config", logEntry.getThrowable().toString());
+        assertTrue(logEntry.getThrowable().toString().contains("java.nio.file.AccessDeniedException: /root/"));
         assertInstanceOf(IOException.class, logEntry.getThrowable());  // the right type of exception happened
         assertFalse(resultBoolean.get());  // it is false since it is the default when an exception happens
         assertTrue(this.settingsManager.getProps().isEmpty());  // props continues to be empty, nothing was loaded
@@ -455,12 +462,12 @@ public class TestSettingsManager {
         File configFile = new File(FileSystems.getDefault().getPath(this.testHomePath, this.configDirPathEnding, "config.properties").toString());  // default file
         assertFalse(configFile.exists());  // the file does not exist yet
 
-        System.setProperty("user.home",  "/root/");  // so it will throw an exception because of permissions
+        this.setHomePath("/root/");  // so it will throw an exception because of permissions
         this.settingsManager.saveConfig();
 
         assertFalse(this.settingsManagerLog.getEvents().isEmpty());  // something was logged
         LoggingEvent logEntry = this.settingsManagerLog.getEvents().get(0);
-        assertEquals("java.nio.file.AccessDeniedException: /root/.config", logEntry.getThrowable().toString());
+        assertTrue(logEntry.getThrowable().toString().contains("java.nio.file.AccessDeniedException: /root/"));
         assertInstanceOf(IOException.class, logEntry.getThrowable());  // the right type of exception happened
         assertFalse(configFile.exists());  // the file was not created because of the exception
     }
@@ -535,7 +542,7 @@ public class TestSettingsManager {
         this.settingsManager.setProps(new Properties());  // clean properties to check later if they were loaded correctly
 
         this.settingsManager.setPath((Path) null);  // so it is created again with the new value required for it to fail
-        System.setProperty("user.home",  "/root/");  // so it will throw an exception, so config doesn't get loaded
+        this.setHomePath("/root/");  // so it will throw an exception, so config doesn't get loaded
         Settings resultSettings = this.settingsManager.getSettings();
 
         // the values returned are the default values and not the saved ones since the load failed
