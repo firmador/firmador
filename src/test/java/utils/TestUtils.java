@@ -32,13 +32,11 @@ public class TestUtils {
     public static Map<String, String> getModifiableEnvironment(){
         try {
             Class<?> pe = Class.forName("java.lang.ProcessEnvironment");
-            Method getenv = pe.getDeclaredMethod("getenv");
+            Method getenv = pe.getDeclaredMethod("getenv", String.class);
             getenv.setAccessible(true);
-            Object unmodifiableEnvironment = getenv.invoke(null);
-            Class<?> map = Class.forName("java.util.Collections$UnmodifiableMap");
-            Field m = map.getDeclaredField("m");
-            m.setAccessible(true);
-            return (Map) m.get(unmodifiableEnvironment);
+            Field props = pe.getDeclaredField("theCaseInsensitiveEnvironment");
+            props.setAccessible(true);
+            return (Map<String, String>) props.get(null);
         } catch (Exception e) {
             throw new RuntimeException("Not possible to get the modifiable environment", e);
         }
