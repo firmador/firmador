@@ -51,7 +51,7 @@ public class TestSettingsManager {
     private final String testHomePath = FileSystems.getDefault().getPath(defaultHomePath, "unit-tests").toString();
     private final String homePropertyName = this.osName.contains("windows") ? "APPDATA" : "user.home";
     private final String configDirPathEnding = this.osName.contains("windows") ? "firmadorlibre" : ".config/firmadorlibre";
-    private final String pathWithNoAccess = this.osName.contains("windows") ? System.getenv("SystemDrive") + "\\Windows\\System" : "/root/";
+    private final String pathWithNoAccess = this.osName.contains("windows") ? System.getenv("SystemDrive") + "\\Windows\\System" : "/root";
     private final SettingsManager settingsManager = SettingsManager.getInstance();
 
     @RegisterExtension
