@@ -5,7 +5,6 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 public class TestUtils {
@@ -29,14 +28,16 @@ public class TestUtils {
         }
     }
 
-    public static Map<String, String> getModifiableEnvironment(){
-        try {
-            Class<?> processEnvironment = Class.forName("java.lang.ProcessEnvironment");
-            Field envField = processEnvironment.getDeclaredField("theCaseInsensitiveEnvironment");
-            envField.setAccessible(true);
-            return (Map<String, String>) envField.get(null);
+    public static Map<String, String> getModifiableEnvironment()
+    {
+        try{
+            Map<String, String> env = System.getenv();
+            Class<?> cl = env.getClass();
+            Field field = cl.getDeclaredField("m");
+            field.setAccessible(true);
+            return (Map<String, String>) field.get(env);
         } catch (Exception e) {
-            throw new RuntimeException("Not possible to get the modifiable environment", e);
+                throw new RuntimeException("Not possible to get the modifiable environment", e);
+            }
         }
-    }
 }
