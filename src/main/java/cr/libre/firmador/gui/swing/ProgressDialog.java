@@ -35,6 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Image;
 
 import javax.swing.JProgressBar;
@@ -51,6 +52,15 @@ public class ProgressDialog extends JDialog {
      * Create the dialog.
      */
     public ProgressDialog(String title, Integer min, Integer max) {
+        initializeDialog(title, min, max);
+    }
+
+    public ProgressDialog(Frame frame, String title, Integer min, Integer max) {
+        super(frame, title);
+        initializeDialog(title, min, max);
+    }
+
+    public void initializeDialog(String title, Integer min, Integer max) {
         setBounds(100, 100, 450, 300);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -68,6 +78,7 @@ public class ProgressDialog extends JDialog {
         progressBar = new JProgressBar();
         progressBar.setMinimum(min);
         progressBar.setMaximum(max);
+        progressBar.setIndeterminate(true);
         GroupLayout glContentPane = new GroupLayout(contentPanel);
         glContentPane.setHorizontalGroup(
             glContentPane.createParallelGroup(Alignment.LEADING)

@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package cr.libre.firmador;
+package cr.libre.firmador.signers;
 
 import java.lang.invoke.MethodHandles;
 import java.security.Key;
@@ -26,10 +26,12 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
-
+import cr.libre.firmador.CertificateManager;
+import cr.libre.firmador.Settings;
 import cr.libre.firmador.cards.CardManager;
 import cr.libre.firmador.cards.CardManagerInterface;
 import cr.libre.firmador.cards.CardSignInfo;
+import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.ooxml.DSSDocumentOXML;
 import cr.libre.firmador.ooxml.TimeStampServiceCR;
@@ -61,7 +63,7 @@ import org.apache.poi.util.LocaleUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FirmadorOpenXmlFormat extends CRSigner {
+public class FirmadorOpenXmlFormat extends CRSigner implements DocumentSigner {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static Calendar nowtime = LocaleUtil.getLocaleCalendar(TimeZone.getTimeZone("America/Costa_Rica"));
     CAdESSignatureParameters parameters;
@@ -70,13 +72,13 @@ public class FirmadorOpenXmlFormat extends CRSigner {
 
     public FirmadorOpenXmlFormat(GUIInterface gui) {
         super(gui);
-        settings = SettingsManager.getInstance().getAndCreateSettings();
+
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card) {
+    public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card, Settings settings) {
         DSSDocument signedDocument = null;
         try {
-            signedDocument = this.sign_ooxlm(toSignDocument, card);
+            signedDocument = this.sign_ooxlm(toSignDocument, card, settings);
         } catch (Throwable e) {
             LOG.error("Error al intentar firmar documento OOXML ", e);
             gui.showError(FirmadorUtils.getRootCause(e));
@@ -84,7 +86,7 @@ public class FirmadorOpenXmlFormat extends CRSigner {
         return signedDocument;
     }
 
-    private DSSDocument sign_ooxlm(DSSDocument toSignDocument, CardSignInfo card) throws Throwable {
+    private DSSDocument sign_ooxlm(DSSDocument toSignDocument, CardSignInfo card, Settings settings) throws Throwable {
         CertificateManager certManager = new CertificateManager();
 
         Provider provider = Security.getProvider("SunRsaSign");
@@ -157,6 +159,11 @@ public class FirmadorOpenXmlFormat extends CRSigner {
 
     public DSSDocument extend(DSSDocument document) {
         return document;
+    }
+
+    public DSSDocument sign(Document toSignDocument, CardSignInfo card) {
+        DSSDocument doc = sign(toSignDocument.getDSSDocument(), card, toSignDocument.getSettings());
+        return doc;
     }
 
 }

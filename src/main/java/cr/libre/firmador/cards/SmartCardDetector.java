@@ -30,10 +30,10 @@ import javax.naming.ldap.Rdn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cr.libre.firmador.CRSigner;
 import cr.libre.firmador.ConfigListener;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
+import cr.libre.firmador.signers.CRSigner;
 
 @SuppressWarnings("restriction")
 public class SmartCardDetector implements  ConfigListener {

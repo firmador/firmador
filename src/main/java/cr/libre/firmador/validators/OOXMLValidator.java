@@ -16,6 +16,7 @@ import org.w3c.dom.NodeList;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
+import cr.libre.firmador.ooxml.DSSDocumentOXML;
 
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
@@ -33,6 +34,8 @@ import org.slf4j.LoggerFactory;
 import org.w3.x2000.x09.xmldsig.SignatureDocument;
 import org.w3.x2000.x09.xmldsig.SignatureType;
 
+import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.validation.reports.Reports;
 
 public class OOXMLValidator implements Validator {
@@ -47,13 +50,13 @@ public class OOXMLValidator implements Validator {
 
 
     @Override
-    public void loadDocumentPath(String fileName) {
+    public DSSDocument loadDocumentPath(String fileName) {
         try {
             documentooxml = OPCPackage.open(fileName, PackageAccess.READ);
             signatureConfig = new SignatureConfig();
             signatureConfig.setSecureValidation(false); // Set false because pptx has problems to validate
             signatureConfig.setAllowCRLDownload(true);
-            signatureConfig.setTspUrl(cr.libre.firmador.CRSigner.TSA_URL);
+            signatureConfig.setTspUrl(cr.libre.firmador.signers.CRSigner.TSA_URL);
             // signatureConfig.setTspOldProtocol(false);
             signatureConfig.setXadesDigestAlgo(HashAlgorithm.sha256);
             signatureConfig.setDigestAlgo(HashAlgorithm.sha256);
@@ -67,11 +70,13 @@ public class OOXMLValidator implements Validator {
             if (!signParts.isEmpty()) {
                 isSignedDocument = true;
             }
+            return new DSSDocumentOXML(documentooxml);
         } catch (Throwable e) {
             LOG.error("Documento no pudo ser analizado para su firma", e);
 
         }
 
+        return null;
     }
 
     private HashMap<SignaturePart, String> toList(Iterable<SignaturePart> signatureParts) {
@@ -109,7 +114,7 @@ public class OOXMLValidator implements Validator {
 
 
     @Override
-    public String getStringReport() {
+    public String getStringReport() throws Throwable {
         Settings settings = SettingsManager.getInstance().getAndCreateSettings();
         String report="";
         int position = 0;
@@ -170,6 +175,11 @@ public class OOXMLValidator implements Validator {
 
         }
         return report;
+    }
+
+    @Override
+    public int amountOfSignatures() {
+        return signParts.size();
     }
 
 }

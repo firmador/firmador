@@ -31,27 +31,27 @@ import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
+import cr.libre.firmador.Settings;
+import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.cards.CardSignInfo;
+import cr.libre.firmador.documents.Document;
+import cr.libre.firmador.documents.DocumentChangeListener;
 import cr.libre.firmador.documents.SupportedMimeTypeEnum;
-//import cr.libre.firmador.FirmadorCAdES;
-//import cr.libre.firmador.FirmadorOpenDocument;
-import cr.libre.firmador.FirmadorPAdES;
-import cr.libre.firmador.FirmadorUtils;
 //import cr.libre.firmador.FirmadorXAdES;
 //import cr.libre.firmador.Settings;
 //import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.plugins.PluginManager;
-
-
+import cr.libre.firmador.signers.FirmadorPAdES;
+import cr.libre.firmador.signers.FirmadorUtils;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 
-public class GUIShell implements GUIInterface {
+public class GUIShell implements GUIInterface, DocumentChangeListener {
 
-    //private Settings settings;
+    private Settings settings;
 
     public void loadGUI() {
-        //settings = SettingsManager.getInstance().getAndCreateSettings();
+        settings = SettingsManager.getInstance().getAndCreateSettings();
         String fileName = getDocumentToSign();
         if (fileName != null) {
             // FirmadorCAdES firmador = new FirmadorCAdES(this);
@@ -60,7 +60,7 @@ public class GUIShell implements GUIInterface {
             // FirmadorXAdES firmador = new FirmadorXAdES(this);
             CardSignInfo card = getPin();
             DSSDocument toSignDocument = new FileDocument(fileName);
-            DSSDocument signedDocument = firmador.sign(toSignDocument, card, null, null, null, null, null);
+            DSSDocument signedDocument = firmador.sign(toSignDocument, card, settings);
             card.destroyPin();
             if (signedDocument != null) {
                 fileName = getPathToSave("");
@@ -184,4 +184,15 @@ public class GUIShell implements GUIInterface {
 
     }
 
+    public void previewDone(Document document) {
+    };
+
+    public void validateDone(Document document) {
+    };
+
+    public void signDone(Document document) {
+    };
+
+    public void extendsDone(Document document) {
+    };
 }

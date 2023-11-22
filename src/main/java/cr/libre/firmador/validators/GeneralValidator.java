@@ -2,8 +2,10 @@ package cr.libre.firmador.validators;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import cr.libre.firmador.Report;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.TokenExtractionStrategy;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -15,6 +17,7 @@ import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonTrustedCertificateSource;
 import eu.europa.esig.dss.spi.x509.aia.DefaultAIASource;
+import eu.europa.esig.dss.validation.AdvancedSignature;
 import eu.europa.esig.dss.validation.CertificateVerifier;
 import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 import eu.europa.esig.dss.validation.SignaturePolicyProvider;
@@ -26,7 +29,7 @@ import eu.europa.esig.dss.xades.validation.XMLDocumentValidator;
 public class GeneralValidator implements Validator {
     private SignedDocumentValidator documentValidator;
 
-    public void loadDocumentPath(String fileName) {
+    public DSSDocument loadDocumentPath(String fileName) {
         CertificateSource trustedCertSource = new CommonTrustedCertificateSource();
         trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA RAIZ NACIONAL - COSTA RICA v2.crt")));
         trustedCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA RAIZ NACIONAL COSTA RICA.cer")));
@@ -65,6 +68,7 @@ public class GeneralValidator implements Validator {
                 documentValidator.setSignaturePolicyProvider(signaturePolicyProvider);
             }
         }
+        return fileDocument;
     }
 
     public Reports getReports() {
@@ -82,7 +86,20 @@ public class GeneralValidator implements Validator {
     }
 
     @Override
-    public String getStringReport() {
-        return "";
+    public String getStringReport() throws Throwable {
+       String reportstr="";
+        Reports validatorReports = this.getReports();
+        if (validatorReports != null) {
+            Report report = new Report(validatorReports);
+            reportstr = report.getReport();
+        }
+        
+        return reportstr;
+    }
+
+    @Override
+    public int amountOfSignatures() {
+        List<AdvancedSignature> signatures = documentValidator.getSignatures();
+        return signatures.size();
     }
 }

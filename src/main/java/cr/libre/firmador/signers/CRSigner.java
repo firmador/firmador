@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package cr.libre.firmador;
+package cr.libre.firmador.signers;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -41,6 +41,9 @@ import eu.europa.esig.dss.validation.CommonCertificateVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cr.libre.firmador.CertificateManager;
+import cr.libre.firmador.Settings;
+import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.gui.GUIInterface;
 
@@ -48,8 +51,19 @@ public class CRSigner {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     public static final String TSA_URL = "http://tsa.sinpe.fi.cr/tsaHttp/";
     protected GUIInterface gui;
+    protected Settings settings;
 
-    public CRSigner(GUIInterface gui) {
+    CRSigner(GUIInterface gui) {
+        this.gui = gui;
+        settings = SettingsManager.getInstance().getAndCreateSettings();
+    }
+
+    public void setSettings(Settings settings) {
+        this.settings = settings;
+
+    }
+
+    public void setGui(GUIInterface gui) {
         this.gui = gui;
     }
 
@@ -157,5 +171,7 @@ public class CRSigner {
         cv.setAIASource(new DefaultAIASource());
         return cv;
     }
+    
+
 
 }

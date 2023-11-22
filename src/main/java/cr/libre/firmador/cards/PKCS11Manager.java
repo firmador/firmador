@@ -34,9 +34,9 @@ import javax.security.auth.x500.X500Principal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cr.libre.firmador.CRSigner;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
+import cr.libre.firmador.signers.CRSigner;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSUtils;
 

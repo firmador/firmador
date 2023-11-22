@@ -57,12 +57,12 @@ import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.ConfigListener;
-import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.cards.SmartCardDetector;
 import cr.libre.firmador.documents.PreviewerInterface;
 import cr.libre.firmador.gui.GUIInterface;
+import cr.libre.firmador.signers.FirmadorUtils;
 
 
 public class SignPanel extends JPanel implements ConfigListener{
@@ -242,20 +242,22 @@ public class SignPanel extends JPanel implements ConfigListener{
 
     public void renderPreviewViewer(int page) {
         if (preview != null) {
-            try {
-                BufferedImage pageImage = preview.getPageImage(page);
-                imageLabel.setSize(pageImage.getWidth(), pageImage.getHeight());
-                imageLabel.setIcon(new ImageIcon(pageImage));
-            } catch (Throwable ex) {
-                LOG.error("Error cambiando cambiando página", ex);
-                gui.showError(FirmadorUtils.getRootCause(ex));
-            }
-            if (preview.showSignLabelPreview()) {
-                previewSignLabel();
-            } else {
-                signatureLabel.setVisible(false);
-            }
+            if (page < preview.getNumberOfPages()) {
+                try {
+                    BufferedImage pageImage = preview.getPageImage(page);
+                    imageLabel.setSize(pageImage.getWidth(), pageImage.getHeight());
+                    imageLabel.setIcon(new ImageIcon(pageImage));
+                } catch (Throwable ex) {
+                    LOG.error("Error cambiando cambiando página", ex);
+                    gui.showError(FirmadorUtils.getRootCause(ex));
+                }
+                if (preview.showSignLabelPreview()) {
+                    previewSignLabel();
+                } else {
+                    signatureLabel.setVisible(false);
+                }
             showPreviewButtons();
+        }
         }
     }
 

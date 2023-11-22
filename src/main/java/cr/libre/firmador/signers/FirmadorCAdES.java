@@ -17,14 +17,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package cr.libre.firmador;
+package cr.libre.firmador.signers;
 
 
 
 
 import java.lang.invoke.MethodHandles;
 
+import cr.libre.firmador.Settings;
+import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.cards.CardSignInfo;
+import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.gui.GUIInterface;
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
@@ -56,19 +59,16 @@ import eu.europa.esig.dss.validation.CertificateVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FirmadorCAdES extends CRSigner {
+public class FirmadorCAdES extends CRSigner implements DocumentSigner {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     CAdESSignatureParameters parameters;
 
-    private Settings settings;
-
     public FirmadorCAdES(GUIInterface gui) {
         super(gui);
-        settings = SettingsManager.getInstance().getAndCreateSettings();
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card) {
+    public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card, Settings settings) {
         parameters = new CAdESSignatureParameters();
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
@@ -164,6 +164,11 @@ public class FirmadorCAdES extends CRSigner {
                 "que no se trata de un problema de los servidores de Firma Digital o de un error de este programa.<br>");
         }
         return extendedDocument;
+    }
+
+    public DSSDocument sign(Document toSignDocument, CardSignInfo card) {
+        DSSDocument doc = sign(toSignDocument.getDSSDocument(), card, toSignDocument.getSettings());
+        return doc;
     }
 
 }

@@ -22,6 +22,7 @@ package cr.libre.firmador.gui;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import cr.libre.firmador.cards.CardSignInfo;
+import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 import cr.libre.firmador.plugins.PluginManager;
 
@@ -43,4 +44,12 @@ public interface GUIInterface {
     public boolean signDocuments();
     public void displayFunctionality(String functionality);
     public void nextStep(String msg);
+
+    void previewDone(Document document);
+
+    void validateDone(Document document);
+
+    void signDone(Document document);
+
+    void extendsDone(Document document);
 }

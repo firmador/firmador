@@ -13,4 +13,9 @@ public class ValidatorFactory {
         validator.loadDocumentPath(fileName);
         return validator;
     }
+
+    public static Validator getValidator(byte[] data, String name) {
+        return null;
+    }
+
 }
