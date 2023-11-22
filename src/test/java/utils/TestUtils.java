@@ -5,7 +5,6 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 public class TestUtils {
@@ -29,14 +28,23 @@ public class TestUtils {
         }
     }
 
-    public static Map<String, String> getModifiableEnvironment(){
+    public static Map<String, String> getModifiableEnvironment()
+    {
         try {
-            Class<?> processEnvironment = Class.forName("java.lang.ProcessEnvironment");
-            Field envField = processEnvironment.getDeclaredField("theCaseInsensitiveEnvironment");
-            envField.setAccessible(true);
-            return (Map<String, String>) envField.get(null);
+            String className = "java.util.Collections$UnmodifiableMap";
+            String fieldName = "m";
+            Map<String, String> env = System.getenv();
+            if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                // since the implementations of ProcessEnvironment are different between OS, the way of getting the editable environment is also different
+                className = "java.lang.ProcessEnvironment";
+                fieldName = "theCaseInsensitiveEnvironment";
+            }
+            Class<?> cl = Class.forName(className);
+            Field field = cl.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return (Map<String, String>) field.get(env);
         } catch (Exception e) {
-            throw new RuntimeException("Not possible to get the modifiable environment", e);
+                throw new RuntimeException("Not possible to get the modifiable environment", e);
+            }
         }
-    }
 }
