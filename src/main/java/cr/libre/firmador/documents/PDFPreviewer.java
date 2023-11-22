@@ -22,6 +22,7 @@ public class PDFPreviewer implements PreviewerInterface {
     public void loadDocument(String fileName) throws Throwable {
         document = PDDocument.load(new File(fileName));
         renderer = null;
+
     }
 
     @Override

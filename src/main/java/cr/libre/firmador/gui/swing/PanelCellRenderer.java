@@ -1,11 +1,19 @@
 package cr.libre.firmador.gui.swing;
 
 import java.awt.Component;
+import java.awt.Image;
+import java.awt.Label;
 import java.util.EventObject;
 
 import javax.swing.AbstractCellEditor;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
@@ -16,7 +24,19 @@ public class PanelCellRenderer extends AbstractCellEditor
 
     private static final long serialVersionUID = 1L;
     private DocumentCellPanel renderer = new DocumentCellPanel();
+    private DocumentTableButton btn;
 
+    static class TextRenderer extends DefaultTableCellRenderer {
+
+        public TextRenderer() {
+            super();
+        }
+
+        public void setValue(Object value) {
+
+            setText(((DocumentTableButton) value).getText());
+        }
+    }
 
     public PanelCellRenderer() {
     }
@@ -27,6 +47,8 @@ public class PanelCellRenderer extends AbstractCellEditor
     }
 
     public boolean isCellEditable(int row, int col) {
+        if (col == 0)
+            return false;
         return true;
     }
 
@@ -38,27 +60,36 @@ public class PanelCellRenderer extends AbstractCellEditor
     // JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
     // int column
     @Override
-    public Component getTableCellRendererComponent(JTable table, Object arg1, boolean isSelected, boolean arg3,
-            int arg4, int arg5) {
-        JButton tabelButton = renderer.getRemoveButton();
-        renderer.setDocument((Document) arg1);
-        renderer.setForeground(table.getSelectionForeground());
-        renderer.setBackground(table.getSelectionBackground());
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+            int row, int column) {
+        
+        DocumentTableButton btn = (DocumentTableButton) value;
+        renderer.setDocument(btn.getDocument());
+        TextRenderer render = new TextRenderer();
+        if (column == ListDocumentTableModel.DOCUMENT_POSITION) {
+            Icon icon = UIManager.getIcon("InternalFrame.closeIcon");
+            // Icon icon = new
+            // ImageIcon(this.getClass().getClassLoader().getResource("firmador.png"));
+            render.setIcon(icon);
 
-        return renderer;
+        } else
+        render.setText(btn.getText());
+
+        return render;
     }
 
 
 
 
     @Override
-    public Component getTableCellEditorComponent(JTable arg0, Object arg1, boolean arg2, int arg3, int arg4) {
-        return renderer;
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        btn = (DocumentTableButton) value;
+        return btn;
     }
 
     @Override
     public Object getCellEditorValue() {
-        return renderer.getDocument();
+        return btn;
     }
 
 }

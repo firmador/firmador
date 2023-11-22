@@ -59,6 +59,8 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         
         PanelCellRenderer panelCellRenderer = new PanelCellRenderer();
         // table.addMouseListener(panelCellRenderer);
+        table.setDefaultRenderer(DocumentTableButton.class, panelCellRenderer);
+        table.setDefaultEditor(DocumentTableButton.class, panelCellRenderer);
         table.setDefaultRenderer(Document.class, panelCellRenderer);
         table.setDefaultEditor(Document.class, panelCellRenderer);
 
@@ -93,11 +95,20 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         // table.setModel(model);
     }
 
+    public void removeDocument(Document document) {
+
+    }
+
+    public void updateDocument(Document document) {
+        model.fireTableDataChanged();
+    }
+
     public List<Document> getSelectedDocuments() {
         Document doctoadd;
         List<Document> selectedDocument = new ArrayList<Document>();
         for (int row : table.getSelectedRows()) {
-            doctoadd = (Document) model.getValueAt(row, ListDocumentTableModel.DOCUMENT_POSITION);
+            doctoadd = (Document) ((DocumentTableButton) model.getValueAt(row,
+                    ListDocumentTableModel.DOCUMENT_POSITION)).getDocument();
             selectedDocument.add(doctoadd);
         }
         return selectedDocument;
@@ -107,7 +118,8 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         Document returnedDocument = null;
         int rowcount = model.getRowCount();
         if (rowcount > 0)
-            returnedDocument = (Document) model.getValueAt(0, ListDocumentTableModel.DOCUMENT_POSITION);
+            returnedDocument = ((DocumentTableButton) model.getValueAt(0, ListDocumentTableModel.DOCUMENT_POSITION))
+                    .getDocument();
         return returnedDocument;
     }
 
@@ -117,7 +129,8 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         List<Document> selectedDocument = new ArrayList<Document>();
 
         while (position < rowcount) {
-            selectedDocument.add((Document) model.getValueAt(position, ListDocumentTableModel.DOCUMENT_POSITION));
+            selectedDocument.add((Document) ((DocumentTableButton) model.getValueAt(position,
+                    ListDocumentTableModel.DOCUMENT_POSITION)).getDocument());
             position += 1;
         }
         return selectedDocument;
@@ -125,7 +138,14 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
 
     @Override
     public void previewDone(Document document) {
-        // TODO Auto-generated method stub
+        int position = model.findByDocument(document);
+        if (position >= 0) {
+            DocumentTableButton btn = (DocumentTableButton) model.getValueAt(position,
+                    ListDocumentTableModel.NUM_PAGES_POSITION);
+            btn.setText("" + document.getNumberOfPages());
+            // model.setValueAt(document.amountOfSignatures(), position,
+            // ListDocumentTableModel.NUM_SIGNATURE_POSITION);
+        }
 
     }
 
@@ -133,7 +153,11 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
     public void validateDone(Document document) {
         int position = model.findByDocument(document);
         if (position >= 0) {
-            model.setValueAt(document.amountOfSignatures(), position, ListDocumentTableModel.NUM_SIGNATURE_POSITION);
+            DocumentTableButton btn = (DocumentTableButton) model.getValueAt(position,
+                    ListDocumentTableModel.NUM_SIGNATURE_POSITION);
+            btn.setText("" + document.amountOfSignatures());
+            // model.setValueAt(document.amountOfSignatures(), position,
+            // ListDocumentTableModel.NUM_SIGNATURE_POSITION);
         } else {
 
         }

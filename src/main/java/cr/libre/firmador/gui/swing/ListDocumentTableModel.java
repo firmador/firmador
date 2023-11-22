@@ -8,9 +8,11 @@ import cr.libre.firmador.documents.Document;
 
 @SuppressWarnings("serial")
 public class ListDocumentTableModel extends AbstractTableModel {
-    public static int DOCUMENT_POSITION = 4;
+    public static int DOCUMENT_POSITION = 6;
     public static int NUM_SIGNATURE_POSITION = 3;
-    private String[] columnNames = { "Nombre", "Ruta de salida", "Formato", "# firmas", "Acciones" };
+    public static int NUM_PAGES_POSITION = 4;
+    private String[] columnNames = { "Nombre", "Ruta de salida", "Formato", "# Firmas", "# Páginas", "Firmar",
+            "Quitar" };
     private List<Object[]> data = new ArrayList<>();
 
     ListDocumentTableModel() {
@@ -51,9 +53,15 @@ public class ListDocumentTableModel extends AbstractTableModel {
     public void addData(Document document) {
         Object[] datadocument = {
                 document.getName(),
-                document.getPathToSaveName(),
-                document.getMimeType().getExtension(),
-                "en cola", document
+                new DocumentTableButton(document, document.getPathToSaveName(),
+                        DocumentTableButton.CHOOSE_SAVE_FILENAME),
+                new DocumentTableButton(document, document.getMimeType().getExtension(),
+                        DocumentTableButton.CHANGE_FORMAT),
+                new DocumentTableButton(document, "en cola", DocumentTableButton.GO_TO_VALIDATE),
+
+                new DocumentTableButton(document, "en cola", DocumentTableButton.GO_TO_SIGN),
+                new DocumentTableButton(document, "Firmar", DocumentTableButton.SIGN_DOCUMENT),
+                new DocumentTableButton(document, "x", DocumentTableButton.REMOVE_DOCUMENT)
                 
         };
         int lastsize = data.size();
@@ -66,7 +74,7 @@ public class ListDocumentTableModel extends AbstractTableModel {
         int currentPosition = 0;
         while (currentPosition < data.size()) {
             Object[] obj = data.get(currentPosition);
-            Document listDoc = (Document) obj[DOCUMENT_POSITION];
+            Document listDoc = ((DocumentTableButton) obj[DOCUMENT_POSITION]).getDocument();
             if (listDoc == doc) {
                 position = currentPosition;
                 break;

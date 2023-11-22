@@ -67,6 +67,10 @@ public class Document {
 
     }
 
+    public GUIInterface getGUI() {
+        return this.gui;
+    }
+
     public void setSettings(Settings settings) {
         this.settings = settings;
         // destroy old signer first
@@ -153,6 +157,10 @@ public class Document {
         return pathToSaveName;
     }
 
+    public void setPathToSaveName(String pathToSaveName) {
+        this.pathToSave = pathToSaveName;
+    }
+
     public String getReport() {
         return report;
     }
@@ -228,6 +236,10 @@ public class Document {
 
     public boolean getIsReady() {
         return isReady;
+    }
+
+    public int getNumberOfPages() {
+        return preview.getNumberOfPages();
     }
     private void checkIsReady() {
         if (hasPreviewLoaded && documentIsValidate) {
