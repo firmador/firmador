@@ -1,10 +1,13 @@
-image: maven:3.9.5-amazoncorretto-21-debian
+image:
+  name: maven:3.9.5-amazoncorretto-21-debian
+  entrypoint: ['bash', '-c', 'useradd otheruser && exec su otheruser -c bash']  # use another user but root, so unit tests work fine
 
 stages:
   - build
   - test
 
 variables:
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
 
 cache:
@@ -15,12 +18,12 @@ cache:
 build:
   stage: build
   script:
-    - mvn compile
+    - mvn $MAVEN_CLI_OPTS build
 
 test:
   stage: test
   script:
-    - mvn test
+    - mvn $MAVEN_CLI_OPTS test
 
 
 
