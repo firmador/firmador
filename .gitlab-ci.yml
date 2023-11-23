@@ -1,5 +1,5 @@
 image:
-  name: maven:3.9.5-amazoncorretto-21-debian
+  name: maven:3.9.5-amazoncorretto-21-debian-bookworm
   entrypoint: ['bash', '-c', 'useradd -m testuser && chown -R testuser /builds && exec su testuser -c bash']  # use another user but root, so unit tests work fine with permissions checks
 
 stages:
