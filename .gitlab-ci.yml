@@ -1,6 +1,6 @@
 image:
-  name: maven:3.9.5-amazoncorretto-21-debian-bookworm
-  entrypoint: ['bash', '-c', 'useradd testuser && chown -R testuser /builds && chown -R testuser /home/testuser && exec su testuser -c bash']  # use another user but root, so unit tests work fine with permissions checks
+  name: maven:3.9.5-amazoncorretto-21-debian
+  entrypoint: ['bash', '-c', 'useradd testuser && chown -R testuser /builds && exec su testuser -c bash && chown -R testuser /home/testuser']  # use another user but root, so unit tests work fine with permissions checks
 
 stages:
   - compile
