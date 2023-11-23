@@ -1,6 +1,6 @@
 image:
   name: maven:3.9.5-amazoncorretto-21-debian
-  entrypoint: ['bash', '-c', 'useradd testuser && exec su testuser -c bash']  # use another user but root, so unit tests work fine with permissions checks
+  entrypoint: ['bash', '-c', 'useradd testuser && chown -R testuser /builds && exec su testuser -c bash']  # use another user but root, so unit tests work fine with permissions checks
 
 stages:
   - compile
@@ -12,8 +12,6 @@ variables:
 
 compile:
   stage: compile
-  before_script:
-    - chown -R testuser /builds
   script:
     - mvn $MAVEN_CLI_OPTS compile
 
