@@ -15,9 +15,6 @@ cache:
     - ~/.m2/repository/
     - ~/target/
 
-before_script:
-  - sudo /bin/chown otheruser /target
-
 compile:
   stage: compile
   script:
