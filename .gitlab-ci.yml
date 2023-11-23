@@ -1,6 +1,6 @@
 image:
   name: maven:3.9.5-amazoncorretto-21-debian
-  entrypoint: ['bash', '-c', 'useradd otheruser && exec su otheruser -c bash']  # use another user but root, so unit tests work fine with permissions checks
+  entrypoint: ['bash', '-c', 'useradd testuser && exec su testuser -c bash']  # use another user but root, so unit tests work fine with permissions checks
 
 stages:
   - compile
@@ -12,20 +12,19 @@ variables:
 
 cache:
   paths:
-    - .m2/repository/
-    - target/
+    - ~/.m2/repository/
+    - ~/target/
+
+before_script:
+  - sudo /bin/chown otheruser /target
 
 compile:
   stage: compile
-  before_script:
-    - sudo /bin/chown otheruser /target
   script:
     - mvn $MAVEN_CLI_OPTS compile
 
 test:
   stage: test
-  before_script:
-    - sudo /bin/chown otheruser /target
   script:
     - mvn $MAVEN_CLI_OPTS test
 
