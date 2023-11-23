@@ -212,5 +212,17 @@ public class GUIShell implements GUIInterface, DocumentChangeListener {
     public void doPreview(Document document) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public Settings getCurrentSettings() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void signDocument(Document document) {
+        // TODO Auto-generated method stub
+        
     };
 }

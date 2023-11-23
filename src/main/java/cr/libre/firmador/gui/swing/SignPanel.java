@@ -60,6 +60,7 @@ import cr.libre.firmador.ConfigListener;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.cards.SmartCardDetector;
+import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.documents.PreviewerInterface;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.signers.FirmadorUtils;
@@ -96,9 +97,14 @@ public class SignPanel extends JPanel implements ConfigListener{
     public GUIInterface gui;
     private SmartCardDetector smartCardDetector;
     private PreviewerInterface preview;
+    private Document currentDocument;
 
     public void setGUI(GUIInterface gui) {
         this.gui=gui;
+    }
+
+    public void setDocument(Document document) {
+        currentDocument = document;
     }
 
     public void setPreview(PreviewerInterface preview) {
@@ -331,7 +337,9 @@ public class SignPanel extends JPanel implements ConfigListener{
 
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                /*boolean ok =*/ gui.signDocuments();
+                currentDocument.setSettings(gui.getCurrentSettings());
+                gui.signDocument(currentDocument);
+
             }
         });
 

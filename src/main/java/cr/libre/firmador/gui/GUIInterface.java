@@ -21,6 +21,7 @@ package cr.libre.firmador.gui;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
+import cr.libre.firmador.Settings;
 import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.documents.SupportedMimeTypeEnum;
@@ -57,4 +58,8 @@ public interface GUIInterface {
     void validateAllDone();
 
     void signAllDone();
+
+    Settings getCurrentSettings();
+
+    void signDocument(Document document);
 }

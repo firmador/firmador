@@ -15,20 +15,8 @@ public class PanelCellRenderer extends AbstractCellEditor
         implements TableCellRenderer, TableCellEditor {
 
     private static final long serialVersionUID = 1L;
-    private DocumentCellPanel renderer = new DocumentCellPanel();
+
     private DocumentTableButton btn;
-
-    static class TextRenderer extends DefaultTableCellRenderer {
-
-        public TextRenderer() {
-            super();
-        }
-
-        public void setValue(Object value) {
-
-            setText(((DocumentTableButton) value).getText());
-        }
-    }
 
     public PanelCellRenderer() {
     }
@@ -56,8 +44,7 @@ public class PanelCellRenderer extends AbstractCellEditor
             int row, int column) {
         
         DocumentTableButton btn = (DocumentTableButton) value;
-        renderer.setDocument(btn.getDocument());
-        TextRenderer render = new TextRenderer();
+        DefaultTableCellRenderer render = new DefaultTableCellRenderer();
         if (column == ListDocumentTableModel.DOCUMENT_POSITION) {
             Icon icon = UIManager.getIcon("InternalFrame.closeIcon");
             // Icon icon = new

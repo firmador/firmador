@@ -5,7 +5,6 @@ import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import cr.libre.firmador.documents.Document;
-import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
 
 @SuppressWarnings("serial")
@@ -16,8 +15,6 @@ public class DocumentTableButton extends JButton {
     public static final int GO_TO_SIGN = 4;
     public static final int SIGN_DOCUMENT = 5;
     public static final int REMOVE_DOCUMENT = 6;
-
-    private int selectedAction = 0;
     private Document document;
 
     private class goToSignActionListener implements ActionListener {
@@ -54,8 +51,8 @@ public class DocumentTableButton extends JButton {
             // TODO Auto-generated method stub
             System.out.print(document.getName());
             GUISwing gui = (GUISwing) document.getGUI();
-            String savefile = gui.showSaveDialog(document.getName(), document.getExtension());
-            document.setPathToSaveName(savefile);
+            String savefile = gui.showSaveDialog(document.getPathName(), "-firmado", document.getExtension());
+            document.setPathToSave(savefile);
             ListDocumentTablePanel docpanel = gui.getListDocumentTablePanel();
             docpanel.updateDocument(document);
         }
@@ -142,7 +139,7 @@ public class DocumentTableButton extends JButton {
     public DocumentTableButton(Document document, String message, int selectedAction) {
         super(message);
         this.document = document;
-        this.selectedAction = selectedAction;
+
 
         switch (selectedAction) {
         case CHOOSE_SAVE_FILENAME:

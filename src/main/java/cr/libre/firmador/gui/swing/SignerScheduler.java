@@ -40,11 +40,12 @@ public class SignerScheduler extends Thread implements PropertyChangeListener, E
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private GUIInterface gui;
     private SignerWorker task;
+    private int MAX_FILES_PROCESS = 2;
     private Integer progressStatus = 0;
     private List<Document> files;
     private boolean stop = false;
     private Semaphore waitforfiles = new Semaphore(1);
-    private Semaphore maxoffilesperprocess = new Semaphore(1);
+    private Semaphore maxoffilesperprocess = new Semaphore(MAX_FILES_PROCESS);
     private SignProgressDialogWorker progressMonitor;
 
 
@@ -144,8 +145,11 @@ public class SignerScheduler extends Thread implements PropertyChangeListener, E
 
     public void done() {
         maxoffilesperprocess.release();
-        if (files.isEmpty()) {
+        int avalilable = maxoffilesperprocess.availablePermits();
+        if (avalilable == MAX_FILES_PROCESS) {
+
             progressMonitor.setVisible(false);
+            gui.signAllDone();
         }
     }
 

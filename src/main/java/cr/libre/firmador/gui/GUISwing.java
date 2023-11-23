@@ -118,6 +118,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     private Document document;
     private LoadProgressDialogWorker loadDialogWorker;
     private boolean forcePreview = false;
+    private List<String> currentSavedFilePath = new ArrayList<String>();
 
     public void loadGUI() {
         try {
@@ -377,6 +378,39 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         String savestrinfilename = lastFile.substring(0, lastFile.lastIndexOf(".")) + suffix + dotExtension;
         saveDialog.setFile(savestrinfilename);
         //saveDialog.setFilenameFilter(docSelector.getLoadDialog().getFilenameFilter()); // FIXME use filter based on file type containing the signature
+        saveDialog.setLocationRelativeTo(null);
+        saveDialog.setVisible(true);
+        saveDialog.dispose();
+        if (saveDialog.getFile() != null) {
+            fileName = saveDialog.getDirectory() + saveDialog.getFile();
+            lastDirectory = saveDialog.getDirectory();
+            lastFile = saveDialog.getFile();
+        }
+        return fileName;
+    }
+
+    public String showSaveDialog(String filepath, String suffix, String extension) {
+        gui.nextStep("Obteniendo ruta de guardado");
+        String lastDirectory = docSelector.getLastDirectory();
+        String lastFile = filepath;
+        String fileName = null;
+        FileDialog saveDialog = null;
+        saveDialog = new FileDialog(mainFrame, "Guardar documento", FileDialog.SAVE);
+        saveDialog.setDirectory(lastDirectory);
+        String dotExtension = "";
+        int lastDot = lastFile.lastIndexOf(".");
+        if (extension != "") {
+            suffix = ""; // XMLs could reuse same files, however
+            dotExtension = extension;
+        } else if (lastDot >= 0)
+            dotExtension = lastFile.substring(lastDot);
+
+        Path path = Paths.get(lastFile);
+        lastFile = path.getFileName().toString();
+        String savestrinfilename = lastFile.substring(0, lastFile.lastIndexOf(".")) + suffix + dotExtension;
+        saveDialog.setFile(savestrinfilename);
+        // saveDialog.setFilenameFilter(docSelector.getLoadDialog().getFilenameFilter());
+        // // FIXME use filter based on file type containing the signature
         saveDialog.setLocationRelativeTo(null);
         saveDialog.setVisible(true);
         saveDialog.dispose();
@@ -679,10 +713,12 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     public void signDone(Document document) {
         signedDocument = document.getSignedDocument();
         fileName = document.getPathToSaveName(); // addSuffixToFilePath(document.getPathName(), "-firmado");
+        String pathToSave = document.getPathToSave();
         try {
-            signedDocument.save(fileName);
+            signedDocument.save(pathToSave);
+            currentSavedFilePath.add(pathToSave);
         } catch (IOException e) {
-            LOG.error("Error Firmando Multiples documentos", e);
+            LOG.error("Error Firmando documentos", e);
             gui.showError(FirmadorUtils.getRootCause(e));
         }
     };
@@ -706,6 +742,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
             validatePanel.extendButton.setEnabled(false);
             gui.displayFunctionality("sign");
         }
+        signPanel.setDocument(document);
         signPanel.setPreview(document.getPreviewManager());
         signPanel.paintPDFViewer();
 
@@ -750,7 +787,15 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
 
     @Override
     public void signAllDone() {
-        // TODO Auto-generated method stub
+        String paths = "";
+        File pfile;
+        for (String path : currentSavedFilePath) {
+            pfile = new File(path);
+
+            paths += "<a href=\"" + pfile.toURI().normalize() + "\">" + path + "</a><br>";
+        }
+        currentSavedFilePath.clear();
+        showMessage("Documento guardado satisfactoriamente en<br>" + paths);
 
     }
 

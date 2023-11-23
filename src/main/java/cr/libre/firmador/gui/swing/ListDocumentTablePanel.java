@@ -135,6 +135,8 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
     }
 
     public void updateDocument(Document document) {
+
+        model.updateDocument(document);
         model.fireTableDataChanged();
     }
 

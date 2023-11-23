@@ -101,10 +101,12 @@ public class Document {
         if (settings.extendDocument && signedDocument != null) {
             this.extend();
         }
+        signDone();
     }
 
     public void extend() {
         signedDocument = signer.extend(signedDocument);
+        extendsDone();
     }
 
     public void setPrincipal() throws Throwable {
@@ -160,6 +162,15 @@ public class Document {
 
     public void setPathToSaveName(String pathToSaveName) {
         this.pathToSave = pathToSaveName;
+        File filep= new File(pathToSaveName);
+        this.pathToSaveName = filep.getName();
+    }
+
+    public void setPathToSave(String pathToSave) {
+        this.pathToSave = pathToSave;
+        File filep = new File(pathToSave);
+        this.pathToSaveName = filep.getName();
+
     }
 
     public String getReport() {

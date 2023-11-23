@@ -8,9 +8,14 @@ import cr.libre.firmador.documents.Document;
 
 @SuppressWarnings("serial")
 public class ListDocumentTableModel extends AbstractTableModel {
-    public static int DOCUMENT_POSITION = 6;
+    public static int NAME_POSITION = 0;
+    public static int SAVE_PATH = 1;
+    public static int DOCUMENT_MIMETYPE = 2;
     public static int NUM_SIGNATURE_POSITION = 3;
     public static int NUM_PAGES_POSITION = 4;
+    public static int SIGNATURE_BTN = 5;
+    public static int DOCUMENT_POSITION = 6;
+
     private String[] columnNames = { "Nombre", "Ruta de salida", "Formato", "# Firmas", "# Páginas", "Firmar",
             "Quitar" };
     private List<Object[]> data = new ArrayList<>();
@@ -99,6 +104,25 @@ public class ListDocumentTableModel extends AbstractTableModel {
 
     public void cleanDocuments() {
         data.clear();
+
+    }
+
+    public void updateDocument(Document document) {
+        int position = findByDocument(document);
+        if (position >= 0) {
+            Object[] docbtn = data.get(position);
+            docbtn[ListDocumentTableModel.NAME_POSITION] = document.getName();
+            ((DocumentTableButton) docbtn[ListDocumentTableModel.SAVE_PATH]).setText("" + document.getPathToSaveName());
+            ((DocumentTableButton) docbtn[ListDocumentTableModel.DOCUMENT_MIMETYPE])
+                    .setText("" + document.getExtension());
+            ((DocumentTableButton) docbtn[ListDocumentTableModel.NUM_SIGNATURE_POSITION])
+                    .setText("" + document.amountOfSignatures());
+            ((DocumentTableButton) docbtn[ListDocumentTableModel.NUM_PAGES_POSITION])
+                    .setText("" + document.getNumberOfPages());
+
+            data.set(position, docbtn);
+         
+        }
 
     }
 
