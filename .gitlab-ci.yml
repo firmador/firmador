@@ -1,18 +1,31 @@
-image:
-  name: maven:3.9.5-amazoncorretto-21-debian
-  entrypoint: ['bash', '-c', 'apt-get update && apt-get install -y libfontconfig1 && useradd -m testuser && exec su testuser -c bash']  # install required packages, use another user but root (so permission unit tests work fine) and setup right permissions to the new user for compiling
-
-stages:
-  - test
+default:
+  before_script: ['bash', '-c', 'apt-get update && apt-get install -y libfontconfig1 && useradd -m testuser && exec su testuser -c bash']  # install required packages, use another user but root (so permission unit tests work fine) and setup right permissions to the new user for compiling
 
 variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
   MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
 
-test:
-  stage: test
+java-8-linux:
+  image: maven:3.9-amazoncorretto-8-debian
   script:
     - mvn $MAVEN_CLI_OPTS test
+
+java-11-linux:
+  image: maven:3.9.5-amazoncorretto-11-debian
+  script:
+    - mvn $MAVEN_CLI_OPTS test
+
+java-17-linux:
+  image: maven:3.9.5-amazoncorretto-17-debian
+  script:
+    - mvn $MAVEN_CLI_OPTS test
+
+java-21-linux:
+  image: maven:3.9.5-amazoncorretto-21-debian
+  script:
+    - mvn $MAVEN_CLI_OPTS test
+
+
 
 
 
