@@ -3,7 +3,7 @@ image:
   entrypoint: ['bash', '-c', 'useradd otheruser && exec su otheruser -c bash']  # use another user but root, so unit tests work fine
 
 stages:
-  - build
+  - compile
   - test
 
 variables:
@@ -16,9 +16,9 @@ cache:
     - target/
 
 build:
-  stage: build
+  stage: compile
   script:
-    - mvn $MAVEN_CLI_OPTS build
+    - mvn $MAVEN_CLI_OPTS compile
 
 test:
   stage: test
