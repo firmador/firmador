@@ -14,15 +14,6 @@ stages:
   - -c
   - apt-get update && apt-get install -y libfontconfig1 && useradd -m testuser && exec su testuser -c bash
 
-# linux-java-8:
-#   image: 
-#     name: maven:3.9.5-amazoncorretto-8-debian
-#     entrypoint: *entry_point
-#   stage: test-linux
-#   script: 
-#     - mvn $MAVEN_CLI_OPTS test
-#   when: always
-
 linux-java-11:
   image: 
     name: maven:3.9.5-amazoncorretto-11-debian
