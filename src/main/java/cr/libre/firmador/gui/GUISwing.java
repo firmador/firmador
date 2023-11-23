@@ -251,13 +251,17 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
 
     public Settings getCurrentSettings() {
         Settings collectedSettings = new Settings(settings);
-        collectedSettings.reason=signPanel.getReasonField().getText();
-        collectedSettings.place=signPanel.getLocationField().getText();
-        collectedSettings.contact=signPanel.getContactInfoField().getText();
+        collectedSettings.reason = signPanel.getReasonField().getText().trim().replaceAll("\t", " ");
+        collectedSettings.place = signPanel.getLocationField().getText().trim().replaceAll("\t", " ");
+        collectedSettings.contact = signPanel.getContactInfoField().getText().trim().replaceAll("\t", " ");
         collectedSettings.image=System.getProperty("jnlp.signatureImage");
+        collectedSettings.signY = signPanel.getPDFVisibleSignatureY();
+        collectedSettings.signX = signPanel.getPDFVisibleSignatureX();
+        collectedSettings.pageNumber = (int) signPanel.getPageSpinner().getValue();
         if (collectedSettings.image == null) collectedSettings.image=settings.getImage();
         collectedSettings.hideSignatureAdvice=Boolean.getBoolean("jnlp.hideSignatureAdvice");
-        
+        collectedSettings.isVisibleSignature = !signPanel.getSignatureVisibleCheckBox().isSelected();
+
         return collectedSettings;
     }
     public boolean signDocuments() {
@@ -333,30 +337,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     }
 
 
-    // FIXME: Remove
-    public boolean doSignDocuments() {
-        boolean ok = false;
-        fileName = getDocumentToSign();
-        toSignDocument = new FileDocument(fileName);
-        CardSignInfo card = getPin();
-        signDocument(card, !signPanel.getSignatureVisibleCheckBox().isSelected(), true);
 
-        if (signedDocument != null) {
-            try {
-                fileName = getPathToSave(getExtension());
-                if (fileName != null) {
-                    signedDocument.save(fileName);
-                    showMessage("Documento guardado satisfactoriamente en<br>" + fileName);
-                    loadDocument(fileName);
-                }
-                ok = true;
-            } catch (IOException e) {
-                LOG.error("Error Firmando documento", e);
-                showError(FirmadorUtils.getRootCause(e));
-            }
-        }
-        return ok;
-    }
 
     public String showSaveDialog(String suffix, String extension) {
         gui.nextStep("Obteniendo ruta de guardado");
@@ -422,22 +403,6 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         return fileName;
     }
 
-    // FIXME: remove
-    public void signDocumentByPath(File file, CardSignInfo card) {
-        documenttosign = file.toString();
-        loadDocument(documenttosign);
-        toSignDocument = new FileDocument(documenttosign);
-        signDocument(card, !signPanel.getSignatureVisibleCheckBox().isSelected(), false);
-        if (signedDocument != null) {
-            fileName = addSuffixToFilePath(documenttosign, "-firmado");
-            try {
-                signedDocument.save(fileName);
-            } catch (IOException e) {
-                LOG.error("Error Firmando Multiples documentos", e);
-                gui.showError(FirmadorUtils.getRootCause(e));
-            }
-        }
-    }
 
 
     public void validateDocumentByPath(File file) {
@@ -540,48 +505,9 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         signPanel.docHideButtons();
     }
 
-    protected void signDocument(CardSignInfo card, Boolean visibleSignature) {
-        signedDocument = null;
-        SupportedMimeTypeEnum mimeType = MimeTypeDetector.detect(toSignDocument);
 
-        if (mimeType.isPDF()) {
-            FirmadorPAdES firmador = new FirmadorPAdES(gui);
-            firmador.setSettings(settings);
-            firmador.setVisibleSignature(visibleSignature);
-            firmador.addVisibleSignature((int)signPanel.getPageSpinner().getValue(), signPanel.calculateSignatureRectangle());
-            signedDocument = firmador.sign(toSignDocument, card, getCurrentSettings());
 
-        } else if (mimeType.isOpenDocument()) {
-            FirmadorOpenDocument firmador = new FirmadorOpenDocument(gui);
-            firmador.setSettings(settings);
-            signedDocument = firmador.sign(toSignDocument, card, settings);
-        } else if (mimeType.isOpenxmlformats()) {
-            FirmadorOpenXmlFormat firmador = new FirmadorOpenXmlFormat(gui);
-            firmador.setSettings(settings);
-            signedDocument = firmador.sign(toSignDocument, card, settings);
 
-        } else if (mimeType.isXML()
-                || signPanel.getAdESFormatButtonGroup().getSelection().getActionCommand().equals("XAdES")) {
-            FirmadorXAdES firmador = new FirmadorXAdES(gui);
-            firmador.setSettings(settings);
-            signedDocument = firmador.sign(toSignDocument, card, settings);
-        } else {
-            FirmadorCAdES firmador = new FirmadorCAdES(gui);
-            firmador.setSettings(settings);
-            signedDocument = firmador.sign(toSignDocument, card, settings);
-        }
-    }
-
-    protected void signDocument(CardSignInfo card, Boolean visibleSignature, Boolean destroyPin) {
-        if (card.isValid()) {
-            gui.nextStep("Inicio del proceso de firmado");
-            signDocument(card,  visibleSignature);
-            if(destroyPin) {
-                gui.nextStep("Destruyendo el pin");
-                card.destroyPin();
-            }
-        }
-    }
 
     public void showMessage(String message) {
         LOG.info("Mensaje de información mostrado: " + message);

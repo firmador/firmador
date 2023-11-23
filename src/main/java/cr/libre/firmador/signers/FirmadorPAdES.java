@@ -63,10 +63,8 @@ import org.slf4j.LoggerFactory;
 
 public class FirmadorPAdES extends CRSigner implements DocumentSigner {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private int page = 1, x, y;
-    PAdESSignatureParameters parameters;
-    private boolean visibleSignature = true;
 
+    PAdESSignatureParameters parameters;
 
     public FirmadorPAdES(GUIInterface gui) {
         super(gui);
@@ -99,29 +97,20 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
             return null;
         }
         try {
-            String reason = null;
-            if (docSettings.reason != null && !docSettings.reason.trim().isEmpty())
-                reason = docSettings.reason.replaceAll("\t", " ");
 
-            String location = null;
-            if (docSettings.place != null && !docSettings.place.trim().isEmpty())
-                location = docSettings.place.replaceAll("\t", " ");
-            String contactInfo = null;
-            if (docSettings.contact != null && !docSettings.contact.trim().isEmpty())
-                contactInfo = docSettings.contact.replaceAll("\t", " ");
             gui.nextStep("Obteniendo certificados de la tarjeta");
             CertificateToken certificate = privateKey.getCertificate();
-            parameters.setSignatureLevel(settings.getPAdESLevel());
+            parameters.setSignatureLevel(docSettings.getPAdESLevel());
             parameters.setAppName("Firmador " + settings.getVersion() + ", https://firmador.libre.cr");
             parameters.setContentSize(13312);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
-            if (reason != null)
-                parameters.setReason(reason);
-            if (location != null)
-                parameters.setLocation(location);
-            if (contactInfo != null)
-                parameters.setContactInfo(contactInfo);
+            if (!docSettings.reason.isEmpty())
+                parameters.setReason(docSettings.reason);
+            if (!docSettings.place.isEmpty())
+                parameters.setLocation(docSettings.place);
+            if (!docSettings.contact.isEmpty())
+                parameters.setContactInfo(docSettings.contact);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             gui.nextStep("Obteniendo servicios TSP");
             verifier = this.getCertificateVerifier(certificate);
@@ -129,9 +118,8 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
             service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
             service.setTspSource(onlineTSPSource);
             Date date = new Date();
-            if (visibleSignature)
-                appendVisibleSignature(certificate, date, reason, location, contactInfo, image,
-                        docSettings.hideSignatureAdvice);
+            if (docSettings.isVisibleSignature)
+                appendVisibleSignature(certificate, date, docSettings);
             gui.nextStep("Agregando representación gráfica de la firma");
             parameters.bLevel().setSigningDate(date);
 
@@ -259,24 +247,13 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
         return timestampedDocument;
     }
 
-    public void setVisibleSignature(boolean visibleSignature) {
-        this.visibleSignature = visibleSignature;
-    }
 
-    public void addVisibleSignature(int page, Rectangle rect) {
-        this.page = page;
-        this.x = rect.x;
-        this.y = rect.y;
-        //this.width=(float)rect.width;
-        //this.height=(float)rect.height;
-    }
-
-    private void appendVisibleSignature(CertificateToken certificate, Date date, String reason, String location, String contactInfo, String image, Boolean hideAdvice) {
+    private void appendVisibleSignature(CertificateToken certificate, Date date, Settings docSettings) {
         SignatureImageParameters imageParameters = new SignatureImageParameters();
         imageParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
         SignatureFieldParameters fparamet = imageParameters.getFieldParameters();
-        fparamet.setOriginX(this.x);
-        fparamet.setOriginY(this.y);
+        fparamet.setOriginX(docSettings.signX);
+        fparamet.setOriginY(docSettings.signY);
         //fparamet.setWidth(width);
         //fparamet.setHeight(height);
 
@@ -290,23 +267,25 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
         SimpleDateFormat fecha = new SimpleDateFormat(settings.getDateFormat());
         fecha.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
         String additionalText = "";
-        if (hideAdvice != null && !hideAdvice) {
+        if (docSettings.hideSignatureAdvice) {
             additionalText = settings.getDefaultSignMessage();
         }
         Boolean hasReason = false;
         Boolean hasLocation = false;
-        if (reason != null && !reason.trim().isEmpty()) {
+        if (docSettings.reason != null && !docSettings.reason.trim().isEmpty()) {
             hasReason = true;
-            additionalText = "Razón: " + reason + "\n";
+            additionalText = "Razón: " + docSettings.reason + "\n";
         }
-        if (location != null && !location.trim().isEmpty()) {
+        if (docSettings.place != null && !docSettings.place.trim().isEmpty()) {
             hasLocation = true;
-            if (hasReason) additionalText += "Lugar: " + location;
-            else additionalText = "Lugar: " + location;
+            if (hasReason) additionalText += "Lugar: " + docSettings.place;
+            else additionalText = "Lugar: " + docSettings.place;
         }
-        if (contactInfo != null && !contactInfo .trim().isEmpty()) {
-            if (hasReason || hasLocation) additionalText += "  Contacto: " + contactInfo;
-            else additionalText = "Contacto: " + contactInfo;
+        if (docSettings.contact != null && !docSettings.contact.trim().isEmpty()) {
+            if (hasReason || hasLocation)
+                additionalText += "  Contacto: " + docSettings.contact;
+            else
+                additionalText = "Contacto: " + docSettings.contact;
         }
         textParameters.setText(cn + "\n" + o + ", " + sn + ".\nFecha declarada: " + fecha.format(date) + "\n" + additionalText.replaceAll("\t", " "));
         textParameters.setTextColor(settings.getFontColor());
@@ -316,8 +295,9 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
 
         imageParameters.setTextParameters(textParameters);
         try {
-            if (image != null && !image.trim().isEmpty()) {
-                imageParameters.setImage(new InMemoryDocument(Utils.toByteArray(new URL(image).openStream())));
+            if (docSettings.image != null && !docSettings.image.trim().isEmpty()) {
+                imageParameters
+                        .setImage(new InMemoryDocument(Utils.toByteArray(new URL(docSettings.image).openStream())));
             }
 
         } catch (IOException e) {
@@ -325,7 +305,7 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
             e.printStackTrace();
         }
        // imageParameters.setImageScaling(ImageScaling.STRETCH);
-        imageParameters.getFieldParameters().setPage(page);
+       imageParameters.getFieldParameters().setPage(docSettings.pageNumber);
         parameters.setImageParameters(imageParameters);
     }
 
