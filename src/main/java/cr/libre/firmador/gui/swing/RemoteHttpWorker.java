@@ -48,11 +48,11 @@ import org.apache.hc.core5.util.TimeValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
+import cr.libre.firmador.signers.FirmadorUtils;
 
 public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

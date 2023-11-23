@@ -188,6 +188,7 @@ public class SettingsManager {
             conf.pAdESLevel = props.getProperty("padesLevel", conf.pAdESLevel);
             conf.xAdESLevel = props.getProperty("xadesLevel", conf.xAdESLevel);
             conf.cAdESLevel = props.getProperty("cadesLevel", conf.cAdESLevel);
+            conf.sofficePath = props.getProperty("sofficePath", conf.sofficePath);
             conf.extraPKCS11Lib = props.getProperty("extrapkcs11Lib");
             conf.pKCS12File = getListFromString(props.getProperty("pkcs12file", ""), conf.pKCS12File);
             conf.activePlugins = getListFromString(props.getProperty("plugins", ""), conf.activePlugins);
@@ -239,6 +240,8 @@ public class SettingsManager {
         setProperty("padesLevel", conf.pAdESLevel);
         setProperty("xadesLevel", conf.xAdESLevel);
         setProperty("cadesLevel", conf.cAdESLevel);
+        setProperty("sofficePath", conf.sofficePath);
+
         setProperty("plugins", getListRepr(conf.activePlugins));
         if (conf.extraPKCS11Lib != null && conf.extraPKCS11Lib != "") setProperty("extrapkcs11Lib", conf.extraPKCS11Lib);
         else if (props.get("extrapkcs11Lib") != null) props.remove("extrapkcs11Lib");

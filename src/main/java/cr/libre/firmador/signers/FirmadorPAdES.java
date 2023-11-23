@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package cr.libre.firmador;
+package cr.libre.firmador.signers;
 
 import java.awt.Font;
 import java.awt.Rectangle;
@@ -27,7 +27,9 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-
+import cr.libre.firmador.Settings;
+import cr.libre.firmador.cards.CardSignInfo;
+import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.gui.GUIInterface;
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
@@ -59,28 +61,27 @@ import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FirmadorPAdES extends CRSigner {
+public class FirmadorPAdES extends CRSigner implements DocumentSigner {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private int page = 1, x, y;
     PAdESSignatureParameters parameters;
     private boolean visibleSignature = true;
-    private Settings settings;
+
 
     public FirmadorPAdES(GUIInterface gui) {
         super(gui);
-        settings = SettingsManager.getInstance().getAndCreateSettings();
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card, String reason, String location, String contactInfo, String image, Boolean hideSignatureAdvice) {
-        CertificateVerifier verifier = this.getCertificateVerifier();
-        PAdESService service = new PAdESService(verifier);
-        service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
+    public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card, Settings docSettings) {
+
+        CertificateVerifier verifier = null;
+        PAdESService service = null;
         parameters = new PAdESSignatureParameters();
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
         gui.nextStep("Obteniendo servicios de verificación de certificados");
-        if (image == null) image = settings.getImage();
+        String image = docSettings.getImage();
         try {
             token = getSignatureConnection(card);
         } catch (DSSException|AlertException|Error e) {
@@ -98,6 +99,16 @@ public class FirmadorPAdES extends CRSigner {
             return null;
         }
         try {
+            String reason = null;
+            if (docSettings.reason != null && !docSettings.reason.trim().isEmpty())
+                reason = docSettings.reason.replaceAll("\t", " ");
+
+            String location = null;
+            if (docSettings.place != null && !docSettings.place.trim().isEmpty())
+                location = docSettings.place.replaceAll("\t", " ");
+            String contactInfo = null;
+            if (docSettings.contact != null && !docSettings.contact.trim().isEmpty())
+                contactInfo = docSettings.contact.replaceAll("\t", " ");
             gui.nextStep("Obteniendo certificados de la tarjeta");
             CertificateToken certificate = privateKey.getCertificate();
             parameters.setSignatureLevel(settings.getPAdESLevel());
@@ -105,41 +116,24 @@ public class FirmadorPAdES extends CRSigner {
             parameters.setContentSize(13312);
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
-            if (reason != null && !reason.trim().isEmpty()) parameters.setReason(reason.replaceAll("\t", " "));
-            if (location != null && !location.trim().isEmpty()) parameters.setLocation(location.replaceAll("\t", " "));
-            if (contactInfo != null && !contactInfo .trim().isEmpty()) parameters.setContactInfo(contactInfo.replaceAll("\t", " "));
+            if (reason != null)
+                parameters.setReason(reason);
+            if (location != null)
+                parameters.setLocation(location);
+            if (contactInfo != null)
+                parameters.setContactInfo(contactInfo);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
             gui.nextStep("Obteniendo servicios TSP");
+            verifier = this.getCertificateVerifier(certificate);
+            service = new PAdESService(verifier);
+            service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
             service.setTspSource(onlineTSPSource);
             Date date = new Date();
-            if (visibleSignature) appendVisibleSignature(certificate, date, reason, location, contactInfo, image, hideSignatureAdvice);
+            if (visibleSignature)
+                appendVisibleSignature(certificate, date, reason, location, contactInfo, image,
+                        docSettings.hideSignatureAdvice);
             gui.nextStep("Agregando representación gráfica de la firma");
             parameters.bLevel().setSigningDate(date);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
 
@@ -206,6 +200,7 @@ public class FirmadorPAdES extends CRSigner {
         OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
         service.setTspSource(onlineTSPSource);
         DSSDocument extendedDocument = null;
+        gui.nextStep("Extendiendo documento para agregar sello de tiempo e información de revocación");
         try {
             extendedDocument = service.extendDocument(document, parameters);
         } catch (Exception e) {
@@ -216,7 +211,10 @@ public class FirmadorPAdES extends CRSigner {
                 "Detalle del error: " + FirmadorUtils.getRootCause(e) + "<br><br>" +
                 "Inténtelo de nuevo más tarde. Si el problema persiste, compruebe su conexión o verifique<br>" +
                 "que no se trata de un problema de los servidores de Firma Digital o de un error de este programa.<br>");
+            gui.nextStep("Sello adicional completado");
         }
+        if (extendedDocument != null)
+            gui.nextStep("Sello adicional completado");
         return extendedDocument;
     }
 
@@ -272,15 +270,7 @@ public class FirmadorPAdES extends CRSigner {
         //this.width=(float)rect.width;
         //this.height=(float)rect.height;
     }
-/*
-    public void addVisibleSignature(int page, int x, int y) { // FIXME this seems unused
-        this.page = page;
-        this.x = x;
-        this.y = y;
-        this.width=settings.signwidth;
-        this.height=settings.signheight;
-    }
-*/
+
     private void appendVisibleSignature(CertificateToken certificate, Date date, String reason, String location, String contactInfo, String image, Boolean hideAdvice) {
         SignatureImageParameters imageParameters = new SignatureImageParameters();
         imageParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
@@ -339,4 +329,8 @@ public class FirmadorPAdES extends CRSigner {
         parameters.setImageParameters(imageParameters);
     }
 
+    public DSSDocument sign(Document toSignDocument, CardSignInfo card) {
+        DSSDocument signeddocument = sign(toSignDocument.getDSSDocument(), card, toSignDocument.getSettings());
+        return signeddocument;
+    }
 }

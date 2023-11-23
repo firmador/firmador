@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
-import cr.libre.firmador.FirmadorUtils;
 import cr.libre.firmador.gui.GUIInterface;
+import cr.libre.firmador.signers.FirmadorUtils;
 
 public class AboutLayout extends GroupLayout {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

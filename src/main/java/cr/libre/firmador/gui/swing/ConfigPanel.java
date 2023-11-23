@@ -87,6 +87,7 @@ public class ConfigPanel extends ScrollableJPanel {
     private PluginManagerPlugin pluginsActive;
     private ScrollableJPanel simplePanel, advancedPanel;
     private boolean isAdvancedOptions = false;
+    private JTextField sofficePath;
     private static final long serialVersionUID = 1L;
 
     private void createSimpleConfigPanel() {
@@ -133,6 +134,9 @@ public class ConfigPanel extends ScrollableJPanel {
         dateFormat = new JTextField();
         dateFormat.setText(this.settings.dateFormat);
         dateFormat.setToolTipText(settings.bundle.getString("must_be_compatible_with_java_date_formats"));
+        sofficePath = new JTextField();
+        sofficePath.setText(this.settings.sofficePath);
+
         defaultSignMessage = new JTextArea();
         defaultSignMessage.setText(this.settings.getDefaultSignMessage());
         defaultSignMessage.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, /* forward traversal textarea with tab */
@@ -284,6 +288,8 @@ public class ConfigPanel extends ScrollableJPanel {
         addSettingsBox(simplePanel, settings.bundle.getString("background_color")+":", backgroundColorPanel);
         addSettingsBox(simplePanel, settings.bundle.getString("signature_image")+":", imagePanel);
         addSettingsBox(simplePanel, settings.bundle.getString("listening_port")+":", portNumber);
+        addSettingsBox(simplePanel, "Ruta de Libreoffice (preview):", sofficePath);
+
         btFontColor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 showFontColorPicker();
@@ -466,6 +472,7 @@ public class ConfigPanel extends ScrollableJPanel {
         settings.pAdESLevel = pAdESLevel.getSelectedItem().toString();
         settings.xAdESLevel = xAdESLevel.getSelectedItem().toString();
         settings.cAdESLevel = cAdESLevel.getSelectedItem().toString();
+        settings.sofficePath = sofficePath.getText();
         settings.pDFImgScaleFactor = Float.parseFloat(pDFImgScaleFactor.getText().replace(",", "."));
         settings.pKCS12File = pKCS12Panel.getList();
         settings.extraPKCS11Lib = pKCS11ModuleText.getText();
@@ -502,6 +509,7 @@ public class ConfigPanel extends ScrollableJPanel {
         pAdESLevel.setSelectedItem(settings.pAdESLevel);
         xAdESLevel.setSelectedItem(settings.xAdESLevel);
         cAdESLevel.setSelectedItem(settings.cAdESLevel);
+        sofficePath.setText(settings.sofficePath);
         pDFImgScaleFactor.setText(String.format("%.2f", settings.pDFImgScaleFactor));
         if (settings.image != null) {
             imageText.setText(settings.image);

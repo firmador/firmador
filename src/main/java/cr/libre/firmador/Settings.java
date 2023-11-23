@@ -48,6 +48,7 @@ public class Settings {
     public boolean withoutVisibleSign = false;
     //public boolean useLTA = true;
     public boolean overwriteSourceFile = false;
+    public boolean hideSignatureAdvice = false;
     public String reason = "";
     public String place = "";
     public String contact = "";
@@ -72,6 +73,7 @@ public class Settings {
     public String pAdESLevel = "LTA";
     public String xAdESLevel = "LTA";
     public String cAdESLevel = "LTA";
+    public String sofficePath = "/usr/bin/soffice";
     public List<String> pKCS12File = new ArrayList<String>();
 
 
@@ -79,18 +81,56 @@ public class Settings {
     public List<String> availablePlugins = new ArrayList<String>();
 
     public float pDFImgScaleFactor = 1;
-
     public String language = "es";
     public String country = "CR";
     public Locale locale = new Locale(language, country);
 
     public ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+    public boolean extendDocument = true;
 
     public Settings() {
         activePlugins.add("cr.libre.firmador.plugins.DummyPlugin");
         activePlugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
         availablePlugins.add("cr.libre.firmador.plugins.DummyPlugin");
         availablePlugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
+    }
+
+    public Settings(Settings newsettings) {
+        newsettings.releaseUrlCheck = releaseUrlCheck;
+        newsettings.baseUrl = baseUrl;
+        newsettings.releaseUrl = releaseUrl;
+        newsettings.releaseSnapshotUrl = releaseSnapshotUrl;
+        newsettings.checksumUrl = checksumUrl;
+        newsettings.checksumSnapshotUrl = checksumSnapshotUrl;
+        newsettings.defaultDevelopmentVersion = defaultDevelopmentVersion;
+        newsettings.withoutVisibleSign = withoutVisibleSign;
+        newsettings.hideSignatureAdvice = hideSignatureAdvice;
+        newsettings.overwriteSourceFile = overwriteSourceFile;
+        newsettings.reason = reason;
+        newsettings.place = place;
+        newsettings.contact = contact;
+        newsettings.dateFormat = dateFormat;
+        newsettings.defaultSignMessage = defaultSignMessage;
+        newsettings.signWidth = signWidth;
+        newsettings.signHeight = signHeight;
+        newsettings.fontSize = fontSize;
+        newsettings.font = font;
+        newsettings.fontColor = fontColor;
+        newsettings.backgroundColor = backgroundColor;
+        newsettings.extraPKCS11Lib = extraPKCS11Lib;
+        newsettings.signX = signX;
+        newsettings.signY = signY;
+        newsettings.image = image;
+        newsettings.fontAlignment = fontAlignment;
+        newsettings.showLogs = showLogs;
+        newsettings.pageNumber = pageNumber;
+        newsettings.portNumber = portNumber;
+        newsettings.pAdESLevel = pAdESLevel;
+        newsettings.xAdESLevel = xAdESLevel;
+        newsettings.cAdESLevel = cAdESLevel;
+        newsettings.sofficePath = sofficePath;
+        newsettings.pDFImgScaleFactor = pDFImgScaleFactor;
+
     }
 
     public String getDefaultSignMessage() {

@@ -48,8 +48,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cr.libre.firmador.CardSignInfo;
-import cr.libre.firmador.SmartCardDetector;
+import cr.libre.firmador.cards.CardSignInfo;
+import cr.libre.firmador.cards.SmartCardDetector;
 
 public class RequestPinWindow extends JFrame {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -62,6 +62,7 @@ public class RequestPinWindow extends JFrame {
     private JLabel lblNewLabel;
     private final JLabel infotext = new JLabel("");
     protected List<CardSignInfo> cards;
+    private SmartCardDetector smartCardDetector = null;
 
     public RequestPinWindow() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -201,8 +202,12 @@ public class RequestPinWindow extends JFrame {
 
     public void inspectCardInfo() throws Throwable {
         try {
-            SmartCardDetector cardd = new SmartCardDetector();
-            cards= cardd.readSaveListSmartCard();
+            if (smartCardDetector == null) {
+                smartCardDetector = new SmartCardDetector();
+            } else
+                smartCardDetector.invalideCache();
+
+            cards = smartCardDetector.readSaveListSmartCard();
             comboBox.removeAllItems();
             //ComboBoxModel model = comboBox.getModel();
 

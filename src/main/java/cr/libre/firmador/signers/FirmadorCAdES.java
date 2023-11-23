@@ -17,17 +17,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package cr.libre.firmador;
+package cr.libre.firmador.signers;
 
 
 
 
 import java.lang.invoke.MethodHandles;
 
-
-
-
-
+import cr.libre.firmador.Settings;
+import cr.libre.firmador.SettingsManager;
+import cr.libre.firmador.cards.CardSignInfo;
+import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.gui.GUIInterface;
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
@@ -59,26 +59,22 @@ import eu.europa.esig.dss.validation.CertificateVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FirmadorCAdES extends CRSigner {
+public class FirmadorCAdES extends CRSigner implements DocumentSigner {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     CAdESSignatureParameters parameters;
 
-    private Settings settings;
-
     public FirmadorCAdES(GUIInterface gui) {
         super(gui);
-        settings = SettingsManager.getInstance().getAndCreateSettings();
     }
 
-    public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card) {
-        CertificateVerifier verifier = this.getCertificateVerifier();
-        CAdESService service = new CAdESService(verifier);
-
+    public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card, Settings settings) {
         parameters = new CAdESSignatureParameters();
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
+        CertificateVerifier verifier = null;
+        CAdESService service = null;
         gui.nextStep("Obteniendo servicios de verificación de certificados");
 
         try {
@@ -89,6 +85,7 @@ public class FirmadorCAdES extends CRSigner {
             return null;
         }
         DSSPrivateKeyEntry privateKey = null;
+        CertificateToken certificate = null;
         try {
             privateKey = getPrivateKey(token);
             gui.nextStep("Obteniendo manejador de llaves privadas");
@@ -99,75 +96,26 @@ public class FirmadorCAdES extends CRSigner {
         }
         try {
             gui.nextStep("Obteniendo certificados de la tarjeta");
-            CertificateToken certificate = privateKey.getCertificate();
+            certificate = privateKey.getCertificate();
             parameters.setSignatureLevel(settings.getCAdESLevel());
             parameters.setSignaturePackaging(SignaturePackaging.DETACHED);
 
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
-
-
-
-            OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
-            gui.nextStep("Obteniendo servicios TSP");
-            service.setTspSource(onlineTSPSource);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
-
-            gui.nextStep("Obteniendo estructura de datos a firmar");
-            signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
-        } catch (DSSException|Error e) {
+        } catch (DSSException | Error e) {
             LOG.error("Error al solicitar firma al dispositivo", e);
             gui.showError(FirmadorUtils.getRootCause(e));
+            return null;
         }
+        OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
+        gui.nextStep("Obteniendo servicios TSP");
+        verifier = this.getCertificateVerifier(certificate);
+        service = new CAdESService(verifier);
+        service.setTspSource(onlineTSPSource);
+        ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        gui.nextStep("Obteniendo estructura de datos a firmar");
+        signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
         try {
             gui.nextStep("Firmando estructura de datos");
             signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
@@ -216,6 +164,11 @@ public class FirmadorCAdES extends CRSigner {
                 "que no se trata de un problema de los servidores de Firma Digital o de un error de este programa.<br>");
         }
         return extendedDocument;
+    }
+
+    public DSSDocument sign(Document toSignDocument, CardSignInfo card) {
+        DSSDocument doc = sign(toSignDocument.getDSSDocument(), card, toSignDocument.getSettings());
+        return doc;
     }
 
 }

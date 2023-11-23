@@ -31,7 +31,6 @@ import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -40,8 +39,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -50,44 +47,47 @@ import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
-import eu.europa.esig.dss.model.InMemoryDocument;
-import org.apache.hc.core5.http.HttpStatus;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cr.libre.firmador.CardSignInfo;
+import cr.libre.firmador.cards.CardSignInfo;
+import cr.libre.firmador.documents.Document;
+import cr.libre.firmador.documents.DocumentChangeListener;
+import cr.libre.firmador.documents.MimeTypeDetector;
+import cr.libre.firmador.documents.PreviewScheduler;
+import cr.libre.firmador.documents.PreviewerInterface;
+import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 import cr.libre.firmador.ConfigListener;
-import cr.libre.firmador.FirmadorCAdES;
-import cr.libre.firmador.FirmadorOpenDocument;
-import cr.libre.firmador.FirmadorPAdES;
-import cr.libre.firmador.FirmadorUtils;
-import cr.libre.firmador.FirmadorXAdES;
-import cr.libre.firmador.Report;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
-import cr.libre.firmador.Validator;
+import cr.libre.firmador.validators.ValidateScheduler;
 import cr.libre.firmador.gui.swing.AboutLayout;
 import cr.libre.firmador.gui.swing.ConfigPanel;
 import cr.libre.firmador.gui.swing.CopyableJLabel;
 import cr.libre.firmador.gui.swing.DocumentSelectionGroupLayout;
-import cr.libre.firmador.gui.swing.ExecutorWorker;
-import cr.libre.firmador.gui.swing.ExecutorWorkerInterface;
-import cr.libre.firmador.gui.swing.ExecutorWorkerMultipleFiles;
-import cr.libre.firmador.gui.swing.ExecutorWorkerMultipleFilesValidator;
+import cr.libre.firmador.gui.swing.ListDocumentTablePanel;
+import cr.libre.firmador.gui.swing.LoadProgressDialogWorker;
 import cr.libre.firmador.gui.swing.LogHandler;
 import cr.libre.firmador.gui.swing.LoggingFrame;
 import cr.libre.firmador.gui.swing.RemoteDocInformation;
 import cr.libre.firmador.gui.swing.RemoteHttpWorker;
 import cr.libre.firmador.gui.swing.RequestPinWindow;
 import cr.libre.firmador.gui.swing.SignPanel;
+import cr.libre.firmador.gui.swing.SignProgressDialogWorker;
+import cr.libre.firmador.gui.swing.SignerScheduler;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import cr.libre.firmador.gui.swing.ValidatePanel;
 import cr.libre.firmador.plugins.PluginManager;
+import cr.libre.firmador.signers.FirmadorCAdES;
+import cr.libre.firmador.signers.FirmadorOpenDocument;
+import cr.libre.firmador.signers.FirmadorOpenXmlFormat;
+import cr.libre.firmador.signers.FirmadorPAdES;
+import cr.libre.firmador.signers.FirmadorUtils;
+import cr.libre.firmador.signers.FirmadorXAdES;
 
-public class GUISwing implements GUIInterface, ConfigListener{
+public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeListener {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private Boolean isRemote;
     public JTabbedPane frameTabbedPane;
@@ -107,10 +107,18 @@ public class GUISwing implements GUIInterface, ConfigListener{
     private SignPanel signPanel;
     private ValidatePanel validatePanel;
     private GUIInterface gui;
-    private ExecutorWorkerInterface worker = null;
     private JScrollPane loggingPane;
     private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     private int tabPosition;
+    private ListDocumentTablePanel listdocumentpanel;
+    private ValidateScheduler validatescheduler;
+    private SignerScheduler signerScheduler;
+    private PreviewScheduler previewScheduler;
+    private SignProgressDialogWorker progressDialogWorker;
+    private Document document;
+    private LoadProgressDialogWorker loadDialogWorker;
+    private boolean forcePreview = false;
+    private List<String> currentSavedFilePath = new ArrayList<String>();
 
     public void loadGUI() {
         try {
@@ -160,6 +168,8 @@ public class GUISwing implements GUIInterface, ConfigListener{
             validatePanel.initializeActions();
             validatePanel.hideButtons();
         }
+        listdocumentpanel = new ListDocumentTablePanel();
+        listdocumentpanel.setGUI(gui);
         JPanel aboutPanel = new JPanel();
         GroupLayout aboutLayout = new AboutLayout(aboutPanel);
         ((AboutLayout) aboutLayout).setInterface(this);
@@ -178,6 +188,8 @@ public class GUISwing implements GUIInterface, ConfigListener{
             frameTabbedPane.setToolTipTextAt(tabPosition, "<html>En esta pestaña se muestra información de validación<br>de las firmas digitales.</html>");
             tabPosition++;
         }
+
+        frameTabbedPane.add("Documentos", listdocumentpanel.getListDocumentScrollPane());
         frameTabbedPane.addTab(settings.bundle.getString("settings"), configPanel);
         frameTabbedPane.setToolTipTextAt(tabPosition, "<html>En esta pestaña se configura<br>aspectos de este programa.</html>");
         frameTabbedPane.addTab(settings.bundle.getString("about"), aboutPanel);
@@ -192,67 +204,71 @@ public class GUISwing implements GUIInterface, ConfigListener{
         mainFrame.setMinimumSize(mainFrame.getSize());
         mainFrame.setLocationByPlatform(true);
         mainFrame.setVisible(true);
+
+        progressDialogWorker = new SignProgressDialogWorker();
+        progressDialogWorker.execute();
+        loadDialogWorker = new LoadProgressDialogWorker(gui);
+        loadDialogWorker.execute();
+
+        validatescheduler = new ValidateScheduler(gui);
+        validatescheduler.start();
+
+        signerScheduler = new SignerScheduler(gui, progressDialogWorker);
+        signerScheduler.start();
+        previewScheduler = new PreviewScheduler(gui);
+        previewScheduler.start();
         if (documenttosign != null) loadDocument(documenttosign);
     }
 
-    public void loadDocument(String fileName) {
-        gui.nextStep("Cargando el documento");
-        if (!isRemote) {
-            clearElements();
-            docSelector.setLastFile(fileName);
-            docSelector.fileField.setText(Paths.get(fileName).getFileName().toString());
-            FileDocument mimeDocument = new FileDocument(fileName);
 
-            try {
-                if (mimeDocument.getMimeType() == MimeTypeEnum.PDF) doc = PDDocument.load(new File(fileName));
-                loadDocument(mimeDocument.getMimeType(), doc);
-            } catch (IOException e) {
-                LOG.error("Error Leyendo el archivo", e);
-                e.printStackTrace();
-                clearElements();
-            }
-            gui.nextStep("Validando firmas dentro del documento");
-            validateDocument(fileName);
-        } else {
-            HashMap<String, RemoteDocInformation> docmap = remote.getDocInformation();
-            docinfo = docmap.get(fileName);
-            PDDocument doc;
-            try {
-                byte[] data =IOUtils.toByteArray( docinfo.getInputdata());
-                toSignDocument = new InMemoryDocument(data, fileName);
-                MimeType mimeType = toSignDocument.getMimeType();
-                if (MimeTypeEnum.PDF == mimeType) {
-                    doc = PDDocument.load(data);
-                    loadDocument(mimeType, doc);
-                } else if (mimeType == MimeTypeEnum.XML || mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
-                    showMessage("Está intentando firmar un documento XML o un openDocument que no posee visualización");
-                    signPanel.getSignButton().setEnabled(true);
-                } else signPanel.shownonPDFButtons();
-            } catch (IOException e) {
-                LOG.error(settings.bundle.getString("error_loading_document"), e);
-                e.printStackTrace();
-            }
-        }
+    public SignPanel getSignPanel() {
+        return signPanel;
     }
 
-    public boolean signDocuments() {
-        if (!isRemote) {
-            worker = new ExecutorWorker(this);
-            SwingUtilities.invokeLater((Runnable) worker);
-            Thread.yield();
-            return true;
-        } else {
-            CardSignInfo card = getPin();
-            signDocument(card, true);
-            try {
-                signedDocument.writeTo(docinfo.getData());
-                docinfo.setStatus(HttpStatus.SC_SUCCESS);
-            } catch (IOException e) {
-                LOG.error(settings.bundle.getString("error_writing_document"), e);
-                e.printStackTrace();
-            }
-            return signedDocument != null;
+    public void loadDocument(String fileName) {
+        Document document = new Document(gui, fileName);
+        document.registerListener(this);
+        listdocumentpanel.addDocument(document);
+        validatescheduler.addDocument(document);
+        previewScheduler.addDocument(document);
+        gui.nextStep("Cargando el documento");
+        setActiveDocument();
+    }
+
+    public void signMultipleDocuments(File[] files) {
+        Document document;
+        List<Document> docs = new ArrayList<Document>();
+        for (File file : files) {
+            document = new Document(gui, file.getAbsolutePath());
+            document.registerListener(this);
+            docs.add(document);
+
         }
+        listdocumentpanel.addDocuments(docs);
+        validatescheduler.addDocuments(docs);
+        gui.displayFunctionality("document");
+        setActiveDocument();
+    }
+
+
+
+    public Settings getCurrentSettings() {
+        Settings collectedSettings = new Settings(settings);
+        collectedSettings.reason=signPanel.getReasonField().getText();
+        collectedSettings.place=signPanel.getLocationField().getText();
+        collectedSettings.contact=signPanel.getContactInfoField().getText();
+        collectedSettings.image=System.getProperty("jnlp.signatureImage");
+        if (collectedSettings.image == null) collectedSettings.image=settings.getImage();
+        collectedSettings.hideSignatureAdvice=Boolean.getBoolean("jnlp.hideSignatureAdvice");
+        
+        return collectedSettings;
+    }
+    public boolean signDocuments() {
+        List<Document> docToSign = listdocumentpanel.getSelectedDocuments();
+        signerScheduler.addDocuments(docToSign);
+        setActiveDocument();
+        return true;
+
     }
 
     public void setArgs(String[] args) {
@@ -295,6 +311,8 @@ public class GUISwing implements GUIInterface, ConfigListener{
     public void displayFunctionality(String functionality) {
         if (functionality.equalsIgnoreCase("sign")) frameTabbedPane.setSelectedIndex(0);
         else if (functionality.equalsIgnoreCase("validator")) frameTabbedPane.setSelectedIndex(1);
+        else if (functionality.equalsIgnoreCase("document"))
+            frameTabbedPane.setSelectedIndex(2);
     }
 
     public void updateConfig() {
@@ -318,6 +336,7 @@ public class GUISwing implements GUIInterface, ConfigListener{
     }
 
 
+    // FIXME: Remove
     public boolean doSignDocuments() {
         boolean ok = false;
         fileName = getDocumentToSign();
@@ -359,7 +378,8 @@ public class GUISwing implements GUIInterface, ConfigListener{
 
         Path path = Paths.get(lastFile);
         lastFile=path.getFileName().toString();
-        saveDialog.setFile(lastFile.substring(0, lastFile.lastIndexOf(".")) + suffix + dotExtension);
+        String savestrinfilename = lastFile.substring(0, lastFile.lastIndexOf(".")) + suffix + dotExtension;
+        saveDialog.setFile(savestrinfilename);
         //saveDialog.setFilenameFilter(docSelector.getLoadDialog().getFilenameFilter()); // FIXME use filter based on file type containing the signature
         saveDialog.setLocationRelativeTo(null);
         saveDialog.setVisible(true);
@@ -372,6 +392,40 @@ public class GUISwing implements GUIInterface, ConfigListener{
         return fileName;
     }
 
+    public String showSaveDialog(String filepath, String suffix, String extension) {
+        gui.nextStep("Obteniendo ruta de guardado");
+        String lastDirectory = docSelector.getLastDirectory();
+        String lastFile = filepath;
+        String fileName = null;
+        FileDialog saveDialog = null;
+        saveDialog = new FileDialog(mainFrame, "Guardar documento", FileDialog.SAVE);
+        saveDialog.setDirectory(lastDirectory);
+        String dotExtension = "";
+        int lastDot = lastFile.lastIndexOf(".");
+        if (extension != "") {
+            suffix = ""; // XMLs could reuse same files, however
+            dotExtension = extension;
+        } else if (lastDot >= 0)
+            dotExtension = lastFile.substring(lastDot);
+
+        Path path = Paths.get(lastFile);
+        lastFile = path.getFileName().toString();
+        String savestrinfilename = lastFile.substring(0, lastFile.lastIndexOf(".")) + suffix + dotExtension;
+        saveDialog.setFile(savestrinfilename);
+        // saveDialog.setFilenameFilter(docSelector.getLoadDialog().getFilenameFilter());
+        // // FIXME use filter based on file type containing the signature
+        saveDialog.setLocationRelativeTo(null);
+        saveDialog.setVisible(true);
+        saveDialog.dispose();
+        if (saveDialog.getFile() != null) {
+            fileName = saveDialog.getDirectory() + saveDialog.getFile();
+            lastDirectory = saveDialog.getDirectory();
+            lastFile = saveDialog.getFile();
+        }
+        return fileName;
+    }
+
+    // FIXME: remove
     public void signDocumentByPath(File file, CardSignInfo card) {
         documenttosign = file.toString();
         loadDocument(documenttosign);
@@ -388,20 +442,9 @@ public class GUISwing implements GUIInterface, ConfigListener{
         }
     }
 
-    public void signMultipleDocuments(File[] files) {
-        worker = new ExecutorWorkerMultipleFiles(this, files);
-        SwingUtilities.invokeLater((Runnable) worker);
-        Thread.yield();
-    }
 
     public void validateDocumentByPath(File file) {
-        validateDocument(file.toString());
-    }
-
-    public void validateMultipleDocuments(File[] files) {
-        worker = new ExecutorWorkerMultipleFilesValidator(this, files);
-        SwingUtilities.invokeLater((Runnable) worker);
-        Thread.yield();
+        // TODO: Hacerlo pero solo incluyendo este path
     }
 
     public void clearElements() {
@@ -420,9 +463,14 @@ public class GUISwing implements GUIInterface, ConfigListener{
     public String getExtension() {
         String extension = "";
         if (toSignDocument != null) {
-            MimeType mimeType = toSignDocument.getMimeType();
-            if (mimeType == MimeTypeEnum.XML) extension = ".xml";
-            else if (mimeType != MimeTypeEnum.PDF && !(mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT)) extension = ".p7s"; // p7s detached, p7m enveloping
+            SupportedMimeTypeEnum mimeType = MimeTypeDetector.detect(toSignDocument);
+            if (mimeType.isXML())
+                extension = ".xml";
+            else if (mimeType.isPDF() || mimeType.isOpenDocument() || mimeType.isOpenxmlformats()) {
+                extension = "." + mimeType.getExtension().toLowerCase();
+            } else {
+                extension = ".p7s";
+            }
         }
         return extension;
     }
@@ -488,103 +536,42 @@ public class GUISwing implements GUIInterface, ConfigListener{
             return outdoc;
         }
 
-    public Boolean validateDocument(Validator validator){
-        Boolean ok = false;
-        if (validator.isSigned()) {
-            validatePanel.extendButton.setEnabled(true);
-            gui.displayFunctionality("validator");
-            ok = true;
-        } else {
-            validatePanel.reportLabel.setText("");
-            validatePanel.extendButton.setEnabled(false);
-            gui.displayFunctionality("sign");
-            return false;
-        }
-        try {
-            Report report = new Report(validator.getReports());
-            validatePanel.reportLabel.setText(report.getReport()); // FIXME don't overwrite previous report
-        } catch (Exception e) {
-            LOG.error("Validando documento", e);
-            e.printStackTrace();
-            validatePanel.reportLabel.setText("Error al generar reporte.<br>" +
-                "Agradeceríamos que informara sobre este inconveniente<br>" +
-                "a los desarrolladores de la aplicación para repararlo.");
-            ok = false;
-        }
-        return ok;
-    }
 
-    public void validateDocument(String fileName) {
-        Validator validator = null;
-        try {
-            validator = new Validator(fileName);
-            if (validator != null) validateDocument(validator);
-        } catch (UnsupportedOperationException e) {
-            LOG.error("Error documento inválido " + fileName, e);
-            showError(e);
-        } catch (Exception e) {
-            LOG.error("Error validando documento desde archivo " + fileName, e);
-            e.printStackTrace();
-            validatePanel.reportLabel.setText("Error al validar documento.<br>" +
-                "Agradeceríamos que informara sobre este inconveniente<br>" +
-                "a los desarrolladores de la aplicación para repararlo.");
-            validatePanel.reportLabel.setText("");
-            validatePanel.extendButton.setEnabled(false);
-            gui.displayFunctionality("sign");
-        }
-    }
 
-    public void loadDocumentPDF(PDDocument doc) throws IOException {
+    public void loadPreview(PreviewerInterface preview) {
         signPanel.getSignButton().setEnabled(true);
         signPanel.docHideButtons();
-        int pages = doc.getNumberOfPages();
-        renderer = signPanel.getRender(doc);
-        if (pages > 0) {
-            SpinnerNumberModel model = ((SpinnerNumberModel)signPanel.getPageSpinner().getModel());
-            model.setMinimum(1);
-            model.setMaximum(pages);
-            if (settings.pageNumber <= pages && settings.pageNumber > 0) signPanel.getPageSpinner().setValue(settings.pageNumber);
-            else signPanel.getPageSpinner().setValue(1);
-            signPanel.paintPDFViewer();
-        }
-        signPanel.showSignButtons();
-    }
-
-    public void loadDocument(MimeType mimeType, PDDocument doc) {
-        signPanel.setDoc(doc);
-        signPanel.getSignButton().setEnabled(true);
-        try {
-            signPanel.docHideButtons();
-            if (mimeType == MimeTypeEnum.PDF) loadDocumentPDF(doc);
-            else signPanel.shownonPDFButtons();
-            //else if (mimeType == MimeTypeEnum.XML) { /* Nothing for now */ }
-            //else if (mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) { /* Nothing for now */ }
-            mainFrame.pack();
-            mainFrame.setMinimumSize(mainFrame.getSize());
-        } catch (Exception e) {
-            LOG.error("Error cargando Documento con mimeType", e);
-            gui.showError(FirmadorUtils.getRootCause(e));
-        }
     }
 
     protected void signDocument(CardSignInfo card, Boolean visibleSignature) {
         signedDocument = null;
-        MimeType mimeType = toSignDocument.getMimeType();
-        if (mimeType == MimeTypeEnum.PDF) {
+        SupportedMimeTypeEnum mimeType = MimeTypeDetector.detect(toSignDocument);
+
+        if (mimeType.isPDF()) {
             FirmadorPAdES firmador = new FirmadorPAdES(gui);
+            firmador.setSettings(settings);
             firmador.setVisibleSignature(visibleSignature);
             firmador.addVisibleSignature((int)signPanel.getPageSpinner().getValue(), signPanel.calculateSignatureRectangle());
-            signedDocument = firmador.sign(toSignDocument, card, signPanel.getReasonField().getText(), signPanel.getLocationField().getText(),
-                signPanel.getContactInfoField().getText(), System.getProperty("jnlp.signatureImage"), Boolean.getBoolean("jnlp.hideSignatureAdvice"));
-        } else if (mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
+            signedDocument = firmador.sign(toSignDocument, card, getCurrentSettings());
+
+        } else if (mimeType.isOpenDocument()) {
             FirmadorOpenDocument firmador = new FirmadorOpenDocument(gui);
-            signedDocument = firmador.sign(toSignDocument, card);
-        } else if (mimeType == MimeTypeEnum.XML || signPanel.getAdESFormatButtonGroup().getSelection().getActionCommand().equals("XAdES")) {
+            firmador.setSettings(settings);
+            signedDocument = firmador.sign(toSignDocument, card, settings);
+        } else if (mimeType.isOpenxmlformats()) {
+            FirmadorOpenXmlFormat firmador = new FirmadorOpenXmlFormat(gui);
+            firmador.setSettings(settings);
+            signedDocument = firmador.sign(toSignDocument, card, settings);
+
+        } else if (mimeType.isXML()
+                || signPanel.getAdESFormatButtonGroup().getSelection().getActionCommand().equals("XAdES")) {
             FirmadorXAdES firmador = new FirmadorXAdES(gui);
-            signedDocument = firmador.sign(toSignDocument, card);
+            firmador.setSettings(settings);
+            signedDocument = firmador.sign(toSignDocument, card, settings);
         } else {
             FirmadorCAdES firmador = new FirmadorCAdES(gui);
-            signedDocument = firmador.sign(toSignDocument, card);
+            firmador.setSettings(settings);
+            signedDocument = firmador.sign(toSignDocument, card, settings);
         }
     }
 
@@ -691,7 +678,134 @@ public class GUISwing implements GUIInterface, ConfigListener{
     }
 
     public void nextStep(String msg) {
-        if (worker != null) worker.nextStep(msg);
+        progressDialogWorker.setNote(msg);
     }
 
+    @Override
+    public void loadDocument(SupportedMimeTypeEnum mimeType, PDDocument doc) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void signDocument(Document document) {
+        signerScheduler.addDocument(document);
+    }
+
+    public void previewDone(Document document) {
+        setActiveDocument();
+        if (document.getIsReady()) {
+            loadActiveDocument(document);
+            loadDialogWorker.setVisible(false);
+        }
+        if (forcePreview) {
+            forcePreview = false;
+            loadDialogWorker.setVisible(false);
+            gui.displayFunctionality("sign");
+        }
+    };
+
+    public void validateDone(Document document) {
+        setActiveDocument();
+        if (document.getIsReady()) {
+            loadActiveDocument(document);
+            loadDialogWorker.setVisible(false);
+        }
+
+    };
+
+    public void signDone(Document document) {
+        signedDocument = document.getSignedDocument();
+        fileName = document.getPathToSaveName(); // addSuffixToFilePath(document.getPathName(), "-firmado");
+        String pathToSave = document.getPathToSave();
+        try {
+            signedDocument.save(pathToSave);
+            currentSavedFilePath.add(pathToSave);
+        } catch (IOException e) {
+            LOG.error("Error Firmando documentos", e);
+            gui.showError(FirmadorUtils.getRootCause(e));
+        }
+    };
+
+    public void extendsDone(Document document) {
+        setActiveDocument();
+    };
+
+    public void signAllDocuments() {
+        signerScheduler.addDocuments(listdocumentpanel.getAllDocuments());
+
+    }
+
+    public void loadActiveDocument(Document document) {
+        if (document.isValid()) {
+            gui.displayFunctionality("validator");
+            validatePanel.reportLabel.setText(document.getReport());
+            validatePanel.extendButton.setEnabled(true);
+        } else {
+            validatePanel.reportLabel.setText("");
+            validatePanel.extendButton.setEnabled(false);
+            gui.displayFunctionality("sign");
+        }
+        signPanel.setDocument(document);
+        signPanel.setPreview(document.getPreviewManager());
+        signPanel.paintPDFViewer();
+
+        SupportedMimeTypeEnum mimeType = document.getMimeType();
+
+        signPanel.getSignButton().setEnabled(true);
+        try {
+            if (mimeType.isPDF()) {
+                signPanel.showSignButtons();
+            } else if (mimeType.isOpenxmlformats()) {
+                signPanel.getSignButton().setEnabled(true);
+            } else
+                signPanel.shownonPDFButtons();
+            mainFrame.pack();
+            mainFrame.setMinimumSize(mainFrame.getSize());
+        } catch (Exception e) {
+            LOG.error("Error cargando Documento con mimeType", e);
+            gui.showError(FirmadorUtils.getRootCause(e));
+        }
+    }
+
+    public void setActiveDocument() {
+        Document currentActiveDocument = listdocumentpanel.getActiveDocument();
+        if (currentActiveDocument != document) {
+            document = currentActiveDocument;
+            setActiveDocument(document);
+        }
+    }
+
+    public void setActiveDocument(Document document) {
+        loadDialogWorker.setVisible(true);
+    }
+
+    public ListDocumentTablePanel getListDocumentTablePanel() {
+        return listdocumentpanel;
+    }
+
+    @Override
+    public void validateAllDone() {
+        loadDialogWorker.setVisible(false);
+    }
+
+    @Override
+    public void signAllDone() {
+        String paths = "";
+        File pfile;
+        for (String path : currentSavedFilePath) {
+            pfile = new File(path);
+
+            paths += "<a href=\"" + pfile.toURI().normalize() + "\">" + path + "</a><br>";
+        }
+        currentSavedFilePath.clear();
+        showMessage("Documento guardado satisfactoriamente en<br>" + paths);
+
+    }
+
+    @Override
+    public void doPreview(Document document) {
+        forcePreview = true;
+        previewScheduler.addDocument(document);
+
+    }
 }
