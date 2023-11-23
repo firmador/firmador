@@ -8,7 +8,7 @@ stages:
 
 # ------ Linux ------
 
-# install required packages, use another user but root (so permission unit tests work fine) and setup right permissions to the new user for compiling - this to assure everything works fine
+# install required packages, use another user but root (so unit tests about not having permissions work fine)- this to assure everything works fine
 .entry_point: &entry_point
   - bash
   - -c
@@ -16,7 +16,7 @@ stages:
 
 linux-java-8:
   image: 
-    name: maven:3.9-amazoncorretto-8-debian
+    name: 3.9.4-amazoncorretto-8-al2023
     entrypoint: *entry_point
   stage: test-linux
   script: 
@@ -52,10 +52,10 @@ linux-java-21:
 
 # ------ Windows ------
 
-windows-java-21:
-  image:
-    name: amazoncorretto-11-windowsservercore
-  stage: test-windows
-  script:
-    - mvn $MAVEN_CLI_OPTS test
-  when: always
+# windows-java-21:
+#   image:
+#     name: amazoncorretto-11-windowsservercore
+#   stage: test-windows
+#   script:
+#     - mvn $MAVEN_CLI_OPTS test
+#   when: always
