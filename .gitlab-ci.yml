@@ -1,8 +1,11 @@
-image: maven:latest
+image: maven:3.9.5-amazoncorretto-21-debian
 
 stages:
   - build
   - test
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
 
 cache:
   paths:
