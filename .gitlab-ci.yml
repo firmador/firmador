@@ -3,17 +3,12 @@ image:
   entrypoint: ['bash', '-c', 'useradd testuser && chown -R testuser /builds && exec su testuser -c bash']  # use another user but root, so unit tests work fine with permissions checks
 
 stages:
- # - compile
+  - compile
   - test
 
 variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
   MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
-
-cache:
-  paths:
-    - ~/.m2/repository/
-    - ~/target/
 
 compile:
   stage: compile
