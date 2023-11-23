@@ -8,6 +8,11 @@ stages:
 
 variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+  
+cache:
+  paths:
+    - ~/.m2/repository/
+    - ~/target/
 
 compile:
   stage: compile
