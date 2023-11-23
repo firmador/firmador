@@ -48,7 +48,7 @@ public class Settings {
     public boolean withoutVisibleSign = false;
     //public boolean useLTA = true;
     public boolean overwriteSourceFile = false;
-    public boolean hideSignatureAdvice = false;
+
     public String reason = "";
     public String place = "";
     public String contact = "";
@@ -87,6 +87,8 @@ public class Settings {
 
     public ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
     public boolean extendDocument = true;
+    public boolean isVisibleSignature = false;
+    public boolean hideSignatureAdvice = false;
 
     public Settings() {
         activePlugins.add("cr.libre.firmador.plugins.DummyPlugin");
@@ -130,7 +132,7 @@ public class Settings {
         newsettings.cAdESLevel = cAdESLevel;
         newsettings.sofficePath = sofficePath;
         newsettings.pDFImgScaleFactor = pDFImgScaleFactor;
-
+        newsettings.isVisibleSignature = isVisibleSignature;
     }
 
     public String getDefaultSignMessage() {

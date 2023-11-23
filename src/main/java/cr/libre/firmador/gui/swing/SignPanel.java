@@ -62,7 +62,9 @@ import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.cards.SmartCardDetector;
 import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.documents.PreviewerInterface;
+import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 import cr.libre.firmador.gui.GUIInterface;
+import cr.libre.firmador.gui.GUISwing;
 import cr.libre.firmador.signers.FirmadorUtils;
 
 
@@ -88,6 +90,7 @@ public class SignPanel extends JPanel implements ConfigListener{
     private JRadioButton CAdESButton;
     private JRadioButton XAdESButton;
     private JButton signButton;
+    private JButton saveButton;
     private JLabel AdESLevelLabel;
     private JRadioButton levelTButton;
     private JRadioButton levelLTButton;
@@ -97,7 +100,7 @@ public class SignPanel extends JPanel implements ConfigListener{
     public GUIInterface gui;
     private SmartCardDetector smartCardDetector;
     private PreviewerInterface preview;
-    private Document currentDocument;
+    private Document currentDocument = null;
 
     public void setGUI(GUIInterface gui) {
         this.gui=gui;
@@ -105,6 +108,16 @@ public class SignPanel extends JPanel implements ConfigListener{
 
     public void setDocument(Document document) {
         currentDocument = document;
+        SupportedMimeTypeEnum mimeType = document.getMimeType();
+
+        hideButtons();
+        if (mimeType.isPDF()) {
+            showSignButtons();
+        } else if (mimeType.isOpenxmlformats()) {
+            getSignButton().setEnabled(true);
+        } else {
+            shownonPDFButtons();
+        }
     }
 
     public void setPreview(PreviewerInterface preview) {
@@ -207,6 +220,10 @@ public class SignPanel extends JPanel implements ConfigListener{
         signButton.setToolTipText("<html>Este botón permite firmar el documento seleccionado.<br>Requiere dispositivo de Firma Digital al cual se le<br>solicitará ingresar el PIN.</html>");
         signButton.setOpaque(false);
 
+        saveButton = new JButton("Guardar en cola");
+        saveButton.setToolTipText(
+                "<html>Este botón permite guardar las configuraciones del documento seleccionado.<br>para firmarse masivamente en la pestaña de documentos.</html>");
+        saveButton.setOpaque(false);
 
         //signatureLabel.setToolTipText("<html>Esta etiqueta es un recuadro arrastrable que representa<br>la ubicación de la firma visible en la página seleccionada.<br><br>Se puede cambiar su posición haciendo clic sobre el recuadro<br>y moviendo el mouse sin soltar el botón de clic<br>hasta soltarlo en la posición deseada.</html>");
         if (System.getProperty("os.name").startsWith("Mac")) signatureLabel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
@@ -337,12 +354,22 @@ public class SignPanel extends JPanel implements ConfigListener{
 
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
+                String savefile = ((GUISwing) gui).showSaveDialog(currentDocument.getPathName(), "-firmado",
+                        currentDocument.getExtension());
+                currentDocument.setPathToSave(savefile);
                 currentDocument.setSettings(gui.getCurrentSettings());
                 gui.signDocument(currentDocument);
 
             }
         });
-
+        saveButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if (currentDocument != null) {
+                currentDocument.setSettings(gui.getCurrentSettings());
+                gui.showMessage("Configuración guarda satisfactoriamente");
+                }
+            }
+        });
 
     }
 
@@ -375,7 +402,8 @@ public class SignPanel extends JPanel implements ConfigListener{
                         .addComponent(levelTButton)
                         .addComponent(levelLTButton)
                         .addComponent(levelLTAButton))
-                    .addComponent(signButton)));
+                                    .addComponent(signButton).addComponent(saveButton)));
+
         signLayout.setVerticalGroup(
             signLayout.createParallelGroup()
                 .addComponent(imgScroll)
@@ -402,7 +430,7 @@ public class SignPanel extends JPanel implements ConfigListener{
                         .addComponent(levelTButton)
                         .addComponent(levelLTButton)
                         .addComponent(levelLTAButton))
-                    .addComponent(signButton)));
+                                .addComponent(signButton).addComponent(saveButton)));
     }
 
     public void hideButtons() {
@@ -628,8 +656,8 @@ public class SignPanel extends JPanel implements ConfigListener{
         AdESFormatButtonGroup = adESFormatButtonGroup;
     }
 
+
     public String getTextExample() {
-        //String dev="";
         String reason = reasonField.getText();
         String location = locationField.getText();
         String contactInfo = contactInfoField.getText();
