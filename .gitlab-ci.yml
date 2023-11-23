@@ -1,6 +1,6 @@
 variables:
-  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -X"
-  MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+  MAVEN_OPTS: "-Dmaven.repo.local=/.m2/repository"
 
 stages:
   - test-linux
@@ -14,41 +14,41 @@ stages:
   - -c
   - apt-get update && apt-get install -y libfontconfig1 && useradd -m testuser && exec su testuser -c bash
 
-linux-java-8:
+# linux-java-8:
+#   image: 
+#     name: maven:3.9.5-amazoncorretto-8-debian
+#     entrypoint: *entry_point
+#   stage: test-linux
+#   script: 
+#     - mvn $MAVEN_CLI_OPTS test
+#   when: always
+
+linux-java-11:
   image: 
-    name: maven:3.9.4-amazoncorretto-8-al2023
-    # entrypoint: *entry_point
+    name: maven:3.9.5-amazoncorretto-11-debian
+    entrypoint: *entry_point
   stage: test-linux
   script: 
     - mvn $MAVEN_CLI_OPTS test
   when: always
 
-# linux-java-11:
-#   image: 
-#     name: maven:3.9.5-amazoncorretto-11-debian
-#     entrypoint: *entry_point
-#   stage: test-linux
-#   script: 
-#     - mvn $MAVEN_CLI_OPTS test
-#   when: always
+linux-java-17:
+  image: 
+    name: maven:3.9.5-amazoncorretto-17-debian
+    entrypoint: *entry_point
+  stage: test-linux
+  script: 
+    - mvn $MAVEN_CLI_OPTS test
+  when: always
 
-# linux-java-17:
-#   image: 
-#     name: maven:3.9.5-amazoncorretto-17-debian
-#     entrypoint: *entry_point
-#   stage: test-linux
-#   script: 
-#     - mvn $MAVEN_CLI_OPTS test
-#   when: always
-
-# linux-java-21:
-#   image: 
-#     name: maven:3.9.5-amazoncorretto-21-debian
-#     entrypoint: *entry_point
-#   stage: test-linux
-#   script: 
-#     - mvn $MAVEN_CLI_OPTS test
-#   when: always
+linux-java-21:
+  image: 
+    name: maven:3.9.5-amazoncorretto-21-debian
+    entrypoint: *entry_point
+  stage: test-linux
+  script: 
+    - mvn $MAVEN_CLI_OPTS test
+  when: always
 
 # ------ Windows ------
 
