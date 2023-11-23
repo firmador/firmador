@@ -17,7 +17,7 @@ stages:
 linux-java-8:
   image: 
     name: maven:3.9.4-amazoncorretto-8-al2023
-    entrypoint: *entry_point
+    # entrypoint: *entry_point
   stage: test-linux
   script: 
     - mvn $MAVEN_CLI_OPTS test
