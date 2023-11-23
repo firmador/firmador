@@ -1,9 +1,6 @@
 default:
   # install required packages, use another user but root (so permission unit tests work fine) and setup right permissions to the new user for compiling
-  before_script: 
-    - apt-get update  && apt-get install -y libfontconfig1
-    - useradd -m testuser
-    - exec su testuser -c bash  
+  before_script: apt-get update  && apt-get install -y libfontconfig1 && useradd -m testuser && exec su testuser -c bash  
 
 variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
@@ -11,20 +8,16 @@ variables:
 
 linux java-8:
   image: maven:3.9-amazoncorretto-8-debian
-  script:
-    - mvn $MAVEN_CLI_OPTS test
+  script: mvn $MAVEN_CLI_OPTS test
 
 linux java-11:
   image: maven:3.9.5-amazoncorretto-11-debian
-  script:
-    - mvn $MAVEN_CLI_OPTS test
+  script: mvn $MAVEN_CLI_OPTS test
 
 linux java-17:
   image: maven:3.9.5-amazoncorretto-17-debian
-  script:
-    - mvn $MAVEN_CLI_OPTS test
+  script: mvn $MAVEN_CLI_OPTS test
 
 linux java-21:
   image: maven:3.9.5-amazoncorretto-21-debian
-  script:
-    - mvn $MAVEN_CLI_OPTS test
+  script: mvn $MAVEN_CLI_OPTS test
