@@ -1,6 +1,6 @@
 image:
   name: maven:3.9.5-amazoncorretto-21-debian
-  entrypoint: ['bash', '-c', 'apt-get install -y libfontconfig1 && useradd -m testuser && chown -R testuser /builds && exec su testuser -c bash']  # install required packages, use another user but root (so permission unit tests work fine) and setup right permissions to the new user for compiling
+  entrypoint: ['bash', '-c', 'apt-get install -y libfontconfig && useradd -m testuser && chown -R testuser /builds && exec su testuser -c bash']  # install required packages, use another user but root (so permission unit tests work fine) and setup right permissions to the new user for compiling
 
 stages:
   - compile
