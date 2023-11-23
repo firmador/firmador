@@ -183,5 +183,23 @@ public class GUIArgs implements GUIInterface {
     };
 
     public void extendsDone(Document document) {
+    }
+
+    @Override
+    public void validateAllDone() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void signAllDone() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void doPreview(Document document) {
+        // TODO Auto-generated method stub
+
     };
 }

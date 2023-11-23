@@ -34,12 +34,17 @@ public class ListDocumentTableModel extends AbstractTableModel {
 
 
     public Object getValueAt(int row, int col) {
-        return data.get(row)[col];
+        if (row < data.size() && row >= 0) {
+            return data.get(row)[col];
+        }
+        return null;
     }
 
     public void setValueAt(Object value, int row, int col) {
-        data.get(row)[col] = value;
-        fireTableCellUpdated(row, col);
+        if (row < data.size() && row >= 0) {
+            data.get(row)[col] = value;
+            fireTableCellUpdated(row, col);
+        }
     }
 
     public Class getColumnClass(int c) {
@@ -57,9 +62,9 @@ public class ListDocumentTableModel extends AbstractTableModel {
                         DocumentTableButton.CHOOSE_SAVE_FILENAME),
                 new DocumentTableButton(document, document.getMimeType().getExtension(),
                         DocumentTableButton.CHANGE_FORMAT),
-                new DocumentTableButton(document, "en cola", DocumentTableButton.GO_TO_VALIDATE),
+                new DocumentTableButton(document, "En cola", DocumentTableButton.GO_TO_VALIDATE),
 
-                new DocumentTableButton(document, "en cola", DocumentTableButton.GO_TO_SIGN),
+                new DocumentTableButton(document, "Previsualizar", DocumentTableButton.GO_TO_SIGN),
                 new DocumentTableButton(document, "Firmar", DocumentTableButton.SIGN_DOCUMENT),
                 new DocumentTableButton(document, "x", DocumentTableButton.REMOVE_DOCUMENT)
                 
@@ -69,10 +74,18 @@ public class ListDocumentTableModel extends AbstractTableModel {
         fireTableRowsInserted(lastsize - 1, data.size() - 1);
     }
     
+    public void removeData(Document document) {
+        int position = findByDocument(document);
+        if (position >= 0) {
+            data.remove(position);
+        }
+    }
+
     public int findByDocument(Document doc) {
         int position = -1;
         int currentPosition = 0;
-        while (currentPosition < data.size()) {
+        int datasize=data.size();
+        while (currentPosition < datasize) {
             Object[] obj = data.get(currentPosition);
             Document listDoc = ((DocumentTableButton) obj[DOCUMENT_POSITION]).getDocument();
             if (listDoc == doc) {
@@ -84,5 +97,9 @@ public class ListDocumentTableModel extends AbstractTableModel {
         return position;
     }
 
+    public void cleanDocuments() {
+        data.clear();
+
+    }
 
 }

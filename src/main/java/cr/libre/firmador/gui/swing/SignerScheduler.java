@@ -58,7 +58,8 @@ public class SignerScheduler extends Thread implements PropertyChangeListener, E
 
     @Override
     public void run() {
-
+        int amountOfFiles = 0;
+        int currentFileCounter = 0;
         try {
             waitforfiles.acquire();// first time adquiere and don't block
             nextStep("Inicio de firmado");
@@ -66,13 +67,19 @@ public class SignerScheduler extends Thread implements PropertyChangeListener, E
         while (!stop) {
             if (this.files.size() <= 0)
                 waitforfiles.acquire(); // block thread until list is empty
-            progressMonitor.setVisible(true);
             progressMonitor.setTitle(String.format("Proceso de firmado de %d  documentos", files.size()));
+            progressMonitor.setHeaderTitle("Firmando documento");
+            progressMonitor.setVisible(true);
+
             CardSignInfo card = gui.getPin();
-            while (!this.files.isEmpty()) {
+            amountOfFiles = this.files.size();
+            currentFileCounter = 0;
+            progressMonitor.setProgressStatus(0);
+            while (!this.files.isEmpty() && card != null) {
                 Document document = this.files.remove(0);
                 try {
                     maxoffilesperprocess.acquire();
+
                     progressMonitor.setHeaderTitle("Firmando " + document.getName());
                     task = new SignerWorker(this, progressMonitor, gui, document, card);
                     task.addPropertyChangeListener(this);
@@ -81,6 +88,11 @@ public class SignerScheduler extends Thread implements PropertyChangeListener, E
                     LOG.debug("Interrupción al obtener bloqueo del hilo en documento: " + document.getPathName(), e);
                     e.printStackTrace();
                 }
+            }
+            if (card == null) {
+                progressMonitor.setHeaderTitle("Proceso cancelado");
+                progressMonitor.setVisible(false);
+                this.files.clear();
             }
         }
     } catch (InterruptedException e) {

@@ -1,23 +1,15 @@
 package cr.libre.firmador.gui.swing;
 
 import java.awt.Component;
-import java.awt.Image;
-import java.awt.Label;
 import java.util.EventObject;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-
-import cr.libre.firmador.documents.Document;
 
 public class PanelCellRenderer extends AbstractCellEditor
         implements TableCellRenderer, TableCellEditor {

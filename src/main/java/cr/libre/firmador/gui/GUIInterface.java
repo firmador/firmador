@@ -52,4 +52,9 @@ public interface GUIInterface {
     void signDone(Document document);
 
     void extendsDone(Document document);
+
+    void doPreview(Document document);
+    void validateAllDone();
+
+    void signAllDone();
 }

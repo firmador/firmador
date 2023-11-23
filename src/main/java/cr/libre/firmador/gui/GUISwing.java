@@ -117,6 +117,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     private SignProgressDialogWorker progressDialogWorker;
     private Document document;
     private LoadProgressDialogWorker loadDialogWorker;
+    private boolean forcePreview = false;
 
     public void loadGUI() {
         try {
@@ -207,7 +208,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         loadDialogWorker = new LoadProgressDialogWorker(gui);
         loadDialogWorker.execute();
 
-        validatescheduler = new ValidateScheduler();
+        validatescheduler = new ValidateScheduler(gui);
         validatescheduler.start();
 
         signerScheduler = new SignerScheduler(gui, progressDialogWorker);
@@ -233,12 +234,14 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
 
     public void signMultipleDocuments(File[] files) {
         Document document;
+        List<Document> docs = new ArrayList<Document>();
         for (File file : files) {
             document = new Document(gui, file.getAbsolutePath());
             document.registerListener(this);
-            listdocumentpanel.addDocument(document);
-            validatescheduler.addDocument(document);
+            docs.add(document);
         }
+        listdocumentpanel.addDocuments(docs);
+        validatescheduler.addDocuments(docs);
         gui.displayFunctionality("document");
         setActiveDocument();
     }
@@ -657,6 +660,11 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
             loadActiveDocument(document);
             loadDialogWorker.setVisible(false);
         }
+        if (forcePreview) {
+            forcePreview = false;
+            loadDialogWorker.setVisible(false);
+            gui.displayFunctionality("sign");
+        }
     };
 
     public void validateDone(Document document) {
@@ -665,6 +673,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
             loadActiveDocument(document);
             loadDialogWorker.setVisible(false);
         }
+
     };
 
     public void signDone(Document document) {
@@ -722,7 +731,6 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         Document currentActiveDocument = listdocumentpanel.getActiveDocument();
         if (currentActiveDocument != document) {
             document = currentActiveDocument;
-
             setActiveDocument(document);
         }
     }
@@ -733,5 +741,23 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
 
     public ListDocumentTablePanel getListDocumentTablePanel() {
         return listdocumentpanel;
+    }
+
+    @Override
+    public void validateAllDone() {
+        loadDialogWorker.setVisible(false);
+    }
+
+    @Override
+    public void signAllDone() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void doPreview(Document document) {
+        forcePreview = true;
+        previewScheduler.addDocument(document);
+
     }
 }

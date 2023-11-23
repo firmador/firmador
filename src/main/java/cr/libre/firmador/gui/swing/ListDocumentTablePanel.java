@@ -35,12 +35,28 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         this.gui = gui;
     }
 
+    private class CleanDocumentsAction implements ActionListener {
+        private ListDocumentTablePanel panel;
+
+        public CleanDocumentsAction(ListDocumentTablePanel panel) {
+            this.panel = panel;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+            this.panel.cleanDocuments();
+
+        }
+
+    }
+
     public ListDocumentTablePanel() {
         super();
         this.setLayout(new BorderLayout());
 
         actionButtonsPanel = new JPanel();
         JButton signbtn = new JButton("Firmar todos los documentos");
+        JButton cleanbtn = new JButton("Vaciar");
 
         signbtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -48,7 +64,11 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
             }
         });
 
+        cleanbtn.addActionListener(new CleanDocumentsAction(this));
+
         actionButtonsPanel.add(signbtn);
+        actionButtonsPanel.add(cleanbtn);
+
         model = new ListDocumentTableModel();
         table = new JTable(model);
 
@@ -95,8 +115,23 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         // table.setModel(model);
     }
 
-    public void removeDocument(Document document) {
+    public void addDocuments(List<Document> docs) {
+        for (Document doc : docs) {
+            model.addData(doc);
+            doc.registerListener(this);
+        }
+        model.fireTableDataChanged();
+    }
 
+    public void removeDocument(Document document) {
+        model.removeData(document);
+        model.fireTableDataChanged();
+
+    }
+
+    public void cleanDocuments() {
+        model.cleanDocuments();
+        model.fireTableDataChanged();
     }
 
     public void updateDocument(Document document) {
@@ -143,6 +178,8 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
             DocumentTableButton btn = (DocumentTableButton) model.getValueAt(position,
                     ListDocumentTableModel.NUM_PAGES_POSITION);
             btn.setText("" + document.getNumberOfPages());
+            model.fireTableDataChanged();
+
             // model.setValueAt(document.amountOfSignatures(), position,
             // ListDocumentTableModel.NUM_SIGNATURE_POSITION);
         }
@@ -156,6 +193,8 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
             DocumentTableButton btn = (DocumentTableButton) model.getValueAt(position,
                     ListDocumentTableModel.NUM_SIGNATURE_POSITION);
             btn.setText("" + document.amountOfSignatures());
+            model.fireTableDataChanged();
+
             // model.setValueAt(document.amountOfSignatures(), position,
             // ListDocumentTableModel.NUM_SIGNATURE_POSITION);
         } else {

@@ -5,6 +5,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import cr.libre.firmador.documents.Document;
+import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
 
 @SuppressWarnings("serial")
@@ -31,6 +32,9 @@ public class DocumentTableButton extends JButton {
             // TODO Auto-generated method stub
             System.out.print(document.getName());
             GUISwing gui = (GUISwing) document.getGUI();
+            if (!document.getIsReady()) {
+                gui.doPreview(document);
+            }
             gui.loadActiveDocument(document);
             gui.displayFunctionality("sign");
         }

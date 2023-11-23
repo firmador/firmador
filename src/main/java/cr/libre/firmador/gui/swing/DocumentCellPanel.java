@@ -69,16 +69,13 @@ class DocumentCellPanel extends JPanel implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             JButtonDoc deleteAction = (JButtonDoc) e.getSource();
             int modelRow = Integer.valueOf(e.getActionCommand());
-            System.out.println("Action DELETE");
         }
     };
     ActionListener viewPreviewAction = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             JButtonDoc viewSignbtn = (JButtonDoc) e.getSource();
-
             viewSignbtn.sign();
-            System.out.println("Action VIEW PREVIEW");
         }
     };
     ActionListener validateAction = new ActionListener() {
@@ -86,7 +83,6 @@ class DocumentCellPanel extends JPanel implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             JButtonDoc validatebtn = (JButtonDoc) e.getSource();
             validatebtn.validateDocument();
-            System.out.println("Action Validate");
         }
     };
 

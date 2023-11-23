@@ -35,7 +35,7 @@ import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.signers.CRSigner;
 
-@SuppressWarnings("restriction")
+
 public class SmartCardDetector implements  ConfigListener {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     protected Settings settings;

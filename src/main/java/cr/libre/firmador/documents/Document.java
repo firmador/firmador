@@ -98,7 +98,7 @@ public class Document {
             document = new FileDocument(this.pathname);
         }
         signedDocument = signer.sign(this, card);
-        if (settings.extendDocument) {
+        if (settings.extendDocument && signedDocument != null) {
             this.extend();
         }
     }
@@ -108,9 +108,10 @@ public class Document {
     }
 
     public void setPrincipal() throws Throwable {
-        // pone el documento como principal en la GUI
-        validate();
-        preview.loadDocument(pathname);
+        if (!documentIsValidate)
+            validate();
+        if (!hasPreviewLoaded)
+            loadPreview();
     }
 
     public String getPathName() {

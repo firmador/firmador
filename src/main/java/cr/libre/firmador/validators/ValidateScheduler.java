@@ -9,18 +9,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.documents.Document;
+import cr.libre.firmador.gui.GUIInterface;
 
 public class ValidateScheduler extends Thread {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
+    public int MAX_FILES_PROCESS = 3;
     private Semaphore waitforfiles = new Semaphore(1);
-    private Semaphore maxoffilesperprocess = new Semaphore(3);
+    private Semaphore maxoffilesperprocess = new Semaphore(MAX_FILES_PROCESS);
     private List<Document> files;
     private boolean stop = false;
+    private GUIInterface gui;
 
-    public ValidateScheduler() {
+    public ValidateScheduler(GUIInterface gui) {
         this.files = new ArrayList<Document>();
+        this.gui=gui;
     }
+
     public void run() {
         try {
             waitforfiles.acquire();// first time adquiere and don't block
@@ -44,7 +48,19 @@ public class ValidateScheduler extends Thread {
         this.files.add(document);
         waitforfiles.release();
     }
+
+    public void addDocuments(List<Document> documents) {
+        for (Document doc : documents) {
+            this.files.add(doc);
+        }
+        waitforfiles.release();
+    }
+
     public void done() {
         maxoffilesperprocess.release();
+        int avalilable = maxoffilesperprocess.availablePermits();
+        if (avalilable == MAX_FILES_PROCESS) {
+            gui.validateAllDone();
+        }
     }
 }
