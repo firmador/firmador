@@ -1,5 +1,5 @@
 image:
-  name: maven:3.9.5-amazoncorretto-21-debian
+  name: maven:3.9.5-amazoncorretto-21-debian-bookworm
   entrypoint: ['bash', '-c', 'useradd testuser && exec su testuser -c bash']  # use another user but root, so unit tests work fine with permissions checks
 
 stages:
@@ -8,7 +8,7 @@ stages:
 
 variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
-  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
 
 cache:
   paths:
