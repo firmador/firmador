@@ -21,6 +21,7 @@ linux-java-8:
   stage: test-linux
   script: 
     - mvn $MAVEN_CLI_OPTS test
+  when: always
 
 linux-java-11:
   image: 
@@ -29,6 +30,7 @@ linux-java-11:
   stage: test-linux
   script: 
     - mvn $MAVEN_CLI_OPTS test
+  when: always
 
 linux-java-17:
   image: 
@@ -37,6 +39,7 @@ linux-java-17:
   stage: test-linux
   script: 
     - mvn $MAVEN_CLI_OPTS test
+  when: always
 
 linux-java-21:
   image: 
@@ -45,6 +48,7 @@ linux-java-21:
   stage: test-linux
   script: 
     - mvn $MAVEN_CLI_OPTS test
+  when: always
 
 # ------ Windows ------
 
@@ -54,3 +58,4 @@ windows-java-21:
   stage: test-windows
   script:
     - mvn $MAVEN_CLI_OPTS test
+  when: always
