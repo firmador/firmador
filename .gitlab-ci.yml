@@ -12,7 +12,7 @@ linux java-8:
 
 linux java-11:
   image: maven:3.9.5-amazoncorretto-11-debian
-  script: mvn $MAVEN_CLI_OPTS test
+  script: mvn test
 
 linux java-17:
   image: maven:3.9.5-amazoncorretto-17-debian
