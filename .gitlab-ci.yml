@@ -1,10 +1,7 @@
-default:
-  # install required packages, use another user but root (so permission unit tests work fine) and setup right permissions to the new user for compiling
-  before_script: 
-    - apt-get update  && apt-get install -y libfontconfig1 && useradd -m testuser && exec su testuser -c bash  
-
-stages:
-  - test
+# default:
+#   # install required packages, use another user but root (so permission unit tests work fine) and setup right permissions to the new user for compiling
+#   before_script: 
+#     - apt-get update  && apt-get install -y libfontconfig1 && useradd -m testuser && exec su testuser -c bash  
 
 variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
