@@ -1,19 +1,24 @@
+variables:
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+  MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
+
+stages:
+  - test-linux
+  - test-windows
+
+# ------ Linux ------
+
 # install required packages, use another user but root (so permission unit tests work fine) and setup right permissions to the new user for compiling - this to assure everything works fine
 .entry_point: &entry_point
   - bash
   - -c
   - apt-get update && apt-get install -y libfontconfig1 && useradd -m testuser && exec su testuser -c bash
 
-
-variables:
-  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
-  MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
-
 linux-java-8:
   image: 
     name: maven:3.9-amazoncorretto-8-debian
     entrypoint: *entry_point
-  stage: test
+  stage: test-linux
   script: 
     - mvn $MAVEN_CLI_OPTS test
 
@@ -21,7 +26,7 @@ linux-java-11:
   image: 
     name: maven:3.9.5-amazoncorretto-11-debian
     entrypoint: *entry_point
-  stage: test
+  stage: test-linux
   script: 
     - mvn $MAVEN_CLI_OPTS test
 
@@ -29,7 +34,7 @@ linux-java-17:
   image: 
     name: maven:3.9.5-amazoncorretto-17-debian
     entrypoint: *entry_point
-  stage: test
+  stage: test-linux
   script: 
     - mvn $MAVEN_CLI_OPTS test
 
@@ -37,6 +42,15 @@ linux-java-21:
   image: 
     name: maven:3.9.5-amazoncorretto-21-debian
     entrypoint: *entry_point
-  stage: test
+  stage: test-linux
   script: 
+    - mvn $MAVEN_CLI_OPTS test
+
+# ------ Windows ------
+
+windows-java-21:
+  image:
+    name: amazoncorretto-11-windowsservercore
+  stage: test-windows
+  script:
     - mvn $MAVEN_CLI_OPTS test
