@@ -11,20 +11,24 @@ variables:
 
 java-8-linux:
   image: maven:3.9-amazoncorretto-8-debian
+  stage: test
   script:
     - mvn $MAVEN_CLI_OPTS test
 
 java-11-linux:
   image: maven:3.9.5-amazoncorretto-11-debian
+  stage: test
   script:
     - mvn $MAVEN_CLI_OPTS test
 
 java-17-linux:
   image: maven:3.9.5-amazoncorretto-17-debian
+  stage: test
   script:
     - mvn $MAVEN_CLI_OPTS test
 
 java-21-linux:
   image: maven:3.9.5-amazoncorretto-21-debian
+  stage: test
   script:
     - mvn $MAVEN_CLI_OPTS test
