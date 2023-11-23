@@ -16,7 +16,7 @@ stages:
 
 linux-java-8:
   image: 
-    name: 3.9.4-amazoncorretto-8-al2023
+    name: maven:3.9.4-amazoncorretto-8-al2023
     entrypoint: *entry_point
   stage: test-linux
   script: 
