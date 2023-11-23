@@ -9,26 +9,22 @@ variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
   MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
 
-java-8-linux:
+linux java-8:
   image: maven:3.9-amazoncorretto-8-debian
-  stage: test
   script:
     - mvn $MAVEN_CLI_OPTS test
 
-java-11-linux:
+linux java-11:
   image: maven:3.9.5-amazoncorretto-11-debian
-  stage: test
   script:
     - mvn $MAVEN_CLI_OPTS test
 
-java-17-linux:
+linux java-17:
   image: maven:3.9.5-amazoncorretto-17-debian
-  stage: test
   script:
     - mvn $MAVEN_CLI_OPTS test
 
-java-21-linux:
+linux java-21:
   image: maven:3.9.5-amazoncorretto-21-debian
-  stage: test
   script:
     - mvn $MAVEN_CLI_OPTS test
