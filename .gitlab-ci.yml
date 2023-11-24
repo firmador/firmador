@@ -2,9 +2,20 @@ variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
   MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
 
+
 stages:
   - test-linux
   - test-windows
+
+
+default:
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
+        - target/failsafe-reports/TEST-*.xml
+
 
 # ------ Linux ------
 
@@ -22,12 +33,6 @@ linux-java-11:
   script: 
     - mvn $MAVEN_CLI_OPTS test
   when: always
-  artifacts:
-    when: always
-    reports:
-      junit:
-        - target/surefire-reports/TEST-*.xml
-        - target/failsafe-reports/TEST-*.xml
 
 linux-java-17:
   image: 
@@ -37,12 +42,6 @@ linux-java-17:
   script: 
     - mvn $MAVEN_CLI_OPTS test
   when: always
-  artifacts:
-    when: always
-    reports:
-      junit:
-        - target/surefire-reports/TEST-*.xml
-        - target/failsafe-reports/TEST-*.xml
 
 linux-java-21:
   image: 
@@ -52,12 +51,6 @@ linux-java-21:
   script: 
     - mvn $MAVEN_CLI_OPTS test
   when: always
-  artifacts:
-    when: always
-    reports:
-      junit:
-        - target/surefire-reports/TEST-*.xml
-        - target/failsafe-reports/TEST-*.xml
 
 # ------ Windows ------
 
