@@ -17,6 +17,7 @@ import javax.swing.ScrollPaneConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.documents.DocumentChangeListener;
 import cr.libre.firmador.gui.GUIInterface;
@@ -55,9 +56,14 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         this.setLayout(new BorderLayout());
 
         actionButtonsPanel = new JPanel();
-        JButton signbtn = new JButton("Firmar todos los documentos");
-        JButton cleanbtn = new JButton("Vaciar");
+        JButton signbtn = new JButton(MessageUtils.t("list_document_signall"));
+        JButton cleanbtn = new JButton(MessageUtils.t("list_document_clear"));
 
+        signbtn.getAccessibleContext().setAccessibleDescription(MessageUtils.t("list_document_signall_accessible"));
+        cleanbtn.getAccessibleContext().setAccessibleDescription(MessageUtils.t("list_document_clear_accessible"));
+
+        signbtn.setMnemonic('S');
+        cleanbtn.setMnemonic('C');
         signbtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 ((GUISwing) gui).signAllDocuments();

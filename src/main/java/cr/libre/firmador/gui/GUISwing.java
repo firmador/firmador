@@ -32,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -60,6 +61,7 @@ import cr.libre.firmador.documents.PreviewScheduler;
 import cr.libre.firmador.documents.PreviewerInterface;
 import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 import cr.libre.firmador.ConfigListener;
+import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.validators.ValidateScheduler;
@@ -82,7 +84,6 @@ import cr.libre.firmador.gui.swing.ValidatePanel;
 import cr.libre.firmador.plugins.PluginManager;
 import cr.libre.firmador.signers.FirmadorCAdES;
 import cr.libre.firmador.signers.FirmadorOpenDocument;
-import cr.libre.firmador.signers.FirmadorOpenXmlFormat;
 import cr.libre.firmador.signers.FirmadorPAdES;
 import cr.libre.firmador.signers.FirmadorUtils;
 import cr.libre.firmador.signers.FirmadorXAdES;
@@ -146,7 +147,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         try {
             mainFrame = new SwingMainWindowFrame(isRemote ? "Firmador remoto" : "Firmador");
         } catch (HeadlessException e) {
-            LOG.error("No se pudo crear la ventana gráfica. Si se está ejecutando Java en entorno gráfico, verificar que no se ha instalado solamente el paquete headless sino el paquete completo para poder cargar la interfaz gráfica.");
+            LOG.error(MessageUtils.t("guiswing_log_error_headless"));
             throw e;
         }
         mainFrame.setGUIInterface(this);
@@ -180,20 +181,42 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         JPanel configPanel = new ConfigPanel();
         configPanel.setOpaque(false);
         frameTabbedPane = new JTabbedPane();
-        frameTabbedPane.addTab("Firmar", signPanel);
-        frameTabbedPane.setToolTipTextAt(0, "<html>En esta pestaña se muestran las opciones<br>para firmar el documento seleccionado.</html>");
+        frameTabbedPane.addTab(MessageUtils.t("guiswing_tab_sign"), signPanel);
+        frameTabbedPane.setToolTipTextAt(0, MessageUtils.t("guiswing_tab_sign_tooltip"));
+        frameTabbedPane.getAccessibleContext().getAccessibleChild(0).getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("guiswing_tab_sign_tooltip_accessible"));
+        frameTabbedPane.setMnemonicAt(0, '1');
+
         tabPosition = 1;
         if (!isRemote) {// TODO add setting for toggling validation tab
-            frameTabbedPane.addTab("Validación", validatePanel.getValidateScrollPane());
-            frameTabbedPane.setToolTipTextAt(tabPosition, "<html>En esta pestaña se muestra información de validación<br>de las firmas digitales.</html>");
+            frameTabbedPane.addTab(MessageUtils.t("guiswing_tab_validation"),
+                    validatePanel.getValidateScrollPane());
+            frameTabbedPane.setToolTipTextAt(tabPosition, MessageUtils.t("guiswing_tab_validation_tooltip"));
+            frameTabbedPane.getAccessibleContext().getAccessibleChild(tabPosition).getAccessibleContext()
+                    .setAccessibleDescription(MessageUtils.t("guiswing_tab_validation_tooltip_accessible"));
+            frameTabbedPane.setMnemonicAt(tabPosition, '2');
             tabPosition++;
         }
 
-        frameTabbedPane.add("Documentos", listdocumentpanel.getListDocumentScrollPane());
-        frameTabbedPane.addTab(settings.bundle.getString("settings"), configPanel);
-        frameTabbedPane.setToolTipTextAt(tabPosition, "<html>En esta pestaña se configura<br>aspectos de este programa.</html>");
-        frameTabbedPane.addTab(settings.bundle.getString("about"), aboutPanel);
-        frameTabbedPane.setToolTipTextAt(tabPosition + 1, "<html>En esta pestaña se muestra información<br>acerca de este programa.</html>");
+        frameTabbedPane.add(MessageUtils.t("guiswing_tab_documentos"),
+                listdocumentpanel.getListDocumentScrollPane());
+        frameTabbedPane.setToolTipTextAt(tabPosition, MessageUtils.t("guiswing_tab_documentos_tooltip"));
+        frameTabbedPane.getAccessibleContext().getAccessibleChild(tabPosition).getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("guiswing_tab_documentos_tooltip_accessible"));
+        frameTabbedPane.setMnemonicAt(tabPosition, '3');
+        tabPosition++;
+        frameTabbedPane.addTab(MessageUtils.t("guiswing_tab_settings"), configPanel);
+        frameTabbedPane.setToolTipTextAt(tabPosition, MessageUtils.t("guiswing_tab_settings_tooltip"));
+        frameTabbedPane.getAccessibleContext().getAccessibleChild(tabPosition).getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("guiswing_tab_settings_tooltip_accessible"));
+        frameTabbedPane.addTab(MessageUtils.t("guiswing_tab_about"), aboutPanel);
+        frameTabbedPane.setMnemonicAt(tabPosition, '4');
+        tabPosition++;
+        frameTabbedPane.setToolTipTextAt(tabPosition, MessageUtils.t("guiswing_tab_about_tooltip"));
+        frameTabbedPane.getAccessibleContext().getAccessibleChild(tabPosition).getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("guiswing_tab_about_tooltip_accessible"));
+        frameTabbedPane.setMnemonicAt(tabPosition, '5');
+        tabPosition++;
         if (settings.showLogs) showLogs(frameTabbedPane);
         docSelector = new DocumentSelectionGroupLayout(mainFrame.getContentPane(), frameTabbedPane, mainFrame);
         docSelector.setGUI(this);
@@ -231,7 +254,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         listdocumentpanel.addDocument(document);
         validatescheduler.addDocument(document);
         previewScheduler.addDocument(document);
-        gui.nextStep("Cargando el documento");
+        gui.nextStep(MessageUtils.t("guiswing_nextstep_load_doc"));
         setActiveDocument();
     }
 
@@ -340,12 +363,12 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     }
 
     public String showSaveDialog(String suffix, String extension) {
-        gui.nextStep(settings.bundle.getString("getting_saved_route"));
+        gui.nextStep(MessageUtils.t("getting_saved_route"));
         String lastDirectory = docSelector.getLastDirectory();
         String lastFile = docSelector.getLastFile();
         String fileName = null;
         FileDialog saveDialog = null;
-        saveDialog = new FileDialog(mainFrame, settings.bundle.getString("save_document"), FileDialog.SAVE);
+        saveDialog = new FileDialog(mainFrame, MessageUtils.t("save_document"), FileDialog.SAVE);
         saveDialog.setDirectory(lastDirectory);
         String dotExtension = "";
         int lastDot = lastFile.lastIndexOf(".");
@@ -371,12 +394,13 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     }
 
     public String showSaveDialog(String filepath, String suffix, String extension) {
-        gui.nextStep("Obteniendo ruta de guardado");
+        gui.nextStep(MessageUtils.t("guiswing_nextstep_save"));
         String lastDirectory = docSelector.getLastDirectory();
         String lastFile = filepath;
         String fileName = null;
         FileDialog saveDialog = null;
-        saveDialog = new FileDialog(mainFrame, "Guardar documento", FileDialog.SAVE);
+        saveDialog = new FileDialog(mainFrame, MessageUtils.t("guiswing_dialog_document_save"),
+                FileDialog.SAVE);
         saveDialog.setDirectory(lastDirectory);
         String dotExtension = "";
         int lastDot = lastFile.lastIndexOf(".");
@@ -415,7 +439,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
             try {
                 doc.close();
             } catch (IOException e) {
-                LOG.error("Error cerrando archivo", e);
+                LOG.error(MessageUtils.t("guiswing_log_closefile"), e);
                 e.printStackTrace();
             }
         }
@@ -446,8 +470,12 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     }
 
     protected void showLogs(JTabbedPane frameTabbedPane) {
-        frameTabbedPane.addTab("Bitácoras", loggingPane);
-        frameTabbedPane.setToolTipTextAt(tabPosition + 2, "<html>En esta pestaña se muestra las bitácoras de ejecución<br> de este programa.</html>");
+        frameTabbedPane.addTab(MessageUtils.t("guiswing_tab_logs"), loggingPane);
+        frameTabbedPane.setToolTipTextAt(tabPosition, MessageUtils.t("guiswing_tab_logs_tooltip"));
+        frameTabbedPane.getAccessibleContext().getAccessibleChild(tabPosition).getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("guiswing_tab_logs_tooltip_accessible"));
+        frameTabbedPane.setMnemonicAt(tabPosition, '6');
+
     }
 
     protected void hideLogs(JTabbedPane frameTabbedPane) {
@@ -510,7 +538,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
 
 
     public void showMessage(String message) {
-        LOG.info("Mensaje de información mostrado: " + message);
+        LOG.info(MessageUtils.t("guiswing_show_message") + message);
         JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -524,63 +552,49 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         String className = error.getClass().getName();
         switch (className) {
             case "java.lang.NoSuchMethodError":
-                message = "Esta aplicación es actualmente incompatible con versiones superiores a Java 8<br>" +
-                    "cuando se ejecuta desde Java Web Start.<br>" +
-                    "Este inconveniente se corregirá en próximas versiones. Disculpe las molestias.";
+                message = MessageUtils.t("guiswing_show_error_nosuchmethoderror");
                 break;
             case "java.security.ProviderException":
-                message = "No se ha encontrado ninguna dispositivo de firma.<br>" +
-                    "Asegúrese de que la tarjeta y el lector están conectados de forma correcta<br>" +
-                    "y de que los controladores están instalados y ha reiniciado el sistema tras su instalación.";
+                message = MessageUtils.t("guiswing_show_error_providerexception");
                 break;
             case "java.security.NoSuchAlgorithmException":
-                message = "No se ha encontrado ninguna tarjeta conectada.<br>" +
-                    "Asegúrese de que la tarjeta y el lector están conectados de forma correcta.";
+                message = MessageUtils.t("guiswing_show_error_nosuchalgorithmexception");
                 break;
             case "sun.security.pkcs11.wrapper.PKCS11Exception":
                 switch (message) {
                 case "CKR_GENERAL_ERROR":
-                    message = "No se ha podido contactar con el servicio del lector de tarjetas.<br>" +
-                        "¿Está correctamente instalado o configurado?";
+                    message = MessageUtils.t("guiswing_show_error_pkcs11_general");
                     break;
                 case "CKR_SLOT_ID_INVALID":
-                    message = "No se ha podido encontrar ningún lector conectado o el controlador del lector no está instalado.";
+                    message = MessageUtils.t("guiswing_show_error_pkcs11_slotinvalid");
                     break;
                 case "CKR_PIN_INCORRECT":
                     messageType = JOptionPane.WARNING_MESSAGE;
-                    message = "¡PIN INCORRECTO!<br><br>" +
-                        "ADVERTENCIA: si se ingresa un PIN incorrecto varias veces sin acertar,<br>" +
-                        "el dispositivo de firma se bloqueará.";
+                    message = MessageUtils.t("guiswing_show_error_pkcs11_pinincorrect");
                     break;
                 case "CKR_PIN_LOCKED":
-                    message = "PIN BLOQUEADO<br><br>" +
-                        "Lo sentimos, el dispositivo de firma no se puede utilizar porque está bloqueado.<br>" +
-                        "Contacte con su proveedor para desbloquearlo.";
+                    message = MessageUtils.t("guiswing_show_error_pkcs11_pinlocked");
                     break;
                 default:
-                    message = "Error: " + className + "<br>" +
-                        "Detalle: " + message + "<br>" +
-                        "Agradecemos que comunique este mensaje de error a los autores del programa<br>" +
-                        "para detallar mejor el posible motivo de este error en próximas versiones.";
+                    message = String.format(MessageUtils.t("guiswing_show_error_pkcs11_default"), className,
+                            message);
+
                     break;
                 }
                 break;
             case "java.io.IOException":
                 if (message.contains("asepkcs") || message.contains("libASEP11")) {
-                    message = "No se ha encontrado la librería de Firma Digital en el sistema.<br>" +
-                        "¿Están instalados los controladores?";
+                    message = MessageUtils.t("guiswing_show_error_installers");
                 }
                 break;
             default:
-                message = "Error: " + className + "<br>" +
-                    "Detalle: " + message + "<br>" +
-                    "Agradecemos que comunique este mensaje de error a los autores del programa<br>" +
-                    "para detallar mejor el posible motivo de este error en próximas versiones.";
+                message = String.format(MessageUtils.t("guiswing_show_error_default"), className, message);
                 break;
         }
-        LOG.error("Mensaje de error mostrado: " + message);
+        LOG.error(MessageUtils.t("guiswing_show_error_logmessage") + message);
         error.printStackTrace();
-        JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", messageType);
+        JOptionPane.showMessageDialog(null, new CopyableJLabel(message),
+                MessageUtils.t("guiswing_show_error_dialog_title"), messageType);
         if (closed) if (messageType == JOptionPane.ERROR_MESSAGE) System.exit(0);
     }
 
@@ -717,12 +731,10 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         File pfile;
         for (String path : currentSavedFilePath) {
             pfile = new File(path);
-
             paths += "<a href=\"" + pfile.toURI().normalize() + "\">" + path + "</a><br>";
         }
         currentSavedFilePath.clear();
-        showMessage("Documento guardado satisfactoriamente en<br>" + paths);
-
+        showMessage(MessageUtils.t("guiswing_dialog_document_success") + paths);
     }
 
     @Override

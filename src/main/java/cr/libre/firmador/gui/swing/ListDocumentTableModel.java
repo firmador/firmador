@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
+
+import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.documents.Document;
 
 @SuppressWarnings("serial")
@@ -16,8 +18,12 @@ public class ListDocumentTableModel extends AbstractTableModel {
     public static int SIGNATURE_BTN = 5;
     public static int DOCUMENT_POSITION = 6;
 
-    private String[] columnNames = { "Nombre", "Ruta de salida", "Formato", "# Firmas", "# Páginas", "Firmar",
-            "Quitar" };
+    private String[] columnNames = { MessageUtils.t("list_document_table_name"),
+            MessageUtils.t("list_document_save_path"), 
+            MessageUtils.t("list_document_mimetype"),
+            MessageUtils.t("list_document_numsign"), MessageUtils.t("list_document_numpages"),
+            MessageUtils.t("list_document_dosign"),
+            MessageUtils.t("list_document_remove") };
     private List<Object[]> data = new ArrayList<>();
 
     ListDocumentTableModel() {
@@ -67,11 +73,15 @@ public class ListDocumentTableModel extends AbstractTableModel {
                         DocumentTableButton.CHOOSE_SAVE_FILENAME),
                 new DocumentTableButton(document, document.getMimeType().getExtension(),
                         DocumentTableButton.CHANGE_FORMAT),
-                new DocumentTableButton(document, "En cola", DocumentTableButton.GO_TO_VALIDATE),
+                new DocumentTableButton(document, MessageUtils.t("list_document_enqueue"),
+                        DocumentTableButton.GO_TO_VALIDATE),
 
-                new DocumentTableButton(document, "Previsualizar", DocumentTableButton.GO_TO_SIGN),
-                new DocumentTableButton(document, "Firmar", DocumentTableButton.SIGN_DOCUMENT),
-                new DocumentTableButton(document, "x", DocumentTableButton.REMOVE_DOCUMENT)
+                new DocumentTableButton(document, MessageUtils.t("list_document_preview"),
+                        DocumentTableButton.GO_TO_SIGN),
+                new DocumentTableButton(document, MessageUtils.t("list_document_sign"),
+                        DocumentTableButton.SIGN_DOCUMENT),
+                new DocumentTableButton(document, MessageUtils.t("list_document_remove"),
+                        DocumentTableButton.REMOVE_DOCUMENT)
                 
         };
         int lastsize = data.size();

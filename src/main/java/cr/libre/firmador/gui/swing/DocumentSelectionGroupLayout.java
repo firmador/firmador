@@ -32,6 +32,9 @@ import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
+import cr.libre.firmador.MessageUtils;
+import cr.libre.firmador.Settings;
+import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
 
@@ -52,14 +55,18 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
     public DocumentSelectionGroupLayout(Container host, JTabbedPane frameTabbedPane, SwingMainWindowFrame frame) {
         super(host);
         this.frame = frame;
-        fileLabel = new JLabel("Documento: ");
-        fileField = new JTextField("(Vacío)");
-        fileField.setToolTipText(
-            "<html>Este campo indica el nombre del fichero<br>que está seleccionado para firmar o validar.</html>");
+        fileLabel = new JLabel(MessageUtils.t("document_selection_label"));
+        fileField = new JTextField(MessageUtils.t("document_selection_filefield"));
+        fileField.setToolTipText(MessageUtils.t("document_selection_filefield_tooltip"));
+        fileField.getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("document_selection_filefield_tooltip_accessible"));
+
         fileField.setEditable(false);
-        fileButton = new JButton("Elegir...");
-        fileButton.setToolTipText(
-            "<html>Haga clic en este botón para seleccionar uno o<br>varios ficheros a firmar, o un fichero a validar.</html>");
+        fileButton = new JButton(MessageUtils.t("document_selection_btn"));
+        fileButton.setToolTipText(MessageUtils.t("document_selection_btn_tooltip"));
+        fileButton.getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("document_selection_btn_tooltip_accessible"));
+        fileButton.setMnemonic('N');
         fileButton.setOpaque(false);
 
         this.setAutoCreateGaps(true);

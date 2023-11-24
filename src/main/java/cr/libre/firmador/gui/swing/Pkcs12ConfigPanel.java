@@ -43,6 +43,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import cr.libre.firmador.MessageUtils;
+
 public class Pkcs12ConfigPanel extends JPanel {
     private static final long serialVersionUID = -2813831810835064245L;
     private JList<String> pk12list;
@@ -87,7 +89,7 @@ public class Pkcs12ConfigPanel extends JPanel {
         pk12Model = new DefaultListModel<String>();
         pk12list  = new JList<String>(pk12Model);
 
-        JLabel ltitle = new JLabel("Archivos PKCS12");
+        JLabel ltitle = new JLabel(MessageUtils.t("pkcs12_config_label"));
 
         ltitle.setHorizontalAlignment(SwingConstants.CENTER);
         add(ltitle, BorderLayout.NORTH);

@@ -34,6 +34,7 @@ import javax.swing.JLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.gui.GUIInterface;
@@ -49,13 +50,10 @@ public class AboutLayout extends GroupLayout {
         super(host);
         settings = SettingsManager.getInstance().getAndCreateSettings();
         JLabel iconLabel = new JLabel(new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
-        JLabel descriptionLabel = new JLabel("<html><p align='center'><b>Firmador</b><br><br>" +
-            "Versión " + settings.getVersion()  + "<br><br>" +
-            "Herramienta para firmar documentos digitalmente.<br><br>" +
-            "Los documentos firmados con esta herramienta cumplen con la<br>" +
-            "Política de Formatos Oficiales de los Documentos Electrónicos<br>" +
-            "Firmados Digitalmente de Costa Rica.<br><br></p></html>", JLabel.CENTER);
-        JButton websiteButton = new JButton("Visitar sitio web del proyecto");
+        JLabel descriptionLabel = new JLabel(
+                String.format(MessageUtils.t("about_description_label"), settings.getVersion()), JLabel.CENTER);
+
+        JButton websiteButton = new JButton(MessageUtils.t("about_website_link"));
         websiteButton.setOpaque(false);
         websiteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -76,6 +74,15 @@ public class AboutLayout extends GroupLayout {
                 .addComponent(descriptionLabel)
                 .addComponent(websiteButton)
         );
+        descriptionLabel.getAccessibleContext().setAccessibleDescription(
+                String.format(MessageUtils.t("about_description_label"), settings.getVersion()));
+        descriptionLabel
+                .setToolTipText(String.format(MessageUtils.t("about_description_label"), settings.getVersion()));
+        websiteButton.setToolTipText(MessageUtils.t("about_website_link"));
+        websiteButton.getAccessibleContext().setAccessibleDescription(MessageUtils.t("about_website_link_accesible"));
+
+        websiteButton.setMnemonic('O');
+        descriptionLabel.setFocusable(true);
     }
 
     public void setInterface(GUIInterface swinginterface){
@@ -87,7 +94,7 @@ public class AboutLayout extends GroupLayout {
             try {
                 Desktop.getDesktop().browse(new URI(settings.baseUrl)); // GTK3 Swing backend has a bug not opening the URL until the app closes
             } catch (Exception e) {
-                LOG.error("Error abriendo url", e);
+                LOG.error(MessageUtils.t("about_log_openurl"), e);
                 this.swinginterface.showError(FirmadorUtils.getRootCause(e));
             }
         }

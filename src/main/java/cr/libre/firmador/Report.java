@@ -41,7 +41,7 @@ public class Report {
         transformer.transform(new StreamSource(new StringReader(reports.getXmlSimpleReport())), new StreamResult(writer));
         for (SignatureWrapper wrapper : reports.getDiagnosticData().getSignatures())
             if (!wrapper.getPdfAnnotationChanges().isEmpty())
-                annotationChanges = "<p><b>Aviso importante:</b> el siguiente documento firmado tiene modificaciones (anotaciones) añadidas después de haberse firmado.</p>";
+                annotationChanges = MessageUtils.t("report_document_with_annotation");
     }
 
     public String getReport() {

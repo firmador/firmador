@@ -106,11 +106,8 @@ public class DocumentTableButton extends JButton {
 
         @Override
         public void actionPerformed(ActionEvent arg0) {
-            // TODO Auto-generated method stub
-            System.out.print(document.getName());
             GUISwing gui = (GUISwing) document.getGUI();
             gui.signDocument(document);
-            // gui.displayFunctionality("sign");
         }
 
     }
