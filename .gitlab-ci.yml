@@ -22,6 +22,12 @@ linux-java-11:
   script: 
     - mvn $MAVEN_CLI_OPTS test
   when: always
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
+        - target/failsafe-reports/TEST-*.xml
 
 linux-java-17:
   image: 
