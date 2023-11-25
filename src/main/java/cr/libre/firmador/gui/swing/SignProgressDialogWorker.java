@@ -4,13 +4,15 @@ import java.util.concurrent.Semaphore;
 
 import javax.swing.SwingWorker;
 
+import cr.libre.firmador.MessageUtils;
+
 public class SignProgressDialogWorker extends SwingWorker<Void, Void> {
     private ProgressDialog progressMonitor;
     private boolean stop = false;
     private Semaphore waitformessages = new Semaphore(1);
 
     public SignProgressDialogWorker() {
-        progressMonitor = new ProgressDialog("Firma de documentos", 0, 100);
+        progressMonitor = new ProgressDialog(MessageUtils.t("sign_dialog_title_default"), 0, 100);
         progressMonitor.setSize(500, 250);
         progressMonitor.setVisible(false);
     }

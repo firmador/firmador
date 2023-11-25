@@ -5,4 +5,8 @@ public class MessageUtils {
         Settings settings = SettingsManager.getInstance().getAndCreateSettings();
         return settings.bundle.getString(msgkey);
     }
+
+    public static char k(char key) {
+        return key;
+    }
 }

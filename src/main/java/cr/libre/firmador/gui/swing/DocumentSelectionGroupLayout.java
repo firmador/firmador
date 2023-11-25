@@ -93,7 +93,7 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
     }
 
     private void showLoadDialog() {
-        loadDialog = new FileDialog(frame, "Seleccionar documento a firmar o validar");
+        loadDialog = new FileDialog(frame, MessageUtils.t("document_selection_filedialog_title"));
         loadDialog.setMultipleMode(true);
         loadDialog.setLocationRelativeTo(null);
         loadDialog.setVisible(true);

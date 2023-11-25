@@ -132,7 +132,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
         } catch (Exception e) {
-            LOG.error("Error cargando GUI", e);
+            LOG.error(MessageUtils.t("guiswing_error_loading_gui"), e);
             showError(FirmadorUtils.getRootCause(e));
         }
         settings = SettingsManager.getInstance().getAndCreateSettings();

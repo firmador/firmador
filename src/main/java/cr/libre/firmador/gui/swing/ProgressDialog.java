@@ -26,6 +26,9 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import cr.libre.firmador.MessageUtils;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.GroupLayout;
@@ -52,6 +55,7 @@ public class ProgressDialog extends JDialog {
      * Create the dialog.
      */
     public ProgressDialog(String title, Integer min, Integer max) {
+        super();
         initializeDialog(title, min, max);
     }
 
@@ -67,7 +71,7 @@ public class ProgressDialog extends JDialog {
         contentPanel.setOpaque(false);
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         setIconImage(image);
-        setTitle("Progreso de firmado");
+        setTitle(MessageUtils.t("progress_dialog_title_default"));
 
         lbtitle = new JLabel(title);
         lbtitle.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -105,13 +109,16 @@ public class ProgressDialog extends JDialog {
             buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
             getContentPane().add(buttonPane, BorderLayout.SOUTH);
             {
-                JButton okButton = new JButton("Cerrar");
+                JButton okButton = new JButton(MessageUtils.t("progress_dialog_btn_close"));
+                okButton.setToolTipText(MessageUtils.t("progress_dialog_btn_close_tooltip"));
+                okButton.getAccessibleContext()
+                        .setAccessibleDescription(MessageUtils.t("progress_dialog_btn_close_tooltip_accesible"));
                 okButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
                         isCanceled = true;
                     }
                 });
-
+                okButton.setMnemonic(MessageUtils.k('X'));
                 okButton.setActionCommand("OK");
                 okButton.setOpaque(false);
                 buttonPane.add(okButton);

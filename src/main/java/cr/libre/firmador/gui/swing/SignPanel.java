@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.ConfigListener;
+import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.cards.SmartCardDetector;
@@ -115,6 +116,7 @@ public class SignPanel extends JPanel implements ConfigListener{
             showSignButtons();
         } else if (mimeType.isOpenxmlformats()) {
             getSignButton().setEnabled(true);
+            saveButton.setEnabled(true);
         } else {
             shownonPDFButtons();
         }
@@ -151,23 +153,35 @@ public class SignPanel extends JPanel implements ConfigListener{
     public SignPanel(){
         super();
         settings = SettingsManager.getInstance().getAndCreateSettings();
-        signatureVisibleCheckBox = new JCheckBox(" Sin firma visible", settings.withoutVisibleSign);
-        signatureVisibleCheckBox.setToolTipText("<html>Marque esta casilla si no desea representar visualmente una firma<br>en una página del documento a la hora de firmarlo.</html>");
+        signatureVisibleCheckBox = new JCheckBox(MessageUtils.t("signpanel_visible_checkbox"),
+                settings.withoutVisibleSign);
+        signatureVisibleCheckBox.getAccessibleContext().setAccessibleName(MessageUtils.t("signpanel_visible_checkbox"));
+        signatureVisibleCheckBox.getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("signpanel_visible_checkbox_accessible"));
+        signatureVisibleCheckBox.setToolTipText(MessageUtils.t("signpanel_visible_checkbox_tooltip"));
         signatureVisibleCheckBox.setOpaque(false);
-        reasonLabel = new JLabel("Razón:");
-        locationLabel = new JLabel("Lugar:");
-        contactInfoLabel = new JLabel("Contacto:");
+        reasonLabel = new JLabel(MessageUtils.t("signpanel_reason"));
+        locationLabel = new JLabel(MessageUtils.t("signpanel_place"));
+        contactInfoLabel = new JLabel(MessageUtils.t("signpanel_contact"));
         reasonField = new JTextField();
         reasonField.setText(settings.reason);
-        reasonField.setToolTipText("<html>Este campo opcional permite indicar una razón<br>o motivo por el cual firma el documento.</html>");
+        reasonField.setToolTipText(MessageUtils.t("signpanel_reason_tooltip"));
+        reasonField.getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("signpanel_reason_tooltip_accessible"));
+
         locationField = new JTextField();
         locationField.setText(settings.place);
-        locationField.setToolTipText("<html>Este campo opcional permite indicar el lugar físico,<br>por ejemplo la ciudad, en la cual declara firmar.</html>");
+        locationField.setToolTipText(MessageUtils.t("signpanel_place_tooltip"));
+        locationField.getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("signpanel_place_tooltip_accessible"));
+
         contactInfoField = new JTextField();
         contactInfoField.setText(settings.contact);
-        contactInfoField.setToolTipText("<html>Este campo opcional permite indicar una<br>manera de contactar con la persona firmante,<br>por ejemplo una dirección de correo electrónico.</html>");
+        contactInfoField.setToolTipText(MessageUtils.t("signpanel_contact_tooltip"));
+        contactInfoField.getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("signpanel_contact_tooltip_accessible"));
 
-        AdESFormatLabel = new JLabel("Formato AdES:");
+        AdESFormatLabel = new JLabel(MessageUtils.t("signpanel_formato_ades"));
         CAdESButton = new JRadioButton("CAdES");
         CAdESButton.setActionCommand("CAdES");
         CAdESButton.setContentAreaFilled(false);
@@ -177,7 +191,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         AdESFormatButtonGroup = new ButtonGroup();
         AdESFormatButtonGroup.add(CAdESButton);
         AdESFormatButtonGroup.add(XAdESButton);
-        AdESLevelLabel = new JLabel("Nivel AdES:");
+        AdESLevelLabel = new JLabel(MessageUtils.t("signpanel_level_ades"));
         levelTButton = new JRadioButton("T");
         levelTButton.setActionCommand("T");
         levelTButton.setContentAreaFilled(false);
@@ -192,9 +206,9 @@ public class SignPanel extends JPanel implements ConfigListener{
         AdESLevelButtonGroup.add(levelLTButton);
         AdESLevelButtonGroup.add(levelLTAButton);
 
-        pageLabel = new JLabel("Página:");
+        pageLabel = new JLabel(MessageUtils.t("signpanel_pages"));
         pageSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
-        pageSpinner.setToolTipText("<html>Este control permite seleccionar el número de página<br>para visualizar y seleccionar en cuál mostrar la firma visible.</html>");
+        pageSpinner.setToolTipText(MessageUtils.t("signpanel_pages_tooltip"));
         pageSpinner.setMaximumSize(pageSpinner.getPreferredSize());
 
         signatureLabel = new JLabel();
@@ -216,15 +230,18 @@ public class SignPanel extends JPanel implements ConfigListener{
         imagePanel.add(imageLabel);
         imgScroll = this.getImageScrollPane(imagePanel);
 
-        signButton = new JButton("Firmar documento");
-        signButton.setToolTipText("<html>Este botón permite firmar el documento seleccionado.<br>Requiere dispositivo de Firma Digital al cual se le<br>solicitará ingresar el PIN.</html>");
+        signButton = new JButton(MessageUtils.t("signpanel_sign_btn"));
+        signButton.setToolTipText(MessageUtils.t("signpanel_sign_tooltip"));
+        signButton.getAccessibleContext().setAccessibleDescription(MessageUtils.t("signpanel_sign_tooltip_accessible"));
+
         signButton.setOpaque(false);
+        signButton.setMnemonic(MessageUtils.k('S'));
 
-        saveButton = new JButton("Guardar en cola");
-        saveButton.setToolTipText(
-                "<html>Este botón permite guardar las configuraciones del documento seleccionado.<br>para firmarse masivamente en la pestaña de documentos.</html>");
+        saveButton = new JButton(MessageUtils.t("signpanel_save_btn"));
+        saveButton.setToolTipText(MessageUtils.t("signpanel_save_tooltip"));
+        saveButton.getAccessibleContext().setAccessibleDescription(MessageUtils.t("signpanel_save_tooltip_accessible"));
         saveButton.setOpaque(false);
-
+        saveButton.setMnemonic(MessageUtils.k('G'));
         //signatureLabel.setToolTipText("<html>Esta etiqueta es un recuadro arrastrable que representa<br>la ubicación de la firma visible en la página seleccionada.<br><br>Se puede cambiar su posición haciendo clic sobre el recuadro<br>y moviendo el mouse sin soltar el botón de clic<br>hasta soltarlo en la posición deseada.</html>");
         if (System.getProperty("os.name").startsWith("Mac")) signatureLabel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         else signatureLabel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
@@ -271,7 +288,7 @@ public class SignPanel extends JPanel implements ConfigListener{
                     imageLabel.setSize(pageImage.getWidth(), pageImage.getHeight());
                     imageLabel.setIcon(new ImageIcon(pageImage));
                 } catch (Throwable ex) {
-                    LOG.error("Error cambiando cambiando página", ex);
+                    LOG.error(MessageUtils.t("signpanel_log_render_preview"), ex);
                     gui.showError(FirmadorUtils.getRootCause(ex));
                 }
                 if (preview.showSignLabelPreview()) {
@@ -295,7 +312,7 @@ public class SignPanel extends JPanel implements ConfigListener{
             try {
                 bufferedImage = ImageIO.read(new URL(previewimg));
             } catch (Exception e) {
-                LOG.error("Error cargando imagen", e);
+                LOG.error(MessageUtils.t("signpanel_error_render_image"), e);
                 gui.showError(FirmadorUtils.getRootCause(e));
             }
             int previewimgWidth = Math.round((float) bufferedImage.getWidth() * settings.pDFImgScaleFactor / 4);
@@ -366,7 +383,7 @@ public class SignPanel extends JPanel implements ConfigListener{
             public void actionPerformed(ActionEvent event) {
                 if (currentDocument != null) {
                 currentDocument.setSettings(gui.getCurrentSettings());
-                gui.showMessage("Configuración guarda satisfactoriamente");
+                    gui.showMessage(MessageUtils.t("signpanel_dialog_save_configutation"));
                 }
             }
         });
@@ -451,6 +468,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         levelTButton.setVisible(false);
         levelLTButton.setVisible(false);
         levelLTAButton.setVisible(false);
+        saveButton.setVisible(false);
 
     }
 
@@ -465,6 +483,7 @@ public class SignPanel extends JPanel implements ConfigListener{
     public void showSignButtons() {
         showPreviewButtons();
         signatureVisibleCheckBox.setVisible(true);
+        saveButton.setVisible(true);
         reasonLabel.setVisible(true);
         reasonField.setVisible(true);
         locationLabel.setVisible(true);
@@ -489,6 +508,9 @@ public class SignPanel extends JPanel implements ConfigListener{
          levelLTButton.setVisible(false);
          levelLTAButton.setVisible(false);
          signButton.setEnabled(true);
+         saveButton.setEnabled(true);
+         saveButton.setVisible(true);
+
     }
 
     public void docHideButtons() {
@@ -510,6 +532,7 @@ public class SignPanel extends JPanel implements ConfigListener{
          levelTButton.setVisible(false);
          levelLTButton.setVisible(false);
          levelLTAButton.setVisible(false);
+         saveButton.setVisible(false);
     }
 
     public void updateConfig() {
