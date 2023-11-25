@@ -8,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.cards.CardSignInfo;
@@ -175,6 +176,10 @@ public class Document {
 
     public String getReport() {
         return report;
+    }
+
+    public String getPlainReport() {
+        return MessageUtils.html2txt(report);
     }
 
     public DSSDocument getDSSDocument() {

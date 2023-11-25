@@ -9,4 +9,8 @@ public class MessageUtils {
     public static char k(char key) {
         return key;
     }
+
+    public static String html2txt(String text) {
+        return text.replaceAll("<[^>]*>", "");
+    }
 }

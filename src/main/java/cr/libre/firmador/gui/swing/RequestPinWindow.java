@@ -48,6 +48,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.cards.SmartCardDetector;
 
@@ -86,10 +87,11 @@ public class RequestPinWindow extends JFrame {
                 }
             }
         });
+        pinField.getAccessibleContext().setAccessibleDescription(MessageUtils.t("pin_dialog_pinfield_accesible"));
         pinField.grabFocus();
 
 
-        lblNewLabel = new JLabel("Seleccione el certificado: ");
+        lblNewLabel = new JLabel(MessageUtils.t("pin_dialog_request_certificate"));
         comboBox = new JComboBox<String>();
         comboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -99,7 +101,7 @@ public class RequestPinWindow extends JFrame {
         comboBox.setBounds(121, 111, 315, 36);
         comboBox.setOpaque(false);
 
-        label = new JLabel("Ingrese su PIN:");
+        label = new JLabel(MessageUtils.t("pin_dialog_requestpin"));
 
         JButton btnNewButton = new JButton("");
         btnNewButton.addActionListener(new ActionListener() {
@@ -113,7 +115,9 @@ public class RequestPinWindow extends JFrame {
             }
         });
         btnNewButton.setIcon(new ImageIcon(this.getClass().getClassLoader().getResource("refresh.png")));
-        btnNewButton.setToolTipText("Refrescar tarjetas");
+        btnNewButton.setToolTipText(MessageUtils.t("pin_dialog_reload_cards"));
+        btnNewButton.getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("pin_dialog_reload_cards_accesible"));
         btnNewButton.setOpaque(false);
         GroupLayout glContentPane = new GroupLayout(contentPane);
         glContentPane.setHorizontalGroup(
@@ -172,14 +176,17 @@ public class RequestPinWindow extends JFrame {
         int action =0;
         boolean ok=false;
         while(!ok) {
-            action = JOptionPane.showConfirmDialog(null, contentPane, "Ingresar PIN", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            action = JOptionPane.showConfirmDialog(null, contentPane, MessageUtils.t("pin_dialog_title"),
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
             if(action==JOptionPane.OK_OPTION) {
                 if (pinField.getPassword().length > 0 && this.card != null) {
                     this.card.setPin(new PasswordProtection(pinField.getPassword())); // PasswordProtection is passed as reference, password.destroy() would remove the referred in card variable
                     pinField.setText(""); // However, https://stackoverflow.com/a/36828836
                     ok=true;
                 }else {
-                    JOptionPane.showMessageDialog(null, "Debe seleccionar una tarjeta y un pin", "Ocurrió un error procesando su solicitud", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, MessageUtils.t("pin_dialog_error_title"),
+                            MessageUtils.t("pin_dialog_error_context"), JOptionPane.WARNING_MESSAGE);
                 }
             }else if(action==JOptionPane.CANCEL_OPTION || action==JOptionPane.CLOSED_OPTION) {
                 ok=true;
@@ -196,7 +203,7 @@ public class RequestPinWindow extends JFrame {
             infotext.setText(card.getDisplayInfo());
         }else {
             this.card=null;
-            infotext.setText("Debe seleccionar al menos una tarjeta");
+            infotext.setText(MessageUtils.t("pin_dialog_warning_card"));
         }
     }
 
@@ -218,14 +225,8 @@ public class RequestPinWindow extends JFrame {
             updateSelected();
         } catch (Throwable er) {
             JOptionPane.showMessageDialog(null,
-            "El firmador ha detectado que estaría utilizando una versión de Java para ARM.\n" +
-            "Aunque su computadora disponga de procesador ARM, debe desinstalar la versión de\n" +
-            "Java para ARM e instalar Java para Intel.\n" +
-            "Esto es debido a que el fabricante de las tarjetas solo provee un controlador para Intel\n" +
-            "y la versión de Java instalada solo puede cargar un controlador de la misma arquitectura.\n\n" +
-            "Una vez haya desinstalado Java para ARM, instalado Java para Intel y reiniciado el firmador,\n" +
-            "el sistema operativo utilizará un emulador para Intel y el firmador y detectará la tarjeta.",
-            "Error al cargar librería", JOptionPane.WARNING_MESSAGE);
+                    MessageUtils.t("pin_dialog_warning_arm"),
+                    MessageUtils.t("pin_dialog_warning_arm_title"), JOptionPane.WARNING_MESSAGE);
         }
     }
     public PasswordProtection getPassword() {

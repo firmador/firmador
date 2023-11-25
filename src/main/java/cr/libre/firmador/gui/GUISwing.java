@@ -539,7 +539,9 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
 
     public void showMessage(String message) {
         LOG.info(MessageUtils.t("guiswing_show_message") + message);
-        JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Mensaje de Firmador", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, new CopyableJLabel(message),
+                MessageUtils.t("document_success_joptionpane_title"),
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void showError(Throwable error) {
@@ -677,6 +679,8 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
             gui.displayFunctionality("validator");
             validatePanel.reportLabel.setText(document.getReport());
             validatePanel.extendButton.setEnabled(true);
+            validatePanel.reportLabel.requestFocusInWindow();
+            validatePanel.reportLabel.getAccessibleContext().setAccessibleDescription(document.getPlainReport());
         } else {
             validatePanel.reportLabel.setText("");
             validatePanel.extendButton.setEnabled(false);
@@ -696,7 +700,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
                 signPanel.getSignButton().setEnabled(true);
             } else
                 signPanel.shownonPDFButtons();
-            mainFrame.pack();
+            // mainFrame.pack();
             mainFrame.setMinimumSize(mainFrame.getSize());
         } catch (Exception e) {
             LOG.error("Error cargando Documento con mimeType", e);

@@ -29,11 +29,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import javax.accessibility.AccessibleState;
 import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
@@ -72,6 +76,21 @@ import cr.libre.firmador.signers.FirmadorUtils;
 public class SignPanel extends JPanel implements ConfigListener{
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final long serialVersionUID = 945116850482545687L;
+
+    private static class CheckBoxListener implements PropertyChangeListener {
+        @Override
+        public void propertyChange(PropertyChangeEvent e) {
+            String propertyName = e.getPropertyName();
+            if ("AccessibleState".equals(propertyName)) {
+                AccessibleState state = (AccessibleState) e.getNewValue();
+                if (state == AccessibleState.CHECKED) {
+                    System.out.println("Se ha seleccionado el JCheckBox");
+                } else {
+                    System.out.println("Se ha deseleccionado el JCheckBox");
+                }
+            }
+        }
+    }
 
     private JScrollPane imgScroll;
     private ScrollableJPanel imagePanel;
@@ -209,6 +228,8 @@ public class SignPanel extends JPanel implements ConfigListener{
         pageLabel = new JLabel(MessageUtils.t("signpanel_pages"));
         pageSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
         pageSpinner.setToolTipText(MessageUtils.t("signpanel_pages_tooltip"));
+        pageSpinner.getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("signpanel_pages_tooltip_accessible"));
         pageSpinner.setMaximumSize(pageSpinner.getPreferredSize());
 
         signatureLabel = new JLabel();

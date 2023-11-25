@@ -24,6 +24,8 @@ import javax.swing.JEditorPane;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
 
+import cr.libre.firmador.MessageUtils;
+
 @SuppressWarnings("serial")
 public class CopyableJLabel extends JTextPane {
 
@@ -36,6 +38,7 @@ public class CopyableJLabel extends JTextPane {
         super();
         setDefault();
         setText("<html><p style=\"word-wrap: break-word; width: 400px;\">" +text + "<p></html>");
+        this.getAccessibleContext().setAccessibleDescription(MessageUtils.html2txt(MessageUtils.html2txt(text)));
     }
 
     private void setDefault() {

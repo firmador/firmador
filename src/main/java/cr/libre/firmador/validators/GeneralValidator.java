@@ -92,10 +92,12 @@ public class GeneralValidator implements Validator {
         if (validatorReports != null) {
             Report report = new Report(validatorReports);
             reportstr = report.getReport();
+
         }
         
         return reportstr;
     }
+
 
     @Override
     public int amountOfSignatures() {
