@@ -1,5 +1,7 @@
 package cr.libre.firmador.signers;
 
+import java.util.List;
+
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.documents.Document;
@@ -14,4 +16,6 @@ public interface DocumentSigner {
     DSSDocument sign(Document toSignDocument, CardSignInfo card);
 
     DSSDocument extend(DSSDocument document);
+
+    void setDetached(List<DSSDocument> detacheddocs);
 }

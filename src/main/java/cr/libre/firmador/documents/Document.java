@@ -83,13 +83,16 @@ public class Document {
     }
 
     public boolean validate() throws Throwable {
-
-        if (validator != null && !documentIsValidate) {
-            isvalid = false;
-            document = validator.loadDocumentPath(pathname);
-            isvalid = validator.isSigned();
-            report = validator.getStringReport();
-            this.validateDone();
+        if (validator != null) {
+            if (!documentIsValidate) {
+                isvalid = false;
+                document = validator.loadDocumentPath(pathname);
+                isvalid = validator.isSigned();
+                report = validator.getStringReport();
+                this.validateDone();
+            }
+        } else {
+            documentIsValidate = true;
         }
         return isvalid;
     }
@@ -106,7 +109,17 @@ public class Document {
     }
 
     public void extend() {
-        signedDocument = signer.extend(signedDocument);
+
+        if (mimeType == SupportedMimeTypeEnum.BINARY) {
+            ArrayList<DSSDocument> detacheddocs = new ArrayList<DSSDocument>();
+            detacheddocs.add(document);
+            signer.setDetached(detacheddocs);
+        }
+        DSSDocument extendDocument = signer.extend(signedDocument);
+        if (extendDocument != null) {
+            signedDocument = extendDocument;
+        }
+
         extendsDone();
     }
 
@@ -219,10 +232,6 @@ public class Document {
         for (DocumentChangeListener hl : listeners)
             hl.extendsDone(this);
     };
-
-    public Validator getValidator() {
-        return validator;
-    }
 
     public boolean isValid() {
         return this.isvalid;

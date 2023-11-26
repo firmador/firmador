@@ -166,4 +166,10 @@ public class FirmadorOpenXmlFormat extends CRSigner implements DocumentSigner {
         return doc;
     }
 
+    @Override
+    public void setDetached(List<DSSDocument> detacheddocs) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

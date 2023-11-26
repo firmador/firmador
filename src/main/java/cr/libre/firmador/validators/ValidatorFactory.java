@@ -10,7 +10,11 @@ public class ValidatorFactory {
         if (mimetype.isOpenxmlformats()) {
             validator = new OOXMLValidator();
         }
+        try {
         validator.loadDocumentPath(fileName);
+        } catch (java.lang.UnsupportedOperationException e) {
+            return null; // format is not detected by dss
+        }
         return validator;
     }
 

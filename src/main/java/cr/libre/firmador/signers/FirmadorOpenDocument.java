@@ -23,6 +23,7 @@ package cr.libre.firmador.signers;
 
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.cards.CardSignInfo;
@@ -176,6 +177,12 @@ public class FirmadorOpenDocument extends CRSigner implements DocumentSigner {
     public DSSDocument sign(Document toSignDocument, CardSignInfo card) {
         DSSDocument doc = sign(toSignDocument.getDSSDocument(), card, toSignDocument.getSettings());
         return doc;
+    }
+
+    @Override
+    public void setDetached(List<DSSDocument> detacheddocs) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

@@ -26,6 +26,7 @@ import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.cards.CardSignInfo;
@@ -312,5 +313,11 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
     public DSSDocument sign(Document toSignDocument, CardSignInfo card) {
         DSSDocument signeddocument = sign(toSignDocument.getDSSDocument(), card, toSignDocument.getSettings());
         return signeddocument;
+    }
+
+    @Override
+    public void setDetached(List<DSSDocument> detacheddocs) {
+        // TODO Auto-generated method stub
+        
     }
 }
