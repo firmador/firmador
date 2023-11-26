@@ -287,6 +287,8 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         if (collectedSettings.image == null) collectedSettings.image=settings.getImage();
         collectedSettings.hideSignatureAdvice=Boolean.getBoolean("jnlp.hideSignatureAdvice");
         collectedSettings.isVisibleSignature = !signPanel.getSignatureVisibleCheckBox().isSelected();
+        collectedSettings.signASiC = signPanel.isASiC();
+        collectedSettings.forceCades = signPanel.isCAdES();
 
         return collectedSettings;
     }
@@ -452,10 +454,12 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
             SupportedMimeTypeEnum mimeType = MimeTypeDetector.detect(toSignDocument);
             if (mimeType.isXML())
                 extension = ".xml";
-            else if (mimeType.isPDF() || mimeType.isOpenDocument() || mimeType.isOpenxmlformats()) {
+            else if (mimeType.isOpenDocument()) {
+                extension = "." + mimeType.getExtension().toLowerCase();
+            } else if (mimeType.isPDF() || mimeType.isOpenxmlformats()) {
                 extension = "." + mimeType.getExtension().toLowerCase();
             } else {
-                extension = ".p7s";
+                extension = ".asice";
             }
         }
         return extension;

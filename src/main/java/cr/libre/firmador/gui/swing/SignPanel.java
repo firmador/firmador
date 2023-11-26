@@ -121,6 +121,7 @@ public class SignPanel extends JPanel implements ConfigListener{
     private SmartCardDetector smartCardDetector;
     private PreviewerInterface preview;
     private Document currentDocument = null;
+    private JRadioButton ASICEButton;
 
     public void setGUI(GUIInterface gui) {
         this.gui=gui;
@@ -207,9 +208,13 @@ public class SignPanel extends JPanel implements ConfigListener{
         XAdESButton = new JRadioButton("XAdES", true);
         XAdESButton.setActionCommand("XAdES");
         XAdESButton.setContentAreaFilled(false);
+        ASICEButton = new JRadioButton("ASiC-E");
+        ASICEButton.setActionCommand("ASiC-E");
+        ASICEButton.setContentAreaFilled(false);
         AdESFormatButtonGroup = new ButtonGroup();
         AdESFormatButtonGroup.add(CAdESButton);
         AdESFormatButtonGroup.add(XAdESButton);
+        AdESFormatButtonGroup.add(ASICEButton);
         AdESLevelLabel = new JLabel(MessageUtils.t("signpanel_level_ades"));
         levelTButton = new JRadioButton("T");
         levelTButton.setActionCommand("T");
@@ -392,12 +397,13 @@ public class SignPanel extends JPanel implements ConfigListener{
 
         signButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
+                currentDocument.setSettings(gui.getCurrentSettings());
                 String savefile = ((GUISwing) gui).showSaveDialog(currentDocument.getPathName(), "-firmado",
                         currentDocument.getExtension());
-                currentDocument.setPathToSave(savefile);
-                currentDocument.setSettings(gui.getCurrentSettings());
-                gui.signDocument(currentDocument);
-
+                if (savefile != null) {
+                    currentDocument.setPathToSave(savefile);
+                    gui.signDocument(currentDocument);
+                }
             }
         });
         saveButton.addActionListener(new ActionListener() {
@@ -435,7 +441,7 @@ public class SignPanel extends JPanel implements ConfigListener{
                     .addComponent(contactInfoField)
                     .addGroup(signLayout.createSequentialGroup()
                         .addComponent(CAdESButton)
-                        .addComponent(XAdESButton))
+                                            .addComponent(XAdESButton).addComponent(ASICEButton))
                     .addGroup(signLayout.createSequentialGroup()
                         .addComponent(levelTButton)
                         .addComponent(levelLTButton)
@@ -462,7 +468,7 @@ public class SignPanel extends JPanel implements ConfigListener{
                     .addGroup(signLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                         .addComponent(AdESFormatLabel)
                         .addComponent(CAdESButton)
-                        .addComponent(XAdESButton))
+                                        .addComponent(XAdESButton).addComponent(ASICEButton))
                     .addGroup(signLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                         .addComponent(AdESLevelLabel)
                         .addComponent(levelTButton)
@@ -485,6 +491,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         AdESFormatLabel.setVisible(false);
         CAdESButton.setVisible(false);
         XAdESButton.setVisible(false);
+        ASICEButton.setVisible(false);
         AdESLevelLabel.setVisible(false);
         levelTButton.setVisible(false);
         levelLTButton.setVisible(false);
@@ -521,16 +528,25 @@ public class SignPanel extends JPanel implements ConfigListener{
     }
 
     public void shownonPDFButtons() {
-         AdESFormatLabel.setVisible(true);
-         CAdESButton.setVisible(true);
-         XAdESButton.setVisible(true);
-         AdESLevelLabel.setVisible(false);
-         levelTButton.setVisible(false);
-         levelLTButton.setVisible(false);
-         levelLTAButton.setVisible(false);
-         signButton.setEnabled(true);
-         saveButton.setEnabled(true);
-         saveButton.setVisible(true);
+
+        if (currentDocument != null) {
+            SupportedMimeTypeEnum mimetype = currentDocument.getMimeType();
+            AdESFormatLabel.setVisible(true);
+            signButton.setEnabled(true);
+            saveButton.setEnabled(true);
+            saveButton.setVisible(true);
+            if (mimetype.isOpenDocument()) {
+                CAdESButton.setVisible(true);
+                XAdESButton.setVisible(true);
+                AdESLevelLabel.setVisible(false);
+                levelTButton.setVisible(false);
+                levelLTButton.setVisible(false);
+                levelLTAButton.setVisible(false);
+            }
+            ASICEButton.setVisible(true);
+            ASICEButton.setSelected(true);
+
+        }
 
     }
 
@@ -549,6 +565,7 @@ public class SignPanel extends JPanel implements ConfigListener{
          AdESFormatLabel.setVisible(false);
          CAdESButton.setVisible(false);
          XAdESButton.setVisible(false);
+         ASICEButton.setVisible(false);
          AdESLevelLabel.setVisible(false);
          levelTButton.setVisible(false);
          levelLTButton.setVisible(false);
@@ -745,5 +762,26 @@ public class SignPanel extends JPanel implements ConfigListener{
         additionalText = additionalText.replace("\n", "<br>");
 
         return additionalText;
+    }
+
+    public boolean isASiC() {
+        if (currentDocument != null) {
+            if (ASICEButton.isVisible()) {
+                if (ASICEButton.isSelected()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isCAdES() {
+        if (currentDocument.getMimeType() == SupportedMimeTypeEnum.BINARY
+                || currentDocument.getMimeType().isOpenDocument()) {
+            if (XAdESButton.isSelected() || CAdESButton.isSelected()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

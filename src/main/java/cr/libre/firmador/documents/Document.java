@@ -15,6 +15,8 @@ import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.signers.DocumentSigner;
 import cr.libre.firmador.signers.DocumentSignerDetector;
+import cr.libre.firmador.signers.FirmadorASiC;
+import cr.libre.firmador.signers.FirmadorCAdES;
 import cr.libre.firmador.validators.Validator;
 import cr.libre.firmador.validators.ValidatorFactory;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -98,6 +100,9 @@ public class Document {
     }
 
     public void sign(CardSignInfo card) {
+        if (settings != null && settings.signASiC) {
+            this.forcesignASiC();
+        }
         if (document == null) {
             document = new FileDocument(this.pathname);
         }
@@ -121,6 +126,9 @@ public class Document {
         }
 
         extendsDone();
+        if (mimeType == SupportedMimeTypeEnum.BINARY) {
+            signer.setDetached(null);
+        }
     }
 
     public void setPrincipal() throws Throwable {
@@ -147,9 +155,13 @@ public class Document {
         if (mimeType.isXML())
             extension = ".xml";
         else if (mimeType.isPDF() || mimeType.isOpenDocument() || mimeType.isOpenxmlformats()) {
-            extension = "." + mimeType.getExtension().toLowerCase();
+            if (settings.signASiC) {
+                extension = ".asice";
+            } else {
+                extension = "." + mimeType.getExtension().toLowerCase();
+            }
         } else {
-            extension = ".p7s";
+            extension = ".asice";
         }
 
         return extension;
@@ -271,5 +283,13 @@ public class Document {
         if (hasPreviewLoaded && documentIsValidate) {
             isReady = true;
         }
+    }
+
+    public void forcesignASiC() {
+        signer = new FirmadorASiC(this.gui);
+    }
+
+    public void forceCades() {
+        signer = new FirmadorCAdES(this.gui);
     }
 }

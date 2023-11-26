@@ -19,13 +19,19 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui.swing;
 
+import java.lang.invoke.MethodHandles;
+
 import javax.swing.SwingWorker;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.gui.GUIInterface;
 
 public class SignerWorker extends SwingWorker<Void, Void> {
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private GUIInterface gui;
     private SignProgressDialogWorker progressMonitor;
     private Document document;
@@ -50,7 +56,12 @@ public class SignerWorker extends SwingWorker<Void, Void> {
     }
 
     protected Void doInBackground() {
+        try {
         this.document.sign(card);
+        } catch (Exception e) {
+            LOG.error("Error firmado documento", e);
+            throw e;
+        }
         return null;
     }
 

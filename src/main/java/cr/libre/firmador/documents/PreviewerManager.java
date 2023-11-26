@@ -9,6 +9,9 @@ public class PreviewerManager {
         if (mimetype.isOpenxmlformats()) {
             previewer = new SofficePreviewer();
         }
+        if (mimetype.isOpenDocument()) {
+            previewer = new SofficePreviewer();
+        }
         return previewer;
     }
 }

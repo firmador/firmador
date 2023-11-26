@@ -89,6 +89,8 @@ public class Settings {
     public boolean extendDocument = true;
     public boolean isVisibleSignature = false;
     public boolean hideSignatureAdvice = false;
+    public boolean signASiC = false;
+    public boolean forceCades = false;
 
     public Settings() {
         activePlugins.add("cr.libre.firmador.plugins.DummyPlugin");
@@ -133,6 +135,8 @@ public class Settings {
         newsettings.sofficePath = sofficePath;
         newsettings.pDFImgScaleFactor = pDFImgScaleFactor;
         newsettings.isVisibleSignature = isVisibleSignature;
+        newsettings.signASiC = signASiC;
+        newsettings.forceCades = forceCades;
     }
 
     public String getDefaultSignMessage() {
