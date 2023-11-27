@@ -1,4 +1,4 @@
-package cr.libre.firmador.documents;
+package cr.libre.firmador.previewers;
 
 import java.awt.image.BufferedImage;
 

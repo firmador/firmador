@@ -57,8 +57,6 @@ import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.documents.DocumentChangeListener;
 import cr.libre.firmador.documents.MimeTypeDetector;
-import cr.libre.firmador.documents.PreviewScheduler;
-import cr.libre.firmador.documents.PreviewerInterface;
 import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 import cr.libre.firmador.ConfigListener;
 import cr.libre.firmador.MessageUtils;
@@ -78,15 +76,17 @@ import cr.libre.firmador.gui.swing.RemoteHttpWorker;
 import cr.libre.firmador.gui.swing.RequestPinWindow;
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SignProgressDialogWorker;
-import cr.libre.firmador.gui.swing.SignerScheduler;
 import cr.libre.firmador.gui.swing.SwingMainWindowFrame;
 import cr.libre.firmador.gui.swing.ValidatePanel;
 import cr.libre.firmador.plugins.PluginManager;
+import cr.libre.firmador.previewers.PreviewScheduler;
+import cr.libre.firmador.previewers.PreviewerInterface;
 import cr.libre.firmador.signers.FirmadorCAdES;
 import cr.libre.firmador.signers.FirmadorOpenDocument;
 import cr.libre.firmador.signers.FirmadorPAdES;
 import cr.libre.firmador.signers.FirmadorUtils;
 import cr.libre.firmador.signers.FirmadorXAdES;
+import cr.libre.firmador.signers.SignerScheduler;
 
 public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeListener {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

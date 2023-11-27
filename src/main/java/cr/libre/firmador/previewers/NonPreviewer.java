@@ -1,51 +1,30 @@
-package cr.libre.firmador.documents;
+package cr.libre.firmador.previewers;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 
-public class SofficePreviewer implements PreviewerInterface {
+public class NonPreviewer implements PreviewerInterface {
     private PDDocument document = null;
     private PDFRenderer renderer = null;
     private Settings settings;
 
-    SofficePreviewer() {
+    NonPreviewer() {
         settings = SettingsManager.getInstance().getAndCreateSettings();
     }
-
-    public void loadDocument(String fileName) throws Throwable {
-
-        File importfile = new File(fileName);
-
-        String separator = FileSystems.getDefault().getSeparator();
-        String guestFilename = FilenameUtils.removeExtension(importfile.getName()) + ".pdf";
-        String tmpdir = Files.createTempDirectory("firmadorlibre").toFile().getAbsolutePath();
-        String command = String.format("%s --headless  --convert-to pdf:writer_pdf_Export --outdir %s %s",
-                settings.sofficePath, tmpdir, importfile.toURI().normalize());
-        Process theProcess = Runtime.getRuntime().exec(command);
-
-        theProcess.getErrorStream().transferTo(System.out);
-        String completepath = tmpdir + separator + guestFilename;
-        File path = new File(completepath);
-        if (path.exists())
-            document = PDDocument.load(path);
-        renderer = null;
+    @Override
+    public void loadDocument(String filename) throws Throwable {
+        document = PDDocument.load(this.getClass().getClassLoader().getResourceAsStream("nonPreview.pdf"));
     }
 
     @Override
     public void loadDocument(byte[] data) throws Throwable {
-        document = PDDocument.load(data);
-        renderer = null;
+        document = PDDocument.load(this.getClass().getClassLoader().getResourceAsStream("nonPreview.pdf"));
     }
 
     @Override
@@ -73,6 +52,7 @@ public class SofficePreviewer implements PreviewerInterface {
         return getRender().renderImage(page, settings.pDFImgScaleFactor);
     }
 
+    @Override
     public boolean showSignLabelPreview() {
         return false;
     }

@@ -66,10 +66,10 @@ import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.cards.SmartCardDetector;
 import cr.libre.firmador.documents.Document;
-import cr.libre.firmador.documents.PreviewerInterface;
 import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
+import cr.libre.firmador.previewers.PreviewerInterface;
 import cr.libre.firmador.signers.FirmadorUtils;
 
 

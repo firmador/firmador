@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package cr.libre.firmador.gui.swing;
+package cr.libre.firmador.signers;
 
 import java.lang.invoke.MethodHandles;
 
@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.gui.GUIInterface;
+import cr.libre.firmador.gui.swing.SignProgressDialogWorker;
 
 public class SignerWorker extends SwingWorker<Void, Void> {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

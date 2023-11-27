@@ -1,4 +1,6 @@
-package cr.libre.firmador.documents;
+package cr.libre.firmador.previewers;
+
+import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 
 public class PreviewerManager {
     public static PreviewerInterface getPreviewManager(SupportedMimeTypeEnum mimetype) {

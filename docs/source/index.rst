@@ -3,14 +3,22 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Firmador Libre's documentation!
-==========================================
+Bienvenido a la documentación de  Firmador Libre
+======================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
-
+   instalacion
+   arquitectura
+   card_docs
+   interfaces
+   previsualizadores
+   firmadores
+   validadores
+   asincronia
+   plugins
 
 Indices and tables
 ==================

@@ -13,6 +13,8 @@ import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.gui.GUIInterface;
+import cr.libre.firmador.previewers.PreviewerInterface;
+import cr.libre.firmador.previewers.PreviewerManager;
 import cr.libre.firmador.signers.DocumentSigner;
 import cr.libre.firmador.signers.DocumentSignerDetector;
 import cr.libre.firmador.signers.FirmadorASiC;

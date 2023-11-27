@@ -1,6 +1,7 @@
-package cr.libre.firmador.documents;
+package cr.libre.firmador.previewers;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -9,22 +10,25 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 
-public class NonPreviewer implements PreviewerInterface {
+public class PDFPreviewer implements PreviewerInterface {
     private PDDocument document = null;
     private PDFRenderer renderer = null;
     private Settings settings;
 
-    NonPreviewer() {
+    PDFPreviewer() {
         settings = SettingsManager.getInstance().getAndCreateSettings();
     }
-    @Override
-    public void loadDocument(String filename) throws Throwable {
-        document = PDDocument.load(this.getClass().getClassLoader().getResourceAsStream("nonPreview.pdf"));
+
+    public void loadDocument(String fileName) throws Throwable {
+        document = PDDocument.load(new File(fileName));
+        renderer = null;
+
     }
 
     @Override
     public void loadDocument(byte[] data) throws Throwable {
-        document = PDDocument.load(this.getClass().getClassLoader().getResourceAsStream("nonPreview.pdf"));
+        document = PDDocument.load(data);
+        renderer = null;
     }
 
     @Override
@@ -52,9 +56,8 @@ public class NonPreviewer implements PreviewerInterface {
         return getRender().renderImage(page, settings.pDFImgScaleFactor);
     }
 
-    @Override
     public boolean showSignLabelPreview() {
-        return false;
+        return true;
     }
 
     @Override
