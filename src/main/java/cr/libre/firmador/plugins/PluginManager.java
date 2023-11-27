@@ -16,6 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
+
 package cr.libre.firmador.plugins;
 
 import java.lang.invoke.MethodHandles;
@@ -32,6 +33,7 @@ import cr.libre.firmador.gui.GUIInterface;
 
 public class PluginManager implements Runnable {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     //private GUIInterface gui;
     private Settings settings;
     private List<Plugin> runnablePlugins = new ArrayList<Plugin>();
@@ -44,7 +46,7 @@ public class PluginManager implements Runnable {
     }
 
     private void loadPlugins() {
-        for (String name : settings.activePlugins) {
+        for (String name : this.settings.activePlugins) {
 
             try {
                 Class<?> pluginClass = Class.forName(name, true, Plugin.class.getClassLoader());
@@ -52,31 +54,31 @@ public class PluginManager implements Runnable {
 
                 if (plugin.getIsRunnable()) {
                     SwingUtilities.invokeLater((Runnable) plugin);
-                    runnablePlugins.add(plugin);
+                    this.runnablePlugins.add(plugin);
                 }
 
-                plugins.add(plugin);
+                this.plugins.add(plugin);
                 plugin.start();
 
             } catch (ClassNotFoundException e) {
-                LOG.error("Error al cargar plugin (clase no encontrada)", e.getMessage());
+                this.LOG.error("Error al cargar plugin (clase no encontrada)", e.getMessage());
                 e.printStackTrace();
             } catch (Exception e) {
-                LOG.error("Error al cargar plugin", e.getMessage());
+                this.LOG.error("Error al cargar plugin", e.getMessage());
                 e.printStackTrace();
             }
         }
     }
 
     public void stop() {
-        for (Plugin plugin : plugins) {
+        for (Plugin plugin : this.plugins) {
             plugin.stop();
         }
 
     }
 
     public void startLogging() {
-        for (Plugin plugin : plugins) {
+        for (Plugin plugin : this.plugins) {
             plugin.startLogging();
         }
     }
@@ -84,6 +86,18 @@ public class PluginManager implements Runnable {
     @Override
     public void run() {
         loadPlugins();
+    }
+
+    public Settings getSettings(){
+        return this.settings;
+    }
+
+    public List<Plugin> getPlugins() {
+        return this.plugins;
+    }
+
+    public List<Plugin> getRunnablePlugins() {
+        return this.runnablePlugins;
     }
 
 }
