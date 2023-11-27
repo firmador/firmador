@@ -52,11 +52,11 @@ public class AboutLayout extends GroupLayout {
     public AboutLayout(Container host) {
         super(host);
         settings = SettingsManager.getInstance().getAndCreateSettings();
-        JLabel iconLabel = new JLabel(new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
-        JLabel descriptionLabel = new JLabel(
+        iconLabel = new JLabel(new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
+        descriptionLabel = new JLabel(
                 String.format(MessageUtils.t("about_description_label"), settings.getVersion()), JLabel.CENTER);
 
-        JButton websiteButton = new JButton(MessageUtils.t("about_website_link"));
+        websiteButton = new JButton(MessageUtils.t("about_website_link"));
         websiteButton.setOpaque(false);
         websiteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
