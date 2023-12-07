@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.CardSignInfo;
 import cr.libre.firmador.SmartCardDetector;
+import cr.libre.firmador.UnsupportedArchitectureException;
 
 public class RequestPinWindow extends JFrame {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -211,15 +212,16 @@ public class RequestPinWindow extends JFrame {
             }
 
             updateSelected();
-        } catch (Throwable er) {
+        } catch (UnsupportedArchitectureException er) {
             JOptionPane.showMessageDialog(null,
             "El firmador ha detectado que estaría utilizando una versión de Java para ARM.\n" +
-            "Aunque su computadora disponga de procesador ARM, debe desinstalar la versión de\n" +
-            "Java para ARM e instalar Java para Intel.\n" +
+            "Aunque su computadora disponga de procesador ARM, debe instalar Java para Intel.\n" +
+            "Puede descargarlo desde el sitio web https://java.com\n" +
+            "Una vez haya instalado Java para Intel y reiniciado el firmador, el sistema utilizará\n" +
+            "un emulador para aplicaciones Intel y el firmador detectará la tarjeta correctamente.\n\n",
             "Esto es debido a que el fabricante de las tarjetas solo provee un controlador para Intel\n" +
-            "y la versión de Java instalada solo puede cargar un controlador de la misma arquitectura.\n\n" +
-            "Una vez haya desinstalado Java para ARM, instalado Java para Intel y reiniciado el firmador,\n" +
-            "el sistema operativo utilizará un emulador para Intel y el firmador y detectará la tarjeta.",
+            "y la versión de Java instalada solo puede cargar un controlador de la misma arquitectura." +
+
             "Error al cargar librería", JOptionPane.WARNING_MESSAGE);
         }
     }

@@ -67,7 +67,9 @@ public class SmartCardDetector implements  ConfigListener {
             cards = readListSmartCard();
         } catch (Throwable e) {
             LOG.info("readListSmartCard thrown", e);
-            if (e.getCause().toString().contains("need 'arm64e'")) throw e;
+            if (e.getMessage().toString().contains("incompatible architecture")) {
+                throw new UnsupportedArchitectureException("Java para ARM detectado. Debe instalar Java para Intel para usar tarjetas de Firma Digital.", e);
+            }
             cards = new ArrayList<CardSignInfo>();
         }
         File f;
