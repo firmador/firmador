@@ -218,7 +218,7 @@ public class RequestPinWindow extends JFrame {
             "Aunque su computadora disponga de procesador ARM, debe instalar Java para Intel.\n" +
             "Puede descargarlo desde el sitio web https://java.com\n" +
             "Una vez haya instalado Java para Intel y reiniciado el firmador, el sistema utilizará\n" +
-            "un emulador para aplicaciones Intel y el firmador detectará la tarjeta correctamente.\n\n",
+            "un emulador para aplicaciones Intel y el firmador detectará la tarjeta correctamente.\n\n" +
             "Esto es debido a que el fabricante de las tarjetas solo provee un controlador para Intel\n" +
             "y la versión de Java instalada solo puede cargar un controlador de la misma arquitectura." +
 
