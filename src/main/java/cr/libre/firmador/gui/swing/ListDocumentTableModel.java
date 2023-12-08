@@ -19,7 +19,7 @@ public class ListDocumentTableModel extends AbstractTableModel {
     public static int DOCUMENT_POSITION = 6;
 
     private String[] columnNames = { MessageUtils.t("list_document_table_name"),
-            MessageUtils.t("list_document_save_path"), 
+            MessageUtils.t("list_document_save_path"),
             MessageUtils.t("list_document_mimetype"),
             MessageUtils.t("list_document_numsign"), MessageUtils.t("list_document_numpages"),
             MessageUtils.t("list_document_dosign"),
@@ -80,15 +80,15 @@ public class ListDocumentTableModel extends AbstractTableModel {
                         DocumentTableButton.GO_TO_SIGN),
                 new DocumentTableButton(document, MessageUtils.t("list_document_sign"),
                         DocumentTableButton.SIGN_DOCUMENT),
-                new DocumentTableButton(document, MessageUtils.t("list_document_remove"),
+                new DocumentTableButton(document, MessageUtils.t("list_document_remove2"),
                         DocumentTableButton.REMOVE_DOCUMENT)
-                
+
         };
         int lastsize = data.size();
         data.add(0, datadocument);
         fireTableRowsInserted(lastsize - 1, data.size() - 1);
     }
-    
+
     public void removeData(Document document) {
         int position = findByDocument(document);
         if (position >= 0) {
@@ -131,7 +131,7 @@ public class ListDocumentTableModel extends AbstractTableModel {
                     .setText("" + document.getNumberOfPages());
 
             data.set(position, docbtn);
-         
+
         }
 
     }

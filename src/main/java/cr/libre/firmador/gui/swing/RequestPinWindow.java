@@ -109,7 +109,7 @@ public class RequestPinWindow extends JFrame {
                 try {
                     inspectCardInfo();
                 } catch (Throwable er) {
-                    LOG.error("Error leyendo tarjetas", er);
+                    LOG.error(MessageUtils.t("pin_error_reading_cards"), er);
                     er.printStackTrace();
                 }
             }
@@ -169,7 +169,7 @@ public class RequestPinWindow extends JFrame {
         try {
             inspectCardInfo();
         } catch (Throwable er) {
-            LOG.error("Error leyendo tarjetas", er);
+            LOG.error(MessageUtils.t("pin_error_reading_cards"), er);
             er.printStackTrace();
         }
         pinField.grabFocus();

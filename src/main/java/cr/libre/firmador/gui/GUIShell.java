@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import cr.libre.firmador.MessageUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import cr.libre.firmador.Settings;
@@ -66,7 +67,7 @@ public class GUIShell implements GUIInterface, DocumentChangeListener {
                 fileName = getPathToSave("");
                 try {
                     signedDocument.save(fileName);
-                    showMessage("Documento guardado satisfactoriamente en \n" + fileName);
+                    showMessage(MessageUtils.t("guishell_saved_document_successfully_in")+" \n" + fileName);
                 } catch (IOException e) {
                     showError(FirmadorUtils.getRootCause(e));
                 }
@@ -84,8 +85,8 @@ public class GUIShell implements GUIInterface, DocumentChangeListener {
     }
 
     public void showError(Throwable error) {
-        System.err.println("Excepción: " + error.getClass().getName());
-        System.err.println("Mensaje: " + error.getLocalizedMessage());
+        System.err.println(MessageUtils.t("guishell_exception") + error.getClass().getName());
+        System.err.println(MessageUtils.t("guishell_message") + error.getLocalizedMessage());
         System.exit(1);
     }
 
@@ -96,19 +97,19 @@ public class GUIShell implements GUIInterface, DocumentChangeListener {
         try {
             plaintext = br.readLine();
         } catch (IOException e) {
-            System.err.println("No se puede leer desde stdin.");
+            System.err.println(MessageUtils.t("guishell_cannot_read_from_stdin"));
             System.exit(1);
         }
         return plaintext;
     }
 
     public String getDocumentToSign() {
-        String docpath = readFromInput("Ruta del documento a firmar: ");
+        String docpath = readFromInput(MessageUtils.t("sign_route_document")+" ");
         return Paths.get(docpath).toAbsolutePath().toString();
     }
 
     public String getPathToSave(String extension) {
-        String docpath = readFromInput("Ruta del documento a guardar: ");
+        String docpath = readFromInput(MessageUtils.t("save_route_document")+" ");
         return Paths.get(docpath).toAbsolutePath().toString();
     }
 
@@ -223,6 +224,6 @@ public class GUIShell implements GUIInterface, DocumentChangeListener {
     @Override
     public void signDocument(Document document) {
         // TODO Auto-generated method stub
-        
+
     };
 }

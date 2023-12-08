@@ -198,11 +198,11 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
             tabPosition++;
         }
 
-        frameTabbedPane.add(MessageUtils.t("guiswing_tab_documentos"),
+        frameTabbedPane.add(MessageUtils.t("guiswing_tab_documents"),
                 listdocumentpanel.getListDocumentScrollPane());
-        frameTabbedPane.setToolTipTextAt(tabPosition, MessageUtils.t("guiswing_tab_documentos_tooltip"));
+        frameTabbedPane.setToolTipTextAt(tabPosition, MessageUtils.t("guiswing_tab_documents_tooltip"));
         frameTabbedPane.getAccessibleContext().getAccessibleChild(tabPosition).getAccessibleContext()
-                .setAccessibleDescription(MessageUtils.t("guiswing_tab_documentos_tooltip_accessible"));
+                .setAccessibleDescription(MessageUtils.t("guiswing_tab_documents_tooltip_accessible"));
         frameTabbedPane.setMnemonicAt(tabPosition, '3');
         tabPosition++;
         frameTabbedPane.addTab(MessageUtils.t("guiswing_tab_settings"), configPanel);
@@ -363,12 +363,12 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     }
 
     public String showSaveDialog(String suffix, String extension) {
-        gui.nextStep(MessageUtils.t("getting_saved_route"));
+        gui.nextStep(MessageUtils.t("guiswing_getting_saved_route"));
         String lastDirectory = docSelector.getLastDirectory();
         String lastFile = docSelector.getLastFile();
         String fileName = null;
         FileDialog saveDialog = null;
-        saveDialog = new FileDialog(mainFrame, MessageUtils.t("save_document"), FileDialog.SAVE);
+        saveDialog = new FileDialog(mainFrame, MessageUtils.t("guiswing_save_document"), FileDialog.SAVE);
         saveDialog.setDirectory(lastDirectory);
         String dotExtension = "";
         int lastDot = lastFile.lastIndexOf(".");

@@ -292,7 +292,7 @@ public class ConfigPanel extends ScrollableJPanel {
         addSettingsBox(simplePanel, MessageUtils.t("background_color") + ":", backgroundColorPanel);
         addSettingsBox(simplePanel, MessageUtils.t("signature_image") + ":", imagePanel);
         addSettingsBox(simplePanel, MessageUtils.t("listening_port") + ":", portNumber);
-        addSettingsBox(simplePanel, "Ruta de Libreoffice (preview):", sofficePath);
+        addSettingsBox(simplePanel, MessageUtils.t("configpanel_libreoffice_route")+ ":", sofficePath);
 
         btFontColor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
