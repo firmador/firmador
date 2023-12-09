@@ -110,6 +110,7 @@ public class GUIRemote extends BaseSwing implements GUIInterface, ConfigListener
 
     public boolean signDocuments() {
         CardSignInfo card = getPin();
+        if (card == null) return false;
         super.signDocument(card, true);
 
         try {
