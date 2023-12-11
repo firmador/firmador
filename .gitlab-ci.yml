@@ -57,15 +57,11 @@ linux-java-21:
 .shared_windows_runners:
   tags:
   - shared-windows
-  - windows
-  - windows-1809
 
 windows-java-21:
   extends:
     .shared_windows_runners
   stage: test-windows
-  before_script:
-    - echo ${java --version}
   script:
-    - mvn $MAVEN_CLI_OPTS test
+    - echo ${java --version}
   when: always
