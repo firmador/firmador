@@ -1,5 +1,5 @@
 variables:
-  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+  MAVEN_CLI_OPTS: "-B -e -fae -V"
   MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
 
 
