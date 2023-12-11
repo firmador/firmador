@@ -13,8 +13,12 @@ import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.gui.GUIInterface;
+import cr.libre.firmador.previewers.PreviewerInterface;
+import cr.libre.firmador.previewers.PreviewerManager;
 import cr.libre.firmador.signers.DocumentSigner;
 import cr.libre.firmador.signers.DocumentSignerDetector;
+import cr.libre.firmador.signers.FirmadorASiC;
+import cr.libre.firmador.signers.FirmadorCAdES;
 import cr.libre.firmador.validators.Validator;
 import cr.libre.firmador.validators.ValidatorFactory;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -83,18 +87,24 @@ public class Document {
     }
 
     public boolean validate() throws Throwable {
-
-        if (validator != null && !documentIsValidate) {
-            isvalid = false;
-            document = validator.loadDocumentPath(pathname);
-            isvalid = validator.isSigned();
-            report = validator.getStringReport();
-            this.validateDone();
+        if (validator != null) {
+            if (!documentIsValidate) {
+                isvalid = false;
+                document = validator.loadDocumentPath(pathname);
+                isvalid = validator.isSigned();
+                report = validator.getStringReport();
+                this.validateDone();
+            }
+        } else {
+            documentIsValidate = true;
         }
         return isvalid;
     }
 
     public void sign(CardSignInfo card) {
+        if (settings != null && settings.signASiC) {
+            this.forcesignASiC();
+        }
         if (document == null) {
             document = new FileDocument(this.pathname);
         }
@@ -106,8 +116,21 @@ public class Document {
     }
 
     public void extend() {
-        signedDocument = signer.extend(signedDocument);
+
+        if (mimeType == SupportedMimeTypeEnum.BINARY) {
+            ArrayList<DSSDocument> detacheddocs = new ArrayList<DSSDocument>();
+            detacheddocs.add(document);
+            signer.setDetached(detacheddocs);
+        }
+        DSSDocument extendDocument = signer.extend(signedDocument);
+        if (extendDocument != null) {
+            signedDocument = extendDocument;
+        }
+
         extendsDone();
+        if (mimeType == SupportedMimeTypeEnum.BINARY) {
+            signer.setDetached(null);
+        }
     }
 
     public void setPrincipal() throws Throwable {
@@ -134,9 +157,13 @@ public class Document {
         if (mimeType.isXML())
             extension = ".xml";
         else if (mimeType.isPDF() || mimeType.isOpenDocument() || mimeType.isOpenxmlformats()) {
-            extension = "." + mimeType.getExtension().toLowerCase();
+            if (settings.signASiC) {
+                extension = ".asice";
+            } else {
+                extension = "." + mimeType.getExtension().toLowerCase();
+            }
         } else {
-            extension = ".p7s";
+            extension = ".asice";
         }
 
         return extension;
@@ -220,10 +247,6 @@ public class Document {
             hl.extendsDone(this);
     };
 
-    public Validator getValidator() {
-        return validator;
-    }
-
     public boolean isValid() {
         return this.isvalid;
     }
@@ -262,5 +285,13 @@ public class Document {
         if (hasPreviewLoaded && documentIsValidate) {
             isReady = true;
         }
+    }
+
+    public void forcesignASiC() {
+        signer = new FirmadorASiC(this.gui);
+    }
+
+    public void forceCades() {
+        signer = new FirmadorCAdES(this.gui);
     }
 }

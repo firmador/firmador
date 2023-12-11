@@ -16,6 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
+
 package cr.libre.firmador.plugins;
 
 import java.lang.invoke.MethodHandles;
@@ -29,7 +30,7 @@ import cr.libre.firmador.SettingsManager;
 public class DummyPlugin implements Plugin {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     public void start() {
-        LOG.info("Stating DummyPlugin");
+        LOG.info("Starting DummyPlugin");
     }
 
     public void startLogging() {
@@ -62,7 +63,7 @@ public class DummyPlugin implements Plugin {
     }
 
     public void stop() {
-        LOG.info("Stop DummyPlugin");
+        LOG.info("Stopping DummyPlugin");
     }
 
     @Override

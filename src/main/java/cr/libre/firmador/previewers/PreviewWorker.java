@@ -1,4 +1,4 @@
-package cr.libre.firmador.documents;
+package cr.libre.firmador.previewers;
 
 import java.lang.invoke.MethodHandles;
 
@@ -6,6 +6,8 @@ import javax.swing.SwingWorker;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cr.libre.firmador.documents.Document;
 
 public class PreviewWorker extends SwingWorker<Void, Void> {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

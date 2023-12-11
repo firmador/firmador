@@ -23,6 +23,7 @@ package cr.libre.firmador.signers;
 
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
@@ -61,7 +62,7 @@ import org.slf4j.LoggerFactory;
 
 public class FirmadorCAdES extends CRSigner implements DocumentSigner {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
+    private List<DSSDocument> detacheddocs = null;
     CAdESSignatureParameters parameters;
 
     public FirmadorCAdES(GUIInterface gui) {
@@ -145,13 +146,15 @@ public class FirmadorCAdES extends CRSigner implements DocumentSigner {
     public DSSDocument extend(DSSDocument document) {
         CAdESSignatureParameters parameters = new CAdESSignatureParameters();
         parameters.setSignatureLevel(SignatureLevel.CAdES_BASELINE_LTA);
-
+        if (detacheddocs != null && !detacheddocs.isEmpty())
+            parameters.setDetachedContents(detacheddocs);
 
         CertificateVerifier verifier = this.getCertificateVerifier();
         CAdESService service = new CAdESService(verifier);
         OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
         service.setTspSource(onlineTSPSource);
         DSSDocument extendedDocument = null;
+
         try {
             extendedDocument = service.extendDocument(document, parameters);
         } catch (Exception e) {
@@ -169,6 +172,11 @@ public class FirmadorCAdES extends CRSigner implements DocumentSigner {
     public DSSDocument sign(Document toSignDocument, CardSignInfo card) {
         DSSDocument doc = sign(toSignDocument.getDSSDocument(), card, toSignDocument.getSettings());
         return doc;
+    }
+
+    @Override
+    public void setDetached(List<DSSDocument> detacheddocs) {
+        this.detacheddocs = detacheddocs;
     }
 
 }

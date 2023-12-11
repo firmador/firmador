@@ -1,28 +1,45 @@
-package cr.libre.firmador.documents;
+package cr.libre.firmador.previewers;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 
-public class PDFPreviewer implements PreviewerInterface {
+public class SofficePreviewer implements PreviewerInterface {
     private PDDocument document = null;
     private PDFRenderer renderer = null;
     private Settings settings;
 
-    PDFPreviewer() {
+    SofficePreviewer() {
         settings = SettingsManager.getInstance().getAndCreateSettings();
     }
 
     public void loadDocument(String fileName) throws Throwable {
-        document = PDDocument.load(new File(fileName));
-        renderer = null;
 
+        File importfile = new File(fileName);
+
+        String separator = FileSystems.getDefault().getSeparator();
+        String guestFilename = FilenameUtils.removeExtension(importfile.getName()) + ".pdf";
+        String tmpdir = Files.createTempDirectory("firmadorlibre").toFile().getAbsolutePath();
+        String command = String.format("%s --headless  --convert-to pdf:writer_pdf_Export --outdir %s %s",
+                settings.sofficePath, tmpdir, importfile.toURI().normalize());
+        Process theProcess = Runtime.getRuntime().exec(command);
+
+        theProcess.getErrorStream().transferTo(System.out);
+        String completepath = tmpdir + separator + guestFilename;
+        File path = new File(completepath);
+        if (path.exists())
+            document = PDDocument.load(path);
+        renderer = null;
     }
 
     @Override
@@ -57,7 +74,7 @@ public class PDFPreviewer implements PreviewerInterface {
     }
 
     public boolean showSignLabelPreview() {
-        return true;
+        return false;
     }
 
     @Override

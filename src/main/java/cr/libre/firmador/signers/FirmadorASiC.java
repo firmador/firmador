@@ -23,31 +23,30 @@ package cr.libre.firmador.signers;
 
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import cr.libre.firmador.CertificateManager;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.gui.GUIInterface;
 import eu.europa.esig.dss.alert.exception.AlertException;
+import eu.europa.esig.dss.asic.xades.ASiCWithXAdESSignatureParameters;
+import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
+import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
-import eu.europa.esig.dss.enumerations.ASiCContainerType;
+
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
-
+import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 
-
-import eu.europa.esig.dss.asic.xades.ASiCWithXAdESSignatureParameters;
-
-
-
-
-import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
 
 import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 
@@ -59,22 +58,24 @@ import eu.europa.esig.dss.validation.CertificateVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FirmadorOpenDocument extends CRSigner implements DocumentSigner {
+public class FirmadorASiC extends CRSigner implements DocumentSigner {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
+    private List<DSSDocument> detacheddocs = null;
     ASiCWithXAdESSignatureParameters parameters;
 
-    public FirmadorOpenDocument(GUIInterface gui) {
+    public FirmadorASiC(GUIInterface gui) {
         super(gui);
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card, Settings settings) {
-        ASiCWithXAdESService service = null;
-
         parameters = new ASiCWithXAdESSignatureParameters();
+
+        CertificateManager certManager = new CertificateManager();
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
+        CertificateVerifier verifier = null;
+        ASiCWithXAdESService service = null;
         gui.nextStep("Obteniendo servicios de verificación de certificados");
 
         try {
@@ -85,6 +86,7 @@ public class FirmadorOpenDocument extends CRSigner implements DocumentSigner {
             return null;
         }
         DSSPrivateKeyEntry privateKey = null;
+        CertificateToken certificate = null;
         try {
             privateKey = getPrivateKey(token);
             gui.nextStep("Obteniendo manejador de llaves privadas");
@@ -95,35 +97,32 @@ public class FirmadorOpenDocument extends CRSigner implements DocumentSigner {
         }
         try {
             gui.nextStep("Obteniendo certificados de la tarjeta");
-            CertificateToken certificate = privateKey.getCertificate();
-            parameters.setSignatureLevel(settings.getXAdESLevel());
-            parameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
+            certificate = privateKey.getCertificate();
 
-            parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
+            parameters.bLevel().setSigningDate(new Date());
             parameters.setSigningCertificate(certificate);
-
-            parameters.setPrettyPrint(true);
-
-            OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
-            gui.nextStep("Obteniendo servicios TSP");
-
-            service = new ASiCWithXAdESService(this.getCertificateVerifier(certificate));
-
-            service.setTspSource(onlineTSPSource);
+            parameters.setCertificateChain(certManager.getCertificateChain(certificate));
+            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
             parameters.aSiC().setContainerType(ASiCContainerType.ASiC_E);
 
-            parameters.setEn319132(false);
-
-
-            ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
-
-            gui.nextStep("Obteniendo estructura de datos a firmar");
-            signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
-        } catch (DSSException|Error e) {
+        } catch (DSSException | Error e) {
             LOG.error("Error al solicitar firma al dispositivo", e);
             gui.showError(FirmadorUtils.getRootCause(e));
+            return null;
         }
+        OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
+        gui.nextStep("Obteniendo servicios TSP");
+        verifier = this.getCertificateVerifier(certificate);
+        service = new ASiCWithXAdESService(verifier);
+        service.setTspSource(onlineTSPSource);
+        if (detacheddocs == null) {
+            detacheddocs = new ArrayList<DSSDocument>();
+        }
+        detacheddocs.add(toSignDocument);
+        ToBeSigned dataToSign = service.getDataToSign(detacheddocs, parameters);
 
+        gui.nextStep("Obteniendo estructura de datos a firmar");
+        signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
         try {
             gui.nextStep("Firmando estructura de datos");
             signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
@@ -138,7 +137,7 @@ public class FirmadorOpenDocument extends CRSigner implements DocumentSigner {
                 "Se ha agregado una firma básica solamente. No obstante, si el sello de tiempo resultara importante<br>" +
                 "para este documento, debería agregarse lo antes posible antes de enviarlo al destinatario.<br><br>" +
                 "Si lo prefiere, puede cancelar el guardado del documento firmado e intentar firmarlo más tarde.<br>");
-            parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
+            parameters.setSignatureLevel(SignatureLevel.CAdES_BASELINE_B);
             try {
                 signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
 
@@ -152,14 +151,17 @@ public class FirmadorOpenDocument extends CRSigner implements DocumentSigner {
 
     public DSSDocument extend(DSSDocument document) {
         ASiCWithXAdESSignatureParameters parameters = new ASiCWithXAdESSignatureParameters();
-        parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
-        parameters.setPrettyPrint(true);
         parameters.aSiC().setContainerType(ASiCContainerType.ASiC_E);
+        parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
+        if (detacheddocs != null && !detacheddocs.isEmpty())
+            parameters.setDetachedContents(detacheddocs);
+
         CertificateVerifier verifier = this.getCertificateVerifier();
         ASiCWithXAdESService service = new ASiCWithXAdESService(verifier);
         OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
         service.setTspSource(onlineTSPSource);
         DSSDocument extendedDocument = null;
+
         try {
             extendedDocument = service.extendDocument(document, parameters);
         } catch (Exception e) {
@@ -181,8 +183,7 @@ public class FirmadorOpenDocument extends CRSigner implements DocumentSigner {
 
     @Override
     public void setDetached(List<DSSDocument> detacheddocs) {
-        // TODO Auto-generated method stub
-        
+        this.detacheddocs = detacheddocs;
     }
 
 }

@@ -18,6 +18,7 @@ public class DocumentSignerDetector {
         } else if (mimeType.isXML()) {
             signer = new FirmadorXAdES(gui);
         } else {
+            // signer = new FirmadorASiC(gui);
             signer = new FirmadorCAdES(gui);
         }
         return signer;

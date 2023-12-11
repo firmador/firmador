@@ -45,15 +45,18 @@ public class AboutLayout extends GroupLayout {
     private GUIInterface swinginterface;
     private Image image = new ImageIcon(this.getClass().getClassLoader().getResource("firmador.png")).getImage();
     private Settings settings;
+    private JLabel descriptionLabel;
+    private JLabel iconLabel;
+    private JButton websiteButton;
 
     public AboutLayout(Container host) {
         super(host);
         settings = SettingsManager.getInstance().getAndCreateSettings();
-        JLabel iconLabel = new JLabel(new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
-        JLabel descriptionLabel = new JLabel(
+        iconLabel = new JLabel(new ImageIcon(image.getScaledInstance(128, 128, Image.SCALE_SMOOTH)));
+        descriptionLabel = new JLabel(
                 String.format(MessageUtils.t("about_description_label"), settings.getVersion()), JLabel.CENTER);
 
-        JButton websiteButton = new JButton(MessageUtils.t("about_website_link"));
+        websiteButton = new JButton(MessageUtils.t("about_website_link"));
         websiteButton.setOpaque(false);
         websiteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -64,15 +67,15 @@ public class AboutLayout extends GroupLayout {
         this.setAutoCreateContainerGaps(true);
         this.setHorizontalGroup(
             this.createParallelGroup(GroupLayout.Alignment.CENTER)
-                .addComponent(iconLabel)
-                .addComponent(descriptionLabel)
-                .addComponent(websiteButton)
+                .addComponent(this.iconLabel)
+                .addComponent(this.descriptionLabel)
+                .addComponent(this.websiteButton)
         );
         this.setVerticalGroup(
             this.createSequentialGroup()
-                .addComponent(iconLabel)
-                .addComponent(descriptionLabel)
-                .addComponent(websiteButton)
+                .addComponent(this.iconLabel)
+                .addComponent(this.descriptionLabel)
+                .addComponent(this.websiteButton)
         );
         descriptionLabel.getAccessibleContext().setAccessibleDescription(
                 String.format(MessageUtils.t("about_description_label"), settings.getVersion()));
@@ -98,6 +101,26 @@ public class AboutLayout extends GroupLayout {
                 this.swinginterface.showError(FirmadorUtils.getRootCause(e));
             }
         }
+    }
+
+    public JLabel getDescriptionLabel(){
+        return this.descriptionLabel;
+    }
+
+    public JLabel getIconLabel(){
+        return this.iconLabel;
+    }
+
+    public JButton getWebsiteButton() {
+        return this.websiteButton;
+    }
+
+    public Settings getSettings(){
+        return this.settings;
+    }
+
+    public GUIInterface getInterface(){
+        return this.swinginterface;
     }
 
 }

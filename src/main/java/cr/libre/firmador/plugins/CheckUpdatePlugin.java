@@ -233,15 +233,15 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
     }
 
     public void start() {
-        LOG.info("Stating CheckUpdatePlugin");
-
+        LOG.info("Starting CheckUpdatePlugin");
     }
+
     @Override
     public void startLogging() {}
 
     @Override
     public void stop() {
-        LOG.info("Stop CheckUpdatePlugin");
+        LOG.info("Stopping CheckUpdatePlugin");
     }
 
     @Override
