@@ -54,6 +54,11 @@ linux-java-21:
 
 # ------ Windows ------
 
+.shared_windows_runners:
+  tags:
+  - shared-windows
+  - windows-1809
+
 windows-java-12:
   extends:
     .shared_windows_runners
