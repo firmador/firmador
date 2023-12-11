@@ -1,5 +1,5 @@
 variables:
-  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+  MAVEN_CLI_OPTS: --batch-mode --errors --fail-at-end --show-version
   MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
 
 
@@ -15,7 +15,6 @@ default:
     reports:
       junit:
         - target/surefire-reports/TEST-*.xml
-        - target/failsafe-reports/TEST-*.xml
 
 
 # ------ Linux ------
@@ -69,7 +68,7 @@ windows-java-12:
     - Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
     - refreshenv
   script:
-    - mvn test
+    - mvn $MAVEN_CLI_OPTS test
   when: always
 
 # ------ Mac ------
@@ -77,7 +76,7 @@ windows-java-12:
 .macos_saas_runners:
   tags:
     - saas-macos-medium-m1
-  image: macos-13-xcode-14
+  image: macos-13-xcode-15
 
 mac-java-20:
   extends:
