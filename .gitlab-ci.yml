@@ -1,5 +1,5 @@
 variables:
-  MAVEN_CLI_OPTS: --batch-mode --errors --fail-at-end --show-version
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
   MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
 
 
@@ -68,7 +68,7 @@ windows-java-12:
     - Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
     - refreshenv
   script:
-    - mvn $MAVEN_CLI_OPTS test
+    - mvn test
   when: always
 
 # ------ Mac ------
@@ -78,7 +78,7 @@ windows-java-12:
     - saas-macos-medium-m1
   image: macos-13-xcode-15
 
-mac-java-20:
+mac-java-21:
   extends:
     .macos_saas_runners
   stage: test-mac
