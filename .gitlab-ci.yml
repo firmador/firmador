@@ -6,6 +6,7 @@ variables:
 stages:
   - test-linux
   - test-windows
+  - test-mac
 
 
 default:
@@ -56,15 +57,34 @@ linux-java-21:
 
 .shared_windows_runners:
   tags:
-  - shared-windows
-  - windows-1809
+    - shared-windows
+    - windows-1809
 
 windows-java-12:
   extends:
     .shared_windows_runners
   stage: test-windows
   before_script:
-    - choco install maven -y
+    - choco install maven -y  # install maven to be able to run the tests
+    - refreshenv
   script:
     - mvn $MAVEN_CLI_OPTS test
+  when: always
+
+# ------ Mac ------
+
+.macos_saas_runners:
+  tags:
+    - saas-macos-medium-m1
+  image: macos-13-xcode-14
+
+mac-java-12:
+  extends:
+    .macos_saas_runners
+  stage: test-mac
+  # before_script:
+    # - choco install maven -y  # install maven to be able to run the tests
+  script:
+    - java -version
+    # - mvn $MAVEN_CLI_OPTS test
   when: always
