@@ -58,10 +58,12 @@ linux-java-21:
   tags:
   - shared-windows
 
-windows-java-21:
+windows-java-12:
   extends:
     .shared_windows_runners
   stage: test-windows
+  before_script:
+    - choco install maven
   script:
-    - java -version
+    - mvn $MAVEN_CLI_OPTS test
   when: always
