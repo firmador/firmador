@@ -63,5 +63,5 @@ windows-java-21:
     .shared_windows_runners
   stage: test-windows
   script:
-    - echo ${java --version}
+    - java -version
   when: always
