@@ -54,10 +54,18 @@ linux-java-21:
 
 # ------ Windows ------
 
+.shared_windows_runners:
+  tags:
+  - shared-windows
+  - windows
+  - windows-1809
+
 windows-java-21:
-  image:
-    name: mcr.microsoft.com/windows/servercore:1809_amd64
+  extends:
+    .shared_windows_runners
   stage: test-windows
+  before_script:
+    - echo ${java --version}
   script:
     - mvn $MAVEN_CLI_OPTS test
   when: always
