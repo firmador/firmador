@@ -54,10 +54,10 @@ linux-java-21:
 
 # ------ Windows ------
 
-# windows-java-21:
-#   image:
-#     name: amazoncorretto-11-windowsservercore
-#   stage: test-windows
-#   script:
-#     - mvn $MAVEN_CLI_OPTS test
-#   when: always
+windows-java-21:
+  image:
+    name: mcr.microsoft.com/windows/servercore:1809_amd64
+  stage: test-windows
+  script:
+    - mvn $MAVEN_CLI_OPTS test
+  when: always
