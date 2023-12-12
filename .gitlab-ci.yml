@@ -61,7 +61,7 @@ linux-java-21:
 
 windows-java-12:
   extends:
-    .shared_windows_runners
+    - .shared_windows_runners
   stage: test-windows
   before_script:
     - choco install maven -y  # install maven to be able to run the tests
@@ -76,11 +76,11 @@ windows-java-12:
 .macos_saas_runners:
   tags:
     - saas-macos-medium-m1
-  image: macos-13-xcode-15
+  image: macos-13-xcode-14
 
-mac-java-21:
+mac-java-20:
   extends:
-    .macos_saas_runners
+    - .macos_saas_runners
   stage: test-mac
   before_script:
     - brew install maven  # install maven to be able to run the tests
