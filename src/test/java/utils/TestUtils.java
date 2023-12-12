@@ -31,9 +31,9 @@ public class TestUtils {
     public static Map<String, String> getModifiableEnvironment()
     {
         try {
-            String className = "java.util.Collections$UnmodifiableMap";
-            String fieldName = "m";
             Map<String, String> env = System.getenv();
+            String className = env.getClass().getName();
+            String fieldName = "m";
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
                 // since the implementations of ProcessEnvironment are different between OS, the way of getting the editable environment is also different
                 className = "java.lang.ProcessEnvironment";
@@ -44,7 +44,7 @@ public class TestUtils {
             field.setAccessible(true);
             return (Map<String, String>) field.get(env);
         } catch (Exception e) {
-                throw new RuntimeException("Not possible to get the modifiable environment", e);
-            }
+            throw new RuntimeException("Not possible to get the modifiable environment", e);
         }
+    }
 }
