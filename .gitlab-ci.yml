@@ -70,7 +70,7 @@ windows-java-12:
   script:
     # - mvn test
     - $env:SystemDrive
-    - dir $env:SystemDrive\Windows\System
+    - dir C:\Windows\System
   when: always
 
 # ------ Mac ------
