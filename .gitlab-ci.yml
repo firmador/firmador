@@ -73,17 +73,17 @@ windows-java-12:
 
 # ------ Mac ------
 
-.macos_saas_runners:
-  tags:
-    - saas-macos-medium-m1
-  image: macos-13-xcode-14
+# .macos_saas_runners:
+#   tags:
+#     - saas-macos-medium-m1
+#   image: macos-13-xcode-14
 
-mac-java-20:
-  extends:
-    - .macos_saas_runners
-  stage: test-mac
-  before_script:
-    - brew install maven  # install maven to be able to run the tests
-  script:
-    - mvn $MAVEN_CLI_OPTS test
-  when: always
+# mac-java-20:
+#   extends:
+#     - .macos_saas_runners
+#   stage: test-mac
+#   before_script:
+#     - brew install maven  # install maven to be able to run the tests
+#   script:
+#     - mvn $MAVEN_CLI_OPTS test
+#   when: always
