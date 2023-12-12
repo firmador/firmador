@@ -6,6 +6,7 @@ variables:
 stages:
   - test-linux
   - test-windows
+  - test-mac
 
 
 default:
@@ -14,7 +15,6 @@ default:
     reports:
       junit:
         - target/surefire-reports/TEST-*.xml
-        - target/failsafe-reports/TEST-*.xml
 
 
 # ------ Linux ------
@@ -54,10 +54,36 @@ linux-java-21:
 
 # ------ Windows ------
 
-# windows-java-21:
-#   image:
-#     name: amazoncorretto-11-windowsservercore
-#   stage: test-windows
+.shared_windows_runners:
+  tags:
+    - shared-windows
+    - windows-1809
+
+windows-java-12:
+  extends:
+    - .shared_windows_runners
+  stage: test-windows
+  before_script:
+    - choco install maven -y  # install maven to be able to run the tests
+    - Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
+    - refreshenv
+  script:
+    - mvn test
+  when: always
+
+# ------ Mac ------
+
+# .macos_saas_runners:
+#   tags:
+#     - saas-macos-medium-m1
+#   image: macos-13-xcode-14
+
+# mac-java-20:
+#   extends:
+#     - .macos_saas_runners
+#   stage: test-mac
+#   before_script:
+#     - brew install maven  # install maven to be able to run the tests
 #   script:
 #     - mvn $MAVEN_CLI_OPTS test
 #   when: always
