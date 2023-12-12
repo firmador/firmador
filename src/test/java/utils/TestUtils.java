@@ -11,7 +11,10 @@ public class TestUtils {
 
     public static void deleteDir(String path){
         try {
-            FileUtils.deleteDirectory(new File(path));
+            File dir = new File(path);
+            if(dir.exists()) {
+                FileUtils.forceDelete(dir);
+            }
         } catch (IOException e) {
             throw new RuntimeException("Not possible to delete the directory", e);
         }
@@ -26,6 +29,12 @@ public class TestUtils {
         } catch (IOException e) {
             throw new RuntimeException("Not possible to create the file", e);
         }
+    }
+
+    public static void createDirectoryWithNoAccess(String path){
+        File dir = new File(path);
+        dir.mkdirs();
+        dir.setReadOnly();
     }
 
     public static Map<String, String> getModifiableEnvironment()
