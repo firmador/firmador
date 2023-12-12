@@ -69,8 +69,7 @@ windows-java-12:
   #   - refreshenv
   script:
     # - mvn test
-    - $env:SystemDrive
-    - dir C:\Windows\System
+    - Get-ChildItem -Recurse "C:\Windows\System"
   when: always
 
 # ------ Mac ------
