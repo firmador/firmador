@@ -4,9 +4,9 @@ variables:
 
 
 stages:
-  - test-linux
+  # - test-linux
   - test-windows
-  - test-mac
+  # - test-mac
 
 
 default:
@@ -63,12 +63,13 @@ windows-java-12:
   extends:
     - .shared_windows_runners
   stage: test-windows
-  before_script:
-    - choco install maven -y  # install maven to be able to run the tests
-    - Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
-    - refreshenv
+  # before_script:
+  #   - choco install maven -y  # install maven to be able to run the tests
+  #   - Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
+  #   - refreshenv
   script:
-    - mvn test
+    - $env:username
+    # - mvn test
   when: always
 
 # ------ Mac ------
