@@ -69,7 +69,7 @@ windows-java-12:
   #   - refreshenv
   script:
     # - mvn test
-    - Get-ChildItem -Recurse "C:\Windows\System"
+    - systeminfo
   when: always
 
 # ------ Mac ------
