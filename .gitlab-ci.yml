@@ -4,9 +4,9 @@ variables:
 
 
 stages:
-  # - test-linux
+  - test-linux
   - test-windows
-  # - test-mac
+  - test-mac
 
 
 default:
@@ -68,8 +68,9 @@ windows-java-12:
   #   - Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
   #   - refreshenv
   script:
-    - $env:username
     # - mvn test
+    - $env:SystemDrive
+    - dir $env:SystemDrive\Windows\System
   when: always
 
 # ------ Mac ------
