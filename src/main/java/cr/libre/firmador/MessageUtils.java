@@ -1,9 +1,14 @@
 package cr.libre.firmador;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 public class MessageUtils {
     public static String t(String msgkey) {
         Settings settings = SettingsManager.getInstance().getAndCreateSettings();
-        return settings.bundle.getString(msgkey);
+        Locale locale = new Locale(settings.language, settings.country);
+        ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+        return bundle.getString(msgkey);
     }
 
     public static char k(char key) {

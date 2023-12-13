@@ -23,10 +23,10 @@ import java.awt.Font;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
 
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignerTextPosition;
@@ -83,9 +83,15 @@ public class Settings {
     public float pDFImgScaleFactor = 1;
     public String language = "es";
     public String country = "CR";
-    public Locale locale = new Locale(language, country);
 
-    public ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+    public String languagesList[] = new String[] {"es", "en"};
+    public Map<String, String> countryByLanguage = new HashMap<String, String>() {
+        {
+            put("es", "CR");
+            put("en", "US");
+        }
+    };
+
     public boolean extendDocument = true;
     public boolean isVisibleSignature = false;
     public boolean hideSignatureAdvice = false;
@@ -137,6 +143,9 @@ public class Settings {
         newsettings.isVisibleSignature = isVisibleSignature;
         newsettings.signASiC = signASiC;
         newsettings.forceCades = forceCades;
+        newsettings.countryByLanguage = countryByLanguage;
+        newsettings.language = language;
+        newsettings.country = country;
     }
 
     public String getDefaultSignMessage() {

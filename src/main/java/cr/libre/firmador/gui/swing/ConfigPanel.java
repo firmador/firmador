@@ -36,7 +36,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.invoke.MethodHandles;
-import java.util.ResourceBundle;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -79,7 +78,7 @@ public class ConfigPanel extends ScrollableJPanel {
     private Integer iconSize = 32;
     private JButton btFontColor, btBackgroundColor, btImage, btPKCS11Module;
     private JCheckBox withoutVisibleSign,/* useLTA,*/ overwriteSourceFile,/* startServer,*/ showLogs;
-    private JComboBox<String> font, fontPosition, pAdESLevel, xAdESLevel, cAdESLevel;
+    private JComboBox<String> font, fontPosition, pAdESLevel, xAdESLevel, cAdESLevel, language;
     private JPanel advancedBottomSpace;
     private JScrollPane configPanel;
     private JSpinner signWidth, signHeight, fontSize, signX, signY, pageNumber, portNumber;
@@ -188,6 +187,8 @@ public class ConfigPanel extends ScrollableJPanel {
         fontPosition = new JComboBox<String>(new String[]{"RIGHT", "LEFT", "BOTTOM", "TOP"});
         fontPosition.setSelectedItem(settings.fontAlignment);
         fontPosition.setOpaque(false);
+        language = new JComboBox<String>(settings.languagesList);
+        language.setSelectedItem(settings.language);
         JPanel fontColorPanel = new JPanel();
         fontColorPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         fontColorPanel.setLayout(new BoxLayout(fontColorPanel, 0));
@@ -293,6 +294,7 @@ public class ConfigPanel extends ScrollableJPanel {
         addSettingsBox(simplePanel, MessageUtils.t("signature_image") + ":", imagePanel);
         addSettingsBox(simplePanel, MessageUtils.t("listening_port") + ":", portNumber);
         addSettingsBox(simplePanel, MessageUtils.t("configpanel_libreoffice_route")+ ":", sofficePath);
+        addSettingsBox(simplePanel, MessageUtils.t("configpanel_language") + ":", language);
 
         btFontColor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
@@ -480,6 +482,8 @@ public class ConfigPanel extends ScrollableJPanel {
         settings.xAdESLevel = xAdESLevel.getSelectedItem().toString();
         settings.cAdESLevel = cAdESLevel.getSelectedItem().toString();
         settings.sofficePath = sofficePath.getText();
+        settings.language = language.getSelectedItem().toString();
+        settings.country = settings.countryByLanguage.get(settings.language);
         settings.pDFImgScaleFactor = Float.parseFloat(pDFImgScaleFactor.getText().replace(",", "."));
         settings.pKCS12File = pKCS12Panel.getList();
         settings.extraPKCS11Lib = pKCS11ModuleText.getText();
@@ -517,6 +521,7 @@ public class ConfigPanel extends ScrollableJPanel {
         xAdESLevel.setSelectedItem(settings.xAdESLevel);
         cAdESLevel.setSelectedItem(settings.cAdESLevel);
         sofficePath.setText(settings.sofficePath);
+        language.setSelectedItem(settings.language);
         pDFImgScaleFactor.setText(String.format("%.2f", settings.pDFImgScaleFactor));
         if (settings.image != null) {
             imageText.setText(settings.image);

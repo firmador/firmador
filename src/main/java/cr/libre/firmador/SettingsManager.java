@@ -193,6 +193,8 @@ public class SettingsManager {
             conf.pKCS12File = getListFromString(props.getProperty("pkcs12file", ""), conf.pKCS12File);
             conf.activePlugins = getListFromString(props.getProperty("plugins", ""), conf.activePlugins);
             conf.pDFImgScaleFactor = getFloatFromString(props.getProperty("pdfimgscalefactor", String.format("%.2f", conf.pDFImgScaleFactor)));
+            conf.language = props.getProperty("language", conf.language);
+            conf.country = props.getProperty("country", conf.country);
         }
         return conf;
     }
@@ -240,6 +242,8 @@ public class SettingsManager {
         setProperty("xadesLevel", conf.xAdESLevel);
         setProperty("cadesLevel", conf.cAdESLevel);
         setProperty("sofficePath", conf.sofficePath);
+        setProperty("language", conf.language);
+        setProperty("country", conf.country);
 
         setProperty("plugins", getListRepr(conf.activePlugins));
         if (conf.extraPKCS11Lib != null && conf.extraPKCS11Lib != "") setProperty("extrapkcs11Lib", conf.extraPKCS11Lib);
