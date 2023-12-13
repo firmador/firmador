@@ -43,7 +43,7 @@ public class TestUtils {
             File dir = new File(path);
             Files.createDirectories(dir.toPath());
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-                final Process p = Runtime.getRuntime().exec("icacls " + path + " /grant *S-1-5-32-545:R /t /inheritance:r");
+                final Process p = Runtime.getRuntime().exec("icacls " + path + " /grant:r *S-1-1-0:R /t /inheritance:r");
 
                 p.waitFor();  // wait for it to end before continue with the next line
 
