@@ -50,20 +50,10 @@ public class TestUtils {
                 List<AclEntry> acl = new ArrayList<>();
                 for (AclEntry aclEntry : aclFileAttributes.getAcl()) {
                     AclEntry entry = AclEntry.newBuilder().setType(AclEntryType.DENY).setPrincipal(aclEntry.principal())
-                        .setPermissions().build();
+                        .setPermissions(AclEntryPermission.ADD_FILE, AclEntryPermission.ADD_SUBDIRECTORY).build();
                     acl.add(entry);
                 }
                 aclFileAttributes.setAcl(acl);
-
-                System.out.println("----------");
-                System.out.println("path: " + path);
-                System.out.println("owner: " + java.nio.file.Files.getOwner(dir.toPath()).getName());
-                System.out.println("permissions:");
-                for (AclEntry aclEntry : aclFileAttributes.getAcl()) {
-                    System.out.println(aclEntry.principal() + ":");
-                    System.out.println(aclEntry.permissions() + "\n");
-                }
-                System.out.println("----------");
             }else{
                 dir.setReadOnly();  // for linux and mac this is enough
             }
