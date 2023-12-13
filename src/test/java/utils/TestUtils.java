@@ -2,8 +2,7 @@ package utils;
 
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.util.Map;
@@ -16,9 +15,18 @@ public class TestUtils {
             if(dir.exists()) {
                 if (System.getProperty("os.name").toLowerCase().contains("windows")) {
                     // make sure the file has the permissions for deletion
-                    System.out.println("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":(OI)(CI)F\" /t /inheritance:r");
                     final Process p = Runtime.getRuntime().exec("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":(OI)(CI)F\" /t /inheritance:r");
                     p.waitFor();  // wait for it to end before continue with the next line
+
+                    System.out.println("----------");
+                    System.out.println("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":(OI)(CI)F\" /t /inheritance:r");
+                    BufferedReader is =
+                        new BufferedReader(new InputStreamReader(p.getInputStream(  )));
+                    String s;
+                    while ((s = is.readLine()) != null) {
+                        System.out.println(s);
+                    }
+                    System.out.println("----------");
                 }
                 FileUtils.forceDelete(dir);
             }
@@ -45,6 +53,16 @@ public class TestUtils {
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
                 final Process p = Runtime.getRuntime().exec("icacls " + path + " /deny \"" + System.getProperty("user.name") + ":(OI)(CI)F\" /t /inheritance:r");
                 p.waitFor();  // wait for it to end before continue with the next line
+
+                System.out.println("----------");
+                System.out.println("icacls " + path + " /deny \"" + System.getProperty("user.name") + ":(OI)(CI)F\" /t /inheritance:r");
+                BufferedReader is =
+                    new BufferedReader(new InputStreamReader(p.getInputStream(  )));
+                String s;
+                while ((s = is.readLine()) != null) {
+                    System.out.println(s);
+                }
+                System.out.println("----------");
             }else{
                 dir.setReadOnly();
             }
