@@ -43,12 +43,14 @@ public class TestUtils {
             File dir = new File(path);
             Files.createDirectories(dir.toPath());
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-                final Process p = Runtime.getRuntime().exec("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":R\" /t /inheritance:r");
+                String fileOwner = java.nio.file.Files.getOwner(dir.toPath()).getName();
+                final Process p = Runtime.getRuntime().exec("icacls " + path + " /grant \"" + fileOwner + ":R\" /t /inheritance:r");
+
                 p.waitFor();  // wait for it to end before continue with the next line
 
                 System.out.println("----------");
                 System.out.println("path: " + path);
-                System.out.println("owner: " + java.nio.file.Files.getOwner(dir.toPath()));
+                System.out.println("owner: " + fileOwner);
                 System.out.println("permissions:");
                 AclFileAttributeView aclFileAttributes = Files.getFileAttributeView(
                     dir.toPath(), AclFileAttributeView.class);
