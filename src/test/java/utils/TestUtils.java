@@ -6,8 +6,10 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclEntryPermission;
+import java.nio.file.attribute.AclEntryType;
 import java.nio.file.attribute.AclFileAttributeView;
-import java.util.Map;
+import java.util.*;
 
 public class TestUtils {
 
@@ -42,17 +44,21 @@ public class TestUtils {
         try {
             File dir = new File(path);
             Files.createDirectories(dir.toPath());
-            if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-                final Process p = Runtime.getRuntime().exec("icacls " + path + " /grant:r *S-1-1-0:R /t /inheritance:r");
 
-                p.waitFor();  // wait for it to end before continue with the next line
+            if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                AclFileAttributeView aclFileAttributes = Files.getFileAttributeView( dir.toPath(), AclFileAttributeView.class);
+                List<AclEntry> acl = new ArrayList<>();
+                for (AclEntry aclEntry : aclFileAttributes.getAcl()) {
+                    AclEntry entry = AclEntry.newBuilder().setType(AclEntryType.DENY).setPrincipal(aclEntry.principal())
+                        .setPermissions(AclEntryPermission.ADD_FILE, AclEntryPermission.ADD_SUBDIRECTORY).build();
+                    acl.add(entry);
+                }
+                aclFileAttributes.setAcl(acl);
 
                 System.out.println("----------");
                 System.out.println("path: " + path);
                 System.out.println("owner: " + java.nio.file.Files.getOwner(dir.toPath()).getName());
                 System.out.println("permissions:");
-                AclFileAttributeView aclFileAttributes = Files.getFileAttributeView(
-                    dir.toPath(), AclFileAttributeView.class);
                 for (AclEntry aclEntry : aclFileAttributes.getAcl()) {
                     System.out.println(aclEntry.principal() + ":");
                     System.out.println(aclEntry.permissions() + "\n");
