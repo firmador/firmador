@@ -20,8 +20,7 @@ public class TestUtils {
 
                     System.out.println("----------");
                     System.out.println("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":F\" /t /inheritance:r");
-                    BufferedReader is =
-                        new BufferedReader(new InputStreamReader(p.getInputStream(  )));
+                    BufferedReader is = new BufferedReader(new InputStreamReader(p.getInputStream(  )));
                     String s;
                     while ((s = is.readLine()) != null) {
                         System.out.println(s);
@@ -56,8 +55,7 @@ public class TestUtils {
 
                 System.out.println("----------");
                 System.out.println("icacls " + path + " /deny \"" + System.getProperty("user.name") + ":(M,WD,AD)\" /t /inheritance:r");
-                BufferedReader is =
-                    new BufferedReader(new InputStreamReader(p.getInputStream(  )));
+                BufferedReader is = new BufferedReader(new InputStreamReader(p.getInputStream(  )));
                 String s;
                 while ((s = is.readLine()) != null) {
                     System.out.println(s);
