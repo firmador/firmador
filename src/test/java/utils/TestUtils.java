@@ -47,9 +47,8 @@ public class TestUtils {
                 AclFileAttributeView aclFileAttributes = Files.getFileAttributeView(dir.toPath(), AclFileAttributeView.class);
                 List<AclEntry> acl = new ArrayList<>();
                 for (AclEntry aclEntry : aclFileAttributes.getAcl()) {
-                    AclEntry entry = AclEntry.newBuilder().setType(AclEntryType.DENY).setPrincipal(aclEntry.principal())
-                        .setPermissions(AclEntryPermission.ADD_FILE, AclEntryPermission.ADD_SUBDIRECTORY, AclEntryPermission.WRITE_DATA,
-                            AclEntryPermission.APPEND_DATA)
+                    AclEntry entry = AclEntry.newBuilder().setType(AclEntryType.ALLOW).setPrincipal(aclEntry.principal())
+                        .setPermissions(AclEntryPermission.READ_DATA)
                         .setFlags(AclEntryFlag.DIRECTORY_INHERIT, AclEntryFlag.FILE_INHERIT).build();
                     acl.add(entry);
                 }

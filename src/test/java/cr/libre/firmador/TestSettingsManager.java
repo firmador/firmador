@@ -494,8 +494,8 @@ public class TestSettingsManager {
 
         assertFalse(this.settingsManagerLog.getEvents().isEmpty());  // something was logged
         LoggingEvent logEntry = this.settingsManagerLog.getEvents().get(0);
-        System.out.println(logEntry.getThrowable().toString());
-        assertTrue(logEntry.getThrowable().toString().contains("java.nio.file.AccessDeniedException: " + this.pathWithNoAccess));
+        assertTrue(logEntry.getThrowable().toString().contains("java.nio.file.AccessDeniedException: " + this.pathWithNoAccess)
+            || logEntry.getThrowable().toString().contains("Access is denied"));
         assertInstanceOf(IOException.class, logEntry.getThrowable());  // the right type of exception happened
         assertFalse(configFile.exists());  // the file was not created because of the exception
     }
