@@ -15,11 +15,11 @@ public class TestUtils {
             if(dir.exists()) {
                 if (System.getProperty("os.name").toLowerCase().contains("windows")) {
                     // make sure the file has the permissions for deletion
-                    final Process p = Runtime.getRuntime().exec("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":(OI)(CI)F\" /t /inheritance:r");
+                    final Process p = Runtime.getRuntime().exec("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":F\" /t /inheritance:r");
                     p.waitFor();  // wait for it to end before continue with the next line
 
                     System.out.println("----------");
-                    System.out.println("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":(OI)(CI)F\" /t /inheritance:r");
+                    System.out.println("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":F\" /t /inheritance:r");
                     BufferedReader is =
                         new BufferedReader(new InputStreamReader(p.getInputStream(  )));
                     String s;
@@ -51,11 +51,11 @@ public class TestUtils {
             File dir = new File(path);
             Files.createDirectories(dir.toPath());
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-                final Process p = Runtime.getRuntime().exec("icacls " + path + " /deny \"" + System.getProperty("user.name") + ":(OI)(CI)(WD,AD)\" /t /inheritance:r");
+                final Process p = Runtime.getRuntime().exec("icacls " + path + " /deny \"" + System.getProperty("user.name") + ":(WD,AD)\" /t /inheritance:r");
                 p.waitFor();  // wait for it to end before continue with the next line
 
                 System.out.println("----------");
-                System.out.println("icacls " + path + " /deny \"" + System.getProperty("user.name") + ":(OI)(CI)(WD,AD)\" /t /inheritance:r");
+                System.out.println("icacls " + path + " /deny \"" + System.getProperty("user.name") + ":(WD,AD)\" /t /inheritance:r");
                 BufferedReader is =
                     new BufferedReader(new InputStreamReader(p.getInputStream(  )));
                 String s;
