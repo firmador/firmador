@@ -31,7 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.DosFileAttributes;
+import java.nio.file.attribute.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -81,11 +81,17 @@ public class SettingsManager {
             System.out.println("isRegularFile is " + attr.isRegularFile());
             System.out.println("creationTime is " + attr.creationTime());
             System.out.println("lastAccessTime is " + attr.lastAccessTime());
+            System.out.println("permissions");
+            AclFileAttributeView aclFileAttributes = Files.getFileAttributeView(this.path, AclFileAttributeView.class);
+            for (AclEntry aclEntry : aclFileAttributes.getAcl()) {
+                System.out.println(aclEntry.principal());
+                System.out.println(aclEntry.permissions());
+            }
             System.out.println("----------");
         } catch (UnsupportedOperationException x) {
             System.err.println("DOS file attributes not supported:" + x);
         }
-        
+
         return this.path;
     }
 

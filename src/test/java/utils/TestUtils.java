@@ -5,10 +5,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
-import java.nio.file.attribute.AclEntry;
-import java.nio.file.attribute.AclEntryPermission;
-import java.nio.file.attribute.AclEntryType;
-import java.nio.file.attribute.AclFileAttributeView;
+import java.nio.file.attribute.*;
 import java.util.*;
 
 public class TestUtils {
@@ -44,18 +41,18 @@ public class TestUtils {
         try {
             File dir = new File(path);
             Files.createDirectories(dir.toPath());
+            dir.setReadOnly();  // for linux and mac this is enough
 
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
                 AclFileAttributeView aclFileAttributes = Files.getFileAttributeView(dir.toPath(), AclFileAttributeView.class);
                 List<AclEntry> acl = new ArrayList<>();
                 for (AclEntry aclEntry : aclFileAttributes.getAcl()) {
                     AclEntry entry = AclEntry.newBuilder().setType(AclEntryType.DENY).setPrincipal(aclEntry.principal())
-                        .setPermissions(AclEntryPermission.ADD_FILE, AclEntryPermission.ADD_SUBDIRECTORY).build();
+                        .setPermissions(AclEntryPermission.ADD_FILE, AclEntryPermission.ADD_SUBDIRECTORY)
+                        .setFlags(AclEntryFlag.DIRECTORY_INHERIT, AclEntryFlag.FILE_INHERIT).build();
                     acl.add(entry);
                 }
                 aclFileAttributes.setAcl(acl);
-            }else{
-                dir.setReadOnly();  // for linux and mac this is enough
             }
         } catch (Exception e) {
             throw new RuntimeException("Not possible create a directory with no access " + path, e);
