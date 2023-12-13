@@ -1,13 +1,10 @@
 variables:
-  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
   MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
-
 
 stages:
   - test-linux
   - test-windows
   - test-mac
-
 
 default:
   artifacts:
@@ -49,7 +46,7 @@ linux-java-21:
     entrypoint: *entry_point
   stage: test-linux
   script: 
-    - mvn $MAVEN_CLI_OPTS test
+    - mvn --batch-mode --errors --fail-at-end --show-version test
   when: always
 
 # ------ Windows ------
@@ -68,7 +65,7 @@ windows-java-12:
     - Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
     - refreshenv
   script:
-    - mvn test
+    - mvn --batch-mode --errors --fail-at-end --show-version test
   when: always
 
 # ------ Mac ------
@@ -85,5 +82,5 @@ windows-java-12:
 #   before_script:
 #     - brew install maven  # install maven to be able to run the tests
 #   script:
-#     - mvn $MAVEN_CLI_OPTS test
+#     - mvn --batch-mode --errors --fail-at-end --show-version test
 #   when: always
