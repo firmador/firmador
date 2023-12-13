@@ -44,22 +44,24 @@ public class TestUtils {
             dir.setReadOnly();  // for linux and mac this is enough
 
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-                AclFileAttributeView aclFileAttributes = Files.getFileAttributeView(dir.toPath(), AclFileAttributeView.class);
+                AclFileAttributeView aclFileAttributesView = Files.getFileAttributeView(dir.toPath(), AclFileAttributeView.class);
                 List<AclEntry> acl = new ArrayList<>();
-                for (AclEntry aclEntry : aclFileAttributes.getAcl()) {
+                for (AclEntry aclEntry : aclFileAttributesView.getAcl()) {
                     AclEntry entry = AclEntry.newBuilder().setType(AclEntryType.ALLOW).setPrincipal(aclEntry.principal())
                         .setPermissions(AclEntryPermission.READ_DATA)
                         .setFlags(AclEntryFlag.DIRECTORY_INHERIT, AclEntryFlag.FILE_INHERIT).build();
                     acl.add(entry);
                 }
-                aclFileAttributes.setAcl(acl);
+                aclFileAttributesView.setAcl(acl);
 
                 System.out.println("----------");
                 System.out.println("path is " + path);
-                aclFileAttributes = Files.getFileAttributeView(dir.toPath(), AclFileAttributeView.class);
-                for (AclEntry aclEntry : aclFileAttributes.getAcl()) {
-                    System.out.println(aclEntry.principal());
-                    System.out.println(aclEntry.permissions());
+                final Process p = Runtime.getRuntime().exec("icacls " + path);
+                p.waitFor();  // wait for it to end before continue with the next line
+                BufferedReader is = new BufferedReader(new InputStreamReader(p.getInputStream(  )));
+                String s;
+                while ((s = is.readLine()) != null) {
+                    System.out.println(s);
                 }
                 System.out.println("----------");
             }

@@ -19,14 +19,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -82,13 +75,15 @@ public class SettingsManager {
             System.out.println("creationTime is " + attr.creationTime());
             System.out.println("lastAccessTime is " + attr.lastAccessTime());
             System.out.println("permissions");
-            AclFileAttributeView aclFileAttributes = Files.getFileAttributeView(this.path, AclFileAttributeView.class);
-            for (AclEntry aclEntry : aclFileAttributes.getAcl()) {
-                System.out.println(aclEntry.principal());
-                System.out.println(aclEntry.permissions());
+            final Process p = Runtime.getRuntime().exec("icacls " + this.path.toString());
+            p.waitFor();  // wait for it to end before continue with the next line
+            BufferedReader is = new BufferedReader(new InputStreamReader(p.getInputStream(  )));
+            String s;
+            while ((s = is.readLine()) != null) {
+                System.out.println(s);
             }
             System.out.println("----------");
-        } catch (UnsupportedOperationException x) {
+        } catch (Exception x) {
             System.err.println("DOS file attributes not supported:" + x);
         }
 
