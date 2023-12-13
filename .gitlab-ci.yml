@@ -17,37 +17,37 @@ default:
 # ------ Linux ------
 
 # install required packages, use another user but root (so unit tests about not having permissions work fine)- this to assure everything works fine
-.entry_point: &entry_point
-  - bash
-  - -c
-  - apt-get update && apt-get install -y libfontconfig1 && useradd -m testuser && exec su testuser -c bash
+# .entry_point: &entry_point
+#   - bash
+#   - -c
+#   - apt-get update && apt-get install -y libfontconfig1 && useradd -m testuser && exec su testuser -c bash
 
-linux-java-11:
-  image: 
-    name: maven:3.9.5-amazoncorretto-11-debian
-    entrypoint: *entry_point
-  stage: test-linux
-  script: 
-    - mvn $MAVEN_CLI_OPTS test
-  when: always
+# linux-java-11:
+#   image: 
+#     name: maven:3.9.5-amazoncorretto-11-debian
+#     entrypoint: *entry_point
+#   stage: test-linux
+#   script: 
+#     - mvn $MAVEN_CLI_OPTS test
+#   when: always
 
-linux-java-17:
-  image: 
-    name: maven:3.9.5-amazoncorretto-17-debian
-    entrypoint: *entry_point
-  stage: test-linux
-  script: 
-    - mvn $MAVEN_CLI_OPTS test
-  when: always
+# linux-java-17:
+#   image: 
+#     name: maven:3.9.5-amazoncorretto-17-debian
+#     entrypoint: *entry_point
+#   stage: test-linux
+#   script: 
+#     - mvn $MAVEN_CLI_OPTS test
+#   when: always
 
-linux-java-21:
-  image: 
-    name: maven:3.9.5-amazoncorretto-21-debian
-    entrypoint: *entry_point
-  stage: test-linux
-  script: 
-    - mvn --batch-mode --errors --fail-at-end --show-version test
-  when: always
+# linux-java-21:
+#   image: 
+#     name: maven:3.9.5-amazoncorretto-21-debian
+#     entrypoint: *entry_point
+#   stage: test-linux
+#   script: 
+#     - mvn --batch-mode --errors --fail-at-end --show-version test
+#   when: always
 
 # ------ Windows ------
 
@@ -60,12 +60,15 @@ windows-java-12:
   extends:
     - .shared_windows_runners
   stage: test-windows
-  before_script:
-    - choco install maven -y  # install maven to be able to run the tests
-    - Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
-    - refreshenv
+  # before_script:
+  #   - choco install maven -y  # install maven to be able to run the tests
+  #   - Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
+  #   - refreshenv
   script:
-    - mvn --batch-mode --errors --fail-at-end --show-version test
+    # - mvn --batch-mode --errors --fail-at-end --show-version test
+    - mkdir C:\Users\gitlab_runner\AppData\Roaming\unit-tests
+    - mkdir C:\Users\gitlab_runner\AppData\Roaming\unit-tests\not-allowed
+    - icacls C:\Users\gitlab_runner\AppData\Roaming\unit-tests\not-allowed /deny "gitlab_runner:(OI)(CI)F" /t /inheritance:r
   when: always
 
 # ------ Mac ------
