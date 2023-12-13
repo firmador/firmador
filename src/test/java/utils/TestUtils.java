@@ -46,11 +46,11 @@ public class TestUtils {
             Files.createDirectories(dir.toPath());
 
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-                AclFileAttributeView aclFileAttributes = Files.getFileAttributeView( dir.toPath(), AclFileAttributeView.class);
+                AclFileAttributeView aclFileAttributes = Files.getFileAttributeView(dir.toPath(), AclFileAttributeView.class);
                 List<AclEntry> acl = new ArrayList<>();
                 for (AclEntry aclEntry : aclFileAttributes.getAcl()) {
                     AclEntry entry = AclEntry.newBuilder().setType(AclEntryType.DENY).setPrincipal(aclEntry.principal())
-                        .setPermissions(AclEntryPermission.ADD_FILE, AclEntryPermission.ADD_SUBDIRECTORY).build();
+                        .setPermissions().build();
                     acl.add(entry);
                 }
                 aclFileAttributes.setAcl(acl);
@@ -65,7 +65,7 @@ public class TestUtils {
                 }
                 System.out.println("----------");
             }else{
-                dir.setReadOnly();
+                dir.setReadOnly();  // for linux and mac this is enough
             }
         } catch (Exception e) {
             throw new RuntimeException("Not possible create a directory with no access " + path, e);
