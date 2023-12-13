@@ -16,6 +16,7 @@ public class TestUtils {
             if(dir.exists()) {
                 if (System.getProperty("os.name").toLowerCase().contains("windows")) {
                     // make sure the file has the permissions for deletion
+                    System.out.println("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":(OI)(CI)F\" /t /inheritance:r");
                     final Process p = Runtime.getRuntime().exec("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":(OI)(CI)F\" /t /inheritance:r");
                     p.waitFor();  // wait for it to end before continue with the next line
                 }
