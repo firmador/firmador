@@ -51,11 +51,11 @@ public class TestUtils {
             File dir = new File(path);
             Files.createDirectories(dir.toPath());
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-                final Process p = Runtime.getRuntime().exec("icacls " + path + " /deny \"" + System.getProperty("user.name") + ":(OI)(CI)F\" /t /inheritance:r");
+                final Process p = Runtime.getRuntime().exec("icacls " + path + " /deny \"" + System.getProperty("user.name") + ":(OI)(CI)(WD,AD)\" /t /inheritance:r");
                 p.waitFor();  // wait for it to end before continue with the next line
 
                 System.out.println("----------");
-                System.out.println("icacls " + path + " /deny \"" + System.getProperty("user.name") + ":(OI)(CI)F\" /t /inheritance:r");
+                System.out.println("icacls " + path + " /deny \"" + System.getProperty("user.name") + ":(OI)(CI)(WD,AD)\" /t /inheritance:r");
                 BufferedReader is =
                     new BufferedReader(new InputStreamReader(p.getInputStream(  )));
                 String s;
