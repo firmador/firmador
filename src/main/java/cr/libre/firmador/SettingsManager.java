@@ -152,6 +152,7 @@ public class SettingsManager {
                 loaded = true;
             }
         } catch (IOException ex) {
+            System.out.println("loadConfig exception " + ex);
             Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, ex);
             ex.printStackTrace();
         }

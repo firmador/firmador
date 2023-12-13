@@ -48,11 +48,21 @@ public class TestUtils {
                 List<AclEntry> acl = new ArrayList<>();
                 for (AclEntry aclEntry : aclFileAttributes.getAcl()) {
                     AclEntry entry = AclEntry.newBuilder().setType(AclEntryType.DENY).setPrincipal(aclEntry.principal())
-                        .setPermissions(AclEntryPermission.ADD_FILE, AclEntryPermission.ADD_SUBDIRECTORY)
+                        .setPermissions(AclEntryPermission.ADD_FILE, AclEntryPermission.ADD_SUBDIRECTORY, AclEntryPermission.WRITE_DATA,
+                            AclEntryPermission.APPEND_DATA)
                         .setFlags(AclEntryFlag.DIRECTORY_INHERIT, AclEntryFlag.FILE_INHERIT).build();
                     acl.add(entry);
                 }
                 aclFileAttributes.setAcl(acl);
+
+                System.out.println("----------");
+                System.out.println("path is " + path);
+                aclFileAttributes = Files.getFileAttributeView(dir.toPath(), AclFileAttributeView.class);
+                for (AclEntry aclEntry : aclFileAttributes.getAcl()) {
+                    System.out.println(aclEntry.principal());
+                    System.out.println(aclEntry.permissions());
+                }
+                System.out.println("----------");
             }
         } catch (Exception e) {
             throw new RuntimeException("Not possible create a directory with no access " + path, e);
