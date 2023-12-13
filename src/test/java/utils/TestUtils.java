@@ -5,6 +5,8 @@ import org.apache.commons.io.FileUtils;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
+import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclFileAttributeView;
 import java.util.Map;
 
 public class TestUtils {
@@ -14,18 +16,9 @@ public class TestUtils {
             File dir = new File(path);
             if(dir.exists()) {
                 if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-                    // make sure the file has the permissions for deletion
+                    // make sure the file has the right permissions for deletion
                     final Process p = Runtime.getRuntime().exec("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":F\" /t /inheritance:r");
                     p.waitFor();  // wait for it to end before continue with the next line
-
-                    System.out.println("----------");
-                    System.out.println("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":F\" /t /inheritance:r");
-                    BufferedReader is = new BufferedReader(new InputStreamReader(p.getInputStream(  )));
-                    String s;
-                    while ((s = is.readLine()) != null) {
-                        System.out.println(s);
-                    }
-                    System.out.println("----------");
                 }
                 FileUtils.forceDelete(dir);
             }
@@ -50,15 +43,18 @@ public class TestUtils {
             File dir = new File(path);
             Files.createDirectories(dir.toPath());
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-                final Process p = Runtime.getRuntime().exec("icacls " + path + " /deny \"" + System.getProperty("user.name") + ":F\" /t /inheritance:r");
+                final Process p = Runtime.getRuntime().exec("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":R\" /t /inheritance:r");
                 p.waitFor();  // wait for it to end before continue with the next line
 
                 System.out.println("----------");
-                System.out.println("icacls " + path + " /deny \"" + System.getProperty("user.name") + ":F\" /t /inheritance:r");
-                BufferedReader is = new BufferedReader(new InputStreamReader(p.getInputStream(  )));
-                String s;
-                while ((s = is.readLine()) != null) {
-                    System.out.println(s);
+                System.out.println("path: " + path);
+                System.out.println("owner: " + java.nio.file.Files.getOwner(dir.toPath()));
+                System.out.println("permissions:");
+                AclFileAttributeView aclFileAttributes = Files.getFileAttributeView(
+                    dir.toPath(), AclFileAttributeView.class);
+                for (AclEntry aclEntry : aclFileAttributes.getAcl()) {
+                    System.out.println(aclEntry.principal() + ":");
+                    System.out.println(aclEntry.permissions() + "\n");
                 }
                 System.out.println("----------");
             }else{
