@@ -31,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.DosFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,14 +62,30 @@ public class SettingsManager {
         // Se asegura que siempre exista el directorio de configuracion
         this.path = FileSystems.getDefault().getPath(homepath, suffixpath);
         System.out.println("----------");
-        System.out.println("user.home: " + System.getProperty("user.home"));
-        System.out.println("this.path: " + this.path);
-        System.out.println("is directory: " + Files.isDirectory(this.path));
-        System.out.println("----------");
+        System.out.println("user.home is " + System.getProperty("user.home"));
+        System.out.println("path is " + this.path);
+        System.out.println("is directory is " + Files.isDirectory(this.path));
+
         if (!Files.isDirectory(this.path)) {
             Files.createDirectories(this.path);
             if (osName.contains("windows")) Files.setAttribute(this.path, "dos:hidden", true);
         }
+
+        try {
+            DosFileAttributes attr = Files.readAttributes(this.path, DosFileAttributes.class);
+            System.out.println("owner is " + Files.getOwner(this.path));
+            System.out.println("isReadOnly is " + attr.isReadOnly());
+            System.out.println("isHidden is " + attr.isHidden());
+            System.out.println("isArchive is " + attr.isArchive());
+            System.out.println("isSystem is " + attr.isSystem());
+            System.out.println("isRegularFile is " + attr.isRegularFile());
+            System.out.println("creationTime is " + attr.creationTime());
+            System.out.println("lastAccessTime is " + attr.lastAccessTime());
+            System.out.println("----------");
+        } catch (UnsupportedOperationException x) {
+            System.err.println("DOS file attributes not supported:" + x);
+        }
+        
         return this.path;
     }
 
