@@ -5,6 +5,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.util.Map;
 
 public class TestUtils {
@@ -13,10 +14,15 @@ public class TestUtils {
         try {
             File dir = new File(path);
             if(dir.exists()) {
+                if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                    // make sure the file has the permissions for deletion
+                    final Process p = Runtime.getRuntime().exec("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":(OI)(CI)F\" /t /inheritance:r");
+                    p.waitFor();  // wait for it to end before continue with the next line
+                }
                 FileUtils.forceDelete(dir);
             }
-        } catch (IOException e) {
-            throw new RuntimeException("Not possible to delete the directory", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Not possible to delete the directory " + path, e);
         }
     }
 
@@ -24,17 +30,26 @@ public class TestUtils {
         try {
             // it creates all the dirs required and then the file
             File file = new File(path);
-            file.getParentFile().mkdirs();
+            Files.createDirectories(file.getParentFile().toPath());
             file.createNewFile();
         } catch (IOException e) {
-            throw new RuntimeException("Not possible to create the file", e);
+            throw new RuntimeException("Not possible to create the file " + path, e);
         }
     }
 
     public static void createDirectoryWithNoAccess(String path){
-        File dir = new File(path);
-        dir.mkdirs();
-        dir.setReadOnly();
+        try {
+            File dir = new File(path);
+            Files.createDirectories(dir.toPath());
+            if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                final Process p = Runtime.getRuntime().exec("icacls " + path + " /deny \"" + System.getProperty("user.name") + ":(OI)(CI)F\" /t /inheritance:r");
+                p.waitFor();  // wait for it to end before continue with the next line
+            }else{
+                dir.setReadOnly();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Not possible create a directory with no access " + path, e);
+        }
     }
 
     public static Map<String, String> getModifiableEnvironment()

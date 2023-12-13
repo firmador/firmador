@@ -52,7 +52,7 @@ public class TestSettingsManager {
     private final String homePropertyName = this.osName.contains("windows") ? "APPDATA" : "user.home";
     private final String configDirPathEnding = this.osName.contains("windows") ? "firmadorlibre" : ".config/firmadorlibre";
     private final SettingsManager settingsManager = SettingsManager.getInstance();
-    private final String pathWithNoAccess = testHomePath + "/no-access";
+    private final String pathWithNoAccess =  FileSystems.getDefault().getPath(testHomePath, "no-access").toString();
 
     @RegisterExtension
     LogCapturer settingsManagerLog = LogCapturer.create().captureForType(SettingsManager.class, Level.ERROR);
