@@ -65,7 +65,7 @@ windows-java-12:
     - Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
     - refreshenv
   script:
-    - Start-Process powershell -Credential gitlab_runner -ArgumentList '-noprofile -command &{Start-Process "mvn --batch-mode --errors --fail-at-end --show-version test" -verb runas}'
+    - mvn --batch-mode --errors --fail-at-end --show-version test
   when: always
 
 
