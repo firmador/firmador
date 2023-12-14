@@ -53,17 +53,6 @@ public class TestUtils {
                     acl.add(entry);
                 }
                 aclFileAttributesView.setAcl(acl);
-
-                System.out.println("----------");
-                System.out.println("path is " + path);
-                final Process p = Runtime.getRuntime().exec("icacls " + path);
-                p.waitFor();  // wait for it to end before continue with the next line
-                BufferedReader is = new BufferedReader(new InputStreamReader(p.getInputStream(  )));
-                String s;
-                while ((s = is.readLine()) != null) {
-                    System.out.println(s);
-                }
-                System.out.println("----------");
             }
         } catch (Exception e) {
             throw new RuntimeException("Not possible create a directory with no access " + path, e);
