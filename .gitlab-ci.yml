@@ -65,6 +65,7 @@ windows-java-12:
     - Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
     - refreshenv
   script:
+     - Enter-PSSession gitlab_runner
      - mvn --batch-mode --errors --fail-at-end --show-version test
   when: always
 
