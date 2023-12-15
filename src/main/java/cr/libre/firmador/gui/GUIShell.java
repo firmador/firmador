@@ -104,12 +104,12 @@ public class GUIShell implements GUIInterface, DocumentChangeListener {
     }
 
     public String getDocumentToSign() {
-        String docpath = readFromInput(MessageUtils.t("sign_route_document")+" ");
+        String docpath = readFromInput(MessageUtils.t("guishell_sign_route_document")+" ");
         return Paths.get(docpath).toAbsolutePath().toString();
     }
 
     public String getPathToSave(String extension) {
-        String docpath = readFromInput(MessageUtils.t("save_route_document")+" ");
+        String docpath = readFromInput(MessageUtils.t("guishell_save_route_document")+" ");
         return Paths.get(docpath).toAbsolutePath().toString();
     }
 

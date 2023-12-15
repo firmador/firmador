@@ -156,7 +156,7 @@ public class Settings {
         try {
             return this.dateFormat;
         } catch (Exception e) {
-            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, "Error retornando dateFormat: " + e); // FIXME does try-catch make sense here?
+            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, MessageUtils.t("settings_error_return_date_format")+": " + e); // FIXME does try-catch make sense here?
             e.printStackTrace();
             return "dd/MM/yyyy hh:mm:ss a";
         }
@@ -291,21 +291,21 @@ public class Settings {
         return position;
     }
     public Color getFontColor() {
-        if (this.fontColor.equalsIgnoreCase("transparente")) return new Color(255, 255, 255, 0);
+        if (this.fontColor.equalsIgnoreCase("transparente") || this.fontColor.equalsIgnoreCase("transparent")) return new Color(255, 255, 255, 0);
         try {
             return Color.decode(this.fontColor);
         } catch (Exception e) {
-            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, "Error decodificando fontColor:" + e);
+            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, MessageUtils.t("settings_error_decoding_font_color")+": " + e);
             e.printStackTrace();
             return new Color(0, 0, 0, 255);
         }
     }
     public Color getBackgroundColor() {
-        if (this.backgroundColor.equalsIgnoreCase("transparente")) return new Color(255, 255, 255, 0);
+        if (this.backgroundColor.equalsIgnoreCase("transparente") || this.backgroundColor.equalsIgnoreCase("transparent")) return new Color(255, 255, 255, 0);
         try {
             return Color.decode(this.backgroundColor);
         } catch (Exception e) {
-            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, "Error decodificando backgroundColor: " + e);
+            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, MessageUtils.t("settings_error_decoding_background_color")+": " + e);
             e.printStackTrace();
             return new Color(255, 255, 255, 0);
         }

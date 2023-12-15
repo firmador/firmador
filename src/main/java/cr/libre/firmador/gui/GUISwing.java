@@ -544,7 +544,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     public void showMessage(String message) {
         LOG.info(MessageUtils.t("guiswing_show_message") + message);
         JOptionPane.showMessageDialog(null, new CopyableJLabel(message),
-                MessageUtils.t("document_success_joptionpane_title"),
+                MessageUtils.t("guiswing_document_success_joptionpane_title"),
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
