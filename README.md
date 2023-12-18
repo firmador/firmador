@@ -9,18 +9,11 @@ Está diseñado para funcionar con Java y funciona en GNU/Linux, macOS y Windows
 En el caso de macOS y Windows requiere instalar [Java](https://java.com/) y los
 controladores de lector y tarjeta del sitio web de [descargas de Soporte Firma
 Digital](https://soportefirmadigital.com/sfdj/dl.aspx).
-En el caso de GNU/Linux, la forma sugerida para instalarlos está explicada en
-los siguientes artículos para instalar firma digital de Costa Rica en
-[Fedora/RHEL/CentOS](https://fran.cr/instalar-firma-digital-costa-rica-linux-fedora/), en
-[Debian/Ubuntu](https://fran.cr/instalar-firma-digital-costa-rica-gnu-linux-ubuntu/), en
-[openSUSE/SLE/SLES](https://fran.cr/instalar-firma-digital-costa-rica-gnu-linux-opensuse-leap-sles-sle/) y en
-[Arch Linux](https://fran.cr/instalar-firma-digital-costa-rica-manjaro-arch-linux/).
 
 
 ## Descarga
 
-- [Descargar firmador](https://firmador.libre.cr/firmador.jar) para Windows,
-  GNU/Linux y macOS.
+Se puede descargar el firmador en el sitio web https://firmador.libre.cr.
 
 
 ## Capturas de pantalla
@@ -47,12 +40,6 @@ las siguientes aperturas funcionarán con doble clic.
 En algunas distribuciones como Ubuntu se puede ejecutar con doble clic si se
 configura el fichero como ejecutable. En las que no esté disponible esta
 característica, se puede ejecutar desde terminal con `java -jar firmador.jar`.
-
-En próximas versiones podría distribuirse con instaladores propios para Windows
-y macOS, desde el momento en el que Oracle no ofrezca instaladores para Java y
-por tanto deba incorporarse con el propio instalador. Asimismo, podrían
-ofrecerse paquetes para distribuciones GNU/Linux para mayor comodidad de
-ejecución.
 
 Firmador tiene algunas configuraciones adicionales de forma opcional, se pueden
 consultar en el fichero [preguntas-frecuentes.md](preguntas-frecuentes.md).
