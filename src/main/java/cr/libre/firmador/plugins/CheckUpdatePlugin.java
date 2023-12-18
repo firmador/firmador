@@ -30,7 +30,7 @@ import java.lang.invoke.MethodHandles;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URI;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -87,10 +87,10 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
             return null;
         }
 
-        protected Void updateRelease() throws IOException, URISyntaxException {
+        protected Void updateRelease() throws IOException {
 
-            URI url = new URI(settings.getReleaseCheckUrl());
-            HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
+            URL url = new URL(settings.getReleaseCheckUrl());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             StringBuilder textBuilder = new StringBuilder();
             try (Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),
                     Charset.forName(StandardCharsets.UTF_8.name())))) {
@@ -146,12 +146,12 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
             return null;
         }
 
-        public String getRemoteHash() throws URISyntaxException {
+        public String getRemoteHash() {
             Settings settings = SettingsManager.getInstance().getAndCreateSettings();
             String hash = "";
             try {
-                URI url = new URI(settings.getChecksumUrl());
-                HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
+                URL url = new URL(settings.getChecksumUrl());
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 StringBuilder textBuilder = new StringBuilder();
                 try (Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), Charset.forName(StandardCharsets.UTF_8.name())))) {
                     int c = 0;
@@ -186,7 +186,7 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
             return dev;
         }
 
-        public boolean checkHash(Path tmpfile) throws IOException, URISyntaxException {
+        public boolean checkHash(Path tmpfile) throws IOException {
             String hexsha = getFileDigest(tmpfile);
             LOG.info("Sha256 of Downloaded file "+hexsha);
             String remoteCheck = getRemoteHash();
@@ -204,9 +204,9 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
             Settings settings = SettingsManager.getInstance().getAndCreateSettings();
             String downloadurl=settings.getReleaseUrl();
             LOG.info("Downloading from "+downloadurl);
-            URI url = new URI(downloadurl);
+            URL url = new URL(downloadurl);
             Path tempFile = Files.createTempFile(null, null);
-            BufferedInputStream in = new BufferedInputStream(url.toURL().openStream());
+            BufferedInputStream in = new BufferedInputStream(url.openStream());
             FileOutputStream fileOutputStream = new FileOutputStream(tempFile.toString());
             byte dataBuffer[] = new byte[1024];
             int bytesRead;

@@ -30,8 +30,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.lang.invoke.MethodHandles;
-import java.net.URI;
-import java.nio.file.Paths;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -259,7 +258,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         if(previewimg != null) {
             BufferedImage bufferedImage = null;
             try {
-                bufferedImage = ImageIO.read(Paths.get(previewimg).toUri().toURL());
+                bufferedImage = ImageIO.read(new URL(previewimg));
             } catch (Exception e) {
                 LOG.error("Error cargando imagen", e);
                 gui.showError(FirmadorUtils.getRootCause(e));

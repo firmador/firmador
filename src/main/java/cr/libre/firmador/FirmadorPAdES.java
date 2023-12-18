@@ -23,8 +23,7 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -328,12 +327,7 @@ public class FirmadorPAdES extends CRSigner {
         imageParameters.setTextParameters(textParameters);
         try {
             if (image != null && !image.trim().isEmpty()) {
-                try {
-                    imageParameters.setImage(new InMemoryDocument(Utils.toByteArray(new URI(image).toURL().openStream())));
-                } catch (URISyntaxException e) {
-                    LOG.error("Error de sintaxis en la URI de la imagen", e);
-                    e.printStackTrace();
-                }
+                imageParameters.setImage(new InMemoryDocument(Utils.toByteArray(new URL(image).openStream())));
             }
 
         } catch (IOException e) {
