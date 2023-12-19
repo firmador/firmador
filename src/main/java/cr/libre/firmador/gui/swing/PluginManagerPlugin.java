@@ -30,6 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.LineBorder;
 
+import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import java.awt.event.ActionListener;
@@ -83,7 +84,9 @@ public class PluginManagerPlugin extends JPanel {
 
         JPanel mainpavailable = new JPanel(new BorderLayout(2, 2));
         JPanel pavailable = new JPanel(new BorderLayout(2, 2));
-        JLabel lavailable = new JLabel("Plugins disponibles");
+        JLabel lavailable = new JLabel(MessageUtils.t("available_plugins"));
+        lavailable.setToolTipText(MessageUtils.t("available_plugins"));
+        lavailable.getAccessibleContext().setAccessibleDescription(MessageUtils.t("available_plugins"));
         lavailable.setAlignmentX(CENTER_ALIGNMENT);
         pavailable.setOpaque(false);
         pavailable.add(lavailable, BorderLayout.CENTER);
@@ -98,7 +101,9 @@ public class PluginManagerPlugin extends JPanel {
 
         JPanel mainpactive = new JPanel(new BorderLayout(2, 2));
         JPanel pactive = new JPanel(new BorderLayout(2, 2));
-        JLabel lactive = new JLabel("   Plugins activos");
+        JLabel lactive = new JLabel(MessageUtils.t("active_plugins"));
+        lactive.setToolTipText(MessageUtils.t("active_plugins"));
+        lactive.getAccessibleContext().setAccessibleDescription(MessageUtils.t("active_plugins"));
         pactive.setOpaque(false);
         pactive.add(lactive, BorderLayout.CENTER);
         rmactive = new JButton("<<");

@@ -88,6 +88,7 @@ public class ConfigPanel extends ScrollableJPanel {
     private ScrollableJPanel simplePanel, advancedPanel;
     private boolean isAdvancedOptions = false;
     private JTextField sofficePath;
+    private JLabel pkcs11Info1, pkcs11Info2;
     private static final long serialVersionUID = 1L;
 
     private void createSimpleConfigPanel() {
@@ -101,6 +102,8 @@ public class ConfigPanel extends ScrollableJPanel {
         checkpanel.setOpaque(false);
         withoutVisibleSign = new JCheckBox(MessageUtils.t("configpanel_without_visible_signature") + "        ",
                 this.settings.withoutVisibleSign);
+        withoutVisibleSign.setToolTipText(MessageUtils.t("configpanel_without_visible_signature"));
+        withoutVisibleSign.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_without_visible_signature"));
         withoutVisibleSign.setOpaque(false);
         checkpanel.add(withoutVisibleSign);
         /*
@@ -113,12 +116,16 @@ public class ConfigPanel extends ScrollableJPanel {
             }
         });
         */
-        showLogs = new JCheckBox(MessageUtils.t("configpanel_view_binnacles") + "        ", this.settings.showLogs);
+        showLogs = new JCheckBox(MessageUtils.t("configpanel_view_logs") + "        ", this.settings.showLogs);
+        showLogs.setToolTipText(MessageUtils.t("configpanel_view_logs"));
+        showLogs.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_view_logs"));
         showLogs.setOpaque(false);
         checkpanel.add(showLogs);
         simplePanel.add(checkpanel);
 
         overwriteSourceFile = new JCheckBox(MessageUtils.t("configpanel_rewrite_original_file"), this.settings.overwriteSourceFile);
+        overwriteSourceFile.setToolTipText(MessageUtils.t("configpanel_rewrite_original_file"));
+        overwriteSourceFile.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_rewrite_original_file"));
         overwriteSourceFile.setOpaque(false);
         checkpanel.add(overwriteSourceFile);
         /*
@@ -139,7 +146,9 @@ public class ConfigPanel extends ScrollableJPanel {
         sofficePath.setText(this.settings.sofficePath);
 
         defaultSignMessage = new JTextArea();
-        defaultSignMessage.setText(this.settings.getDefaultSignMessage());
+        defaultSignMessage.setText(MessageUtils.t("configpanel_default_sign_message1")+",\n"+MessageUtils.t("configpanel_default_sign_message2"));
+        defaultSignMessage.setToolTipText(MessageUtils.t("configpanel_default_sign_message1")+",\n"+MessageUtils.t("configpanel_default_sign_message2"));
+        defaultSignMessage.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_default_sign_message1")+",\n"+MessageUtils.t("configpanel_default_sign_message2"));
         defaultSignMessage.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, /* forward traversal textarea with tab */
             KeyboardFocusManager.getCurrentKeyboardFocusManager().getDefaultFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
         defaultSignMessage.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, /* reverse traversal textarea with shift+tab */
@@ -378,9 +387,14 @@ public class ConfigPanel extends ScrollableJPanel {
         addSettingsBox(advancedPanel, MessageUtils.t("configpanel_file") + " PKCS11", pKCS11ModulePanel); // FIXME prefill with
                                                                                               // default paths when
                                                                                               // unset
-        advancedPanel.add(
-                new JLabel(MessageUtils.t("configpanel_the_file") + " PKCS11 " + MessageUtils.t("configpanel_is_automatic_detected") + ", "));
-        advancedPanel.add(new JLabel(MessageUtils.t("configpanel_but_could_be_write_using_the_previous_field")));
+        pkcs11Info1 = new JLabel(MessageUtils.t("configpanel_the_file") + " PKCS11 " + MessageUtils.t("configpanel_is_automatic_detected") + ", ");
+        pkcs11Info1.setToolTipText(MessageUtils.t("configpanel_the_file") + " PKCS11 " + MessageUtils.t("configpanel_is_automatic_detected") + ", ");
+        pkcs11Info1.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_the_file") + " PKCS11 " + MessageUtils.t("configpanel_is_automatic_detected") + ", ");
+        pkcs11Info2 = new JLabel(MessageUtils.t("configpanel_but_could_be_write_using_the_previous_field"));
+        pkcs11Info2.setToolTipText(MessageUtils.t("configpanel_but_could_be_write_using_the_previous_field"));
+        pkcs11Info1.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_but_could_be_write_using_the_previous_field"));
+        advancedPanel.add(pkcs11Info1);
+        advancedPanel.add(pkcs11Info2);
         advancedBottomSpace = new JPanel();
         advancedBottomSpace.setOpaque(false);
         advancedPanel.add(advancedBottomSpace);
@@ -395,6 +409,8 @@ public class ConfigPanel extends ScrollableJPanel {
         JPanel optionswitchpanel = new JPanel();
         add(optionswitchpanel, BorderLayout.NORTH);
         JButton showadvanced = new JButton(MessageUtils.t("configpanel_advanced_options"));
+        showadvanced.setToolTipText(MessageUtils.t("configpanel_advanced_options"));
+        showadvanced.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_advanced_options"));
         showadvanced.setOpaque(false);
         optionswitchpanel.setOpaque(false);
         optionswitchpanel.add(showadvanced);
@@ -418,6 +434,8 @@ public class ConfigPanel extends ScrollableJPanel {
         btns.setOpaque(false);
         add(btns, BorderLayout.SOUTH);
         JButton restartbtn = new JButton(MessageUtils.t("configpanel_restart"));
+        restartbtn.setToolTipText(MessageUtils.t("configpanel_restart"));
+        restartbtn.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_restart"));
         restartbtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 restartSettings();
@@ -425,6 +443,8 @@ public class ConfigPanel extends ScrollableJPanel {
         });
         btns.add(restartbtn);
         JButton applywithoutsave = new JButton(MessageUtils.t("configpanel_apply_without_saving"));
+        applywithoutsave.setToolTipText(MessageUtils.t("configpanel_apply_without_saving"));
+        applywithoutsave.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_apply_without_saving"));
         applywithoutsave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 chargeSettings();
@@ -433,6 +453,8 @@ public class ConfigPanel extends ScrollableJPanel {
         });
         btns.add(applywithoutsave);
         JButton btSave = new JButton(MessageUtils.t("configpanel_save"));
+        btSave.setToolTipText(MessageUtils.t("configpanel_save"));
+        btSave.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_save"));
         btSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 saveSettings();
@@ -446,6 +468,8 @@ public class ConfigPanel extends ScrollableJPanel {
     }
     public JLabel addSettingsBox(JPanel panel, String text, JComponent item, Dimension d) {
         JLabel label = new JLabel(text);
+        label.setToolTipText(text);
+        label.getAccessibleContext().setAccessibleDescription(text);
         JPanel itempanel = new JPanel();
         label.setPreferredSize(new Dimension(150, 30));
         itempanel.setBorder(new EmptyBorder(0, 0, 0, 0));

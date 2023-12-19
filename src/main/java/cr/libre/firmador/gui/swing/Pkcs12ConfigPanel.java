@@ -90,7 +90,8 @@ public class Pkcs12ConfigPanel extends JPanel {
         pk12list  = new JList<String>(pk12Model);
 
         JLabel ltitle = new JLabel(MessageUtils.t("pkcs12_config_label"));
-
+        ltitle.setToolTipText(MessageUtils.t("pkcs12_config_label"));
+        ltitle.getAccessibleContext().setAccessibleDescription(MessageUtils.t("pkcs12_config_label"));
         ltitle.setHorizontalAlignment(SwingConstants.CENTER);
         add(ltitle, BorderLayout.NORTH);
 
