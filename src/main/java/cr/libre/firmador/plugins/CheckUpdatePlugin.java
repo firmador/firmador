@@ -39,6 +39,7 @@ import java.nio.file.Paths;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import cr.libre.firmador.MessageUtils;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
@@ -68,7 +69,7 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
             LOG.info("Local SHA256: " + localHash);
 
             if (!remoteHash.contains(localHash)) {
-                String message = "Hay una versión nueva disponible, por favor actualice con prontitud a la nueva versión desde: <br> " + settings.baseUrl;
+                String message = MessageUtils.t("checkplugin_info") + settings.baseUrl;
 
                 if (canWritePath()) {
                     int answer = JOptionPane.showConfirmDialog(null, new CopyableJLabel(message), "Desea descargar la actualización de Firmador disponible", JOptionPane.YES_NO_OPTION);
@@ -76,12 +77,12 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
                         try {
                             updateJar();
                         } catch (Throwable e) {
-                            LOG.error("Error al actualizar el JAR", e.getMessage());
+                            LOG.error(MessageUtils.t("checkplugin_error_updating_jar"), e.getMessage());
                             e.printStackTrace();
                         }
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Actualización de Firmador disponible", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, new CopyableJLabel(message), MessageUtils.t("checkplugin_title"), JOptionPane.INFORMATION_MESSAGE);
                 }
             }
             return null;
@@ -102,20 +103,20 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
             String responseversion = textBuilder.toString();
             String version=settings.getVersion();
             if (!version.contentEquals(responseversion)) {
-                String message = "Hay una versión nueva disponible, por favor actualice con prontitud a la nueva versión desde: <br> " + settings.baseUrl;
+                String message = MessageUtils.t("checkplugin_info") + settings.baseUrl;
 
                 if (canWritePath()) {
-                    int answer = JOptionPane.showConfirmDialog(null, new CopyableJLabel(message), "Desea descargar la actualización de Firmador disponible", JOptionPane.YES_NO_OPTION);
+                    int answer = JOptionPane.showConfirmDialog(null, new CopyableJLabel(message), MessageUtils.t("checkplugin_download"), JOptionPane.YES_NO_OPTION);
                     if (answer == JOptionPane.YES_OPTION) {
                         try {
                             updateJar();
                         } catch (Throwable e) {
-                            LOG.error("Error al actualizar el JAR", e.getMessage());
+                            LOG.error(MessageUtils.t("checkplugin_error_updating_jar"), e.getMessage());
                             e.printStackTrace();
                         }
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, new CopyableJLabel(message), "Actualización de Firmador disponible", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, new CopyableJLabel(message), MessageUtils.t("checkplugin_title"), JOptionPane.INFORMATION_MESSAGE);
                 }
             }
             return null;

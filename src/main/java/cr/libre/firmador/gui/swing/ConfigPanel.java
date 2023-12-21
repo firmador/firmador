@@ -146,9 +146,9 @@ public class ConfigPanel extends ScrollableJPanel {
         sofficePath.setText(this.settings.sofficePath);
 
         defaultSignMessage = new JTextArea();
-        defaultSignMessage.setText(MessageUtils.t("configpanel_default_sign_message1")+",\n"+MessageUtils.t("configpanel_default_sign_message2"));
-        defaultSignMessage.setToolTipText(MessageUtils.t("configpanel_default_sign_message1")+",\n"+MessageUtils.t("configpanel_default_sign_message2"));
-        defaultSignMessage.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_default_sign_message1")+",\n"+MessageUtils.t("configpanel_default_sign_message2"));
+        defaultSignMessage.setText(MessageUtils.t("configpanel_default_sign_message"));
+        defaultSignMessage.setToolTipText(MessageUtils.t("configpanel_default_sign_message"));
+        defaultSignMessage.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_default_sign_message"));
         defaultSignMessage.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, /* forward traversal textarea with tab */
             KeyboardFocusManager.getCurrentKeyboardFocusManager().getDefaultFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
         defaultSignMessage.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, /* reverse traversal textarea with shift+tab */
@@ -203,8 +203,9 @@ public class ConfigPanel extends ScrollableJPanel {
         fontColorPanel.setLayout(new BoxLayout(fontColorPanel, 0));
         fontColorPanel.setOpaque(false);
         fontColor = new JTextField();
-        fontColor.setToolTipText(MessageUtils.t("configpanel_use_the_word_transparent_if_you_do_not_want_a_color"));
         fontColor.setText(this.settings.fontColor);
+        fontColor.setToolTipText(this.settings.fontColor);
+        fontColor.getAccessibleContext().setAccessibleDescription(this.settings.fontColor);
         fontColor.getDocument().addDocumentListener(new DocumentListener() {
             public void updateIcon(DocumentEvent edoc) {
                 try {
@@ -229,6 +230,8 @@ public class ConfigPanel extends ScrollableJPanel {
             }
         });
         btFontColor = new JButton(MessageUtils.t("configpanel_choose"));
+        btFontColor.setToolTipText(MessageUtils.t("configpanel_choose"));
+        btFontColor.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_choose"));
         btFontColor.setOpaque(false);
         setIcons(btFontColor, this.settings.fontColor, this.settings.getFontColor());
         fontColorPanel.add(btFontColor);
@@ -241,11 +244,14 @@ public class ConfigPanel extends ScrollableJPanel {
         backgroundColor
                 .setToolTipText(MessageUtils.t("configpanel_use_the_word_transparent_if_you_do_not_want_a_background_color"));
         String backgroundColorText = this.settings.backgroundColor;
-        if(backgroundColorText.equalsIgnoreCase("transparente")){
+        if(backgroundColorText.equalsIgnoreCase("transparente") ||
+            backgroundColorText.equalsIgnoreCase("transparent")){
             backgroundColorText = MessageUtils.t("configpanel_transparent");
         }
         backgroundColor.setText(backgroundColorText);
         btBackgroundColor = new JButton(MessageUtils.t("configpanel_choose"));
+        btBackgroundColor.setToolTipText(MessageUtils.t("configpanel_choose"));
+        btBackgroundColor.getAccessibleContext().setAccessibleDescription(backgroundColorText);
         btBackgroundColor.setOpaque(false);
         setIcons(btBackgroundColor, this.settings.backgroundColor, this.settings.getBackgroundColor());
         backgroundColorPanel.add(btBackgroundColor);
@@ -279,6 +285,8 @@ public class ConfigPanel extends ScrollableJPanel {
         imagePanel.setOpaque(false);
         imageText = new JTextField();
         btImage = new JButton(MessageUtils.t("configpanel_choose"));
+        btImage.setToolTipText(MessageUtils.t("configpanel_choose"));
+        btImage.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_choose"));
         if (this.settings.image != null) {
             imageText.setText(this.settings.image);
             btImage.setIcon(this.getIcon(this.settings.image));
@@ -375,6 +383,8 @@ public class ConfigPanel extends ScrollableJPanel {
         pKCS11ModulePanel.setOpaque(false);
         pKCS11ModuleText = new JTextField();
         btPKCS11Module = new JButton(MessageUtils.t("configpanel_choose"));
+        btPKCS11Module.setToolTipText(MessageUtils.t("configpanel_choose"));
+        btPKCS11Module.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_choose"));
         if (this.settings.extraPKCS11Lib != null ) pKCS11ModuleText.setText(this.settings.extraPKCS11Lib);
         pKCS11ModulePanel.add(pKCS11ModuleText);
         pKCS11ModulePanel.add(btPKCS11Module);

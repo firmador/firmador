@@ -4,6 +4,7 @@ import java.util.concurrent.Semaphore;
 
 import javax.swing.SwingWorker;
 
+import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
 
@@ -14,7 +15,7 @@ public class LoadProgressDialogWorker extends SwingWorker<Void, Void> {
     private Semaphore waitformessages = new Semaphore(1);
 
     public LoadProgressDialogWorker(GUIInterface gui) {
-        progressMonitor = new ProgressDialog(((GUISwing) gui).getMainFrame(), "Analizando de documentos", 0, 100);
+        progressMonitor = new ProgressDialog(((GUISwing) gui).getMainFrame(), MessageUtils.t("loadprogressdialogworker_analyzing_docs"), 0, 100);
         progressMonitor.setSize(500, 250);
         progressMonitor.setVisible(false);
     }

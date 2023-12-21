@@ -22,6 +22,7 @@ package cr.libre.firmador.cards;
 import java.lang.invoke.MethodHandles;
 import java.security.KeyStore.PasswordProtection;
 
+import cr.libre.firmador.MessageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,10 +63,10 @@ public class CardSignInfo {
         this.cardType = cardType;
         this.tokenSerialNumber=path;
         this.identification = identification;
-        firstName="NOMBRE";
-        lastName="DE LA PERSONA";
-        commonName="NOMBRE DE LA PERSONA (TIPO DE CERTIFICADO)";
-        organization="TIPO DE PERSONA";
+        firstName=MessageUtils.t("cardsigninfo_name");
+        lastName=MessageUtils.t("cardsigninfo_of_the_person");
+        commonName=MessageUtils.t("cardsigninfo_name_person");
+        organization=MessageUtils.t("cardsigninfo_type_person");
         expires="";
     }
 
@@ -97,7 +98,7 @@ public class CardSignInfo {
     public Long getSlotLongID() {
         return  slotID;
     }
-    
+
     public void setSlotID(long slotID) {
         this.slotID = slotID;
     }
@@ -109,7 +110,7 @@ public class CardSignInfo {
     public String getDisplayInfo() {
 
         if(this.cardType == PKCS11TYPE)
-            return firstName + " " + lastName + " (" + identification + ") (Expira: " + expires+ ")";
+            return firstName + " " + lastName + " (" + identification + MessageUtils.t("cardsigninfo_expires") + expires+ ")";
     //+ this.certSerialNumber+ " [Token serial number: " + this.tokenSerialNumber + "] (Expires: " + expires+ ")";
         return this.identification;
     }
@@ -122,7 +123,7 @@ public class CardSignInfo {
         try {
             pin.destroy();
         } catch (Exception e) {
-            LOG.error("Error destruyendo el pin", e);
+            LOG.error(MessageUtils.t("cardsigninfo_error_destroying_pin"), e);
             e.printStackTrace();
         }
     }

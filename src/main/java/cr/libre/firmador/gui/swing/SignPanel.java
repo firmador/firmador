@@ -725,9 +725,9 @@ public class SignPanel extends JPanel implements ConfigListener{
         Boolean hasReason = false;
         Boolean hasLocation = false;
         Boolean hasContact = false;
-        String commonName="NOMBRE DE LA PERSONA (TIPO DE CERTIFICADO)";
+        String commonName=MessageUtils.t("signpanel_name_person");
         String identification="XXX-XXXXXXXXXXXX";
-        String organization="TIPO DE PERSONA";
+        String organization=MessageUtils.t("signpanel_type_person");
         String additionalText = new String();
         try {
             if (smartCardDetector == null)
@@ -740,20 +740,20 @@ public class SignPanel extends JPanel implements ConfigListener{
                 identification = card.getIdentification();
             }
         } catch (Throwable te) {}
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(settings.dateFormat);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(this.settings.dateFormatByLanguage.get(this.settings.language));
         LocalDateTime now = LocalDateTime.now();
-        additionalText = commonName+"<br>"+organization+", "+identification+".<br>Fecha declarada: "+dtf.format(now)+"<br>";
+        additionalText = commonName+"<br>"+organization+", "+identification+MessageUtils.t("signpanel_declared_date")+dtf.format(now)+"<br>";
         if (reason != null && !reason.trim().isEmpty()) {
             hasReason = true;
-            additionalText += "Razón: " + reason + "\n";
+            additionalText += MessageUtils.t("signpanel_reason")+" " + reason + "\n";
         }
         if (location != null && !location.trim().isEmpty()) {
             hasLocation = true;
-            additionalText += "Lugar: " + location;
+            additionalText += MessageUtils.t("signpanel_place")+" "+ location;
         }
         if (contactInfo != null && !contactInfo .trim().isEmpty()) {
             hasContact=true;
-            additionalText += "  Contacto: " + contactInfo;
+            additionalText += " " +MessageUtils.t("signpanel_contact")+" " + contactInfo;
         }
         if (!(hasReason || hasLocation ||hasContact )) {
             additionalText += settings.getDefaultSignMessage();

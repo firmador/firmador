@@ -53,6 +53,13 @@ public class Settings {
     public String place = "";
     public String contact = "";
     public String dateFormat = "dd/MM/yyyy hh:mm:ss a";
+    public String dateFormatEn = "MM/dd/yyyy hh:mm:ss a";
+    public Map<String, String> dateFormatByLanguage = new HashMap<String, String>() {
+        {
+            put("es", dateFormat);
+            put("en", dateFormatEn);
+        }
+    };
     public String defaultSignMessage = "Esta es una representación gráfica únicamente,\nverifique la validez de la firma.";
     public Integer signWidth = 133;
     public Integer signHeight = 33;
@@ -120,6 +127,8 @@ public class Settings {
         newsettings.place = place;
         newsettings.contact = contact;
         newsettings.dateFormat = dateFormat;
+        newsettings.dateFormatEn = dateFormatEn;
+        newsettings.dateFormatByLanguage = dateFormatByLanguage;
         newsettings.defaultSignMessage = defaultSignMessage;
         newsettings.signWidth = signWidth;
         newsettings.signHeight = signHeight;

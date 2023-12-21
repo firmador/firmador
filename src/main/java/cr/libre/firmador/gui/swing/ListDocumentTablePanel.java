@@ -57,10 +57,12 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
 
         actionButtonsPanel = new JPanel();
         JButton signbtn = new JButton(MessageUtils.t("list_document_signall"));
-        JButton cleanbtn = new JButton(MessageUtils.t("list_document_clear"));
+        signbtn.setToolTipText(MessageUtils.t("list_document_signall"));
+        signbtn.getAccessibleContext().setAccessibleDescription(MessageUtils.t("list_document_signall"));
 
-        signbtn.getAccessibleContext().setAccessibleDescription(MessageUtils.t("list_document_signall_accessible"));
-        cleanbtn.getAccessibleContext().setAccessibleDescription(MessageUtils.t("list_document_clear_accessible"));
+        JButton cleanbtn = new JButton(MessageUtils.t("list_document_clear"));
+        cleanbtn.setToolTipText(MessageUtils.t("list_document_clear"));
+        cleanbtn.getAccessibleContext().setAccessibleDescription(MessageUtils.t("list_document_clear"));
 
         signbtn.setMnemonic('S');
         cleanbtn.setMnemonic('C');
@@ -80,9 +82,9 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
 
         table.setShowHorizontalLines(true);
         // UIManager.put("Button.defaultButtonFollowsFocus", Boolean.TRUE);
-        
+
         JPanel tablePanel = new JPanel();
-        
+
         PanelCellRenderer panelCellRenderer = new PanelCellRenderer();
         // table.addMouseListener(panelCellRenderer);
         table.setDefaultRenderer(DocumentTableButton.class, panelCellRenderer);
