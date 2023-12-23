@@ -23,7 +23,7 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.net.URL;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -36,7 +36,7 @@ import eu.europa.esig.dss.enumerations.SignerTextPosition;
 import eu.europa.esig.dss.enumerations.VisualSignatureRotation;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
-import eu.europa.esig.dss.model.InMemoryDocument;
+import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
@@ -53,7 +53,7 @@ import eu.europa.esig.dss.service.tsp.OnlineTSPSource;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.SignatureTokenConnection;
-import eu.europa.esig.dss.utils.Utils;
+
 import eu.europa.esig.dss.validation.CertificateVerifier;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.slf4j.Logger;
@@ -325,16 +325,9 @@ public class FirmadorPAdES extends CRSigner {
         textParameters.setSignerTextPosition(settings.getFontAlignment());
 
         imageParameters.setTextParameters(textParameters);
-        try {
-            if (image != null && !image.trim().isEmpty()) {
-                imageParameters.setImage(new InMemoryDocument(Utils.toByteArray(new URL(image).openStream())));
-            }
-
-        } catch (IOException e) {
-            LOG.error("Error al procesar la imagen para la representación visual de firma)", e);
-            e.printStackTrace();
+        if (image != null && !image.trim().isEmpty()) {
+            imageParameters.setImage(new FileDocument(image));
         }
-       // imageParameters.setImageScaling(ImageScaling.STRETCH);
         imageParameters.getFieldParameters().setPage(page);
         parameters.setImageParameters(imageParameters);
     }
