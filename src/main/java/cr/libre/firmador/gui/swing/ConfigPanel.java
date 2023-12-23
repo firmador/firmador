@@ -204,7 +204,7 @@ public class ConfigPanel extends ScrollableJPanel {
         fontColorPanel.setOpaque(false);
         fontColor = new JTextField();
         fontColor.setText(this.settings.fontColor);
-        fontColor.setToolTipText(this.settings.fontColor);
+        fontColor.setToolTipText(MessageUtils.t("configpanel_use_the_word_transparent_if_you_do_not_want_a_color"));
         fontColor.getAccessibleContext().setAccessibleDescription(this.settings.fontColor);
         fontColor.getDocument().addDocumentListener(new DocumentListener() {
             public void updateIcon(DocumentEvent edoc) {
@@ -663,7 +663,7 @@ public class ConfigPanel extends ScrollableJPanel {
     }
 
     public void showMessage(String message) {
-        JOptionPane.showMessageDialog(null, new CopyableJLabel(message), MessageUtils.t("configpanel_signer_message"),
+        JOptionPane.showMessageDialog(null, new CopyableJLabel(message), MessageUtils.t("configpanel_Firmador_message"),
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
