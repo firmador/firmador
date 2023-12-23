@@ -101,7 +101,7 @@
             </goals>
             <configuration>
               <multiReleaseOutput>true</multiReleaseOutput>
-              <release>9</release>
+              <release>11</release>
               <compileSourceRoots>
                 <compileSourceRoot>${project.basedir}/src/main/java9</compileSourceRoot>
               </compileSourceRoots>
