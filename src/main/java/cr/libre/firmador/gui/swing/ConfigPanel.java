@@ -255,7 +255,8 @@ public class ConfigPanel extends ScrollableJPanel {
         imagePanel.setOpaque(false);
         imageText = new JTextField();
         btImage = new JButton("Elegir");
-        if (this.settings.image != null) {
+        btImage.setIcon(createImageIcon(new Color(255, 255, 255, 0)));
+        if (this.settings.image != null && !settings.image.trim().isEmpty()) {
             imageText.setText(this.settings.image);
             btImage.setIcon(this.getIcon(this.settings.image));
         }
@@ -500,7 +501,7 @@ public class ConfigPanel extends ScrollableJPanel {
         xAdESLevel.setSelectedItem(settings.xAdESLevel);
         cAdESLevel.setSelectedItem(settings.cAdESLevel);
         pDFImgScaleFactor.setText(String.format("%.2f", settings.pDFImgScaleFactor));
-        if (settings.image != null) {
+        if (settings.image != null && !settings.image.trim().isEmpty()) {
             imageText.setText(settings.image);
             btImage.setIcon(this.getIcon(settings.image));
         } else {
