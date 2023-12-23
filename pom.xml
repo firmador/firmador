@@ -165,7 +165,7 @@
     <dependencies>
       <dependency>
         <groupId>eu.europa.ec.joinup.sd-dss</groupId>
-        <version>5.13.RC1</version>
+        <version>6.0</version>
         <artifactId>dss-bom</artifactId>
         <type>pom</type>
         <scope>import</scope>
@@ -188,12 +188,6 @@
     <dependency>
       <groupId>eu.europa.ec.joinup.sd-dss</groupId>
       <artifactId>dss-asic-xades</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>jakarta.activation-api</artifactId>
-          <groupId>jakarta.activation</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>eu.europa.ec.joinup.sd-dss</groupId>
@@ -215,11 +209,6 @@
       <version>1.6.0</version>
     </dependency>
 -->
-    <dependency>
-      <groupId>org.apache.pdfbox</groupId>
-      <artifactId>pdfbox</artifactId>
-      <version>2.0.30</version>
-    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
