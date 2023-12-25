@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
 import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.cards.SmartCardDetector;
+import cr.libre.firmador.cards.UnsupportedArchitectureException;
 
 public class RequestPinWindow extends JFrame {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -223,7 +224,7 @@ public class RequestPinWindow extends JFrame {
             }
 
             updateSelected();
-        } catch (Throwable er) {
+        } catch (UnsupportedArchitectureException er) {
             JOptionPane.showMessageDialog(null,
                     MessageUtils.t("pin_dialog_warning_arm"),
                     MessageUtils.t("pin_dialog_warning_arm_title"), JOptionPane.WARNING_MESSAGE);

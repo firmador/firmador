@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.CertificateManager;
+import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.cards.CardSignInfo;
@@ -77,12 +78,7 @@ public class CRSigner {
             String msg = e.getCause().toString();
             LOG.error("Error " + te.getLocalizedMessage() + " obteniendo manejador de llaves privadas de la tarjeta", e);
             if (e.getCause().toString().contains("need 'arm64e'")) {
-                gui.showMessage("El firmador ha detectado que estaría utilizando una versión de Java para ARM.\n" +
-                    "Aunque su computadora disponga de procesador ARM, debe desinstalar la versión de Java para ARM e instalar Java para Intel.\n" +
-                    "Esto es debido a que el fabricante de las tarjetas solo provee un controlador para Intel\n" +
-                    "y la versión de Java instalada solo puede cargar un controlador de la misma arquitectura.\n\n" +
-                    "Una vez haya desinstalado Java para ARM, instalado Java para Intel y reiniciado el firmador,\n" +
-                    "el sistema operativo utilizará un emulador para Intel y el firmador y detectará la tarjeta.");
+                gui.showMessage(MessageUtils.t("pin_dialog_warning_arm"));
                 return null;
             }
             if (te.getLocalizedMessage().equals("CKR_PIN_INCORRECT")) throw e;

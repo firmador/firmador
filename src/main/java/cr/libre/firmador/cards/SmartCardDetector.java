@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.ConfigListener;
+import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.signers.CRSigner;
@@ -57,7 +58,9 @@ public class SmartCardDetector implements  ConfigListener {
             cards = readListSmartCard();
         } catch (Throwable e) {
             LOG.info("readListSmartCard thrown", e);
-            if (e.getCause().toString().contains("need 'arm64e'")) throw e;
+            if (e.getMessage().toString().contains("incompatible architecture")) {
+                throw new UnsupportedArchitectureException(MessageUtils.t("smartcardDetector_unsupported_arch"), e);
+            }
             cards = new ArrayList<CardSignInfo>();
         }
         File f;

@@ -336,7 +336,7 @@ public class Settings {
     public String getOrigin() {
         String origin = System.getProperty("jnlp.remoteOrigin");
         if (origin == null) {
-            origin = "*";
+            origin = "http://localhost:" + portNumber;
         }
 
         return origin;
