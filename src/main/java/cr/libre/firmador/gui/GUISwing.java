@@ -660,12 +660,14 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         signedDocument = document.getSignedDocument();
         fileName = document.getPathToSaveName(); // addSuffixToFilePath(document.getPathName(), "-firmado");
         String pathToSave = document.getPathToSave();
-        try {
-            signedDocument.save(pathToSave);
-            currentSavedFilePath.add(pathToSave);
-        } catch (IOException e) {
-            LOG.error("Error Firmando documentos", e);
-            gui.showError(FirmadorUtils.getRootCause(e));
+        if (!document.getSignwithErrors() && signedDocument != null) {
+            try {
+                signedDocument.save(pathToSave);
+                currentSavedFilePath.add(pathToSave);
+            } catch (IOException e) {
+                LOG.error("Error Firmando documentos", e);
+                gui.showError(FirmadorUtils.getRootCause(e));
+            }
         }
     };
 
@@ -742,13 +744,21 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
             paths += "<a href=\"" + pfile.toURI().normalize() + "\">" + path + "</a><br>";
         }
         currentSavedFilePath.clear();
-        showMessage(MessageUtils.t("guiswing_dialog_document_success") + paths);
+        if (!paths.isEmpty())
+            showMessage(MessageUtils.t("guiswing_dialog_document_success") + paths);
     }
 
     @Override
     public void doPreview(Document document) {
         forcePreview = true;
         previewScheduler.addDocument(document);
+
+    }
+
+    @Override
+    public void clearDone() {
+        signPanel.clean();
+        validatePanel.clean();
 
     }
 }

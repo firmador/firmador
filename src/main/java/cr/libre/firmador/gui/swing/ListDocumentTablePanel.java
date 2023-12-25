@@ -46,7 +46,7 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         @Override
         public void actionPerformed(ActionEvent arg0) {
             this.panel.cleanDocuments();
-
+            this.panel.gui.clearDone();
         }
 
     }
@@ -220,6 +220,12 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
 
     @Override
     public void extendsDone(Document document) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void clearDone() {
         // TODO Auto-generated method stub
 
     }

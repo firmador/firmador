@@ -88,6 +88,8 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
             gui.showError(FirmadorUtils.getRootCause(e));
             return null;
         }
+        if (token == null)
+            return null;
         DSSPrivateKeyEntry privateKey = null;
         try {
             privateKey = getPrivateKey(token);

@@ -102,4 +102,7 @@ public class ValidatePanel extends ScrollableJPanel {
         return validateScrollPane;
     }
 
+    public void clean() {
+        reportLabel.setText("");
+    }
 }

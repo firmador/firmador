@@ -8,4 +8,6 @@ public interface DocumentChangeListener {
     void signDone(Document document);
 
     void extendsDone(Document document);
+
+    void clearDone();
 }

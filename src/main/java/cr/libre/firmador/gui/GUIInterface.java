@@ -62,4 +62,6 @@ public interface GUIInterface {
     Settings getCurrentSettings();
 
     void signDocument(Document document);
+
+    void clearDone();
 }

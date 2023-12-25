@@ -784,4 +784,10 @@ public class SignPanel extends JPanel implements ConfigListener{
         }
         return false;
     }
+
+    public void clean() {
+        hideButtons();
+        // imageLabel.setText("");
+        imageLabel.setIcon(null);
+    }
 }

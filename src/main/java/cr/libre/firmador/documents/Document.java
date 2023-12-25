@@ -46,6 +46,7 @@ public class Document {
     private boolean hasPreviewLoaded = false;
     private boolean isReady = false;
     private String report;
+    private boolean signwithErrors = false;
 
 
     public Document(GUIInterface gui, String pathname) {
@@ -293,5 +294,13 @@ public class Document {
 
     public void forceCades() {
         signer = new FirmadorCAdES(this.gui);
+    }
+
+    public boolean getSignwithErrors() {
+        return signwithErrors;
+    }
+
+    public void setSignwithErrors(boolean signwithErrors) {
+        this.signwithErrors = signwithErrors;
     }
 }

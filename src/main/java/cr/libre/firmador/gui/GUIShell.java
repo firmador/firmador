@@ -225,5 +225,11 @@ public class GUIShell implements GUIInterface, DocumentChangeListener {
     public void signDocument(Document document) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public void clearDone() {
+        // TODO Auto-generated method stub
+
     };
 }

@@ -75,21 +75,34 @@ public class CRSigner {
             keys = signingToken.getKeys();
         } catch (Throwable e) {
             Throwable te = FirmadorUtils.getRootCause(e);
-            String msg = e.getCause().toString();
-            LOG.error("Error " + te.getLocalizedMessage() + " obteniendo manejador de llaves privadas de la tarjeta", e);
-            if (e.getCause().toString().contains("need 'arm64e'")) {
-                gui.showMessage(MessageUtils.t("pin_dialog_warning_arm"));
-                return null;
-            }
-            if (te.getLocalizedMessage().equals("CKR_PIN_INCORRECT")) throw e;
-            if (te.getLocalizedMessage().equals("CKR_GENERAL_ERROR") && e.getCause().toString().contains("Unable to instantiate PKCS11")) throw e;
-            if (te.getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) {
-                LOG.info(te.getLocalizedMessage() + " (dispositivo de firma no reconocido)", e);
-                return null;
+            Throwable cause = e.getCause();
+            if (cause != null) {
+                String msg = cause.toString();
+                LOG.error(
+                        "Error " + te.getLocalizedMessage() + " obteniendo manejador de llaves privadas de la tarjeta",
+                        e);
+                if (e.getCause().toString().contains("need 'arm64e'")) {
+                    gui.showMessage(MessageUtils.t("pin_dialog_warning_arm"));
+                    return null;
+                }
+                if (te.getLocalizedMessage().equals("CKR_PIN_INCORRECT"))
+                    throw e;
+                if (te.getLocalizedMessage().equals("CKR_GENERAL_ERROR")
+                        && e.getCause().toString().contains("Unable to instantiate PKCS11"))
+                    throw e;
+                if (te.getLocalizedMessage().equals("CKR_TOKEN_NOT_RECOGNIZED")) {
+                    LOG.info(te.getLocalizedMessage() + " (dispositivo de firma no reconocido)", e);
+                    return null;
+                } else {
+                    if (msg.contains("but token only has 0 slots"))
+                        throw e;
+                    gui.showError(FirmadorUtils.getRootCause(e));
+                }
+
             } else {
-                if (msg.contains("but token only has 0 slots")) throw e;
-                gui.showError(FirmadorUtils.getRootCause(e));
+                throw e;
             }
+
         }
         // FIXME: This uses first non-repudiation key available assuming there are no more, keys with the same purpose with the same token.
         // This should work fine with unmodified Firma Digital smart cards but it would be convenient checking there are no corner cases
@@ -122,7 +135,12 @@ public class CRSigner {
             else signingToken = new Pkcs11SignatureToken(getPkcs11Lib(), card.getPin() /* new PrefilledPasswordCallback(card.getPin()) */, card.getSlotID());
         } catch (Throwable e) {
             LOG.error("Error al obtener la conexión de firma", e);
-            gui.showError(FirmadorUtils.getRootCause(e));
+            Throwable msg = FirmadorUtils.getRootCause(e);
+            if (msg.toString().contains("UnrecoverableKeyException")) {
+                gui.showMessage(MessageUtils.t("guiswing_show_error_pkcs11_pinincorrect"));
+            } else {
+                gui.showError(FirmadorUtils.getRootCause(e));
+            }
         }
         return signingToken;
     }
