@@ -222,7 +222,7 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
             PAdESTimestampParameters timestampParameters = new PAdESTimestampParameters();
             if (visibleTimestamp) {
                 SignatureImageParameters imageParameters = new SignatureImageParameters();
-                imageParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
+                imageParameters.getFieldParameters().setRotation(VisualSignatureRotation.AUTOMATIC);
                 imageParameters.getFieldParameters().setOriginX(0);
                 imageParameters.getFieldParameters().setOriginY(0);
                 SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
@@ -251,7 +251,7 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
 
     private void appendVisibleSignature(CertificateToken certificate, Date date, Settings docSettings) {
         SignatureImageParameters imageParameters = new SignatureImageParameters();
-        imageParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
+        imageParameters.getFieldParameters().setRotation(VisualSignatureRotation.AUTOMATIC);
         SignatureFieldParameters fparamet = imageParameters.getFieldParameters();
         fparamet.setOriginX(docSettings.signX);
         fparamet.setOriginY(docSettings.signY);

@@ -25,10 +25,11 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import eu.europa.esig.dss.DSSXmlErrorListener;
-import eu.europa.esig.dss.DomUtils;
+import eu.europa.esig.dss.xml.utils.DSSXmlErrorListener;
+import eu.europa.esig.dss.xml.utils.DomUtils;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.validation.reports.Reports;
+
 
 public class Report {
 

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cr.libre.firmador</groupId>
   <artifactId>firmador</artifactId>
-  <version>1.9.3</version>
+  <version>1.9.5</version>
   <name>firmador</name>
   <url>https://firmador.libre.cr</url>
   <properties>
@@ -56,7 +56,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.1.2</version>
+        <version>3.2.3</version>
         <configuration>
           <argLine>
             --add-opens java.base/java.util=ALL-UNNAMED
@@ -67,7 +67,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>3.1.2</version>
+        <version>3.2.3</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -86,12 +86,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.6.0</version>
+        <version>3.6.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
+        <version>3.12.0</version>
         <configuration>
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
@@ -114,7 +114,6 @@
               <compileSourceRoots>
                 <compileSourceRoot>${project.basedir}/src/main/java9</compileSourceRoot>
               </compileSourceRoots>
-              <outputDirectory>${project.build.outputDirectory}/META-INF/versions/9</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -122,7 +121,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.5.0</version>
+        <version>3.5.1</version>
         <executions>
           <execution>
             <goals>
@@ -172,7 +171,7 @@
     <dependencies>
       <dependency>
         <groupId>eu.europa.ec.joinup.sd-dss</groupId>
-        <version>5.12.1</version>
+        <version>5.13.RC1</version>
         <artifactId>dss-bom</artifactId>
         <type>pom</type>
         <scope>import</scope>
@@ -213,12 +212,12 @@
     <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi</artifactId>
-        <version>5.2.4</version>
+        <version>5.2.5</version>
     </dependency>
     <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi-ooxml</artifactId>
-        <version>5.2.4</version>
+        <version>5.2.5</version>
     </dependency>
     <dependency>
         <groupId>org.apache.tika</groupId>
@@ -228,12 +227,12 @@
     <dependency>
       <groupId>commons-cli</groupId>
       <artifactId>commons-cli</artifactId>
-      <version>1.5.0</version>
+      <version>1.6.0</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
-      <version>2.0.7</version>
+      <version>2.0.9</version>
     </dependency>
     <dependency>
       <groupId>com.apple</groupId>
