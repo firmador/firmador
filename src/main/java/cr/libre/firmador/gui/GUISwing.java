@@ -759,6 +759,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     public void clearDone() {
         signPanel.clean();
         validatePanel.clean();
+        document = null;
 
     }
 }
