@@ -184,6 +184,7 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
     public DSSDocument extend(DSSDocument document) {
         PAdESSignatureParameters parameters = new PAdESSignatureParameters();
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
+        gui.nextStep("Extendiendo documento para agregar sello de tiempo e información de revocación");
 
         parameters.setContentSize(3072);
         CertificateVerifier verifier = this.getCertificateVerifier();
@@ -191,7 +192,7 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
         OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
         service.setTspSource(onlineTSPSource);
         DSSDocument extendedDocument = null;
-        gui.nextStep("Extendiendo documento para agregar sello de tiempo e información de revocación");
+
         try {
             extendedDocument = service.extendDocument(document, parameters);
         } catch (Exception e) {

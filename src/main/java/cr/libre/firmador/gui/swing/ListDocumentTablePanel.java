@@ -214,8 +214,17 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
 
     @Override
     public void signDone(Document document) {
-        // TODO Auto-generated method stub
+        int position = model.findByDocument(document);
+        if (position >= 0) {
 
+            DocumentTableButton btn = (DocumentTableButton) model.getValueAt(position,
+                    ListDocumentTableModel.NUM_SIGNATURE_POSITION);
+            btn.setText("" + document.amountOfSignatures());
+            model.fireTableDataChanged();
+
+            // model.setValueAt(document.amountOfSignatures(), position,
+            // ListDocumentTableModel.NUM_SIGNATURE_POSITION);
+        }
     }
 
     @Override
