@@ -18,12 +18,14 @@ public class ListDocumentTableModel extends AbstractTableModel {
     public static int SIGNATURE_BTN = 5;
     public static int DOCUMENT_POSITION = 6;
 
-    private String[] columnNames = { MessageUtils.t("list_document_table_name"),
+    private String[] columnNames = {
+            MessageUtils.t("list_document_table_name"),
             MessageUtils.t("list_document_save_path"),
             MessageUtils.t("list_document_mimetype"),
-            MessageUtils.t("list_document_numsign"), MessageUtils.t("list_document_numpages"),
+            MessageUtils.t("list_document_numsign"),
+            MessageUtils.t("list_document_numpages"),
             MessageUtils.t("list_document_dosign"),
-            MessageUtils.t("list_document_remove") };
+            MessageUtils.t("list_document_delete") };
     private List<Object[]> data = new ArrayList<>();
 
     ListDocumentTableModel() {
@@ -75,12 +77,11 @@ public class ListDocumentTableModel extends AbstractTableModel {
                         DocumentTableButton.CHANGE_FORMAT),
                 new DocumentTableButton(document, MessageUtils.t("list_document_enqueue"),
                         DocumentTableButton.GO_TO_VALIDATE),
-
                 new DocumentTableButton(document, MessageUtils.t("list_document_preview"),
                         DocumentTableButton.GO_TO_SIGN),
                 new DocumentTableButton(document, MessageUtils.t("list_document_sign"),
                         DocumentTableButton.SIGN_DOCUMENT),
-                new DocumentTableButton(document, MessageUtils.t("list_document_remove2"),
+                new DocumentTableButton(document, MessageUtils.t("list_document_delete"),
                         DocumentTableButton.REMOVE_DOCUMENT)
 
         };
@@ -114,7 +115,6 @@ public class ListDocumentTableModel extends AbstractTableModel {
 
     public void cleanDocuments() {
         data.clear();
-
     }
 
     public void updateDocument(Document document) {
@@ -129,9 +129,7 @@ public class ListDocumentTableModel extends AbstractTableModel {
                     .setText("" + document.amountOfSignatures());
             ((DocumentTableButton) docbtn[ListDocumentTableModel.NUM_PAGES_POSITION])
                     .setText("" + document.getNumberOfPages());
-
             data.set(position, docbtn);
-
         }
 
     }

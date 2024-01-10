@@ -210,7 +210,7 @@ public class ConfigPanel extends ScrollableJPanel {
             public void updateIcon(DocumentEvent edoc) {
                 try {
                     String text = fontColor.getText();
-                    if (!text.isEmpty() && !text.equalsIgnoreCase(MessageUtils.t("configpanel_transparent"))) {
+                    if (!text.isEmpty() && !text.equalsIgnoreCase("transparente")) {
                         Color color = Color.decode(text);
                         btFontColor.setIcon(createImageIcon(color));
                     } else btFontColor.setIcon(getTransparentImageIcon());
@@ -244,10 +244,6 @@ public class ConfigPanel extends ScrollableJPanel {
         backgroundColor
                 .setToolTipText(MessageUtils.t("configpanel_use_the_word_transparent_if_you_do_not_want_a_background_color"));
         String backgroundColorText = this.settings.backgroundColor;
-        if(backgroundColorText.equalsIgnoreCase("transparente") ||
-            backgroundColorText.equalsIgnoreCase("transparent")){
-            backgroundColorText = MessageUtils.t("configpanel_transparent");
-        }
         backgroundColor.setText(backgroundColorText);
         btBackgroundColor = new JButton(MessageUtils.t("configpanel_choose"));
         btBackgroundColor.setToolTipText(MessageUtils.t("configpanel_choose"));
@@ -260,7 +256,7 @@ public class ConfigPanel extends ScrollableJPanel {
             public void updateIcon(DocumentEvent edoc) {
                 try {
                     String text = backgroundColor.getText();
-                    if (!text.isEmpty() && !text.equalsIgnoreCase(MessageUtils.t("configpanel_transparent"))) {
+                    if (!text.isEmpty() && !text.equalsIgnoreCase("transparente")) {
                         Color color = Color.decode(text);
                         btBackgroundColor.setIcon(createImageIcon(color));
                     } else btBackgroundColor.setIcon(getTransparentImageIcon());
@@ -443,9 +439,9 @@ public class ConfigPanel extends ScrollableJPanel {
         JPanel btns = new JPanel();
         btns.setOpaque(false);
         add(btns, BorderLayout.SOUTH);
-        JButton restartbtn = new JButton(MessageUtils.t("configpanel_restart"));
-        restartbtn.setToolTipText(MessageUtils.t("configpanel_restart"));
-        restartbtn.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_restart"));
+        JButton restartbtn = new JButton(MessageUtils.t("configpanel_restore"));
+        restartbtn.setToolTipText(MessageUtils.t("configpanel_restore"));
+        restartbtn.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_restore"));
         restartbtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 restartSettings();
@@ -458,6 +454,7 @@ public class ConfigPanel extends ScrollableJPanel {
         applywithoutsave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 chargeSettings();
+                showMessage(MessageUtils.t("configpanel_language_not_applied_save_and_restart"));
                 //if (startServer.isSelected()) showMessage("Modo remoto no se activará, debe guardar y reiniciar la aplicación.");
             }
         });
@@ -468,6 +465,7 @@ public class ConfigPanel extends ScrollableJPanel {
         btSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 saveSettings();
+                showMessage(MessageUtils.t("configpanel_language_applied_on_restart"));
                 //if (startServer.isSelected()) showMessage("El Modo remoto se iniciará al reinicio de la aplicación, puede desactivarlo con el menú contextual obtenido con clic derecho.");
             }
         });
@@ -575,7 +573,7 @@ public class ConfigPanel extends ScrollableJPanel {
     }
 
     private void setIcons(JButton component, String text, Color color) {
-        if (text.equalsIgnoreCase(MessageUtils.t("configpanel_transparent")))
+        if (text.equalsIgnoreCase("transparente"))
             component.setIcon(getTransparentImageIcon());
         else component.setIcon(createImageIcon(color));
     }

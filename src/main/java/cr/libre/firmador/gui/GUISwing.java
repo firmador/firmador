@@ -297,7 +297,6 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         signerScheduler.addDocuments(docToSign);
         setActiveDocument();
         return true;
-
     }
 
     public void setArgs(String[] args) {

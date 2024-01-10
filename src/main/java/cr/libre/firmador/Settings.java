@@ -300,7 +300,7 @@ public class Settings {
         return position;
     }
     public Color getFontColor() {
-        if (this.fontColor.equalsIgnoreCase("transparente") || this.fontColor.equalsIgnoreCase("transparent")) return new Color(255, 255, 255, 0);
+        if (this.fontColor.equalsIgnoreCase("transparente")) return new Color(255, 255, 255, 0);
         try {
             return Color.decode(this.fontColor);
         } catch (Exception e) {
@@ -310,7 +310,7 @@ public class Settings {
         }
     }
     public Color getBackgroundColor() {
-        if (this.backgroundColor.equalsIgnoreCase("transparente") || this.backgroundColor.equalsIgnoreCase("transparent")) return new Color(255, 255, 255, 0);
+        if (this.backgroundColor.equalsIgnoreCase("transparente")) return new Color(255, 255, 255, 0);
         try {
             return Color.decode(this.backgroundColor);
         } catch (Exception e) {

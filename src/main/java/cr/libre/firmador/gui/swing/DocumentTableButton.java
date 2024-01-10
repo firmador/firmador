@@ -27,13 +27,14 @@ public class DocumentTableButton extends JButton {
         @Override
         public void actionPerformed(ActionEvent arg0) {
             // TODO Auto-generated method stub
-            System.out.print(document.getName());
             GUISwing gui = (GUISwing) document.getGUI();
             if (!document.getIsReady()) {
                 gui.doPreview(document);
             }
             gui.loadActiveDocument(document);
             gui.displayFunctionality("sign");
+
+            gui.getListDocumentTablePanel().getModel().fireTableStructureChanged(); // to refresh the table to not display the buttons
         }
 
     }
@@ -49,12 +50,15 @@ public class DocumentTableButton extends JButton {
         @Override
         public void actionPerformed(ActionEvent arg0) {
             // TODO Auto-generated method stub
-            System.out.print(document.getName());
             GUISwing gui = (GUISwing) document.getGUI();
             String savefile = gui.showSaveDialog(document.getPathName(), "-firmado", document.getExtension());
-            document.setPathToSave(savefile);
-            ListDocumentTablePanel docpanel = gui.getListDocumentTablePanel();
-            docpanel.updateDocument(document);
+            if(savefile != null) {  // a path was selected
+                document.setPathToSave(savefile);
+                ListDocumentTablePanel docpanel = gui.getListDocumentTablePanel();
+                docpanel.updateDocument(document);
+
+                gui.getListDocumentTablePanel().getModel().fireTableStructureChanged(); // to refresh the table to not display the buttons
+            }
         }
 
     }
@@ -70,8 +74,11 @@ public class DocumentTableButton extends JButton {
         @Override
         public void actionPerformed(ActionEvent arg0) {
             // TODO Auto-generated method stub
+
+            GUISwing gui = (GUISwing) document.getGUI();
             System.out.print("Change document format");
 
+            gui.getListDocumentTablePanel().getModel().fireTableStructureChanged(); // to refresh the table to not display the buttons
         }
 
     }
@@ -88,10 +95,11 @@ public class DocumentTableButton extends JButton {
         @Override
         public void actionPerformed(ActionEvent arg0) {
             // TODO Auto-generated method stub
-            System.out.print(document.getName());
             GUISwing gui = (GUISwing) document.getGUI();
             gui.loadActiveDocument(document);
             gui.displayFunctionality("validate");
+
+            gui.getListDocumentTablePanel().getModel().fireTableStructureChanged(); // to refresh the table to not display the buttons
         }
 
     }
@@ -108,6 +116,8 @@ public class DocumentTableButton extends JButton {
         public void actionPerformed(ActionEvent arg0) {
             GUISwing gui = (GUISwing) document.getGUI();
             gui.signDocument(document);
+
+            gui.getListDocumentTablePanel().getModel().fireTableStructureChanged(); // to refresh the table to not display the buttons
         }
 
     }
@@ -125,6 +135,8 @@ public class DocumentTableButton extends JButton {
             GUISwing gui = (GUISwing) document.getGUI();
             ListDocumentTablePanel docpanel = gui.getListDocumentTablePanel();
             docpanel.removeDocument(document);
+
+            gui.getListDocumentTablePanel().getModel().fireTableStructureChanged(); // to refresh the table to not display the buttons
         }
 
     }
@@ -137,26 +149,27 @@ public class DocumentTableButton extends JButton {
         super(message);
         this.document = document;
 
+        GUISwing gui = (GUISwing) this.document.getGUI();
 
         switch (selectedAction) {
-        case CHOOSE_SAVE_FILENAME:
-            this.addActionListener(new ChooseSaveFileActionListener(document));
-            break;
-        case CHANGE_FORMAT:
-            this.addActionListener(new ChangeFormatActionListener(document));
-            break;
-        case GO_TO_VALIDATE:
-            this.addActionListener(new goToValidateActionListener(document));
-            break;
-        case GO_TO_SIGN:
-            this.addActionListener(new goToSignActionListener(document));
-            break;
-        case SIGN_DOCUMENT:
-            this.addActionListener(new SignActionListener(document));
-            break;
-        case REMOVE_DOCUMENT:
-            this.addActionListener(new removeActionListener(document));
-            break;
+            case CHOOSE_SAVE_FILENAME:
+                this.addActionListener(new ChooseSaveFileActionListener(document));
+                break;
+            case CHANGE_FORMAT:
+                this.addActionListener(new ChangeFormatActionListener(document));
+                break;
+            case GO_TO_VALIDATE:
+                this.addActionListener(new goToValidateActionListener(document));
+                break;
+            case GO_TO_SIGN:
+                this.addActionListener(new goToSignActionListener(document));
+                break;
+            case SIGN_DOCUMENT:
+                this.addActionListener(new SignActionListener(document));
+                break;
+            case REMOVE_DOCUMENT:
+                this.addActionListener(new removeActionListener(document));
+                break;
         }
     }
 

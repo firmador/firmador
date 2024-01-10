@@ -27,9 +27,7 @@ public class PanelCellRenderer extends AbstractCellEditor
     }
 
     public boolean isCellEditable(int row, int col) {
-        if (col == 0)
-            return false;
-        return true;
+        return col != 0;
     }
 
     @Override
@@ -37,28 +35,15 @@ public class PanelCellRenderer extends AbstractCellEditor
         return true;
     }
 
-    // JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
-    // int column
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
             int row, int column) {
-        
+
         DocumentTableButton btn = (DocumentTableButton) value;
         DefaultTableCellRenderer render = new DefaultTableCellRenderer();
-        if (column == ListDocumentTableModel.DOCUMENT_POSITION) {
-            Icon icon = UIManager.getIcon("InternalFrame.closeIcon");
-            // Icon icon = new
-            // ImageIcon(this.getClass().getClassLoader().getResource("firmador.png"));
-            render.setIcon(icon);
-
-        } else
         render.setText(btn.getText());
-
         return render;
     }
-
-
-
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {

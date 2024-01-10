@@ -410,7 +410,7 @@ public class SignPanel extends JPanel implements ConfigListener{
             public void actionPerformed(ActionEvent event) {
                 if (currentDocument != null) {
                 currentDocument.setSettings(gui.getCurrentSettings());
-                    gui.showMessage(MessageUtils.t("signpanel_dialog_save_configutation"));
+                    gui.showMessage(MessageUtils.t("signpanel_dialog_save_configuration"));
                 }
             }
         });

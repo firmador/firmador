@@ -32,6 +32,7 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
     private JTable table;
     private JPanel actionButtonsPanel;
     private ListDocumentTableModel model;
+
     public void setGUI(GUIInterface gui) {
         this.gui = gui;
     }
@@ -48,7 +49,6 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
             this.panel.cleanDocuments();
             this.panel.gui.clearDone();
         }
-
     }
 
     public ListDocumentTablePanel() {
@@ -68,7 +68,11 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         cleanbtn.setMnemonic('C');
         signbtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                ((GUISwing) gui).signAllDocuments();
+                if(table.getRowCount() > 0) {
+                    ((GUISwing) gui).signAllDocuments();
+                }else {
+                    gui.showMessage(MessageUtils.t("list_document_no_documents_to_sign"));
+                }
             }
         });
 
@@ -81,27 +85,21 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         table = new JTable(model);
 
         table.setShowHorizontalLines(true);
-        // UIManager.put("Button.defaultButtonFollowsFocus", Boolean.TRUE);
 
         JPanel tablePanel = new JPanel();
 
         PanelCellRenderer panelCellRenderer = new PanelCellRenderer();
-        // table.addMouseListener(panelCellRenderer);
         table.setDefaultRenderer(DocumentTableButton.class, panelCellRenderer);
         table.setDefaultEditor(DocumentTableButton.class, panelCellRenderer);
         table.setDefaultRenderer(Document.class, panelCellRenderer);
         table.setDefaultEditor(Document.class, panelCellRenderer);
 
-        // table.setPreferredScrollableViewportSize(new Dimension(500, 70));
         table.setFillsViewportHeight(true);
-        table.setBorder(BorderFactory.createLineBorder(Color.red));
-        // add(table);
         tablePanel.setLayout(new BorderLayout());
         tablePanel.add(table.getTableHeader(), BorderLayout.PAGE_START);
         tablePanel.add(table, BorderLayout.CENTER);
         this.add(actionButtonsPanel, BorderLayout.PAGE_START);
         this.add(tablePanel, BorderLayout.CENTER);
-
     }
 
     public JScrollPane getListDocumentScrollPane() {
@@ -134,7 +132,6 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
     public void removeDocument(Document document) {
         model.removeData(document);
         model.fireTableDataChanged();
-
     }
 
     public void cleanDocuments() {
@@ -143,7 +140,6 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
     }
 
     public void updateDocument(Document document) {
-
         model.updateDocument(document);
         model.fireTableDataChanged();
     }
@@ -207,8 +203,6 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
 
             // model.setValueAt(document.amountOfSignatures(), position,
             // ListDocumentTableModel.NUM_SIGNATURE_POSITION);
-        } else {
-
         }
     }
 
@@ -237,5 +231,9 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
     public void clearDone() {
         // TODO Auto-generated method stub
 
+    }
+
+    public ListDocumentTableModel getModel() {
+        return model;
     }
 }
