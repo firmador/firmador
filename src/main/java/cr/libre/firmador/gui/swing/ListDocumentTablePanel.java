@@ -204,11 +204,11 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
     public void signDone(Document document) {
         int position = model.findByDocument(document);
         if (position >= 0) {
-
-            DocumentTableButton btn = (DocumentTableButton) model.getValueAt(position,
-                    ListDocumentTableModel.NUM_SIGNATURE_POSITION);
-            btn.setText("" + document.amountOfSignatures());
-            model.fireTableDataChanged();
+            if(!document.getSignwithErrors()) {
+                // remove the non-signed document and add the signed one to the list of documents
+                removeDocument(document);
+                gui.loadDocument(document.getPathToSave());
+            }
         }
     }
 
