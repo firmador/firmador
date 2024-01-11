@@ -185,9 +185,6 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
                     ListDocumentTableModel.NUM_PAGES_POSITION);
             btn.setText("" + document.getNumberOfPages());
             model.fireTableDataChanged();
-
-            // model.setValueAt(document.amountOfSignatures(), position,
-            // ListDocumentTableModel.NUM_SIGNATURE_POSITION);
         }
 
     }
@@ -200,9 +197,6 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
                     ListDocumentTableModel.NUM_SIGNATURE_POSITION);
             btn.setText("" + document.amountOfSignatures());
             model.fireTableDataChanged();
-
-            // model.setValueAt(document.amountOfSignatures(), position,
-            // ListDocumentTableModel.NUM_SIGNATURE_POSITION);
         }
     }
 
@@ -215,9 +209,6 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
                     ListDocumentTableModel.NUM_SIGNATURE_POSITION);
             btn.setText("" + document.amountOfSignatures());
             model.fireTableDataChanged();
-
-            // model.setValueAt(document.amountOfSignatures(), position,
-            // ListDocumentTableModel.NUM_SIGNATURE_POSITION);
         }
     }
 

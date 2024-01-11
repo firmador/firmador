@@ -276,7 +276,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
 
 
     public Settings getCurrentSettings() {
-        Settings collectedSettings = new Settings(settings);
+        Settings collectedSettings = new Settings(this.settings);
         collectedSettings.reason = signPanel.getReasonField().getText().trim().replaceAll("\t", " ");
         collectedSettings.place = signPanel.getLocationField().getText().trim().replaceAll("\t", " ");
         collectedSettings.contact = signPanel.getContactInfoField().getText().trim().replaceAll("\t", " ");
@@ -284,7 +284,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         collectedSettings.signY = signPanel.getPDFVisibleSignatureY();
         collectedSettings.signX = signPanel.getPDFVisibleSignatureX();
         collectedSettings.pageNumber = (int) signPanel.getPageSpinner().getValue();
-        if (collectedSettings.image == null) collectedSettings.image=settings.getImage();
+        if (collectedSettings.image == null) collectedSettings.image=this.settings.getImage();
         collectedSettings.hideSignatureAdvice=Boolean.getBoolean("jnlp.hideSignatureAdvice");
         collectedSettings.isVisibleSignature = !signPanel.getSignatureVisibleCheckBox().isSelected();
         collectedSettings.signASiC = signPanel.isASiC();
@@ -405,16 +405,15 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         saveDialog.setDirectory(lastDirectory);
         String dotExtension = "";
         int lastDot = lastFile.lastIndexOf(".");
-        if (extension != "") {
-            suffix = ""; // XMLs could reuse same files, however
+        if (extension.isEmpty()) {
             dotExtension = extension;
         } else if (lastDot >= 0)
             dotExtension = lastFile.substring(lastDot);
 
         Path path = Paths.get(lastFile);
         lastFile = path.getFileName().toString();
-        String savestrinfilename = lastFile.substring(0, lastFile.lastIndexOf(".")) + suffix + dotExtension;
-        saveDialog.setFile(savestrinfilename);
+        String savestringfilename = lastFile.substring(0, lastFile.lastIndexOf(".")) + suffix + dotExtension;
+        saveDialog.setFile(savestringfilename);
         // saveDialog.setFilenameFilter(docSelector.getLoadDialog().getFilenameFilter());
         // // FIXME use filter based on file type containing the signature
         saveDialog.setLocationRelativeTo(null);
