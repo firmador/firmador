@@ -300,7 +300,7 @@ public class ConfigPanel extends ScrollableJPanel {
                 new Dimension(150, 50));
         addSettingsBox(simplePanel, MessageUtils.t("configpanel_initial_page") + ":", pageNumber);
         addSettingsBox(simplePanel, MessageUtils.t("configpanel_signature_width") + ":", signWidth);
-        addSettingsBox(simplePanel, MessageUtils.t("configpanel_signature_long") + ":", signHeight);
+        addSettingsBox(simplePanel, MessageUtils.t("configpanel_signature_height") + ":", signHeight);
         addSettingsBox(simplePanel, MessageUtils.t("configpanel_initial_position_x") + ":", signX);
         addSettingsBox(simplePanel, MessageUtils.t("configpanel_initial_position_y") + ":", signY);
         addSettingsBox(simplePanel, MessageUtils.t("configpanel_font_size") + ":", fontSize);
@@ -393,9 +393,9 @@ public class ConfigPanel extends ScrollableJPanel {
         addSettingsBox(advancedPanel, MessageUtils.t("configpanel_file") + " PKCS11", pKCS11ModulePanel); // FIXME prefill with
                                                                                               // default paths when
                                                                                               // unset
-        pkcs11Info1 = new JLabel(MessageUtils.t("configpanel_the_file") + " PKCS11 " + MessageUtils.t("configpanel_is_automatic_detected") + ", ");
-        pkcs11Info1.setToolTipText(MessageUtils.t("configpanel_the_file") + " PKCS11 " + MessageUtils.t("configpanel_is_automatic_detected") + ", ");
-        pkcs11Info1.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_the_file") + " PKCS11 " + MessageUtils.t("configpanel_is_automatic_detected") + ", ");
+        pkcs11Info1 = new JLabel(MessageUtils.t("configpanel_the_file") + " PKCS11 " + MessageUtils.t("configpanel_is_automatically_detected") + ", ");
+        pkcs11Info1.setToolTipText(MessageUtils.t("configpanel_the_file") + " PKCS11 " + MessageUtils.t("configpanel_is_automatically_detected") + ", ");
+        pkcs11Info1.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_the_file") + " PKCS11 " + MessageUtils.t("configpanel_is_automatically_detected") + ", ");
         pkcs11Info2 = new JLabel(MessageUtils.t("configpanel_but_could_be_write_using_the_previous_field"));
         pkcs11Info2.setToolTipText(MessageUtils.t("configpanel_but_could_be_write_using_the_previous_field"));
         pkcs11Info1.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_but_could_be_write_using_the_previous_field"));
