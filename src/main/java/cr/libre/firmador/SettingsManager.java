@@ -63,9 +63,11 @@ public class SettingsManager {
         System.out.println("GET CONFIG DIR");
         System.out.println(this.path);
         System.out.println(Files.isDirectory(this.path));
-        System.out.println("--------\n");
+
         if (!Files.isDirectory(this.path)) {
             Files.createDirectories(this.path);
+            System.out.println("directory created " + this.path);
+            System.out.println("--------\n");
             if (osName.contains("windows")) Files.setAttribute(this.path, "dos:hidden", true);
         }
         return this.path;
