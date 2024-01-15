@@ -65,7 +65,7 @@ windows-java-12:
     - Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
     - refreshenv
   script:
-    - mvn --batch-mode --errors --fail-at-end --show-version test -Dtest=TestSettingsManager#testGetConfigFileWithNameParamThrowsIOException
+    - mvn --batch-mode --errors --fail-at-end --show-version test -Dtest=TestSettingsManager#testLoadConfigWithIOException
   when: always
 
 
