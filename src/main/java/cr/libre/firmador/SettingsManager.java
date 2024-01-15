@@ -60,14 +60,9 @@ public class SettingsManager {
         }
         // Se asegura que siempre exista el directorio de configuracion
         this.path = FileSystems.getDefault().getPath(homepath, suffixpath);
-        System.out.println("GET CONFIG DIR");
-        System.out.println(this.path);
-        System.out.println(Files.isDirectory(this.path));
 
         if (!Files.isDirectory(this.path)) {
             Files.createDirectories(this.path);
-            System.out.println("directory created " + this.path);
-            System.out.println("--------\n");
             if (osName.contains("windows")) Files.setAttribute(this.path, "dos:hidden", true);
         }
         return this.path;
@@ -76,9 +71,6 @@ public class SettingsManager {
     public Path getPathConfigFile(String name) throws IOException{
         if (this.path == null) {
             this.path = this.getConfigDir();
-            System.out.println("GET PATH CONFIG FILE");
-            System.out.println(this.path);
-            System.out.println("--------\n");
             this.path = this.path.getFileSystem().getPath(this.path.toString(), name);
         }
         return this.path;
