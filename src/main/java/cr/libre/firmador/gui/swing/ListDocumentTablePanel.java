@@ -4,9 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -14,6 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
+
+import cr.libre.firmador.SettingsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +40,8 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
     private JTable table;
     private JPanel actionButtonsPanel;
     private ListDocumentTableModel model;
+
+    private Path documentListSavePath = FileSystems.getDefault().getPath(SettingsManager.getInstance().getPath().getParent().toString(), "document_list.csv");
 
     public void setGUI(GUIInterface gui) {
         this.gui = gui;
@@ -64,8 +74,19 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         cleanbtn.setToolTipText(MessageUtils.t("list_document_clear"));
         cleanbtn.getAccessibleContext().setAccessibleDescription(MessageUtils.t("list_document_clear"));
 
+        JButton savedoclistbtn = new JButton(MessageUtils.t("list_document_save_list"));
+        savedoclistbtn.setToolTipText(MessageUtils.t("list_document_save_list"));
+        savedoclistbtn.getAccessibleContext().setAccessibleDescription(MessageUtils.t("list_document_save_list"));
+
+        JButton loaddoclistbtn = new JButton(MessageUtils.t("list_document_load_list"));
+        loaddoclistbtn.setToolTipText(MessageUtils.t("list_document_load_list"));
+        loaddoclistbtn.getAccessibleContext().setAccessibleDescription(MessageUtils.t("list_document_load_list"));
+
         signbtn.setMnemonic('S');
         cleanbtn.setMnemonic('C');
+        savedoclistbtn.setMnemonic('D');
+        loaddoclistbtn.setMnemonic('L');
+
         signbtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 if(table.getRowCount() > 0) {
@@ -78,7 +99,39 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
 
         cleanbtn.addActionListener(new CleanDocumentsAction(this));
 
+        savedoclistbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    if(table.getRowCount() > 0) {
+                        saveDocumentList();
+                    }else{
+                        gui.showMessage(MessageUtils.t("list_document_no_documents_to_save"));
+                    }
+                } catch (IOException e) {
+                    gui.showMessage(MessageUtils.t("list_document_error_during_save"));
+                }
+            }
+        });
+
+        loaddoclistbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    if(Files.exists(documentListSavePath)) {
+                        loadDocumentList();
+                    }else{
+                        gui.showMessage(MessageUtils.t("list_document_no_file_to_load"));
+                    }
+                } catch (IOException e) {
+                    gui.showMessage(MessageUtils.t("list_document_error_during_load"));
+                }
+            }
+        });
+
         actionButtonsPanel.add(signbtn);
+        actionButtonsPanel.add(savedoclistbtn);
+        actionButtonsPanel.add(loaddoclistbtn);
         actionButtonsPanel.add(cleanbtn);
 
         model = new ListDocumentTableModel();
@@ -142,6 +195,28 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
     public void updateDocument(Document document) {
         model.updateDocument(document);
         model.fireTableDataChanged();
+    }
+
+    public void saveDocumentList() throws IOException {
+        model.saveDocumentList(this.documentListSavePath.toString());
+        gui.showMessage(MessageUtils.t("list_document_save_done") + " " + this.documentListSavePath.toString());
+    }
+
+    public void loadDocumentList() throws IOException{
+        try (Scanner scanner = new Scanner(new File(this.documentListSavePath.toString()))) {
+            cleanDocuments();  // clear the list before loading what is saved
+
+            String[] fileLine;
+            scanner.nextLine();  // to get the header, ignore it
+            while (scanner.hasNextLine()) {
+                fileLine = scanner.nextLine().split(",");
+                Document document = gui.loadDocument(fileLine[1]);
+
+                // update the path to save in case the user selected something different from default before saving
+                document.setPathToSave(fileLine[2]);
+                updateDocument(document);
+            }
+        }
     }
 
     public List<Document> getSelectedDocuments() {

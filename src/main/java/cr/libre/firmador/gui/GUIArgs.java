@@ -150,7 +150,8 @@ public class GUIArgs implements GUIInterface {
     public void setPluginManager(PluginManager pluginManager) {
     }
 
-    public void loadDocument(String fileName) {
+    public Document loadDocument(String fileName) {
+        return null;
     }
 
     public void loadDocument(SupportedMimeTypeEnum mimeType, PDDocument doc) {
@@ -212,7 +213,7 @@ public class GUIArgs implements GUIInterface {
     @Override
     public void signDocument(Document document) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override

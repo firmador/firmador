@@ -152,7 +152,8 @@ public class GUIShell implements GUIInterface, DocumentChangeListener {
     }
 
     @Override
-    public void loadDocument(String fileName) {
+    public Document loadDocument(String fileName) {
+        return null;
     }
 
     @Override

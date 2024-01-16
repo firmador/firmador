@@ -1,6 +1,9 @@
 package cr.libre.firmador.gui.swing;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -115,6 +118,20 @@ public class ListDocumentTableModel extends AbstractTableModel {
 
     public void cleanDocuments() {
         data.clear();
+    }
+
+    public void saveDocumentList(String savePath) throws IOException {
+        FileWriter writer = new FileWriter(savePath);
+        writer.write("name,pathName,pathToSave\n");  // write the header for the document
+
+        for(Object[] objList : data) {
+            Document document = ((DocumentTableButton) objList[1]).getDocument();
+            ArrayList<String> dataToSave = new ArrayList<>(Arrays.asList(document.getName(), document.getPathName(), document.getPathToSave()));
+
+            writer.write(String.join(",", dataToSave));
+            writer.write("\n");
+        }
+        writer.close();
     }
 
     public void updateDocument(Document document) {
