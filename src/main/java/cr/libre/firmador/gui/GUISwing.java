@@ -365,7 +365,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     }
 
     public String showSaveDialog(String suffix, String extension) {
-        gui.nextStep(MessageUtils.t("guiswing_getting_saved_route"));
+        gui.nextStep(MessageUtils.t("guiswing_getting_save_path"));
         String lastDirectory = docSelector.getLastDirectory();
         String lastFile = docSelector.getLastFile();
         String fileName = null;

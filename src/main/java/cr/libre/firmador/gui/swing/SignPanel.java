@@ -230,11 +230,11 @@ public class SignPanel extends JPanel implements ConfigListener{
         AdESLevelButtonGroup.add(levelLTButton);
         AdESLevelButtonGroup.add(levelLTAButton);
 
-        pageLabel = new JLabel(MessageUtils.t("signpanel_pages"));
+        pageLabel = new JLabel(MessageUtils.t("signpanel_page"));
         pageSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
-        pageSpinner.setToolTipText(MessageUtils.t("signpanel_pages_tooltip"));
+        pageSpinner.setToolTipText(MessageUtils.t("signpanel_page_tooltip"));
         pageSpinner.getAccessibleContext()
-                .setAccessibleDescription(MessageUtils.t("signpanel_pages_tooltip_accessible"));
+                .setAccessibleDescription(MessageUtils.t("signpanel_page_tooltip_accessible"));
         pageSpinner.setMaximumSize(pageSpinner.getPreferredSize());
 
         signatureLabel = new JLabel();
