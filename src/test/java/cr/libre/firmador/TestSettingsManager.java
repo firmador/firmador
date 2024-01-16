@@ -24,6 +24,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.event.Level;
@@ -193,7 +194,7 @@ public class TestSettingsManager {
     }
 
     @Test
-    @EnabledOnOs({OS.MAC, OS.LINUX})
+    @DisabledIfSystemProperty(named = "os.name", matches = "Windows Server.*")
     void testGetConfigDirThrowsIOException(){
         // TODO - Fix this test so it runs in Windows in the CI/CD pipeline in Gitlab
 
@@ -237,7 +238,7 @@ public class TestSettingsManager {
     }
 
     @Test
-    @EnabledOnOs({OS.MAC, OS.LINUX})
+    @DisabledIfSystemProperty(named = "os.name", matches = "Windows Server.*")
     void testGetPathConfigFileThrowsIOException(){
         // TODO - Fix this test so it runs in Windows in the CI/CD pipeline in Gitlab
 
@@ -271,7 +272,7 @@ public class TestSettingsManager {
     }
 
     @Test
-    @EnabledOnOs({OS.MAC, OS.LINUX})
+    @DisabledIfSystemProperty(named = "os.name", matches = "Windows Server.*")
     void testGetConfigFileWithNameParamThrowsIOException(){
         // TODO - Fix this test so it runs in Windows in the CI/CD pipeline in Gitlab
 
@@ -410,7 +411,7 @@ public class TestSettingsManager {
     }
 
     @Test
-    @EnabledOnOs({OS.MAC, OS.LINUX})
+    @DisabledIfSystemProperty(named = "os.name", matches = "Windows Server.*")
     void testGetConfigFileWithoutParamsThrowsIOException(){
         // TODO - Fix this test so it runs in Windows in the CI/CD pipeline in Gitlab
 
@@ -463,7 +464,7 @@ public class TestSettingsManager {
     }
 
     @Test
-    @EnabledOnOs({OS.MAC, OS.LINUX})
+    @DisabledIfSystemProperty(named = "os.name", matches = "Windows Server.*")
     void testLoadConfigWithIOException(){
         // TODO - Fix this test so it runs in Windows in the CI/CD pipeline in Gitlab
 
