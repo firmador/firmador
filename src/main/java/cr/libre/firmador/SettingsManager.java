@@ -60,6 +60,7 @@ public class SettingsManager {
         }
         // Se asegura que siempre exista el directorio de configuracion
         this.path = FileSystems.getDefault().getPath(homepath, suffixpath);
+
         if (!Files.isDirectory(this.path)) {
             Files.createDirectories(this.path);
             if (osName.contains("windows")) Files.setAttribute(this.path, "dos:hidden", true);
