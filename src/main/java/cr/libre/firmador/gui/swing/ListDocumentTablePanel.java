@@ -10,7 +10,9 @@ import java.lang.invoke.MethodHandles;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -203,6 +205,7 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
     }
 
     public void loadDocumentList() throws IOException{
+        ArrayList<String > docsNotFound = new ArrayList<>();
         try (Scanner scanner = new Scanner(new File(this.documentListSavePath.toString()))) {
             cleanDocuments();  // clear the list before loading what is saved
 
@@ -210,12 +213,20 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
             scanner.nextLine();  // to get the header, ignore it
             while (scanner.hasNextLine()) {
                 fileLine = scanner.nextLine().split(",");
-                Document document = gui.loadDocument(fileLine[1]);
+                String documentPath = fileLine[1];
+                if(Files.exists(Paths.get(documentPath))) {  // load the document only if it exists in the filesystem
+                    Document document = gui.loadDocument(documentPath);
 
-                // update the path to save in case the user selected something different from default before saving
-                document.setPathToSave(fileLine[2]);
-                updateDocument(document);
+                    // update the path to save in case the user selected something different from default before saving
+                    document.setPathToSave(fileLine[2]);
+                    updateDocument(document);
+                }else{
+                    docsNotFound.add(documentPath);
+                }
             }
+        }
+        if(!docsNotFound.isEmpty()){
+            gui.showMessage(MessageUtils.t("list_document_files_not_found_on_load") + " " + String.join(", ", docsNotFound));
         }
     }
 
