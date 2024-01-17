@@ -108,8 +108,10 @@ public class Settings {
     public Settings() {
         activePlugins.add("cr.libre.firmador.plugins.DummyPlugin");
         activePlugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
+        activePlugins.add("cr.libre.firmador.plugins.InstallerPlugin");
         availablePlugins.add("cr.libre.firmador.plugins.DummyPlugin");
         availablePlugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
+        availablePlugins.add("cr.libre.firmador.plugins.InstallerPlugin");
     }
 
     public Settings(Settings oldsettings) {

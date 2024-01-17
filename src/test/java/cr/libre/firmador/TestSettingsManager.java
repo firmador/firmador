@@ -581,7 +581,10 @@ public class TestSettingsManager {
         assertTrue(resultSettings.place.isEmpty());
         assertTrue(resultSettings.contact.isEmpty());
         assertEquals(Font.SANS_SERIF, resultSettings.font);
-        assertEquals(new ArrayList<>(List.of("cr.libre.firmador.plugins.DummyPlugin", "cr.libre.firmador.plugins.CheckUpdatePlugin")), resultSettings.activePlugins);
+        assertEquals(
+                new ArrayList<>(List.of("cr.libre.firmador.plugins.DummyPlugin",
+                        "cr.libre.firmador.plugins.CheckUpdatePlugin", "cr.libre.firmador.plugins.InstallerPlugin")),
+                resultSettings.activePlugins);
     }
 
     // ------ getFloatFromString method tests ------
