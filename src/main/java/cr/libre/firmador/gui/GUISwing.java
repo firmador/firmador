@@ -249,7 +249,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         return signPanel;
     }
 
-    public void loadDocument(String fileName) {
+    public Document loadDocument(String fileName) {
         Document document = new Document(gui, fileName);
         document.registerListener(this);
         this.pluginManager.registerDocument(document);
@@ -258,6 +258,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         previewScheduler.addDocument(document);
         gui.nextStep(MessageUtils.t("guiswing_nextstep_load_doc"));
         setActiveDocument();
+        return document;
     }
 
     public void signMultipleDocuments(File[] files) {
