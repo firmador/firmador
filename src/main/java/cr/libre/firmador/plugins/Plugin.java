@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador.plugins;
 
+import cr.libre.firmador.documents.Document;
+
 public interface Plugin {
 
     public boolean isrunnable = false;
@@ -32,5 +34,7 @@ public interface Plugin {
     public void stop();
 
     public boolean getIsRunnable();
+
+    public boolean interactWithDocuments();
 
 }

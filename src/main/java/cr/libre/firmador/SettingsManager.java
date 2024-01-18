@@ -59,13 +59,13 @@ public class SettingsManager {
             suffixpath = "firmadorlibre";
         }
         // Se asegura que siempre exista el directorio de configuracion
-        this.path = FileSystems.getDefault().getPath(homepath, suffixpath);
+        Path dirpath = FileSystems.getDefault().getPath(homepath, suffixpath);
 
-        if (!Files.isDirectory(this.path)) {
-            Files.createDirectories(this.path);
+        if (!Files.isDirectory(dirpath)) {
+            Files.createDirectories(dirpath);
             if (osName.contains("windows")) Files.setAttribute(this.path, "dos:hidden", true);
         }
-        return this.path;
+        return dirpath;
     }
 
     public Path getPathConfigFile(String name) throws IOException{

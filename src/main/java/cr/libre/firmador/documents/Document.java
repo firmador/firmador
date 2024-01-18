@@ -47,6 +47,7 @@ public class Document {
     private boolean isReady = false;
     private String report;
     private boolean signwithErrors = false;
+    private CardSignInfo usedcard;
 
 
     public Document(GUIInterface gui, String pathname) {
@@ -103,6 +104,7 @@ public class Document {
     }
 
     public void sign(CardSignInfo card) {
+        usedcard = card;
         if (settings != null && settings.signASiC) {
             this.forcesignASiC();
         }
@@ -302,5 +304,9 @@ public class Document {
 
     public void setSignwithErrors(boolean signwithErrors) {
         this.signwithErrors = signwithErrors;
+    }
+
+    public CardSignInfo getUsedCard() {
+        return usedcard;
     }
 }

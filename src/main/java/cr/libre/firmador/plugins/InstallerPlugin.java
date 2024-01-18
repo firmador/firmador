@@ -199,4 +199,8 @@ public class InstallerPlugin implements Plugin {
         return false;
     }
 
+    @Override
+    public boolean interactWithDocuments() {
+        return false;
+    }
 }

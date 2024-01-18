@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
+import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.gui.GUIInterface;
 
 public class PluginManager implements Runnable {
@@ -100,4 +101,17 @@ public class PluginManager implements Runnable {
         return this.runnablePlugins;
     }
 
+    public void registerDocument(Document document) {
+        for (Plugin plugin : this.plugins) {
+            if (plugin.interactWithDocuments())
+                ((DocumentInteractInterface) plugin).registerDocument(document);
+        }
+    }
+
+    public void unregisterDocument(Document document) {
+        for (Plugin plugin : this.plugins) {
+            if (plugin.interactWithDocuments())
+                ((DocumentInteractInterface) plugin).unregisterDocument(document);
+        }
+    }
 }

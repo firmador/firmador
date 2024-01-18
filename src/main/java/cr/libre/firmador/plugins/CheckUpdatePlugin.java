@@ -256,4 +256,9 @@ public class CheckUpdatePlugin implements Plugin, Runnable {
         return true;
     }
 
+    @Override
+    public boolean interactWithDocuments() {
+        return false;
+    }
+
 }

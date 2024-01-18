@@ -120,6 +120,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     private LoadProgressDialogWorker loadDialogWorker;
     private boolean forcePreview = false;
     private List<String> currentSavedFilePath = new ArrayList<String>();
+    private PluginManager pluginManager;
 
     public void loadGUI() {
         try {
@@ -251,6 +252,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     public void loadDocument(String fileName) {
         Document document = new Document(gui, fileName);
         document.registerListener(this);
+        this.pluginManager.registerDocument(document);
         listdocumentpanel.addDocument(document);
         validatescheduler.addDocument(document);
         previewScheduler.addDocument(document);
@@ -265,7 +267,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
             document = new Document(gui, file.getAbsolutePath());
             document.registerListener(this);
             docs.add(document);
-
+            this.pluginManager.registerDocument(document);
         }
         listdocumentpanel.addDocuments(docs);
         validatescheduler.addDocuments(docs);
@@ -616,6 +618,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
                 pluginManager.stop();
             }
         });
+        this.pluginManager = pluginManager;
     }
 
     public void nextStep(String msg) {
