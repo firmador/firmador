@@ -109,7 +109,7 @@ public class Settings {
         activePlugins.add("cr.libre.firmador.plugins.DummyPlugin");
         activePlugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
         activePlugins.add("cr.libre.firmador.plugins.InstallerPlugin");
-        activePlugins.add("cr.libre.firmador.plugins.DocumentSignLogs");
+        // activePlugins.add("cr.libre.firmador.plugins.DocumentSignLogs");
         availablePlugins.add("cr.libre.firmador.plugins.DummyPlugin");
         availablePlugins.add("cr.libre.firmador.plugins.CheckUpdatePlugin");
         availablePlugins.add("cr.libre.firmador.plugins.InstallerPlugin");
