@@ -27,14 +27,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.nio.file.*;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -279,4 +275,83 @@ public class SettingsManager {
 
     public void nullifySettingsVariable(){ this.settings = null; }
 
+    public String saveDocumentSettings(Settings settings, String documentName){
+        String documentConfigFilePath = "";
+        OutputStreamWriter writer = null;
+        try {
+            Path documentConfigDirPath = FileSystems.getDefault().getPath(getConfigDir().toString(), "docSettings");
+            Files.createDirectories(documentConfigDirPath);  // create the dirs if they don't exist
+            documentConfigFilePath = FileSystems.getDefault().getPath(documentConfigDirPath.toString(), documentName + ".config").toString();
+
+            Properties props = docSettingsToProperties(settings);
+            writer = new OutputStreamWriter(Files.newOutputStream(Paths.get(documentConfigFilePath)), StandardCharsets.UTF_8);
+            props.store(writer, "Firmador Libre settings for " + documentName);
+        } catch (Exception e) {
+            Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, e); // FIXME using JUL instead of SLF4j, could use just a single logger
+            e.printStackTrace();
+        } finally {
+            try {
+                if (writer != null) writer.close();
+            } catch (IOException e) {
+                Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, e);
+                e.printStackTrace();
+            }
+        }
+        return documentConfigFilePath;
+    }
+
+    public Settings loadDocumentSettings(String documentSettingsPath){
+        InputStream inputStream = null;
+        Settings settings = null;
+        try {
+            inputStream = Files.newInputStream(Paths.get(documentSettingsPath));
+            Properties props = new Properties();
+            props.load(inputStream);
+            settings = propertiesToDocSettings(props);
+        } catch (Exception e) {
+            Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, e); // FIXME using JUL instead of SLF4j, could use just a single logger
+            e.printStackTrace();
+        }finally {
+            try {
+                if (inputStream != null) inputStream.close();
+            } catch (IOException e) {
+                Logger.getLogger(SettingsManager.class.getName()).log(Level.SEVERE, null, e);
+                e.printStackTrace();
+            }
+        }
+        return settings;
+    }
+
+    private Properties docSettingsToProperties(Settings settings ) throws Exception {
+        Properties props = new Properties();
+        ArrayList<String> fieldsToSave = new ArrayList<>(Arrays.asList("country", "reason", "pDFImgScaleFactor",
+            "signWidth", "fontSize", "language", "cAdESLevel", "signX", "pageNumber", "backgroundColor", "signY",
+            "fontAlignment", "contact", "fontColor", "place", "image", "signHeight", "pAdESLevel", "overwriteSourceFile",
+            "xAdESLevel", "dateFormat", "withoutVisibleSign", "defaultSignMessage", "font"));
+        for ( String fieldName : fieldsToSave ) {
+            Object fieldValue = settings.getClass().getDeclaredField(fieldName).get(settings);
+            if(fieldValue != null) {
+                props.put(fieldName, fieldValue.toString());
+            }
+        }
+        return props;
+    }
+
+    private Settings propertiesToDocSettings(Properties props) throws Exception{
+        Settings settings = new Settings(getAndCreateSettings());  // other settings not loaded will have the value of current app settings
+        for (Map.Entry<Object, Object> entry : props.entrySet()) {
+            Field field = settings.getClass().getDeclaredField(entry.getKey().toString());
+            String value = entry.getValue().toString();
+            if (field.getType() == boolean.class) {
+                field.setBoolean(settings, Boolean.parseBoolean(value));
+            } else if (field.getType() == Integer.class) {
+                field.set(settings, Integer.parseInt(value));
+            } else if (field.getType() == float.class) {
+                field.setFloat(settings, getFloatFromString(value));
+            } else {
+                field.set(settings, value);
+            }
+        }
+        return settings;
+    }
 }
