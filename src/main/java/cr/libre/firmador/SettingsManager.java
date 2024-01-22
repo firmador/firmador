@@ -59,7 +59,7 @@ public class SettingsManager {
 
         if (!Files.isDirectory(dirpath)) {
             Files.createDirectories(dirpath);
-            if (osName.contains("windows")) Files.setAttribute(this.path, "dos:hidden", true);
+            if (osName.contains("windows")) Files.setAttribute(dirpath, "dos:hidden", true);
         }
         return dirpath;
     }
