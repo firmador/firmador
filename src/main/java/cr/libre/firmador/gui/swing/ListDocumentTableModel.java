@@ -1,15 +1,17 @@
 package cr.libre.firmador.gui.swing;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.opencsv.CSVWriter;
 import cr.libre.firmador.MessageUtils;
+import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.documents.Document;
+import org.apache.commons.io.FileUtils;
 
 @SuppressWarnings("serial")
 public class ListDocumentTableModel extends AbstractTableModel {
@@ -121,15 +123,18 @@ public class ListDocumentTableModel extends AbstractTableModel {
     }
 
     public void saveDocumentList(String savePath) throws IOException {
-        FileWriter writer = new FileWriter(savePath);
-        writer.write("name,pathName,pathToSave\n");  // write the header for the document
+        // delete previous saved settings since documents are being saved again
+        File settingsDir = new File(FileSystems.getDefault().getPath(SettingsManager.getInstance().getConfigDir().toString(), "docSettings").toString());
+        if(settingsDir.exists())  FileUtils.forceDelete(settingsDir);
+
+        CSVWriter writer = new CSVWriter(new FileWriter(savePath));
+        writer.writeNext(new String[]{"name", "pathName", "pathToSave", "settingsPath"});  // write the header for the document
 
         for(Object[] objList : data) {
             Document document = ((DocumentTableButton) objList[1]).getDocument();
-            ArrayList<String> dataToSave = new ArrayList<>(Arrays.asList(document.getName(), document.getPathName(), document.getPathToSave()));
-
-            writer.write(String.join(",", dataToSave));
-            writer.write("\n");
+            String settingsPath = SettingsManager.getInstance().saveDocumentSettings(document.getSettings(), document.getName());
+            String[] dataToSave = {document.getName(), document.getPathName(), document.getPathToSave(), settingsPath};
+            writer.writeNext(dataToSave);
         }
         writer.close();
     }

@@ -4,8 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -23,6 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 
+import com.opencsv.CSVReader;
 import cr.libre.firmador.SettingsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,7 +110,7 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
                     }else{
                         gui.showMessage(MessageUtils.t("list_document_no_documents_to_save"));
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     gui.showMessage(MessageUtils.t("list_document_error_during_save"));
                 }
             }
@@ -125,7 +125,7 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
                     }else{
                         gui.showMessage(MessageUtils.t("list_document_no_file_to_load"));
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     gui.showMessage(MessageUtils.t("list_document_error_during_load"));
                 }
             }
@@ -204,27 +204,31 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         gui.showMessage(MessageUtils.t("list_document_save_done") + " " + this.documentListSavePath.toString());
     }
 
-    public void loadDocumentList() throws IOException{
+    public void loadDocumentList() throws Exception{
         ArrayList<String > docsNotFound = new ArrayList<>();
-        try (Scanner scanner = new Scanner(new File(this.documentListSavePath.toString()))) {
-            cleanDocuments();  // clear the list before loading what is saved
+        CSVReader reader = new CSVReader(new FileReader(this.documentListSavePath.toFile()));
 
-            String[] fileLine;
-            scanner.nextLine();  // to get the header, ignore it
-            while (scanner.hasNextLine()) {
-                fileLine = scanner.nextLine().split(",");
-                String documentPath = fileLine[1];
-                if(Files.exists(Paths.get(documentPath))) {  // load the document only if it exists in the filesystem
-                    Document document = gui.loadDocument(documentPath);
+        cleanDocuments();  // clear the list before loading what is saved
 
-                    // update the path to save in case the user selected something different from default before saving
-                    document.setPathToSave(fileLine[2]);
-                    updateDocument(document);
-                }else{
-                    docsNotFound.add(documentPath);
-                }
+        String [] fileLine;
+        reader.readNext();  // to get the header, ignore it
+        while ((fileLine = reader.readNext()) != null) {
+            String documentPath = fileLine[1];
+            if(Files.exists(Paths.get(documentPath))) {  // load the document only if it exists in the filesystem
+                Document document = gui.loadDocument(documentPath);
+
+                // set the document settings, so it is as it was before saving/loading
+                document.setSettings(SettingsManager.getInstance().loadDocumentSettings(fileLine[3]));
+
+                // update the path to save in case the user selected something different from default before saving
+                document.setPathToSave(fileLine[2]);
+                updateDocument(document);
+            }else {
+                docsNotFound.add(documentPath);
             }
         }
+        reader.close();
+
         if(!docsNotFound.isEmpty()){
             gui.showMessage(MessageUtils.t("list_document_files_not_found_on_load") + " " + String.join(", ", docsNotFound));
         }
