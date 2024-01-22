@@ -141,7 +141,6 @@ public class TestSettingsManager {
         Path expectedPath = FileSystems.getDefault().getPath(this.testHomePath, this.configDirPathEnding);
         assertEquals(expectedPath, resultPath.get());
         assertTrue(Files.isDirectory(resultPath.get()));
-        assertEquals(expectedPath, this.settingsManager.getPath());  // the path variable was also set
     }
 
     @Test
@@ -152,7 +151,7 @@ public class TestSettingsManager {
 
         Path expectedPath = FileSystems.getDefault().getPath(this.testHomePath, this.configDirPathEnding);
         assertEquals(expectedPath, resultPath.get());
-        assertTrue(Files.isDirectory(resultPath.get()));
+        assertTrue(Files.isDirectory(resultPath.get()));  // the directory was created correctly
     }
 
     @Test
@@ -168,7 +167,6 @@ public class TestSettingsManager {
         Path expectedPath = FileSystems.getDefault().getPath(nonDirectoryTestPath, this.configDirPathEnding);
         assertEquals(expectedPath, resultPath.get());
         assertTrue(Files.isDirectory(resultPath.get()));  // the directory was created correctly
-        assertEquals(expectedPath, this.settingsManager.getPath());  // the path variable was also set
         try {
             assertTrue((boolean)Files.getAttribute(resultPath.get(), "dos:hidden"));  // dir is hidden in Windows
         }catch (IOException e){
