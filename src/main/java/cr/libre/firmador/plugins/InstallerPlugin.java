@@ -125,7 +125,7 @@ public class InstallerPlugin implements Plugin {
 
 
             try {
-                System.out.println("CORRIENDO");
+
                 Runtime.getRuntime()
                         .exec("powershell -Command \"Start-Process 'cmd' -Verb RunAs -ArgumentList '/c \" wscript "
                                 + temp.toAbsolutePath().toString() + "\"'\"");
