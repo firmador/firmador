@@ -36,9 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -793,21 +791,23 @@ public class TestSettingsManager {
 
     @Test
     void testGetAndCreateSettingsWithException(){
-        TestUtils.createDirectoryWithNoAccess(this.pathWithNoAccess);
-
         this.settingsManager.nullifySettingsVariable();
-        this.settingsManager.setPath(this.pathWithNoAccess);
+        String requiredPath = FileSystems.getDefault().getPath(this.testHomePath, this.configDirPathEnding, "new-name.properties").toString();
+        TestUtils.createFile(requiredPath);
+        this.settingsManager.setPath(requiredPath);
+        this.settingsManager.setProperty("signwidth", "abcd");  // so it fails in the parsing to Integer
 
         Settings resultSettings = this.settingsManager.getAndCreateSettings();
 
         assertFalse(this.settingsManagerLog.getEvents().isEmpty());  // something was logged
         LoggingEvent logEntry = this.settingsManagerLog.getEvents().get(0);
-        assertTrue(logEntry.getThrowable().toString().contains("java.io.FileNotFoundException: " + this.pathWithNoAccess));
-        assertInstanceOf(IOException.class, logEntry.getThrowable());  // the right type of exception happened
+        assertTrue(logEntry.getThrowable().toString().contains("java.lang.NumberFormatException: For input string: \"abcd\""));
+        assertInstanceOf(NumberFormatException.class, logEntry.getThrowable());  // the right type of exception happened
         assertNotNull(resultSettings);  // settings were assigned and returned
     }
 
     // ------ getProps method tests ------
+
     @Test
     void testGetProps(){
         Properties resultProps = this.settingsManager.getProps();
@@ -817,6 +817,7 @@ public class TestSettingsManager {
     }
 
     // ------ setProps method tests ------
+
     @Test
     void testSetProps(){
         Properties expectedProps = new Properties();
@@ -825,7 +826,8 @@ public class TestSettingsManager {
         assertEquals(expectedProps, this.settingsManager.getProps());  // it was set correctly
     }
 
-    // ------ nullifySettingsVariable tests ------
+    // ------ nullifySettingsVariable method tests ------
+
     @Test
     void testNullifySettingsVariable(){
         Settings resultSettings = this.settingsManager.getAndCreateSettings();  // so settings is assigned for the first time if it was null before this
@@ -837,5 +839,152 @@ public class TestSettingsManager {
         Settings resultSettings3 = this.settingsManager.getAndCreateSettings();
         assertNotEquals(resultSettings, resultSettings3);  // the settings variable was null so a new instance was created
     }
+
+    // ------ getSettingsVariable/setSettingsVariable methods tests ------
+
+    @Test
+    void testGetAndSetSettingsVariable(){
+        Settings appSettings = new Settings();
+        appSettings.showLogs = true;
+
+        this.settingsManager.setSettingsVariable(appSettings);
+        Settings resultSettings = this.settingsManager.getSettingsVariable();
+
+        assertNotNull(resultSettings);
+        assertEquals(resultSettings, appSettings);
+        assertEquals(resultSettings.showLogs, appSettings.showLogs);
+    }
+
+    // ------ saveDocumentSettings method tests ------
+    @Test
+    void testSaveDocumentSettings(){
+        String documentName = "testSaveDocumentSettings.pdf";
+
+        String resultPath = this.settingsManager.saveDocumentSettings(new Settings(), documentName);
+
+        String expectedPath = FileSystems.getDefault().getPath(this.testHomePath, this.configDirPathEnding, "docSettings", documentName + ".config").toString();
+        assertFalse(resultPath.isEmpty());
+        assertEquals(resultPath, expectedPath);
+        assertTrue(Files.exists(Paths.get(resultPath)));  // the document path actually exists in the filesystem
+        assertTrue(new File(resultPath).length() > 0);  // the file contains data
+    }
+
+    @Test
+    void testSaveDocumentSettingsWithException(){
+        String documentName = "testSaveDocumentSettingsWithException.pdf";
+
+        TestUtils.createDirectoryWithNoAccess(this.pathWithNoAccess);
+        this.setHomePath(this.pathWithNoAccess);  // so it will throw an exception because of permissions
+
+        String resultPath = this.settingsManager.saveDocumentSettings(new Settings(), documentName);
+
+        String expectedPath = FileSystems.getDefault().getPath(this.testHomePath, this.configDirPathEnding, "docSettings", documentName + ".config").toString();
+        assertFalse(this.settingsManagerLog.getEvents().isEmpty());  // something was logged
+        LoggingEvent logEntry = this.settingsManagerLog.getEvents().get(0);
+        assertTrue(logEntry.getThrowable().toString().contains("java.nio.file.AccessDeniedException: " + pathWithNoAccess));
+        assertInstanceOf(IOException.class, logEntry.getThrowable());  // the right type of exception happened
+        assertTrue(resultPath.isEmpty());  // the path is empty since it died before creating it
+        assertFalse(Files.exists(Paths.get(expectedPath)));  // the document path does not exist in the filesystem
+    }
+
+    // ------ loadDocumentSettings method tests ------
+
+    @Test
+    void testLoadDocumentSettings(){
+        String documentName = "testLoadDocumentSettings.pdf";
+        Settings settings = new Settings();
+        // change some things, so we can make sure the right things are loaded when they are not the default values
+        settings.reason = "This is a test reason.";
+        settings.place = "This is a test place.";
+        settings.contact = "This is a test contact.";
+
+        String documentSettingsPath = this.settingsManager.saveDocumentSettings(settings, documentName);  // save them so there is something to load
+
+        Settings resultSettings = this.settingsManager.loadDocumentSettings(documentSettingsPath);
+
+        assertNotNull(resultSettings);  // the settings were loaded correctly
+        // the right settings values were loaded (the non-default ones)
+        assertEquals(settings.reason, resultSettings.reason);
+        assertEquals(settings.place, resultSettings.place);
+        assertEquals(settings.contact, resultSettings.contact);
+    }
+
+    @Test
+    void testLoadDocumentSettingsWithException(){
+        String documentName = "testLoadDocumentSettingsWithException.pdf";
+        String documentPath = FileSystems.getDefault().getPath(this.testHomePath, this.configDirPathEnding, "non-existent-path", documentName + ".config").toString();  // path that does not exist so it fails
+
+        Settings resultSettings = this.settingsManager.loadDocumentSettings(documentPath);
+
+        assertFalse(this.settingsManagerLog.getEvents().isEmpty());  // something was logged
+        LoggingEvent logEntry = this.settingsManagerLog.getEvents().get(0);
+        assertTrue(logEntry.getThrowable().toString().contains("java.nio.file.NoSuchFileException: " + documentPath));
+        assertInstanceOf(NoSuchFileException.class, logEntry.getThrowable());  // the right type of exception happened
+        assertNull(resultSettings);  // the settings returned is null since it died before loading them
+    }
+
+    // ------ docSettingsToProperties method tests ------
+
+    @Test
+    void testDocSettingsToProperties() {
+        Settings settings = new Settings();
+        // change some things with different types, so we can make sure the right things are loaded when they are not the default values
+        settings.pageNumber = 20;
+        settings.image = "testImage";
+        settings.overwriteSourceFile = true;
+        settings.pDFImgScaleFactor = 2.3F;
+
+        AtomicReference<Properties> resultProps = new AtomicReference<>();
+        assertDoesNotThrow(() -> {
+            Method docSettingsToPropertiesPrivateMethod = SettingsManager.class.getDeclaredMethod("docSettingsToProperties", Settings.class);  // do this since it is a private method
+            docSettingsToPropertiesPrivateMethod.setAccessible(true);
+            resultProps.set((Properties) docSettingsToPropertiesPrivateMethod.invoke(this.settingsManager, settings));
+        });
+
+        assertNotNull(resultProps.get());  // the properties were loaded correctly
+        Set<String> shouldBeSavedFields = new HashSet<>(Arrays.asList("country", "reason", "pDFImgScaleFactor",
+            "signWidth", "fontSize", "language", "cAdESLevel", "signX", "pageNumber", "backgroundColor", "signY",
+            "fontAlignment", "contact", "fontColor", "place", "image", "signHeight", "pAdESLevel", "overwriteSourceFile",
+            "xAdESLevel", "dateFormat", "withoutVisibleSign", "defaultSignMessage", "font"));
+        assertEquals(shouldBeSavedFields, resultProps.get().stringPropertyNames());  // all the required properties were saved
+        // the right properties values were loaded (the changed ones)
+        assertEquals(settings.pageNumber.toString(), resultProps.get().getProperty("pageNumber"));
+        assertEquals(settings.image, resultProps.get().getProperty("image"));
+        assertEquals(settings.overwriteSourceFile, Boolean.parseBoolean(resultProps.get().getProperty("overwriteSourceFile")));
+        assertEquals(settings.pDFImgScaleFactor, Float.parseFloat(resultProps.get().getProperty("pDFImgScaleFactor")));
+    }
+
+    // ------ propertiesToDocSettings method tests ------
+
+    @Test
+    void testPropertiesToDocSettings() {
+        Settings appSettings = new Settings();
+        appSettings.showLogs = true;  // to make sure the other settings not loaded will have the app settings value
+        this.settingsManager.setSettingsVariable(appSettings);
+
+        // change some things with different types, so we can make sure the right things are loaded when they are not the default values
+        Properties props = new Properties();
+        props.setProperty("pageNumber", "20");
+        props.setProperty("image", "testImage");
+        props.setProperty("overwriteSourceFile", "true");
+        props.setProperty("pDFImgScaleFactor", "2.3");
+
+        AtomicReference<Settings> resultSettings = new AtomicReference<>();
+        assertDoesNotThrow(() -> {
+            Method propertiesToDocSettingsPrivateMethod = SettingsManager.class.getDeclaredMethod("propertiesToDocSettings", Properties.class);  // do this since it is a private method
+            propertiesToDocSettingsPrivateMethod.setAccessible(true);
+            resultSettings.set((Settings) propertiesToDocSettingsPrivateMethod.invoke(this.settingsManager, props));
+        });
+
+        assertNotNull(resultSettings.get());  // the settings were loaded correctly
+        // the right properties values were loaded (the changed ones) with the right types
+        assertEquals(Integer.parseInt(props.getProperty("pageNumber")), resultSettings.get().pageNumber);
+        assertEquals(props.getProperty("image"), resultSettings.get().image);
+        assertEquals(Boolean.parseBoolean(props.getProperty("overwriteSourceFile")), resultSettings.get().overwriteSourceFile);
+        assertEquals(Float.parseFloat(props.getProperty("pDFImgScaleFactor")), resultSettings.get().pDFImgScaleFactor);
+        // the other values in settings will have the app settings values instead of default
+        assertEquals(appSettings.showLogs, resultSettings.get().showLogs);
+    }
+
 
 }

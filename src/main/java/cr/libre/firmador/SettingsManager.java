@@ -275,6 +275,10 @@ public class SettingsManager {
 
     public void nullifySettingsVariable(){ this.settings = null; }
 
+    public void setSettingsVariable(Settings settings){ this.settings = settings; }
+
+    public Settings getSettingsVariable() { return this.settings; }
+
     public String saveDocumentSettings(Settings settings, String documentName){
         String documentConfigFilePath = "";
         OutputStreamWriter writer = null;
@@ -328,7 +332,7 @@ public class SettingsManager {
             "signWidth", "fontSize", "language", "cAdESLevel", "signX", "pageNumber", "backgroundColor", "signY",
             "fontAlignment", "contact", "fontColor", "place", "image", "signHeight", "pAdESLevel", "overwriteSourceFile",
             "xAdESLevel", "dateFormat", "withoutVisibleSign", "defaultSignMessage", "font"));
-        for ( String fieldName : fieldsToSave ) {
+        for (String fieldName : fieldsToSave) {
             Object fieldValue = settings.getClass().getDeclaredField(fieldName).get(settings);
             if(fieldValue != null) {
                 props.put(fieldName, fieldValue.toString());
@@ -338,7 +342,7 @@ public class SettingsManager {
     }
 
     private Settings propertiesToDocSettings(Properties props) throws Exception{
-        Settings settings = new Settings(getAndCreateSettings());  // other settings not loaded will have the value of current app settings
+        Settings settings = new Settings(getAndCreateSettings());  // the other settings not loaded will have the value of current app settings
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
             Field field = settings.getClass().getDeclaredField(entry.getKey().toString());
             String value = entry.getValue().toString();
