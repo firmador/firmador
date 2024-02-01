@@ -355,17 +355,6 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
     }
 
-    private String addSuffixToFilePath(String name, String suffix) {
-        String dotExtension = "";
-        String newname = name + suffix;
-        int lastDot = name.lastIndexOf(".");
-        if (lastDot >= 0) {
-            dotExtension = name.substring(lastDot);
-            newname = name.substring(0, name.lastIndexOf(".")) + suffix + dotExtension;
-        }
-        return newname;
-    }
-
     public String showSaveDialog(String suffix, String extension) {
         gui.nextStep(MessageUtils.t("guiswing_getting_save_path"));
         String lastDirectory = docSelector.getLastDirectory();
@@ -697,7 +686,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         signPanel.setDocument(document);
         signPanel.setPreview(document.getPreviewManager());
         signPanel.paintPDFViewer();
-
+        docSelector.setLastFile(document.getPathName());
         SupportedMimeTypeEnum mimeType = document.getMimeType();
 
         signPanel.getSignButton().setEnabled(true);
@@ -726,6 +715,8 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
 
     public void setActiveDocument(Document document) {
         loadDialogWorker.setVisible(true);
+        docSelector.setLastFile(document.getPathName());
+
     }
 
     public ListDocumentTablePanel getListDocumentTablePanel() {

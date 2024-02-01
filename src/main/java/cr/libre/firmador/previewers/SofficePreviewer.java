@@ -13,6 +13,8 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
+import cr.libre.firmador.documents.MimeTypeDetector;
+import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 
 public class SofficePreviewer implements PreviewerInterface {
     private PDDocument document = null;
@@ -27,11 +29,21 @@ public class SofficePreviewer implements PreviewerInterface {
 
         File importfile = new File(fileName);
 
+        SupportedMimeTypeEnum mimetype = MimeTypeDetector.detect(fileName);
+
+        String conversorsource = "pdf:writer_pdf_Export";
+        if (mimetype == SupportedMimeTypeEnum.XLSX || mimetype == SupportedMimeTypeEnum.ODS) {
+            conversorsource = "pdf:calc_pdf_Export";
+        }
+        if (mimetype == SupportedMimeTypeEnum.ODP || mimetype == SupportedMimeTypeEnum.PPTX) {
+            conversorsource = "pdf:draw_pdf_Export";
+        }
+
         String separator = FileSystems.getDefault().getSeparator();
         String guestFilename = FilenameUtils.removeExtension(importfile.getName()) + ".pdf";
         String tmpdir = Files.createTempDirectory("firmadorlibre").toFile().getAbsolutePath();
-        String command = String.format("%s --headless  --convert-to pdf:writer_pdf_Export --outdir %s %s",
-                settings.sofficePath, tmpdir, importfile.toURI().normalize());
+        String command = String.format("%s --headless  --convert-to %s --outdir %s %s", settings.sofficePath,
+                conversorsource, tmpdir, importfile.toURI().normalize());
         Process theProcess = Runtime.getRuntime().exec(command);
 
         theProcess.getErrorStream().transferTo(System.out);

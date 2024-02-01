@@ -123,6 +123,7 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
         this.lastFile = lastFile;
         Path path= FileSystems.getDefault().getPath(this.lastFile);
         this.lastDirectory = path.getParent().toString();
+        fileField.setText(path.getFileName().toString());
     }
 
     public FileDialog getLoadDialog() {
