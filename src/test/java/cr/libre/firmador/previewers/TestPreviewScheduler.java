@@ -60,7 +60,7 @@ public class TestPreviewScheduler {
         assertTrue(this.previewScheduler.getFiles().isEmpty());
 
         this.previewScheduler.start();
-        Thread.sleep(10);   // let it run for 10ms before it is interrupted, so it can run the code as expected
+        Thread.sleep(100);   // let it run for 100ms before it is interrupted, so it can run the code as expected
 
         assertFalse(this.previewScheduler.getStop());  // the scheduler was not interrupted
         verify(this.waitforfiles, atLeastOnce()).acquire();  // method acquire was called at least one time
@@ -74,7 +74,7 @@ public class TestPreviewScheduler {
         assertFalse(this.previewScheduler.getFiles().isEmpty());
 
         this.previewScheduler.start();
-        Thread.sleep(10);   // let it run for 10ms before it is interrupted, so it can run the code as expected
+        Thread.sleep(100);   // let it run for 100ms before it is interrupted, so it can run the code as expected
 
         assertFalse(this.previewScheduler.getStop());  // the scheduler was not interrupted
         verify(this.waitforfiles, atLeastOnce()).acquire();  // method acquire was called at least one time
