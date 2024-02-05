@@ -134,7 +134,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         hideButtons();
         if (mimeType.isPDF()) {
             showSignButtons();
-        } else if (mimeType.isOpenxmlformats()) {
+        } else if (mimeType.isOpenxmlformats() || mimeType.isOpenDocument()) {
             getSignButton().setEnabled(true);
             saveButton.setEnabled(true);
         } else {
@@ -540,14 +540,12 @@ public class SignPanel extends JPanel implements ConfigListener{
             signButton.setEnabled(true);
             saveButton.setEnabled(true);
             saveButton.setVisible(true);
-            if (mimetype.isOpenDocument()) {
-                CAdESButton.setVisible(true);
-                XAdESButton.setVisible(true);
-                AdESLevelLabel.setVisible(false);
-                levelTButton.setVisible(false);
-                levelLTButton.setVisible(false);
-                levelLTAButton.setVisible(false);
-            }
+            CAdESButton.setVisible(true);
+            XAdESButton.setVisible(true);
+            AdESLevelLabel.setVisible(false);
+            levelTButton.setVisible(false);
+            levelLTButton.setVisible(false);
+            levelLTAButton.setVisible(false);
             ASICEButton.setVisible(true);
             ASICEButton.setSelected(true);
 

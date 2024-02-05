@@ -691,12 +691,6 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
 
         signPanel.getSignButton().setEnabled(true);
         try {
-            if (mimeType.isPDF()) {
-                signPanel.showSignButtons();
-            } else if (mimeType.isOpenxmlformats()) {
-                signPanel.getSignButton().setEnabled(true);
-            } else
-                signPanel.shownonPDFButtons();
             // mainFrame.pack();
             mainFrame.setMinimumSize(mainFrame.getSize());
         } catch (Exception e) {

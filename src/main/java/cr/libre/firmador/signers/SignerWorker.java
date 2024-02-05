@@ -60,7 +60,7 @@ public class SignerWorker extends SwingWorker<Void, Void> {
         try {
             this.document.setSignwithErrors(false);
             this.document.sign(card);
-        } catch (Exception e) {
+         } catch (Exception e) {
             this.document.setSignwithErrors(true);
             LOG.error("Error firmado documento", e);
             throw e;

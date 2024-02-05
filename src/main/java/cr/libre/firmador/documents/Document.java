@@ -112,6 +112,8 @@ public class Document {
             document = new FileDocument(this.pathname);
         }
         signedDocument = signer.sign(this, card);
+        if (signedDocument == null)
+            signwithErrors = true;
         if (settings.extendDocument && signedDocument != null) {
             this.extend();
         }
