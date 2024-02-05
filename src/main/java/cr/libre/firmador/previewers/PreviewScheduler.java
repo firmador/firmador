@@ -12,10 +12,11 @@ import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.gui.GUIInterface;
 
 public class PreviewScheduler extends Thread {
+    public static int MAX_FILES_PROCESS = 3;
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private Semaphore waitforfiles = new Semaphore(1);
-    private Semaphore maxoffilesperprocess = new Semaphore(3);
+    private Semaphore maxoffilesperprocess = new Semaphore(MAX_FILES_PROCESS);
     private List<Document> files;
     private boolean stop = false;
 
@@ -32,7 +33,7 @@ public class PreviewScheduler extends Thread {
 
     public void run() {
         try {
-            this.waitforfiles.acquire(); // first time acquire and don't block
+            this.waitforfiles.acquire(); // first time acquire and don't lock
 
             while(!this.stop) {
                 if(this.files.isEmpty())
