@@ -1,5 +1,5 @@
 variables:
-  MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository -Djava.awt.headless=true"
+  MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository -Dawt.toolkit=sun.awt.HeadlessToolkit"
 
 stages:
   - test-linux
@@ -20,16 +20,13 @@ default:
 .entry_point: &entry_point
   - bash
   - -c
-  - apt-get update && apt-get install xvfb -y libfontconfig1 && useradd -m testuser && exec su testuser -c bash
+  - apt-get update && apt-get install -y libfontconfig1 && useradd -m testuser && exec su testuser -c bash
 
 linux-java-11:
   image: 
     name: maven:3.9.5-amazoncorretto-11-debian
     entrypoint: *entry_point
   stage: test-linux
-  before_script:
-    - "Xvfb :99 &"
-    - "export DISPLAY=:99"
   script: 
     - mvn --batch-mode --errors --fail-at-end --show-version test
   when: always
