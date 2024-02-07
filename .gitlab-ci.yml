@@ -1,5 +1,5 @@
 variables:
-  MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository -Djava.awt.headless=true"
+  MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
 
 stages:
   - test-linux
@@ -27,11 +27,11 @@ linux-java-11:
     name: maven:3.9.5-amazoncorretto-11-debian
     entrypoint: *entry_point
   stage: test-linux
-  # before_script:
-  #   - "Xvfb :99 &"
-  #   - "export DISPLAY=:99"
+  before_script:
+    - "Xvfb :99 &"
+    - "export DISPLAY=:99"
   script: 
-    - xvfb-run mvn --batch-mode --errors --fail-at-end --show-version test
+    - mvn --batch-mode --errors --fail-at-end --show-version test
   when: always
 
 # linux-java-17:
