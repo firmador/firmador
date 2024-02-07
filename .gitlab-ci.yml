@@ -20,7 +20,7 @@ default:
 .entry_point: &entry_point
   - bash
   - -c
-  - apt-get update && apt-get install -y libfontconfig1 libxtst6 xvfb && useradd -m testuser && exec su testuser -c bash
+  - apt-get update && apt-get install -y libfontconfig1 xvfb && useradd -m testuser && exec su testuser -c bash
 
 linux-java-11:
   image: 
@@ -28,8 +28,8 @@ linux-java-11:
     entrypoint: *entry_point
   stage: test-linux
   before_script:
-    - nohup Xvfb :99 -screen 0 1152x900x8 &
-    - export DISPLAY="localhost:99"
+    - export DISPLAY=:99
+    - nohup Xvfb -ac :99 -screen 0 1280x1024x24 &
   script: 
     - mvn --batch-mode --errors --fail-at-end --show-version test
   when: always
