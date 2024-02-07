@@ -1,5 +1,5 @@
 variables:
-  MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
+  MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository -Djava.awt.headless=true"
 
 stages:
   - test-linux
@@ -28,7 +28,7 @@ linux-java-11:
     entrypoint: *entry_point
   stage: test-linux
   script: 
-    - mvn --batch-mode --errors --fail-at-end --show-version -Djava.awt.headless=true test
+    - mvn --batch-mode --errors --fail-at-end --show-version test
   when: always
 
 # linux-java-17:
