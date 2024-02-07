@@ -27,11 +27,11 @@ linux-java-11:
     name: maven:3.9.5-amazoncorretto-11-debian
     entrypoint: *entry_point
   stage: test-linux
-  # before_script:
-  #   - export DISPLAY=:99
-  #   - nohup Xvfb -ac -nolisten :99 &
+  before_script:
+    - export DISPLAY=:99
+    - Xvfb :99 -screen 0 1280x1024x24 -ac -nolisten tcp -nolisten unix &
   script: 
-    - xvfb-run mvn --batch-mode --errors --fail-at-end --show-version test
+    - mvn --batch-mode --errors --fail-at-end --show-version test
   when: always
 
 # linux-java-17:
