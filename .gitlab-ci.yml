@@ -1,5 +1,5 @@
 variables:
-  MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository -Djava.awt.headless=true"
+  MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
 
 stages:
   - test-linux
@@ -29,7 +29,7 @@ linux-java-11:
   stage: test-linux
   before_script:
     - export DISPLAY=:99
-    - nohup Xvfb -ac :99 -screen 0 1280x1024x24 &
+    - nohup Xvfb -ac -nolisten :99 &
   script: 
     - mvn --batch-mode --errors --fail-at-end --show-version test
   when: always
