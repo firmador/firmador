@@ -18,10 +18,10 @@ public class TestPreviewScheduler {
     private final String testODTPath =  FileSystems.getDefault().getPath("testDocs", "testODT.odt").toString();
     private final String testDOCXPath =  FileSystems.getDefault().getPath("testDocs", "testDOCX.docx").toString();
     private final GUIShell gui = new GUIShell();
-    private final Document testDocumentPDF1 = new Document(gui, this.testPDFPath);
-    private final Document testDocumentPDF2 = new Document(gui, this.testPDFPath);
-    private final Document testDocumentODT = new Document(gui, this.testODTPath);
-    private final Document testDocumentDOCX = new Document(gui, this.testDOCXPath);
+    private final Document testDocumentPDF1 = new Document(this.gui, this.testPDFPath);
+    private final Document testDocumentPDF2 = new Document(this.gui, this.testPDFPath);
+    private final Document testDocumentODT = new Document(this.gui, this.testODTPath);
+    private final Document testDocumentDOCX = new Document(this.gui, this.testDOCXPath);
     private final Semaphore waitforfiles = spy(new Semaphore(1));
     private final Semaphore maxoffilesperprocess = spy(new Semaphore(MAX_FILES_PROCESS));
     private PreviewScheduler previewScheduler;
@@ -70,7 +70,7 @@ public class TestPreviewScheduler {
 
     @Test
     void testRunWithNonEmptyList() throws InterruptedException {
-        this.previewScheduler.addDocument(testDocumentPDF1);
+        this.previewScheduler.addDocument(this.testDocumentPDF1);
         assertFalse(this.previewScheduler.getStop());
         assertFalse(this.previewScheduler.getFiles().isEmpty());
 
@@ -87,13 +87,13 @@ public class TestPreviewScheduler {
     void testRunCheckSemaphoresUse() throws InterruptedException{
         this.previewScheduler.start();
 
-        this.previewScheduler.addDocument(testDocumentODT);
+        this.previewScheduler.addDocument(this.testDocumentODT);
         Thread.sleep(500); // give it sometime between adding docs to let it adjust
-        this.previewScheduler.addDocument(testDocumentPDF1);
+        this.previewScheduler.addDocument(this.testDocumentPDF1);
         Thread.sleep(500); // give it sometime between adding docs to let it adjust
-        this.previewScheduler.addDocument(testDocumentPDF2);
+        this.previewScheduler.addDocument(this.testDocumentPDF2);
         Thread.sleep(500); // give it sometime between adding docs to let it adjust
-        this.previewScheduler.addDocument(testDocumentDOCX);
+        this.previewScheduler.addDocument(this.testDocumentDOCX);
 
         Thread.sleep(1000);   // let it run for 1s before it is interrupted, so it can run the code as expected
 
@@ -130,9 +130,10 @@ public class TestPreviewScheduler {
     void testAddDocument(){
         assertTrue(this.previewScheduler.getFiles().isEmpty());
 
-        this.previewScheduler.addDocument(testDocumentPDF1);
+        this.previewScheduler.addDocument(this.testDocumentPDF1);
 
         assertFalse(this.previewScheduler.getFiles().isEmpty());
+        assertEquals(this.testDocumentPDF1, this.previewScheduler.getFiles().get(0));
         verify(this.waitforfiles, times(1)).release();  // method release was called once after the doc is added
     }
 
