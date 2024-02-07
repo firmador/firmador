@@ -20,7 +20,7 @@ default:
 .entry_point: &entry_point
   - bash
   - -c
-  - apt-get update && apt-get install -y libfontconfig1 xvfb && useradd -m testuser && exec su testuser -c bash
+  - apt-get update && apt-get install -y libfontconfig1 xvfb libxtst6 && useradd -m testuser && exec su testuser -c bash
 
 linux-java-11:
   image: 
