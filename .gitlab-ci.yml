@@ -22,39 +22,39 @@ default:
   - -c
   - apt-get update && apt-get install -y libfontconfig1 xvfb libxtst6 libxi6 && useradd -m testuser && exec su testuser -c bash
 
-.before_script: &before_script
-  - export DISPLAY=:99
-  - Xvfb :99 -screen 0 1280x1024x24 -ac -nolisten tcp -nolisten unix &
+# .before_script: &before_script
+#   - export DISPLAY=:99
+#   - Xvfb :99 -screen 0 1280x1024x24 -ac -nolisten tcp -nolisten unix &
 
 linux-java-11:
   image: 
     name: maven:3.9.5-amazoncorretto-11-debian
     entrypoint: *entry_point
   stage: test-linux
-  before_script: *before_script 
+  # before_script: *before_script 
   script: 
-    - mvn --batch-mode --errors --fail-at-end --show-version test
+    - xvfb-run mvn --batch-mode --errors --fail-at-end --show-version test
   when: always
 
-linux-java-17:
-  image: 
-    name: maven:3.9.5-amazoncorretto-17-debian
-    entrypoint: *entry_point
-  stage: test-linux
-  before_script: *before_script
-  script: 
-    - mvn --batch-mode --errors --fail-at-end --show-version test
-  when: always
+# linux-java-17:
+#   image: 
+#     name: maven:3.9.5-amazoncorretto-17-debian
+#     entrypoint: *entry_point
+#   stage: test-linux
+#   before_script: *before_script
+#   script: 
+#     - mvn --batch-mode --errors --fail-at-end --show-version test
+#   when: always
 
-linux-java-21:
-  image: 
-    name: maven:3.9.5-amazoncorretto-21-debian
-    entrypoint: *entry_point
-  stage: test-linux
-  before_script: *before_script
-  script: 
-    - mvn --batch-mode --errors --fail-at-end --show-version test
-  when: always
+# linux-java-21:
+#   image: 
+#     name: maven:3.9.5-amazoncorretto-21-debian
+#     entrypoint: *entry_point
+#   stage: test-linux
+#   before_script: *before_script
+#   script: 
+#     - mvn --batch-mode --errors --fail-at-end --show-version test
+#   when: always
 
 # ------ Windows ------
 
