@@ -12,8 +12,8 @@ import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.gui.GUIInterface;
 
 public class PreviewScheduler extends Thread {
+    public static int MAX_FILES_PROCESS = 5;
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private int MAX_FILES_PROCESS = 5;
     private Semaphore waitforfiles = new Semaphore(1);
     private Semaphore maxoffilesperprocess = new Semaphore(MAX_FILES_PROCESS);
     private List<Document> files;
@@ -22,44 +22,67 @@ public class PreviewScheduler extends Thread {
     private GUIInterface gui;
 
     public PreviewScheduler() {
-        this.files = new ArrayList<Document>();
+        this.files = new ArrayList<>();
     }
 
     public PreviewScheduler(GUIInterface gui) {
-        this.files = new ArrayList<Document>();
+        this.files = new ArrayList<>();
         this.gui = gui;
     }
+
     public void run() {
         try {
-            waitforfiles.acquire();// first time adquiere and don't block
+            this.waitforfiles.acquire(); // first time acquire and don't lock
 
-        while (!stop) {
-            if (this.files.size() <= 0)
-                waitforfiles.acquire(); // block thread until list is empty
+            while(!this.stop) {
+                if(this.files.isEmpty())
+                    this.waitforfiles.acquire(); // lock thread until the list is not empty
 
-            while (!this.files.isEmpty()) {
-                Document document = this.files.remove(0);
-                maxoffilesperprocess.acquire();
-                PreviewWorker task = new PreviewWorker(document, this);
-                task.execute();
+                while(!this.files.isEmpty()) {
+                    Document document = this.files.remove(0);
+                    this.maxoffilesperprocess.acquire();
+                    PreviewWorker task = new PreviewWorker(document, this);
+                    task.execute();
+                }
             }
 
+        } catch (InterruptedException e) {
+            this.stop = true;
+            e.printStackTrace();
         }
-    } catch (InterruptedException e) {
-        stop = true;
-        e.printStackTrace();
-    }
     }
 
     public void addDocument(Document document) {
         this.files.add(document);
-        waitforfiles.release();
+        this.waitforfiles.release();
     }
+
     public void done() {
         maxoffilesperprocess.release();
         int avalilable = maxoffilesperprocess.availablePermits();
         if (avalilable == MAX_FILES_PROCESS) {
             gui.previewAllDone();
         }
+
+    }
+
+    public GUIInterface getGui() {
+        return this.gui;
+    }
+
+    public List<Document> getFiles(){
+        return this.files;
+    }
+
+    public boolean getStop(){
+        return this.stop;
+    }
+
+    public void setWaitforfiles(Semaphore waitforfiles){
+        this.waitforfiles = waitforfiles;
+    }
+
+    public void setMaxoffilesperprocess(Semaphore maxoffilesperprocess){
+        this.maxoffilesperprocess = maxoffilesperprocess;
     }
 }
