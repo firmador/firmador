@@ -20,7 +20,7 @@ default:
 .entry_point: &entry_point
   - bash
   - -c
-  - apt-get update && apt-get install -y libfontconfig1 && useradd -m testuser && exec su testuser -c bash && export DISPLAY=99
+  - apt-get update && apt-get install -y libfontconfig1 xvfb-run && useradd -m testuser && exec su testuser -c bash
 
 linux-java-11:
   image: 
@@ -28,7 +28,7 @@ linux-java-11:
     entrypoint: *entry_point
   stage: test-linux
   script: 
-    - sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & mvn $MAVEN_CLI_OPTS test
+    - xvfb-run mvn $MAVEN_CLI_OPTS test
   when: always
 
 linux-java-17:
