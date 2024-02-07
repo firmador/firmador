@@ -1,5 +1,5 @@
 variables:
-  MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository -Djava.awt.headless=true"
+  MAVEN_OPTS: "-Dmaven.repo.local=~/.m2/repository"
 
 stages:
   - test-linux
@@ -20,7 +20,7 @@ default:
 .entry_point: &entry_point
   - bash
   - -c
-  - apt-get update && apt-get install -y libfontconfig1 && useradd -m testuser && exec su testuser -c bash
+  - apt-get update && apt-get install -y libfontconfig1 Xvfb && useradd -m testuser && exec su testuser -c bash
 
 linux-java-11:
   image: 
@@ -28,7 +28,7 @@ linux-java-11:
     entrypoint: *entry_point
   stage: test-linux
   script: 
-    - mvn --batch-mode --errors --fail-at-end --show-version test
+    - xvfb-run -a mvn --batch-mode --errors --fail-at-end --show-version test
   when: always
 
 linux-java-17:
