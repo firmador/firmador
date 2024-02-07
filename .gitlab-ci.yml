@@ -36,7 +36,6 @@ linux-java-17:
     name: maven:3.9.5-amazoncorretto-17-debian
     entrypoint: *entry_point
   stage: test-linux
-  before_script: *before_script
   script: 
     - xvfb-run mvn --batch-mode --errors --fail-at-end --show-version test  # to run with simulated X11
   when: always
@@ -46,7 +45,6 @@ linux-java-21:
     name: maven:3.9.5-amazoncorretto-21-debian
     entrypoint: *entry_point
   stage: test-linux
-  before_script: *before_script
   script: 
     - xvfb-run mvn --batch-mode --errors --fail-at-end --show-version test  # to run with simulated X11
   when: always
