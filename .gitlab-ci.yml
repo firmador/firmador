@@ -20,18 +20,15 @@ default:
 .entry_point: &entry_point
   - bash
   - -c
-  - apt-get update && apt-get install -y libfontconfig1 xvfb && useradd -m testuser && exec su testuser -c bash
+  - apt-get update && apt-get install -y libfontconfig1 libxtst6 xvfb && useradd -m testuser && exec su testuser -c bash
 
 linux-java-11:
   image: 
     name: maven:3.9.5-amazoncorretto-11-debian
     entrypoint: *entry_point
   stage: test-linux
-  before_script:
-    - export DISPLAY=:99
-    - Xvfb -ac :99 &
   script: 
-    - mvn --batch-mode --errors --fail-at-end --show-version test
+    - xvfb-run mvn --batch-mode --errors --fail-at-end --show-version test
   when: always
 
 # linux-java-17:
