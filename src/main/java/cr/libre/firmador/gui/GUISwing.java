@@ -250,6 +250,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     }
 
     public Document loadDocument(String fileName) {
+        loadDialogWorker.setVisible(true);
         Document document = new Document(gui, fileName);
         document.registerListener(this);
         this.pluginManager.registerDocument(document);
@@ -262,6 +263,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     }
 
     public void signMultipleDocuments(File[] files) {
+        loadDialogWorker.setVisible(true);
         Document document;
         List<Document> docs = new ArrayList<Document>();
         for (File file : files) {
@@ -273,7 +275,8 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         listdocumentpanel.addDocuments(docs);
         validatescheduler.addDocuments(docs);
         gui.displayFunctionality("document");
-        setActiveDocument();
+        // setActiveDocument();
+        loadDialogWorker.setVisible(false);
     }
 
 
@@ -527,10 +530,6 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         signPanel.docHideButtons();
     }
 
-
-
-
-
     public void showMessage(String message) {
         LOG.info(MessageUtils.t("guiswing_show_message") + message);
         JOptionPane.showMessageDialog(null, new CopyableJLabel(message),
@@ -625,16 +624,18 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         signerScheduler.addDocument(document);
     }
 
+
     public void previewDone(Document document) {
-        setActiveDocument();
-        if (document.getIsReady()) {
-            loadActiveDocument(document);
-            loadDialogWorker.setVisible(false);
-        }
-        if (forcePreview) {
-            forcePreview = false;
-            loadDialogWorker.setVisible(false);
-            gui.displayFunctionality("sign");
+        if (document.getShowPreview()) {
+            setActiveDocument();
+            if (document.getIsReady()) {
+                loadActiveDocument(document);
+            }
+            if (forcePreview) {
+                forcePreview = false;
+                loadDialogWorker.setVisible(false);
+                gui.displayFunctionality("sign");
+            }
         }
     };
 
@@ -644,7 +645,6 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
             loadActiveDocument(document);
             loadDialogWorker.setVisible(false);
         }
-
     };
 
     public void signDone(Document document) {
@@ -671,6 +671,14 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
 
     }
 
+    public void ScheduleAllPreviewDocuments() {
+        loadDialogWorker.setVisible(true);
+        for (Document doc : listdocumentpanel.getAllDocuments()) {
+            doc.setShowPreview(false);
+            previewScheduler.addDocument(doc);
+        }
+    }
+
     public void loadActiveDocument(Document document) {
         if (document.isValid()) {
             gui.displayFunctionality("validator");
@@ -688,7 +696,6 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         signPanel.paintPDFViewer();
         docSelector.setLastFile(document.getPathName());
         SupportedMimeTypeEnum mimeType = document.getMimeType();
-
         signPanel.getSignButton().setEnabled(true);
         try {
             // mainFrame.pack();
@@ -708,9 +715,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     }
 
     public void setActiveDocument(Document document) {
-        loadDialogWorker.setVisible(true);
         docSelector.setLastFile(document.getPathName());
-
     }
 
     public ListDocumentTablePanel getListDocumentTablePanel() {
@@ -719,7 +724,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
 
     @Override
     public void validateAllDone() {
-        loadDialogWorker.setVisible(false);
+        // loadDialogWorker.setVisible(false);
     }
 
     @Override
@@ -738,6 +743,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     @Override
     public void doPreview(Document document) {
         forcePreview = true;
+        loadDialogWorker.setVisible(true);
         previewScheduler.addDocument(document);
 
     }
@@ -747,6 +753,12 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         signPanel.clean();
         validatePanel.clean();
         document = null;
+
+    }
+
+    @Override
+    public void previewAllDone() {
+        loadDialogWorker.setVisible(false);
 
     }
 }

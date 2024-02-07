@@ -59,6 +59,7 @@ public interface GUIInterface {
 
     void signAllDone();
 
+    void previewAllDone();
     Settings getCurrentSettings();
 
     void signDocument(Document document);

@@ -113,4 +113,22 @@ public class DocumentSignLogs implements Plugin, DocumentChangeListener, Documen
 
     }
 
+    @Override
+    public void previewAllDone() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void validateAllDone() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void signAllDone() {
+        // TODO Auto-generated method stub
+
+    }
+
 }

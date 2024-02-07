@@ -70,7 +70,7 @@ public class OOXMLValidator implements Validator {
             if (!signParts.isEmpty()) {
                 isSignedDocument = true;
             }
-            return new DSSDocumentOXML(documentooxml);
+            return new DSSDocumentOXML(documentooxml, fileName);
         } catch (Throwable e) {
             LOG.error("Documento no pudo ser analizado para su firma", e);
 

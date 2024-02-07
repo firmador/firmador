@@ -220,5 +220,11 @@ public class GUIArgs implements GUIInterface {
     public void clearDone() {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public void previewAllDone() {
+        // TODO Auto-generated method stub
+
     };
 }

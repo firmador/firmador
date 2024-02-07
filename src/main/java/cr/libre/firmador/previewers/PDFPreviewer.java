@@ -71,4 +71,9 @@ public class PDFPreviewer implements PreviewerInterface {
             }
         }
     }
+
+    @Override
+    public boolean canConfigurePreview() {
+        return true;
+    }
 }

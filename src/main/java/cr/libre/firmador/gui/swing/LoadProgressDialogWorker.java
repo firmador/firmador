@@ -10,7 +10,6 @@ import cr.libre.firmador.gui.GUISwing;
 
 public class LoadProgressDialogWorker extends SwingWorker<Void, Void> {
     private ProgressDialog progressMonitor;
-    private GUIInterface gui;
     private boolean stop = false;
     private Semaphore waitformessages = new Semaphore(1);
 
@@ -26,9 +25,8 @@ public class LoadProgressDialogWorker extends SwingWorker<Void, Void> {
         while (!stop) {
             waitformessages.acquire();
             progressMonitor.setModal(true);
-
             progressMonitor.setVisible(true);
-            progressMonitor.setVisible(false);
+            // progressMonitor.setVisible(false);
         }
         return null;
     }
@@ -36,8 +34,10 @@ public class LoadProgressDialogWorker extends SwingWorker<Void, Void> {
     public void setVisible(boolean visible) {
         if (visible) {
             waitformessages.release();
+
         } else {
-            progressMonitor.setVisible(false);
+            if (progressMonitor.isVisible())
+                progressMonitor.setVisible(false);
         }
     }
 

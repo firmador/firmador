@@ -1,15 +1,23 @@
 package cr.libre.firmador.previewers;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.invoke.MethodHandles;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
@@ -17,6 +25,8 @@ import cr.libre.firmador.documents.MimeTypeDetector;
 import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 
 public class SofficePreviewer implements PreviewerInterface {
+    final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     private PDDocument document = null;
     private PDFRenderer renderer = null;
     private Settings settings;
@@ -42,11 +52,17 @@ public class SofficePreviewer implements PreviewerInterface {
         String separator = FileSystems.getDefault().getSeparator();
         String guestFilename = FilenameUtils.removeExtension(importfile.getName()) + ".pdf";
         String tmpdir = Files.createTempDirectory("firmadorlibre").toFile().getAbsolutePath();
-        String command = String.format("%s --headless  --convert-to %s --outdir %s %s", settings.sofficePath,
+        String command = String.format("%s --headless  --convert-to %s --outdir %s %s", settings.getSofficePath(),
                 conversorsource, tmpdir, importfile.toURI().normalize());
         Process theProcess = Runtime.getRuntime().exec(command);
 
-        theProcess.getErrorStream().transferTo(System.out);
+        InputStream inputStream = theProcess.getErrorStream();
+
+        String text = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
+                .collect(Collectors.joining("\n"));
+
+        LOG.info(text); // .transferTo(System.out);
+
         String completepath = tmpdir + separator + guestFilename;
         File path = new File(completepath);
         if (path.exists())
@@ -99,5 +115,12 @@ public class SofficePreviewer implements PreviewerInterface {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public boolean canConfigurePreview() {
+        File path = new File(settings.getSofficePath());
+
+        return path.exists();
     }
 }

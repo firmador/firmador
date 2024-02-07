@@ -91,8 +91,6 @@ public class TimeStampServiceCR extends TSPTimeStampService {
 
     public void AddCertificateRevocation(SignatureConfig signatureConfig, RevocationData revocationData)
             throws Throwable {
-
-
         CertificateToken certificate = new CertificateToken(signatureConfig.getSigningCertificateChain().get(0));
         List<CertificateToken> chain = certManager.getCertificateChain(certificate);
         CertificateToken issuerCertificateOscp = chain.get(0);

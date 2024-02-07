@@ -19,6 +19,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.signers;
 
+import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.security.Key;
 import java.security.KeyStore;
@@ -103,8 +104,8 @@ public class FirmadorOpenXmlFormat extends CRSigner implements DocumentSigner {
         signatureConfig = new SignatureConfig();
 
         X509Certificate x509 = (X509Certificate) keystore.getCertificate(tokenstr);
-        CertificateToken certificate = new CertificateToken(x509); 
-        
+        CertificateToken certificate = new CertificateToken(x509);
+
         signatureConfig.setKey((PrivateKey) key);
         signatureConfig.addSignatureFacet(new OOXMLSignatureFacet());
         signatureConfig.addSignatureFacet(new EnvelopedSignatureFacet());
@@ -129,7 +130,7 @@ public class FirmadorOpenXmlFormat extends CRSigner implements DocumentSigner {
         signatureConfig.setXadesDigestAlgo(HashAlgorithm.sha256);
         signatureConfig.setDigestAlgo(HashAlgorithm.sha256);
         signatureConfig.setAllowMultipleSignatures(true);
-        
+
         List<X509Certificate> certchain = certManager.getX509CertificateChain(certificate);
         certchain.add(0, x509);
         signatureConfig.setSigningCertificateChain(certchain);
@@ -138,6 +139,7 @@ public class FirmadorOpenXmlFormat extends CRSigner implements DocumentSigner {
 
         RevocationDataService revocationDataService = revocationChain -> revocationData;
         signatureConfig.setRevocationDataService(revocationDataService);
+        
         OPCPackage pkg = OPCPackage.open(toSignDocument.openStream());
         SignatureInfo si = new SignatureInfo();
         si.setOpcPackage(pkg);
@@ -154,7 +156,7 @@ public class FirmadorOpenXmlFormat extends CRSigner implements DocumentSigner {
         if (card.getCardType() == CardSignInfo.PKCS11TYPE && provider != null) {
             Security.addProvider(provider);
         }
-        return new DSSDocumentOXML(pkg);
+        return new DSSDocumentOXML(pkg, "");
     }
 
     public DSSDocument extend(DSSDocument document) {
@@ -169,7 +171,7 @@ public class FirmadorOpenXmlFormat extends CRSigner implements DocumentSigner {
     @Override
     public void setDetached(List<DSSDocument> detacheddocs) {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

@@ -63,6 +63,40 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         }
     }
 
+    private class PreviewAllAction implements ActionListener {
+        private ListDocumentTablePanel panel;
+
+        public PreviewAllAction(ListDocumentTablePanel panel) {
+            this.panel = panel;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+            if (this.panel.table.getRowCount() > 0) {
+                ((GUISwing) this.panel.gui).ScheduleAllPreviewDocuments();
+            } else {
+                gui.showMessage(MessageUtils.t("list_document_previewall_empty_action"));
+            }
+        }
+    }
+
+    private class SignAllAction implements ActionListener {
+        private ListDocumentTablePanel panel;
+
+        public SignAllAction(ListDocumentTablePanel panel) {
+            this.panel = panel;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+            if (this.panel.table.getRowCount() > 0) {
+                ((GUISwing) this.panel.gui).signAllDocuments();
+            } else {
+                gui.showMessage(MessageUtils.t("list_document_no_documents_to_sign"));
+            }
+        }
+    }
+
     public ListDocumentTablePanel() {
         super();
         this.setLayout(new BorderLayout());
@@ -84,22 +118,20 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         loaddoclistbtn.setToolTipText(MessageUtils.t("list_document_load_list"));
         loaddoclistbtn.getAccessibleContext().setAccessibleDescription(MessageUtils.t("list_document_load_list"));
 
+        JButton previewallbtn = new JButton(MessageUtils.t("list_document_previewall"));
+        previewallbtn.setToolTipText(MessageUtils.t("list_document_previewall_tooltip"));
+        previewallbtn.getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("list_document_previewall_tooltip_accesible"));
+
         signbtn.setMnemonic('S');
         cleanbtn.setMnemonic('C');
         savedoclistbtn.setMnemonic('D');
         loaddoclistbtn.setMnemonic('L');
+        previewallbtn.setMnemonic('P');
 
-        signbtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                if(table.getRowCount() > 0) {
-                    ((GUISwing) gui).signAllDocuments();
-                }else {
-                    gui.showMessage(MessageUtils.t("list_document_no_documents_to_sign"));
-                }
-            }
-        });
-
+        signbtn.addActionListener(new SignAllAction(this));
         cleanbtn.addActionListener(new CleanDocumentsAction(this));
+        previewallbtn.addActionListener(new PreviewAllAction(this));
 
         savedoclistbtn.addActionListener(new ActionListener() {
             @Override
@@ -135,6 +167,7 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         actionButtonsPanel.add(savedoclistbtn);
         actionButtonsPanel.add(loaddoclistbtn);
         actionButtonsPanel.add(cleanbtn);
+        actionButtonsPanel.add(previewallbtn);
 
         model = new ListDocumentTableModel();
         table = new JTable(model);
@@ -316,5 +349,23 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
 
     public ListDocumentTableModel getModel() {
         return model;
+    }
+
+    @Override
+    public void previewAllDone() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void validateAllDone() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void signAllDone() {
+        // TODO Auto-generated method stub
+
     }
 }

@@ -80,7 +80,7 @@ public class Settings {
     public String pAdESLevel = "LTA";
     public String xAdESLevel = "LTA";
     public String cAdESLevel = "LTA";
-    public String sofficePath = "/usr/bin/soffice";
+    public String sofficePath = "";
     public List<String> pKCS12File = new ArrayList<String>();
 
 
@@ -152,7 +152,7 @@ public class Settings {
         this.pAdESLevel = oldsettings.pAdESLevel;
         this.xAdESLevel = oldsettings.xAdESLevel;
         this.cAdESLevel = oldsettings.cAdESLevel;
-        this.sofficePath = oldsettings.sofficePath;
+        this.sofficePath = oldsettings.getSofficePath();
         this.pDFImgScaleFactor = oldsettings.pDFImgScaleFactor;
         this.isVisibleSignature = oldsettings.isVisibleSignature;
         this.signASiC = oldsettings.signASiC;
@@ -185,6 +185,20 @@ public class Settings {
             hl.updateConfig();
     }
 
+    public String getSofficePath() {
+        String newofficepath = "/usr/bin/soffice";
+        if (sofficePath.isEmpty()) {
+            String osName = System.getProperty("os.name").toLowerCase();
+            if (osName.contains("mac"))
+                newofficepath = "/Applications/LibreOffice.app/Contents/MacOS/soffice ";
+            else if (osName.contains("linux"))
+                newofficepath = "/usr/bin/soffice";
+            else if (osName.contains("windows"))
+                newofficepath = System.getenv("systemdrive") + "\\Program Files\\LibreOffice\\program\\soffice.exe";
+        } else
+            newofficepath = this.sofficePath;
+        return newofficepath;
+    }
     public String getFontName(String fontName, boolean isPdf) {
         String selectedFontName = "";
         switch (fontName) {

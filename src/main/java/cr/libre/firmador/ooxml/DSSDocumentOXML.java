@@ -1,6 +1,8 @@
 package cr.libre.firmador.ooxml;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,6 +17,7 @@ public class DSSDocumentOXML implements DSSDocument   {
 	private OPCPackage opcpkg;
 	protected MimeType mimeType;
 	protected String name;
+    private String fileName;
 
 	public OPCPackage getOpcpkg() {
 		return opcpkg;
@@ -34,13 +37,29 @@ public class DSSDocumentOXML implements DSSDocument   {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public DSSDocumentOXML(OPCPackage opcpkg){
+
+    public DSSDocumentOXML(OPCPackage opcpkg, String fileName) {
 		this.opcpkg=opcpkg;
+        this.fileName = fileName;
 	}
 	@Override
 	public InputStream openStream() {
-		
-		return null;
+       /**
+	    try {
+            File tempFile = File.createTempFile("prefix-", "-suffix");
+            tempFile.deleteOnExit();
+            return new FileInputStream(tempFile);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }**/
+       try {
+           return new FileInputStream(new File(this.fileName));
+       } catch (FileNotFoundException e) {
+           // TODO Auto-generated catch block
+           e.printStackTrace();
+       } // this.opcpkg.;
+       return null;
 	}
 
 	@Override

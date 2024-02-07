@@ -22,5 +22,7 @@ public interface PreviewerInterface {
     boolean showSignLabelPreview();
 
     void closePreview();
+
+    boolean canConfigurePreview();
 }
 

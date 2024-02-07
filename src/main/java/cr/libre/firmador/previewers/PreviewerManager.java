@@ -4,7 +4,7 @@ import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 
 public class PreviewerManager {
     public static PreviewerInterface getPreviewManager(SupportedMimeTypeEnum mimetype) {
-        PreviewerInterface previewer = new NonPreviewer();
+        PreviewerInterface previewer = null;
         if(mimetype.isPDF()) {
             previewer = new PDFPreviewer();
         }
@@ -13,6 +13,14 @@ public class PreviewerManager {
         }
         if (mimetype.isOpenDocument()) {
             previewer = new SofficePreviewer();
+        }
+        // check if previewer can load, else fallback to nonpreviewer
+        if (previewer != null && !previewer.canConfigurePreview()) {
+            previewer = null;
+        }
+
+        if (previewer == null) {
+            previewer = new NonPreviewer();
         }
         return previewer;
     }

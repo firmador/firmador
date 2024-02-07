@@ -24,8 +24,8 @@ public class PreviewWorker extends SwingWorker<Void, Void> {
         try {
             document.loadPreview();
         } catch (Throwable e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Preview Worker: " + e.getMessage(), e);
+
         } finally {
             scheduler.done();
         }

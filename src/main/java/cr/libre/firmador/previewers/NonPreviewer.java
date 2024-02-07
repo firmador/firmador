@@ -68,4 +68,9 @@ public class NonPreviewer implements PreviewerInterface {
             }
         }
     }
+
+    @Override
+    public boolean canConfigurePreview() {
+        return true;
+    }
 }

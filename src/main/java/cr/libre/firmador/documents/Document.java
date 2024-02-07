@@ -48,6 +48,7 @@ public class Document {
     private String report;
     private boolean signwithErrors = false;
     private CardSignInfo usedcard;
+    private boolean showPreview = true;
 
 
     public Document(GUIInterface gui, String pathname) {
@@ -260,10 +261,15 @@ public class Document {
         return preview;
     }
 
-    public void loadPreview() throws Throwable {
-        preview.loadDocument(pathname);
-        preview.getRender();
-        this.previewDone();
+    public void loadPreview() {
+        try {
+            preview.loadDocument(pathname);
+            preview.getRender();
+        } catch (Throwable e) {
+            LOG.error("Preview: " + e.getMessage(), e);
+        } finally {
+            this.previewDone();
+        }
     }
 
     public int amountOfSignatures() {
@@ -310,5 +316,13 @@ public class Document {
 
     public CardSignInfo getUsedCard() {
         return usedcard;
+    }
+
+    public boolean getShowPreview() {
+        return showPreview;
+    }
+
+    public void setShowPreview(boolean showPreview) {
+        this.showPreview = showPreview;
     }
 }

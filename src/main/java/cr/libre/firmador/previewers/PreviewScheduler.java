@@ -13,9 +13,9 @@ import cr.libre.firmador.gui.GUIInterface;
 
 public class PreviewScheduler extends Thread {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
+    private int MAX_FILES_PROCESS = 5;
     private Semaphore waitforfiles = new Semaphore(1);
-    private Semaphore maxoffilesperprocess = new Semaphore(3);
+    private Semaphore maxoffilesperprocess = new Semaphore(MAX_FILES_PROCESS);
     private List<Document> files;
     private boolean stop = false;
 
@@ -43,6 +43,7 @@ public class PreviewScheduler extends Thread {
                 PreviewWorker task = new PreviewWorker(document, this);
                 task.execute();
             }
+
         }
     } catch (InterruptedException e) {
         stop = true;
@@ -56,5 +57,9 @@ public class PreviewScheduler extends Thread {
     }
     public void done() {
         maxoffilesperprocess.release();
+        int avalilable = maxoffilesperprocess.availablePermits();
+        if (avalilable == MAX_FILES_PROCESS) {
+            gui.previewAllDone();
+        }
     }
 }
