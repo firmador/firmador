@@ -55,7 +55,7 @@ public class TestValidateScheduler {
         assertTrue(this.validateScheduler.getFiles().isEmpty());
 
         this.validateScheduler.start();
-        Thread.sleep(100);   // let it run for 100ms before it is interrupted, so it can run the code as expected
+        Thread.sleep(1000);   // let it run for 1s before it is interrupted, so it can run the code as expected
 
         assertFalse(this.validateScheduler.getStop());  // the scheduler was not interrupted
         verify(this.waitforfiles, atLeastOnce()).acquire();  // method acquire was called at least one time
