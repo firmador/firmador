@@ -1,5 +1,6 @@
 package cr.libre.firmador.signers;
 
+import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.gui.GUIShell;
@@ -81,8 +82,8 @@ public class TestSignerScheduler {
         assertFalse(this.signerScheduler.getStop());  // the scheduler was not interrupted
         verify(this.waitforfiles, atLeastOnce()).acquire();  // method acquire was called at least one time
         verifyNoInteractions(this.maxoffilesperprocess);  // this semaphore is not used since list is empty
-        verify(this.progressMonitor, never()).setTitle(String.format("Proceso de firmado de %d  documentos", signerScheduler.getFiles().size()));  // method was never called
-        verify(this.progressMonitor, never()).setHeaderTitle("Firmando documento");  // method was never called
+        verify(this.progressMonitor, never()).setTitle(String.format(MessageUtils.t("signer_scheduler_sign_process"), signerScheduler.getFiles().size()));  // method was never called
+        verify(this.progressMonitor, never()).setHeaderTitle(MessageUtils.t("signer_scheduler_signing_document"));  // method was never called
         verify(this.progressMonitor, never()).setVisible(true);  // method was never called
     }
 
@@ -100,13 +101,13 @@ public class TestSignerScheduler {
 
         assertFalse(this.signerScheduler.getStop());  // the scheduler was not interrupted
         verify(this.waitforfiles, atLeastOnce()).acquire();  // method acquire was called at least one time
-        verify(this.progressMonitor, atLeastOnce()).setTitle(String.format("Proceso de firmado de %d documento(s)", signerScheduler.getFiles().size()));  // method was called at least one time
-        verify(this.progressMonitor, atLeastOnce()).setHeaderTitle("Firmando documento");  // method was called at least one time
+        verify(this.progressMonitor, atLeastOnce()).setTitle(String.format(MessageUtils.t("signer_scheduler_sign_process"), signerScheduler.getFiles().size()));  // method was called at least one time
+        verify(this.progressMonitor, atLeastOnce()).setHeaderTitle(MessageUtils.t("signer_scheduler_signing_document"));  // method was called at least one time
         verify(this.progressMonitor, atLeastOnce()).setVisible(true);  // method was called at least one time
         verify(this.progressMonitor, atLeastOnce()).setProgressStatus(0);  // method was called at least one time
 
         verify(this.maxoffilesperprocess, times(1)).acquire();  // method acquire was called once since the list had one document
-        verify(this.progressMonitor, times(1)).setHeaderTitle("Firmando " + this.testDocumentPDF1.getName());  // method was called once with the document name
+        verify(this.progressMonitor, times(1)).setHeaderTitle(MessageUtils.t("signer_scheduler_signing") + " " + this.testDocumentPDF1.getName());  // method was called once with the document name
         assertTrue(this.signerScheduler.getFiles().isEmpty());  // list is empty after the document is processed
     }
 
@@ -132,13 +133,13 @@ public class TestSignerScheduler {
 
         assertFalse(this.signerScheduler.getStop());  // the scheduler was not interrupted, the variable was not changed
         verify(this.waitforfiles, atLeastOnce()).acquire();  // method acquire was called at least one time
-        verify(this.progressMonitor, atLeastOnce()).setTitle(String.format("Proceso de firmado de %d documento(s)", signerScheduler.getFiles().size()));  // method was called at least one time
-        verify(this.progressMonitor, atLeastOnce()).setHeaderTitle("Firmando documento");  // method was called at least one time
+        verify(this.progressMonitor, atLeastOnce()).setTitle(String.format(MessageUtils.t("signer_scheduler_sign_process"), signerScheduler.getFiles().size()));  // method was called at least one time
+        verify(this.progressMonitor, atLeastOnce()).setHeaderTitle(MessageUtils.t("signer_scheduler_signing_document"));  // method was called at least one time
         verify(this.progressMonitor, atLeastOnce()).setVisible(true);  // method was called at least one time
         verify(this.progressMonitor, atLeastOnce()).setProgressStatus(0);  // method was called at least one time
 
         verify(this.maxoffilesperprocess, times(1)).acquire();  // method acquire was called once before the exception was thrown
-        verify(this.progressMonitor, never()).setHeaderTitle("Firmando " + this.testDocumentPDF1.getName());  // method was never called
+        verify(this.progressMonitor, never()).setHeaderTitle(MessageUtils.t("signer_scheduler_signing") + " " + this.testDocumentPDF1.getName());  // method was never called
         assertTrue(this.signerScheduler.getFiles().isEmpty());  // list is empty since the document was removed before the exception was thrown
     }
 
@@ -157,16 +158,16 @@ public class TestSignerScheduler {
 
         assertFalse(this.signerScheduler.getStop());  // the scheduler was not interrupted
         verify(this.waitforfiles, atLeastOnce()).acquire();  // method acquire was called at least one time
-        verify(this.progressMonitor, atLeastOnce()).setTitle(String.format("Proceso de firmado de %d documento(s)", signerScheduler.getFiles().size()));  // method was called at least one time
-        verify(this.progressMonitor, atLeastOnce()).setHeaderTitle("Firmando documento");  // method was called at least one time
+        verify(this.progressMonitor, atLeastOnce()).setTitle(String.format(MessageUtils.t("signer_scheduler_sign_process"), signerScheduler.getFiles().size()));  // method was called at least one time
+        verify(this.progressMonitor, atLeastOnce()).setHeaderTitle(MessageUtils.t("signer_scheduler_signing_document"));  // method was called at least one time
         verify(this.progressMonitor, atLeastOnce()).setVisible(true);  // method was called at least one time
         verify(this.progressMonitor, atLeastOnce()).setProgressStatus(0);  // method was called at least one time
 
         verifyNoInteractions(this.maxoffilesperprocess);  // method acquire was not called since card is null
-        verify(this.progressMonitor, never()).setHeaderTitle("Firmando " + this.testDocumentPDF1.getName());  // method was not called since card is null
-        verify(this.progressMonitor, never()).setHeaderTitle("Firmando " + this.testDocumentDOCX.getName());  // method was not called since card is null
+        verify(this.progressMonitor, never()).setHeaderTitle(MessageUtils.t("signer_scheduler_signing") + " " + this.testDocumentPDF1.getName());  // method was not called since card is null
+        verify(this.progressMonitor, never()).setHeaderTitle(MessageUtils.t("signer_scheduler_signing") + " " + this.testDocumentDOCX.getName());  // method was not called since card is null
 
-        verify(this.progressMonitor, atLeastOnce()).setHeaderTitle("Proceso cancelado");  // method was called at least one time
+        verify(this.progressMonitor, atLeastOnce()).setHeaderTitle(MessageUtils.t("signer_scheduler_cancelled_process"));  // method was called at least one time
         verify(this.progressMonitor, atLeastOnce()).setVisible(false);  // method was called at least one time
         assertTrue(this.signerScheduler.getFiles().isEmpty());  // list was cleared because the card is null
     }
@@ -194,9 +195,9 @@ public class TestSignerScheduler {
         verify(this.maxoffilesperprocess, times(number0fDocs)).release();  // method release was called once per document when done
         assertTrue(this.signerScheduler.getFiles().isEmpty());  // list is empty after the documents are processed
 
-        verify(this.progressMonitor, times(1)).setHeaderTitle("Firmando " + this.testDocumentODT.getName());  // method was called when the document was processed
-        verify(this.progressMonitor, times(2)).setHeaderTitle("Firmando " + this.testDocumentPDF1.getName());  // method was called when the document was processed - 2 times since there are 2 PDFs with the same file
-        verify(this.progressMonitor, times(1)).setHeaderTitle("Firmando " + this.testDocumentDOCX.getName());  // method was called when the document was processed
+        verify(this.progressMonitor, times(1)).setHeaderTitle(MessageUtils.t("signer_scheduler_signing") + " " + this.testDocumentODT.getName());  // method was called when the document was processed
+        verify(this.progressMonitor, times(2)).setHeaderTitle(MessageUtils.t("signer_scheduler_signing") + " " + this.testDocumentPDF1.getName());  // method was called when the document was processed - 2 times since there are 2 PDFs with the same file
+        verify(this.progressMonitor, times(1)).setHeaderTitle(MessageUtils.t("signer_scheduler_signing") + " " + this.testDocumentDOCX.getName());  // method was called when the document was processed
 
         // check semaphores have the right status at the end
         assertFalse(this.maxoffilesperprocess.hasQueuedThreads());  // no more pending files to process
@@ -286,7 +287,7 @@ public class TestSignerScheduler {
 
         // nothing was executed since the property name is something else but progress
         verify(this.progressMonitor, times(1)).setProgressStatus(10);
-        verify(this.progressMonitor, times(1)).setNote("Completando... 10%.\n");
+        verify(this.progressMonitor, times(1)).setNote(String.format(MessageUtils.t("signer_scheduler_completing") + "\n", 10));
         assertFalse(this.signerScheduler.getTask().isDone());
         assertFalse(this.progressMonitor.isCanceled());
         assertTrue(this.signerSchedulerLog.getEvents().isEmpty());  // nothing was logged
@@ -304,7 +305,7 @@ public class TestSignerScheduler {
         assertFalse(this.signerScheduler.getTask().isDone());
         assertTrue(this.signerScheduler.getProgressMonitor().isCanceled());
         verify(this.progressMonitor, times(1)).setProgressStatus(20);
-        verify(this.progressMonitor, times(1)).setNote("Completando... 20%.\n");
+        verify(this.progressMonitor, times(1)).setNote(String.format(MessageUtils.t("signer_scheduler_completing") + "\n", 20));
         verify(this.maxoffilesperprocess, times(1)).release();  // the method was called once
         assertTrue(this.signerScheduler.getTask().isCancelled());  // the task was cancelled
         assertFalse(this.signerSchedulerLog.getEvents().isEmpty());  // something was logged
@@ -324,7 +325,7 @@ public class TestSignerScheduler {
         assertTrue(this.signerScheduler.getTask().isDone());
         assertFalse(this.signerScheduler.getProgressMonitor().isCanceled());
         verify(this.progressMonitor, times(1)).setProgressStatus(30);
-        verify(this.progressMonitor, times(1)).setNote("Completando... 30%.\n");
+        verify(this.progressMonitor, times(1)).setNote(String.format(MessageUtils.t("signer_scheduler_completing") + "\n", 30));
         verifyNoInteractions(this.maxoffilesperprocess);  // the semaphore was not used at all
         assertFalse(this.signerScheduler.getTask().isCancelled());  // the task was not cancelled
         assertFalse(this.signerSchedulerLog.getEvents().isEmpty());  // something was logged
