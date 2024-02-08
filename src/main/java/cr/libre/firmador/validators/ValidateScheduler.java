@@ -27,7 +27,7 @@ public class ValidateScheduler extends Thread {
 
     public void run() {
         try {
-            this.waitforfiles.acquire(); // first time adquiere and don't lock
+            this.waitforfiles.acquire(); // first time acquire and don't lock
             while (!this.stop) {
                 if (this.files.isEmpty())
                     this.waitforfiles.acquire(); // lock thread until the list is not empty

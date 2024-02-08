@@ -20,10 +20,10 @@ public class TestValidateScheduler {
     private final String testODTPath =  FileSystems.getDefault().getPath("testDocs", "testODT.odt").toString();
     private final String testDOCXPath =  FileSystems.getDefault().getPath("testDocs", "testDOCX.docx").toString();
     private final GUIShell gui = spy(new GUIShell());
-    private final Document testDocumentPDF1 = new Document(gui, this.testPDFPath);
-    private final Document testDocumentPDF2 = new Document(gui, this.testPDFPath);
-    private final Document testDocumentODT = new Document(gui, this.testODTPath);
-    private final Document testDocumentDOCX = new Document(gui, this.testDOCXPath);
+    private final Document testDocumentPDF1 = new Document(this.gui, this.testPDFPath);
+    private final Document testDocumentPDF2 = new Document(this.gui, this.testPDFPath);
+    private final Document testDocumentODT = new Document(this.gui, this.testODTPath);
+    private final Document testDocumentDOCX = new Document(this.gui, this.testDOCXPath);
     private final Semaphore waitforfiles = spy(new Semaphore(1));
     private final Semaphore maxoffilesperprocess = spy(new Semaphore(MAX_FILES_PROCESS));
     private ValidateScheduler validateScheduler;
@@ -64,7 +64,7 @@ public class TestValidateScheduler {
 
     @Test
     void testRunWithNonEmptyList() throws InterruptedException {
-        this.validateScheduler.addDocument(testDocumentPDF1);
+        this.validateScheduler.addDocument(this.testDocumentPDF1);
         assertFalse(this.validateScheduler.getStop());
         assertFalse(this.validateScheduler.getFiles().isEmpty());
 
@@ -81,13 +81,13 @@ public class TestValidateScheduler {
     void testRunCheckSemaphoresUse() throws InterruptedException{
         this.validateScheduler.start();
 
-        this.validateScheduler.addDocument(testDocumentODT);
+        this.validateScheduler.addDocument(this.testDocumentODT);
         Thread.sleep(500); // give it sometime between adding docs to let it adjust
-        this.validateScheduler.addDocument(testDocumentPDF1);
+        this.validateScheduler.addDocument(this.testDocumentPDF1);
         Thread.sleep(500); // give it sometime between adding docs to let it adjust
-        this.validateScheduler.addDocument(testDocumentPDF2);
+        this.validateScheduler.addDocument(this.testDocumentPDF2);
         Thread.sleep(500); // give it sometime between adding docs to let it adjust
-        this.validateScheduler.addDocument(testDocumentDOCX);
+        this.validateScheduler.addDocument(this.testDocumentDOCX);
 
         Thread.sleep(1000);   // let it run for 1s before it is interrupted, so it can run the code as expected
 
@@ -124,9 +124,10 @@ public class TestValidateScheduler {
     void testAddDocument(){
         assertTrue(this.validateScheduler.getFiles().isEmpty());
 
-        this.validateScheduler.addDocument(testDocumentPDF1);
+        this.validateScheduler.addDocument(this.testDocumentPDF1);
 
         assertFalse(this.validateScheduler.getFiles().isEmpty());
+        assertEquals(this.testDocumentPDF1, this.validateScheduler.getFiles().get(0));
         verify(this.waitforfiles, times(1)).release();  // method release was called once after the doc is added
     }
 
@@ -136,7 +137,7 @@ public class TestValidateScheduler {
     void testAddDocuments(){
         assertTrue(this.validateScheduler.getFiles().isEmpty());
 
-        ArrayList<Document> docsToAdd= new ArrayList<>(List.of(testDocumentPDF1, testDocumentDOCX, testDocumentODT));
+        ArrayList<Document> docsToAdd= new ArrayList<>(List.of(this.testDocumentPDF1, this.testDocumentDOCX, this.testDocumentODT));
         this.validateScheduler.addDocuments(docsToAdd);
 
         assertFalse(this.validateScheduler.getFiles().isEmpty());

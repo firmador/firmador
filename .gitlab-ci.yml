@@ -20,7 +20,7 @@ default:
 .entry_point: &entry_point
   - bash
   - -c
-  - apt-get update && apt-get install -y libfontconfig1 && useradd -m testuser && exec su testuser -c bash
+  - apt-get update && apt-get install -y libfontconfig1 xvfb libxtst6 libxi6 && useradd -m testuser && exec su testuser -c bash
 
 linux-java-11:
   image: 
@@ -28,7 +28,7 @@ linux-java-11:
     entrypoint: *entry_point
   stage: test-linux
   script: 
-    - mvn $MAVEN_CLI_OPTS test
+    - xvfb-run mvn --batch-mode --errors --fail-at-end --show-version test  # to run with simulated X11
   when: always
 
 linux-java-17:
@@ -37,7 +37,7 @@ linux-java-17:
     entrypoint: *entry_point
   stage: test-linux
   script: 
-    - mvn $MAVEN_CLI_OPTS test
+    - xvfb-run mvn --batch-mode --errors --fail-at-end --show-version test  # to run with simulated X11
   when: always
 
 linux-java-21:
@@ -46,7 +46,7 @@ linux-java-21:
     entrypoint: *entry_point
   stage: test-linux
   script: 
-    - mvn --batch-mode --errors --fail-at-end --show-version test
+    - xvfb-run mvn --batch-mode --errors --fail-at-end --show-version test  # to run with simulated X11
   when: always
 
 # ------ Windows ------

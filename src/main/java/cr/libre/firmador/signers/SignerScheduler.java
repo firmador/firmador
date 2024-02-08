@@ -22,7 +22,6 @@ package cr.libre.firmador.signers;
 import java.awt.Toolkit;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,13 +35,12 @@ import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.swing.ExecutorWorkerInterface;
 import cr.libre.firmador.gui.swing.SignProgressDialogWorker;
-import cr.libre.firmador.validators.ValidationWorker;
 
 public class SignerScheduler extends Thread implements PropertyChangeListener, ExecutorWorkerInterface  {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    public static int MAX_FILES_PROCESS = 2;
     private GUIInterface gui;
     private SignerWorker task;
-    private int MAX_FILES_PROCESS = 2;
     private Integer progressStatus = 0;
     private List<Document> files;
     private boolean stop = false;
@@ -54,66 +52,62 @@ public class SignerScheduler extends Thread implements PropertyChangeListener, E
     public SignerScheduler(GUIInterface gui, SignProgressDialogWorker progressMonitor) {
         super();
         this.gui = gui;
-        files = new ArrayList<Document>();
+        this.files = new ArrayList<>();
         this.progressMonitor = progressMonitor;
     }
 
 
     @Override
     public void run() {
-        int amountOfFiles = 0;
-        int currentFileCounter = 0;
         try {
-            waitforfiles.acquire();// first time adquiere and don't block
+            this.waitforfiles.acquire(); // first time acquire and don't lock
             nextStep("Inicio de firmado");
 
-        while (!stop) {
-            if (this.files.size() <= 0)
-                waitforfiles.acquire(); // block thread until list is empty
-            progressMonitor.setTitle(String.format("Proceso de firmado de %d  documentos", files.size()));
-            progressMonitor.setHeaderTitle("Firmando documento");
-            progressMonitor.setVisible(true);
+            while (!this.stop) {
+                if (this.files.isEmpty())
+                    this.waitforfiles.acquire(); // lock thread until the list is not empty
 
-            CardSignInfo card = gui.getPin();
-            amountOfFiles = this.files.size();
-            currentFileCounter = 0;
-            progressMonitor.setProgressStatus(0);
-            while (!this.files.isEmpty() && card != null) {
-                Document document = this.files.remove(0);
-                try {
-                    maxoffilesperprocess.acquire();
+                this.progressMonitor.setTitle(String.format("Proceso de firmado de %d documento(s)", files.size()));
+                this.progressMonitor.setHeaderTitle("Firmando documento");
+                this.progressMonitor.setVisible(true);
 
-                    progressMonitor.setHeaderTitle("Firmando " + document.getName());
-                    task = new SignerWorker(this, progressMonitor, gui, document, card);
-                    task.addPropertyChangeListener(this);
-                    task.execute();
-                } catch (InterruptedException e) {
-                    LOG.debug("Interrupción al obtener bloqueo del hilo en documento: " + document.getPathName(), e);
-                    e.printStackTrace();
+                CardSignInfo card = gui.getPin();
+                this.progressMonitor.setProgressStatus(0);
+                while (!this.files.isEmpty() && card != null) {
+                    Document document = this.files.remove(0);
+                    try {
+                        this.maxoffilesperprocess.acquire();
+
+                        this.progressMonitor.setHeaderTitle("Firmando " + document.getName());
+                        this.task = new SignerWorker(this, progressMonitor, gui, document, card);
+                        this.task.addPropertyChangeListener(this);
+                        this.task.execute();
+                    } catch (InterruptedException e) {
+                        LOG.debug("Interrupción al obtener bloqueo del hilo en documento: " + document.getPathName(), e);
+                        e.printStackTrace();
+                    }
+                }
+                if (card == null) {
+                    this.progressMonitor.setHeaderTitle("Proceso cancelado");
+                    this.progressMonitor.setVisible(false);
+                    this.files.clear();
                 }
             }
-            if (card == null) {
-                progressMonitor.setHeaderTitle("Proceso cancelado");
-                progressMonitor.setVisible(false);
-                this.files.clear();
-            }
+        } catch (InterruptedException e) {
+            this.stop = true;
+            e.printStackTrace();
         }
-    } catch (InterruptedException e) {
-        stop = true;
-        e.printStackTrace();
-    }
     }
 
     public void nextStep(String msg) {
-        if(msg == null) msg="";
-        progressStatus += 5 ;
-        if(progressStatus > 100) progressStatus = 99;
-        progressMonitor.setProgressStatus(progressStatus);
-        String message =
-                String.format(" %d%%.\n", progressStatus);
-        progressMonitor.setNote(msg+message);
+        if(msg == null) msg = "";
+        this.progressStatus += 5;
+        if(this.progressStatus > 100) this.progressStatus = 99;
+        this.progressMonitor.setProgressStatus(this.progressStatus);
+        String message = String.format(" %d%%.\n", this.progressStatus);
+        this.progressMonitor.setNote(msg + message);
         try {
-            Thread.sleep(500); // change the thread to show progress bar.
+            sleep(500);  // change the thread to show progress bar.
         } catch (InterruptedException e) {
             LOG.debug("Interrupción al correr el estado del progreso con múltiples ficheros", e);
             e.printStackTrace();
@@ -121,49 +115,92 @@ public class SignerScheduler extends Thread implements PropertyChangeListener, E
     }
 
     public void propertyChange(PropertyChangeEvent evt) {
-        if ("progress" == evt.getPropertyName() ) {
+        if ("progress".equals(evt.getPropertyName())) {
             int progress = (Integer) evt.getNewValue();
-            progressMonitor.setProgressStatus(progress);
-            String message =
-                String.format("Completando... %d%%.\n", progress);
-            progressMonitor.setNote(message);
+            this.progressMonitor.setProgressStatus(progress);
+            String message = String.format("Completando... %d%%.\n", progress);
+            this.progressMonitor.setNote(message);
 
-            if (progressMonitor.isCanceled() || task.isDone()) {
+            if (this.progressMonitor.isCanceled() || this.task.isDone()) {
                 Toolkit.getDefaultToolkit().beep();
-                if (progressMonitor.isCanceled()) {
-                    task.cancel(true);
-                    maxoffilesperprocess.release();
-                    LOG.info("Tarea cancelada");
+                if (this.progressMonitor.isCanceled()) {
+                    this.task.cancel(true);
+                    this.maxoffilesperprocess.release();
+                    this.LOG.info("Tarea cancelada");
                 } else {
-                    LOG.info("Tarea completa");
+                    this.LOG.info("Tarea completada");
                 }
             }
         }
     }
+
     public void setProgress(Integer status) {
-        progressStatus = status;
-        progressMonitor.setProgressStatus(progressStatus);
+        this.progressStatus = status;
+        this.progressMonitor.setProgressStatus(this.progressStatus);
     }
 
     public void done() {
-        maxoffilesperprocess.release();
-        int avalilable = maxoffilesperprocess.availablePermits();
-        if (avalilable == MAX_FILES_PROCESS) {
-
-            progressMonitor.setVisible(false);
-            gui.signAllDone();
+        this.maxoffilesperprocess.release();
+        int available = this.maxoffilesperprocess.availablePermits();
+        if (available == MAX_FILES_PROCESS) {
+            this.progressMonitor.setVisible(false);
+            this.gui.signAllDone();
         }
     }
 
     public void addDocument(Document document) {
         this.files.add(document);
-        waitforfiles.release();
+        this.waitforfiles.release();
     }
 
     public void addDocuments(List<Document> docfiles) {
         for (Document d : docfiles) {
             this.files.add(d);
         }
-        waitforfiles.release();
+        this.waitforfiles.release();
+    }
+
+    public void sleep(int ms) throws InterruptedException{
+        Thread.sleep(ms);
+    }
+
+    public GUIInterface getGui() {
+        return this.gui;
+    }
+
+    public List<Document> getFiles(){
+        return this.files;
+    }
+
+    public SignProgressDialogWorker getProgressMonitor() {
+        return this.progressMonitor;
+    }
+
+    public void setProgressStatus(Integer progressStatus){
+        this.progressStatus = progressStatus;
+    }
+
+    public Integer getProgressStatus(){
+        return this.progressStatus;
+    }
+
+    public SignerWorker getTask(){
+        return this.task;
+    }
+
+    public void setTask(SignerWorker task){
+        this.task = task;
+    }
+
+    public boolean getStop(){
+        return this.stop;
+    }
+
+    public void setWaitforfiles(Semaphore waitforfiles){
+        this.waitforfiles = waitforfiles;
+    }
+
+    public void setMaxoffilesperprocess(Semaphore maxoffilesperprocess){
+        this.maxoffilesperprocess = maxoffilesperprocess;
     }
 }
