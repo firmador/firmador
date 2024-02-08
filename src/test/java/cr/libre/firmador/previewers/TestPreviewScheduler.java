@@ -95,7 +95,8 @@ public class TestPreviewScheduler {
         Thread.sleep(500); // give it sometime between adding docs to let it adjust
         this.previewScheduler.addDocument(this.testDocumentDOCX);
 
-        Thread.sleep(1000);   // let it run for 1s before it is interrupted, so it can run the code as expected
+        Thread.sleep(4000); // let it run for 4s before it is interrupted, so it can run the code as
+                            // expected
 
         int number0fDocs = 4;
         assertFalse(this.previewScheduler.getStop());  // the scheduler was not interrupted
