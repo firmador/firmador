@@ -143,12 +143,12 @@ public class ConfigPanel extends ScrollableJPanel {
         dateFormat.setText(this.settings.dateFormat);
         dateFormat.setToolTipText(MessageUtils.t("configpanel_must_be_compatible_with_java_date_formats"));
         sofficePath = new JTextField();
-        sofficePath.setText(this.settings.sofficePath);
+        sofficePath.setText(this.settings.getSofficePath());
 
         defaultSignMessage = new JTextArea();
-        defaultSignMessage.setText(MessageUtils.t("configpanel_default_sign_message"));
-        defaultSignMessage.setToolTipText(MessageUtils.t("configpanel_default_sign_message"));
-        defaultSignMessage.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_default_sign_message"));
+        defaultSignMessage.setText(settings.defaultSignMessage);
+        defaultSignMessage.setToolTipText(MessageUtils.t("configpanel_default_sign_message_help"));
+        defaultSignMessage.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_default_sign_message_help"));
         defaultSignMessage.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, /* forward traversal textarea with tab */
             KeyboardFocusManager.getCurrentKeyboardFocusManager().getDefaultFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
         defaultSignMessage.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, /* reverse traversal textarea with shift+tab */
@@ -556,7 +556,7 @@ public class ConfigPanel extends ScrollableJPanel {
         pAdESLevel.setSelectedItem(settings.pAdESLevel);
         xAdESLevel.setSelectedItem(settings.xAdESLevel);
         cAdESLevel.setSelectedItem(settings.cAdESLevel);
-        sofficePath.setText(settings.sofficePath);
+        sofficePath.setText(settings.getSofficePath());
         language.setSelectedItem(settings.language);
         pDFImgScaleFactor.setText(String.format("%.2f", settings.pDFImgScaleFactor));
         if (settings.image != null) {

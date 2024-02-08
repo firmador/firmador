@@ -21,12 +21,9 @@ package cr.libre.firmador;
 
 import java.awt.Font;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.HashMap;
-import java.util.Map;
 
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignerTextPosition;
@@ -60,7 +57,7 @@ public class Settings {
             put("en", dateFormatEn);
         }
     };
-    public String defaultSignMessage = "Esta es una representación gráfica únicamente,\nverifique la validez de la firma.";
+    public String defaultSignMessage;
     public Integer signWidth = 133;
     public Integer signHeight = 33;
     public Integer fontSize = 7;
@@ -115,6 +112,7 @@ public class Settings {
         availablePlugins.add("cr.libre.firmador.plugins.InstallerPlugin");
         availablePlugins.add("cr.libre.firmador.plugins.DocumentSignLogs");
 
+        defaultSignMessage = getTranslatedDefaultSignMessage();
     }
 
     public Settings(Settings oldsettings) {
@@ -166,6 +164,12 @@ public class Settings {
         return this.defaultSignMessage;
     }
 
+    public String getTranslatedDefaultSignMessage(){
+        Locale locale = new Locale(this.language, this.country);
+        ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+        return bundle.getString("configpanel_default_sign_message");
+    }
+
     public String getDateFormat() {
         try {
             return this.dateFormat;
@@ -199,6 +203,7 @@ public class Settings {
             newofficepath = this.sofficePath;
         return newofficepath;
     }
+
     public String getFontName(String fontName, boolean isPdf) {
         String selectedFontName = "";
         switch (fontName) {

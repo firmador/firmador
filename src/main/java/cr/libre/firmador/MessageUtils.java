@@ -13,16 +13,6 @@ public class MessageUtils {
         return bundle.getString(msgkey);
     }
 
-    public String getKey(String variable_name){
-        Map<String, String> keyByVariableName = new HashMap<String, String>() {
-            {
-                put("defaultSignMessage", "configpanel_default_sign_message");
-            }
-        };
-        return keyByVariableName.get(variable_name);
-
-    }
-
     public static char k(char key) {
         return key;
     }

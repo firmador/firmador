@@ -271,7 +271,7 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
         SimpleDateFormat fecha = new SimpleDateFormat(settings.getDateFormat());
         fecha.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
         String additionalText = "";
-        if (docSettings.hideSignatureAdvice) {
+        if (!docSettings.hideSignatureAdvice) {
             additionalText = settings.getDefaultSignMessage();
         }
         Boolean hasReason = false;
@@ -321,6 +321,6 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
     @Override
     public void setDetached(List<DSSDocument> detacheddocs) {
         // TODO Auto-generated method stub
-        
+
     }
 }
