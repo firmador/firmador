@@ -24,9 +24,11 @@ public class PreviewWorker extends SwingWorker<Void, Void> {
         try {
             document.loadPreview();
         } catch (Throwable e) {
+            LOG.error("Document preview with errors: " + document.getName());
             LOG.error("Preview Worker: " + e.getMessage(), e);
 
         } finally {
+            LOG.info("Document preview loaded: " + document.getName());
             scheduler.done();
         }
         return null;

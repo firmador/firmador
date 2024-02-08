@@ -64,7 +64,6 @@ public class TimeStampServiceCR extends TSPTimeStampService {
     }
 
     public void AddTPSRevocation(SignatureConfig signatureConfig, RevocationData revocationData) {
-
         List<X509Certificate> chain = signatureConfig.getSigningCertificateChain();
         CertificateToken certificate = new CertificateToken(chain.get(0));
 
@@ -83,9 +82,17 @@ public class TimeStampServiceCR extends TSPTimeStampService {
             } catch (Throwable e) {
                 LOG.warn("No se encontró CRL para el certificado " + certificate.toString(), e);
             }
-            oscptoken = oscpsource.getRevocationToken(certificate, new CertificateToken(chain.get(1)));
-            if (oscptoken != null)
-                revocationData.addOCSP(oscptoken.getEncoded());
+            
+            
+            try {
+                oscptoken = oscpsource.getRevocationToken(certificate, issuerCertificate);
+                if (oscptoken != null)
+                    revocationData.addOCSP(oscptoken.getEncoded());
+
+            } catch (Throwable e) {
+                LOG.warn("No se encontró OSCP para el certificado " + certificate.toString(), e);
+            }
+            
         }
     }
 
