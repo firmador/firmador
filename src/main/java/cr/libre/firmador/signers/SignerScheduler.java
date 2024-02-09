@@ -149,13 +149,16 @@ public class SignerScheduler extends Thread implements PropertyChangeListener, E
     }
 
     public void addDocument(Document document) {
+        document.setShowPreview(true);
         this.files.add(document);
         this.waitforfiles.release();
     }
 
     public void addDocuments(List<Document> docfiles) {
         for (Document d : docfiles) {
+            d.setShowPreview(false);
             this.files.add(d);
+
         }
         this.waitforfiles.release();
     }

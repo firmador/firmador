@@ -49,6 +49,7 @@ public class Document {
     private boolean signwithErrors = false;
     private CardSignInfo usedcard;
     private boolean showPreview = true;
+    private boolean ismasivesign = false;
 
 
     public Document(GUIInterface gui, String pathname) {
@@ -324,5 +325,13 @@ public class Document {
 
     public void setShowPreview(boolean showPreview) {
         this.showPreview = showPreview;
+    }
+
+    public boolean isIsmasivesign() {
+        return ismasivesign;
+    }
+
+    public void setIsmasivesign(boolean ismasivesign) {
+        this.ismasivesign = ismasivesign;
     }
 }

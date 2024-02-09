@@ -124,10 +124,19 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
         Path path= FileSystems.getDefault().getPath(this.lastFile);
         this.lastDirectory = path.getParent().toString();
         fileField.setText(path.getFileName().toString());
+        fileField.getAccessibleContext().setAccessibleDescription(
+                String.format(MessageUtils.t("document_selection_filefield_load_tooltip_accessible"),
+                        path.getFileName().toString()));
+        fileField.requestFocus(true);
+        fileField.requestFocus();
+
     }
 
     public FileDialog getLoadDialog() {
         return loadDialog;
     }
 
+    public void clean() {
+        fileField.setText("");
+    }
 }

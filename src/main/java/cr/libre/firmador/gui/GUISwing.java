@@ -250,15 +250,24 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     }
 
     public Document loadDocument(String fileName) {
-        loadDialogWorker.setVisible(true);
+        return loadDocument(fileName, true);
+    }
+
+    public Document loadDocument(String fileName, boolean preview) {
+
+        if (preview)
+            loadDialogWorker.setVisible(true);
         Document document = new Document(gui, fileName);
         document.registerListener(this);
         this.pluginManager.registerDocument(document);
         listdocumentpanel.addDocument(document);
         validatescheduler.addDocument(document);
         previewScheduler.addDocument(document);
-        gui.nextStep(MessageUtils.t("guiswing_nextstep_load_doc"));
-        setActiveDocument();
+        if (preview) {
+            gui.nextStep(MessageUtils.t("guiswing_nextstep_load_doc"));
+            setActiveDocument();
+        }
+
         return document;
     }
 
@@ -736,8 +745,10 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
             paths += "<a href=\"" + pfile.toURI().normalize() + "\">" + path + "</a><br>";
         }
         currentSavedFilePath.clear();
+        
         if (!paths.isEmpty())
             showMessage(MessageUtils.t("guiswing_dialog_document_success") + paths);
+
     }
 
     @Override
@@ -753,6 +764,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         signPanel.clean();
         validatePanel.clean();
         document = null;
+        docSelector.clean();
 
     }
 
