@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=Firmador Libre
+Comment=Herramienta para firmar documentos cumpliendo con la Política de Formatos Oficiales de los Documentos Electrónicos Firmados Digitalmente de Costa Rica.
+Exec=cr.libre.firmador.sh
+Icon=cr.libre.firmador
+Type=Application
+Terminal=false
+Categories=Office;

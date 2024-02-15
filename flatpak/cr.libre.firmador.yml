@@ -1,0 +1,66 @@
+id: cr.libre.firmador
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+command: cr.libre.firmador.sh
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.openjdk21
+finish-args:
+  - --env=PATH=/app/jre/bin:/usr/bin:/app/bin
+  - --filesystem=home
+  - --share=network
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --socket=pulseaudio
+  - --device=dri
+  - --socket=pcsc
+modules:
+  - name: openjdk
+    buildsystem: simple
+    build-commands:
+      - /usr/lib/sdk/openjdk21/install.sh
+
+  - name: pcsc-lite
+    config-opts:
+      - --disable-libudev
+      - --disable-libsystemd
+      - --without-systemdsystemunitdir
+      - --disable-serial
+      - --disable-usb
+      - --disable-documentation
+    cleanup:
+      - /include
+      - /bin/pcsc-spy
+      - /lib/libpcscspy*
+      - /lib/pkg-config
+      - /share/doc
+      - /share/man
+    post-install:
+      - rm /app/sbin/pcscd
+      - rmdir /app/sbin || true
+    sources:
+      - type: archive
+        url: https://pcsclite.apdu.fr/files/pcsc-lite-1.9.5.tar.bz2
+        sha256: 9ee3f9b333537562177893559ad4f7b8d5c23ebe828eef53056c02db14049d08        
+  
+  - name: firmador
+    buildsystem: simple
+    build-commands:
+      - install -D firmador.jar ${FLATPAK_DEST}/bin/firmador.jar
+      - install -D ${FLATPAK_ID}.sh ${FLATPAK_DEST}/bin/${FLATPAK_ID}.sh
+      - install -D libASEP11.so ${FLATPAK_DEST}/lib/libASEP11.so
+      - install -D ${FLATPAK_ID}.desktop ${FLATPAK_DEST}/share/applications/${FLATPAK_ID}.desktop
+      - install -D ${FLATPAK_ID}.png ${FLATPAK_DEST}/share/icons/hicolor/128x128/apps/${FLATPAK_ID}.png
+
+    sources:
+      - type: file
+        path: cr.libre.firmador.sh
+      - type: file
+        path: ../target/firmador.jar
+      - type: file
+        path: /usr/lib/x64-athena/libASEP11.so
+      - type: file
+        path: cr.libre.firmador.desktop
+      - type: file
+        path: cr.libre.firmador.png
