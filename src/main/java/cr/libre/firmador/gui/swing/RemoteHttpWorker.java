@@ -88,6 +88,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
 
             public RequestHandler(GUIInterface gui, Settings settings) {
                 super();
+                this.gui = gui;
                 this.settings = settings;
                 ((GUISwing) gui).getMainFrame().addWindowListener(new WindowAdapter() {
                     @Override
