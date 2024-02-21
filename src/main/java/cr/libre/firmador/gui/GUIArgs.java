@@ -147,7 +147,10 @@ public class GUIArgs implements GUIInterface {
          System.out.println(message);
     }
 
-    public void setPluginManager(PluginManager pluginManager) {
+    public void configurePluginManager() {
+    }
+
+    public void setPluginManager(PluginManager pluginManager){
     }
 
     public Document loadDocument(String fileName) {

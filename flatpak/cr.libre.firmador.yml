@@ -8,6 +8,7 @@ sdk-extensions:
 finish-args:
   - --env=PATH=/app/jre/bin:/usr/bin:/app/bin
   - --filesystem=home
+  - --filesystem=host
   - --share=network
   - --share=ipc
   - --socket=x11

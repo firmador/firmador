@@ -10,7 +10,7 @@ Firmador libre prosee varias interfaces por las que puede ser llamado, todas las
 5.  ``String getDocumentToSign()``: Retorna la ruta completa del documento a firmar.
 6.  ``String getPathToSave(String extension)``: Retorna la ruta completa donde se debe guardar el documento.
 7.  ``CardSignInfo getPin()``: Retorna la información del PIN de la tarjeta para usarse a la hora de firmar.
-8.  ``void setPluginManager(PluginManager pluginManager)``: Registra un plugin para que la interfaz pueda proporcionale eventos u obtener eventos del plugin.
+8.  ``void configurePluginManager()``: Registra el plugin manager para que la interfaz pueda proporcionale eventos u obtener eventos del plugin.
 9.  ``public void loadDocument(String fileName)``: Carga un documento dado la ruta completa del documento.
 10. ``public void loadDocument(SupportedMimeTypeEnum mimeType, PDDocument doc)``: Carga un documento según el mimetype proporcionado y el documento `PDDocument`.
 11. ``public void extendDocument()``: Extiende el documento ya firmado.
@@ -27,6 +27,7 @@ Firmador libre prosee varias interfaces por las que puede ser llamado, todas las
 22. ``void signAllDone()``: Es llamada cuando se termina de firmar todos los documentos encolados.
 23. ``Settings getCurrentSettings()``: Obtiene los settings que están seleccionados actualmente en la interfaz (no confundir con los settings de toda la aplicación ya que usan la misma clase Settings)
 24. ``void signDocument(Document document)``: Encola un documento para ser firmado con el Agendador de firmado.
+25. ``void setPluginManager(PluginManager pluginManager)``: Asigna el plugin manager para uso de la interfaz.
 
 Existen las siguientes implementaciones de esta interfaz.
 

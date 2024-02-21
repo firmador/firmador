@@ -191,13 +191,14 @@ public class Settings {
 
     public String getSofficePath() {
         String newofficepath = "/usr/bin/soffice";
-        if (sofficePath.isEmpty()) {
+        if (this.sofficePath.isEmpty()) {
             String osName = System.getProperty("os.name").toLowerCase();
             if (osName.contains("mac"))
                 newofficepath = "/Applications/LibreOffice.app/Contents/MacOS/soffice ";
-            else if (osName.contains("linux"))
-                newofficepath = "/usr/bin/soffice";
-            else if (osName.contains("windows"))
+            else if (osName.contains("linux")) {
+                String envFlatpakSofficePath = System.getenv("FLATPAKSOFFICEPATH");
+                newofficepath = envFlatpakSofficePath != null && !envFlatpakSofficePath.isEmpty() ? envFlatpakSofficePath : "/usr/bin/soffice";
+            }else if (osName.contains("windows"))
                 newofficepath = System.getenv("systemdrive") + "\\Program Files\\LibreOffice\\program\\soffice.exe";
         } else
             newofficepath = this.sofficePath;

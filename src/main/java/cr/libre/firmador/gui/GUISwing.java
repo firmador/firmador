@@ -306,7 +306,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     }
 
     public void setArgs(String[] args) {
-        List<String> arguments = new ArrayList<String>();
+        List<String> arguments = new ArrayList<>();
         for (String params : args) {
             if (!params.startsWith("-"))
                 arguments.add(params);
@@ -600,13 +600,16 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         else return null;
     }
 
-    public void setPluginManager(PluginManager pluginManager) {
-        pluginManager.startLogging();
-        mainFrame.addWindowListener(new WindowAdapter() {
+    public void configurePluginManager() {
+        this.pluginManager.startLogging();
+        this.mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent arg0) {
                 pluginManager.stop();
             }
         });
+    }
+
+    public void setPluginManager(PluginManager pluginManager){
         this.pluginManager = pluginManager;
     }
 
