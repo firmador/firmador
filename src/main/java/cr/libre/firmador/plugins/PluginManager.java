@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.documents.Document;
-import cr.libre.firmador.gui.GUIInterface;
 
 public class PluginManager implements Runnable {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -40,9 +39,8 @@ public class PluginManager implements Runnable {
     private List<Plugin> runnablePlugins = new ArrayList<Plugin>();
     private List<Plugin> plugins = new ArrayList<Plugin>();
 
-    public PluginManager(GUIInterface gui) {
+    public PluginManager() {
         super();
-        //this.gui = gui;
         this.settings = SettingsManager.getInstance().getAndCreateSettings();
     }
 
