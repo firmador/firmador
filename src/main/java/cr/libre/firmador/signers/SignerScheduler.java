@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
+import cr.libre.firmador.MessageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,14 +62,14 @@ public class SignerScheduler extends Thread implements PropertyChangeListener, E
     public void run() {
         try {
             this.waitforfiles.acquire(); // first time acquire and don't lock
-            nextStep("Inicio de firmado");
+            nextStep(MessageUtils.t("signer_scheduler_sign_start"));
 
             while (!this.stop) {
                 if (this.files.isEmpty())
                     this.waitforfiles.acquire(); // lock thread until the list is not empty
 
-                this.progressMonitor.setTitle(String.format("Proceso de firmado de %d documento(s)", files.size()));
-                this.progressMonitor.setHeaderTitle("Firmando documento");
+                this.progressMonitor.setTitle(String.format(MessageUtils.t("signer_scheduler_sign_process"), files.size()));
+                this.progressMonitor.setHeaderTitle(MessageUtils.t("signer_scheduler_signing_document"));
                 this.progressMonitor.setVisible(true);
 
                 CardSignInfo card = gui.getPin();
@@ -78,7 +79,7 @@ public class SignerScheduler extends Thread implements PropertyChangeListener, E
                     try {
                         this.maxoffilesperprocess.acquire();
 
-                        this.progressMonitor.setHeaderTitle("Firmando " + document.getName());
+                        this.progressMonitor.setHeaderTitle(MessageUtils.t("signer_scheduler_signing") + " " + document.getName());
                         this.task = new SignerWorker(this, progressMonitor, gui, document, card);
                         this.task.addPropertyChangeListener(this);
                         this.task.execute();
@@ -88,7 +89,7 @@ public class SignerScheduler extends Thread implements PropertyChangeListener, E
                     }
                 }
                 if (card == null) {
-                    this.progressMonitor.setHeaderTitle("Proceso cancelado");
+                    this.progressMonitor.setHeaderTitle(MessageUtils.t("signer_scheduler_cancelled_process"));
                     this.progressMonitor.setVisible(false);
                     this.files.clear();
                 }
@@ -118,7 +119,7 @@ public class SignerScheduler extends Thread implements PropertyChangeListener, E
         if ("progress".equals(evt.getPropertyName())) {
             int progress = (Integer) evt.getNewValue();
             this.progressMonitor.setProgressStatus(progress);
-            String message = String.format("Completando... %d%%.\n", progress);
+            String message = String.format(MessageUtils.t("signer_scheduler_completing") + "\n", progress);
             this.progressMonitor.setNote(message);
 
             if (this.progressMonitor.isCanceled() || this.task.isDone()) {
