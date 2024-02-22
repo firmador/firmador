@@ -68,8 +68,7 @@ public class InstallerPlugin implements Plugin {
 
     private boolean is_installed() throws IOException {
         boolean installed;
-        boolean inFlatpakEnvVar = Boolean.parseBoolean(System.getenv("FIRMADORINFLATPAK"));
-        if(inFlatpakEnvVar){
+        if(Boolean.parseBoolean(System.getenv("FIRMADORINFLATPAK"))){
             installed = true;
         }else {
             Path execpath = null;
