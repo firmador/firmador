@@ -330,7 +330,7 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
             if(!document.getSignwithErrors()) {
                 // remove the non-signed document and add the signed one to the list of documents
                 removeDocument(document);
-                gui.loadDocument(document.getPathToSave());
+                ((GUISwing) gui).loadDocument(document.getPathToSave(), false);
             }
         }
     }

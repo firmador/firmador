@@ -66,9 +66,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+
+
 public class PKCS11Manager implements CardManagerInterface {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String PKCS11_PROVIDER_NAME = "SunPKCS11";
+    private static final String SUN_PKCS11_CLASSNAME = "sun.security.pkcs11.SunPKCS11";
+    private static final String SUN_PKCS11_PROVIDER_NAME = "SunPKCS11";
 
     KeyStore keystore = null;
     Long lastSlotID = null;
@@ -202,13 +210,43 @@ public class PKCS11Manager implements CardManagerInterface {
         return tempFile;
     }
 
+    public static int getVersion() {
+        String version = System.getProperty("java.version");
+        if (version.startsWith("1.")) {
+            version = version.substring(2, 3);
+        } else {
+            int dot = version.indexOf(".");
+            if (dot != -1) {
+                version = version.substring(0, dot);
+            }
+        }
+        return Integer.parseInt(version);
+    }
+
+    private Provider getProviderByIntrospection(String configFile) {
+        Provider prov = null;
+        try {
+            int javaVersion = this.getVersion();
+            if (javaVersion >= 9) {
+                prov = Security.getProvider(PKCS11_PROVIDER_NAME);
+                prov = prov.configure(configFile);
+            } else {
+                Class<?> sunPkcs11ProviderClass = Class.forName(SUN_PKCS11_CLASSNAME);
+                Constructor<?> constructor = sunPkcs11ProviderClass.getConstructor(String.class);
+                prov = (Provider) constructor.newInstance(configFile);
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+            // Handle any error, log message or throw an exception
+        }
+        return prov;
+    }
 	private KeyStore getKeyStoreFromPKCS11(String pkcs11Config, PasswordProtection password) throws Exception {
+	    Path configpath =createTempFileWithContent(pkcs11Config);
 	    // Crear una instancia de SunPKCS11 con la configuración proporcionada
-        provider = Security.getProvider(PKCS11_PROVIDER_NAME);
-        Path configpath =createTempFileWithContent(pkcs11Config);
-        provider=provider.configure(configpath.toAbsolutePath().toString());
-	    Security.addProvider(provider);
-	
+        provider = getProviderByIntrospection(configpath.toAbsolutePath().toString());
+        Security.addProvider(provider);
+
 	    // Obtener el KeyStore del proveedor PKCS11
 	    KeyStore keyStore = KeyStore.getInstance("PKCS11", provider);
 	    keyStore.load(null, password.getPassword()); 
