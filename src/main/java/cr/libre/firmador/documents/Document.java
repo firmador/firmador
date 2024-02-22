@@ -274,6 +274,8 @@ public class Document {
     }
 
     public int amountOfSignatures() {
+        if (validator == null)
+            return 0;
         return validator.amountOfSignatures();
 
     }
