@@ -9,6 +9,7 @@ import javax.swing.table.AbstractTableModel;
 
 import com.opencsv.CSVWriter;
 import cr.libre.firmador.MessageUtils;
+import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.documents.Document;
 import org.apache.commons.io.FileUtils;
@@ -154,6 +155,31 @@ public class ListDocumentTableModel extends AbstractTableModel {
             data.set(position, docbtn);
         }
 
+    }
+
+    public void updateSaveDirDocuments(String directory) {
+        int currentPosition = 0;
+        int datasize = data.size();
+        while (currentPosition < datasize) {
+            Object[] obj = data.get(currentPosition);
+            Document doc = ((DocumentTableButton) obj[DOCUMENT_POSITION]).getDocument();
+            doc.setPathToSave(directory + File.separatorChar + doc.getName());
+            ((DocumentTableButton) obj[ListDocumentTableModel.SAVE_PATH]).setText("" + doc.getPathToSaveName());
+            data.set(currentPosition, obj);
+            currentPosition += 1;
+        }
+    }
+
+    public void updateDocumentBySettings(Settings currentSettings) {
+        int currentPosition = 0;
+        int datasize = data.size();
+        while (currentPosition < datasize) {
+            Object[] obj = data.get(currentPosition);
+            Document doc = ((DocumentTableButton) obj[DOCUMENT_POSITION]).getDocument();
+            doc.setSettings(currentSettings);
+            data.set(currentPosition, obj);
+            currentPosition += 1;
+        }
     }
 
 }

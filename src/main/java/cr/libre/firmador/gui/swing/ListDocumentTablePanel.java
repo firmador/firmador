@@ -2,6 +2,7 @@ package cr.libre.firmador.gui.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -17,6 +18,7 @@ import java.util.Scanner;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -97,6 +99,49 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         }
     }
 
+    private class ChangeFolderAction implements ActionListener {
+        private ListDocumentTablePanel panel;
+        private FileDialog loadDialog;
+
+        public ChangeFolderAction(ListDocumentTablePanel panel) {
+            this.panel = panel;
+        }
+
+        private String showLoadDialog() {
+            JFileChooser f = new JFileChooser();
+            f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            f.showSaveDialog(null);
+            return f.getSelectedFile().getPath();
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+            if (this.panel.table.getRowCount() > 0) {
+                this.panel.updateDocumentByDirectory(showLoadDialog());
+            } else {
+                gui.showMessage(MessageUtils.t("list_document_no_documents_to_sign"));
+            }
+
+        }
+    }
+
+    private class SetConfigureAllAction implements ActionListener {
+        private ListDocumentTablePanel panel;
+
+        public SetConfigureAllAction(ListDocumentTablePanel panel) {
+            this.panel = panel;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+            if (this.panel.table.getRowCount() > 0) {
+                ((GUISwing) this.panel.gui).signAllDocuments();
+            } else {
+                gui.showMessage(MessageUtils.t("list_document_no_documents_to_sign"));
+            }
+        }
+    }
+
     public ListDocumentTablePanel() {
         super();
         this.setLayout(new BorderLayout());
@@ -122,6 +167,19 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         previewallbtn.setToolTipText(MessageUtils.t("list_document_previewall_tooltip"));
         previewallbtn.getAccessibleContext()
                 .setAccessibleDescription(MessageUtils.t("list_document_previewall_tooltip_accesible"));
+        
+        
+        JButton changefolderbtn = new JButton(MessageUtils.t("list_document_changefolder"));
+        changefolderbtn.setToolTipText(MessageUtils.t("list_document_changefolder_tooltip"));
+        changefolderbtn.getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("list_document_changefolder_tooltip_accesible"));
+        
+        JButton setconfigureallbtn = new JButton(MessageUtils.t("list_document_setconfigureall"));
+        setconfigureallbtn.setToolTipText(MessageUtils.t("list_document_setconfigureall_tooltip"));
+        setconfigureallbtn.getAccessibleContext()
+                .setAccessibleDescription(MessageUtils.t("list_document_setconfigureall_tooltip_accesible"));
+
+        //
 
         signbtn.setMnemonic('S');
         cleanbtn.setMnemonic('C');
@@ -132,6 +190,8 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         signbtn.addActionListener(new SignAllAction(this));
         cleanbtn.addActionListener(new CleanDocumentsAction(this));
         previewallbtn.addActionListener(new PreviewAllAction(this));
+        changefolderbtn.addActionListener(new ChangeFolderAction(this));
+        setconfigureallbtn.addActionListener(new SetConfigureAllAction(this));
 
         savedoclistbtn.addActionListener(new ActionListener() {
             @Override
@@ -168,6 +228,8 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         actionButtonsPanel.add(loaddoclistbtn);
         actionButtonsPanel.add(cleanbtn);
         actionButtonsPanel.add(previewallbtn);
+        actionButtonsPanel.add(changefolderbtn);
+        actionButtonsPanel.add(setconfigureallbtn);
 
         model = new ListDocumentTableModel();
         table = new JTable(model);
@@ -230,6 +292,15 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
     public void updateDocument(Document document) {
         model.updateDocument(document);
         model.fireTableDataChanged();
+    }
+
+    public void updateDocumentByDirectory(String directory) {
+        model.updateSaveDirDocuments(directory);
+        model.fireTableDataChanged();
+    }
+
+    public void updateDocumentBySettings() {
+        model.updateDocumentBySettings(gui.getCurrentSettings());
     }
 
     public void saveDocumentList() throws IOException {
