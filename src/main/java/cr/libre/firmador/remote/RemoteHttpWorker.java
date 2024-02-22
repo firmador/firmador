@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
-package cr.libre.firmador.gui.swing;
+package cr.libre.firmador.remote;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
+import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
 import cr.libre.firmador.signers.FirmadorUtils;
@@ -85,6 +86,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
             protected Settings settings;
             protected GUIInterface gui;
 
+            private
 
             public RequestHandler(GUIInterface gui, Settings settings) {
                 super();
@@ -100,32 +102,49 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
             }
 
 
-            public void processSign(String name, RemoteDocInformation data) {
-                gui.loadDocument(name);
+            public void processSign(Document doc) {
+                // gui.setActiveDocument(doc);
+            }
+
+            private Document retrieveDocument(String name) {
+                return null;
+            }
+            private boolean signDocument(String name, final ClassicHttpRequest request) {
+                return true;
+            }
+            
+            private boolean deleteDocument(String name){
+                return true;
+            }
+            
+            private boolean closeWidget() {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            LOG.error("Interrupción al correr servidor", e);
+                            e.printStackTrace();
+                        }
+                        ((GUISwing) gui).close();
+
+                    }
+                });
+                return true;
             }
 
             public void handle(final ClassicHttpRequest request, final ClassicHttpResponse response, final HttpContext context) throws HttpException, IOException {
+                Document doc = null;
                 response.setHeader("Access-Control-Allow-Origin", settings.getOrigin());
                 response.setHeader("Vary", "Origin");
                 try {
                     if (request.getUri().getPath().equals("/close")) {
                         response.setCode(HttpStatus.SC_OK);
-                        //response.setEntity(new StringEntity("Closing..."));
+                        closeWidget();
                         LOG.trace("Closing...");
                         response.close();
 
-                         SwingUtilities.invokeLater(new Runnable() {
-                             public void run() {
-                                 try {
-                                    Thread.sleep(1000);
-                                } catch (InterruptedException e) {
-                                    LOG.error("Interrupción al correr servidor", e);
-                                    e.printStackTrace();
-                                }
-                                ((GUISwing) gui).close();
 
-                             }
-                         });
                         return;
                     }
 
@@ -150,16 +169,17 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                 }
                 HttpEntity entity = request.getEntity();
                 response.setCode(HttpStatus.SC_ACCEPTED);
-                RemoteDocInformation docinfo;
                 if(!docInformation.containsKey(requestFileName)) {
-                    docinfo = new RemoteDocInformation(requestFileName, new ByteArrayOutputStream(), HttpStatus.SC_ACCEPTED);
+                   
+                  
                     if (entity.getContentLength() > 0) {
-                        docinfo.setInputdata(entity.getContent());
+                        doc = new Document(gui, entity.getContent().readAllBytes(), requestFileName,
+                                Document.STATUS_TOSIGN);
                         publish();
-                        docInformation.put(requestFileName, docinfo);
-                        processSign(requestFileName, docinfo);
+                        // docInformation.put(requestFileName, docinfo);
+                        processSign(doc);
                     }else {
-                        docinfo.setStatus(HttpStatus.SC_NO_CONTENT);
+                        doc=null;
                     }
                 }else {
                     docinfo = docInformation.get(requestFileName);

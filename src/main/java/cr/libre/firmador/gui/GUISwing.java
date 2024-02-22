@@ -72,7 +72,7 @@ import cr.libre.firmador.gui.swing.LoadProgressDialogWorker;
 import cr.libre.firmador.gui.swing.LogHandler;
 import cr.libre.firmador.gui.swing.LoggingFrame;
 import cr.libre.firmador.gui.swing.RemoteDocInformation;
-import cr.libre.firmador.gui.swing.RemoteHttpWorker;
+import cr.libre.firmador.remote.RemoteHttpWorker;
 import cr.libre.firmador.gui.swing.RequestPinWindow;
 import cr.libre.firmador.gui.swing.SignPanel;
 import cr.libre.firmador.gui.swing.SignProgressDialogWorker;

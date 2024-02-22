@@ -26,6 +26,9 @@ import eu.europa.esig.dss.model.FileDocument;
 
 public class Document {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    public static final int STATUS_TOSIGN = 0;
+    public static final int STATUS_SIGNED = 1;
+    public static final int STATUS_ERROR_SIGNING = 2;
     private List<DocumentChangeListener> listeners = new ArrayList<DocumentChangeListener>();
     private SupportedMimeTypeEnum mimeType;
     private String pathname;
@@ -50,6 +53,7 @@ public class Document {
     private CardSignInfo usedcard;
     private boolean showPreview = true;
     private boolean ismasivesign = false;
+    private int status = 0;
 
 
     public Document(GUIInterface gui, String pathname) {
@@ -64,10 +68,11 @@ public class Document {
         signer = DocumentSignerDetector.getDocumentSigner(gui, settings, mimeType);
     }
 
-    public Document(GUIInterface gui, byte[] data, String name) {
+    public Document(GUIInterface gui, byte[] data, String name, int status) {
         this.pathname = name;
         this.data = data;
         this.gui = gui;
+        this.status = status;
         mimeType = MimeTypeDetector.detect(data, name);
         validator = ValidatorFactory.getValidator(data, name);
         preview = PreviewerManager.getPreviewManager(mimeType);
@@ -336,4 +341,13 @@ public class Document {
     public void setIsmasivesign(boolean ismasivesign) {
         this.ismasivesign = ismasivesign;
     }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
 }
