@@ -1,4 +1,6 @@
 # Useful command for building/running flatpaks
+install-platform: 
+	flatpak install org.gnome.Platform/x86_64/45
 
 build:
 	flatpak-builder --force-clean build-dir cr.libre.firmador.yml

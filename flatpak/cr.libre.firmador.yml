@@ -1,7 +1,8 @@
 id: cr.libre.firmador
-runtime: org.freedesktop.Platform
-runtime-version: '23.08'
-sdk: org.freedesktop.Sdk
+runtime: org.gnome.Platform
+#runtime: org.freedesktop.Platform
+runtime-version: '45'
+sdk: org.gnome.Sdk
 command: cr.libre.firmador.sh
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.openjdk21
@@ -49,6 +50,7 @@ modules:
     buildsystem: simple
     build-commands:
       - install -D firmador.jar ${FLATPAK_DEST}/bin/firmador.jar
+      - chmod +x LibreOffice-still.basic-x86_64.AppImage && ./LibreOffice-still.basic-x86_64.AppImage --appimage-extract && cp -r squashfs-root/ ${FLATPAK_DEST}/libreoffice 
       - install -D ${FLATPAK_ID}.sh ${FLATPAK_DEST}/bin/${FLATPAK_ID}.sh
       - install -D libASEP11.so ${FLATPAK_DEST}/lib/libASEP11.so
       - install -D ${FLATPAK_ID}.desktop ${FLATPAK_DEST}/share/applications/${FLATPAK_ID}.desktop
@@ -57,6 +59,10 @@ modules:
     sources:
       - type: file
         path: cr.libre.firmador.sh
+      - type: file
+        path: LibreOffice-still.basic-x86_64.AppImage
+        url: https://appimages.libreitalia.org/LibreOffice-still.basic-x86_64.AppImage
+        md5: 2d3d354d97b9e5b4a5ffd6fd45a0ec87 
       - type: file
         path: ../target/firmador.jar
       - type: file
