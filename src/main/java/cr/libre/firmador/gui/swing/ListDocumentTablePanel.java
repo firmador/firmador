@@ -2,7 +2,6 @@ package cr.libre.firmador.gui.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -12,10 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -101,7 +97,6 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
 
     private class ChangeFolderAction implements ActionListener {
         private ListDocumentTablePanel panel;
-        private FileDialog loadDialog;
 
         public ChangeFolderAction(ListDocumentTablePanel panel) {
             this.panel = panel;
@@ -110,14 +105,24 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         private String showLoadDialog() {
             JFileChooser f = new JFileChooser();
             f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            f.showSaveDialog(null);
-            return f.getSelectedFile().getPath();
+            // f.setAcceptAllFileFilterUsed(false);
+            if (f.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+                File currentfolder = f.getSelectedFile();
+                if (!currentfolder.exists()) {
+                    this.panel.gui.showMessage(MessageUtils.t("list_document_changefolder_notfound"));
+                    return null;
+                }
+                return currentfolder.getPath();
+            }
+            return null;
         }
 
         @Override
         public void actionPerformed(ActionEvent arg0) {
             if (this.panel.table.getRowCount() > 0) {
-                this.panel.updateDocumentByDirectory(showLoadDialog());
+                String directory = showLoadDialog();
+                if (directory != null)
+                    this.panel.updateDocumentByDirectory(directory);
             } else {
                 gui.showMessage(MessageUtils.t("list_document_no_documents_to_sign"));
             }
@@ -135,9 +140,10 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         @Override
         public void actionPerformed(ActionEvent arg0) {
             if (this.panel.table.getRowCount() > 0) {
-                ((GUISwing) this.panel.gui).signAllDocuments();
+                this.panel.updateDocumentBySettings();
+                panel.gui.showMessage(MessageUtils.t("list_document_setconfigureall_success"));
             } else {
-                gui.showMessage(MessageUtils.t("list_document_no_documents_to_sign"));
+                panel.gui.showMessage(MessageUtils.t("list_document_no_documents_to_sign"));
             }
         }
     }
