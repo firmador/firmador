@@ -134,6 +134,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         hideButtons();
         if (mimeType.isPDF()) {
             showSignButtons();
+            signatureLabel.setVisible(true);
         } else if (mimeType.isOpenxmlformats() || mimeType.isOpenDocument()) {
             getSignButton().setEnabled(true);
             saveButton.setEnabled(true);
@@ -502,7 +503,7 @@ public class SignPanel extends JPanel implements ConfigListener{
         levelLTButton.setVisible(false);
         levelLTAButton.setVisible(false);
         saveButton.setVisible(false);
-
+        signatureLabel.setVisible(false);
     }
 
     public void showPreviewButtons() {
