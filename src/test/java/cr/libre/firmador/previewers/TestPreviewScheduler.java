@@ -75,7 +75,7 @@ public class TestPreviewScheduler {
         assertFalse(this.previewScheduler.getFiles().isEmpty());
 
         this.previewScheduler.start();
-        Thread.sleep(100);   // let it run for 100ms before it is interrupted, so it can run the code as expected
+        Thread.sleep(300);   // let it run for 300ms before it is interrupted, so it can run the code as expected
 
         assertFalse(this.previewScheduler.getStop());  // the scheduler was not interrupted
         verify(this.waitforfiles, atLeastOnce()).acquire();  // method acquire was called at least one time
@@ -95,8 +95,7 @@ public class TestPreviewScheduler {
         Thread.sleep(500); // give it sometime between adding docs to let it adjust
         this.previewScheduler.addDocument(this.testDocumentDOCX);
 
-        Thread.sleep(4000); // let it run for 4s before it is interrupted, so it can run the code as
-                            // expected
+        Thread.sleep(4000); // let it run for 4s before it is interrupted, so it can run the code as  expected
 
         int number0fDocs = 4;
         assertFalse(this.previewScheduler.getStop());  // the scheduler was not interrupted
