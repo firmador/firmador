@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Firmador Libre
+Comment=Herramienta para firmar documentos cumpliendo con la Política de Formatos Oficiales de los Documentos Electrónicos Firmados Digitalmente de Costa Rica.
+Exec=cr.libre.firmador.sh %f
+Icon=cr.libre.firmador
+Type=Application
+Terminal=false
+Categories=Office;
+MimeType=application/pdf;application/vnd.oasis.opendocument.text;application/vnd.oasis.opendocument.spreadsheet;application/vnd.oasis.opendocument.presentation;application/vnd.oasis.opendocument.graphics;application/vnd.openxmlformats-officedocument.wordprocessingml.document;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.openxmlformats-officedocument.presentationml.presentation

@@ -50,6 +50,7 @@ import eu.europa.esig.dss.model.FileDocument;
 public class GUIShell implements GUIInterface, DocumentChangeListener {
 
     private Settings settings;
+    private PluginManager pluginManager;
 
     public void loadGUI() {
         settings = SettingsManager.getInstance().getAndCreateSettings();
@@ -147,8 +148,13 @@ public class GUIShell implements GUIInterface, DocumentChangeListener {
     }
 
     @Override
-    public void setPluginManager(PluginManager pluginManager) {
-        pluginManager.startLogging();
+    public void configurePluginManager() {
+        this.pluginManager.startLogging();
+    }
+
+    @Override
+    public void setPluginManager(PluginManager pluginManager){
+        this.pluginManager = pluginManager;
     }
 
     @Override

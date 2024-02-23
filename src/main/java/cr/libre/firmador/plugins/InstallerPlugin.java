@@ -67,16 +67,22 @@ public class InstallerPlugin implements Plugin {
     }
 
     private boolean is_installed() throws IOException {
-        Path execpath = null;
-        String osName = System.getProperty("os.name").toLowerCase();
-        if (osName.contains("mac"))
-            execpath = getMacExecPath();
-        else if (osName.contains("linux"))
-            execpath = getLinuxExecPath();
-        else if (osName.contains("windows"))
-            execpath = getWindowsExecPath();
+        boolean installed;
+        if(Boolean.parseBoolean(System.getenv("FIRMADORINFLATPAK"))){
+            installed = true;
+        }else {
+            Path execpath = null;
+            String osName = System.getProperty("os.name").toLowerCase();
+            if (osName.contains("mac"))
+                execpath = getMacExecPath();
+            else if (osName.contains("linux"))
+                execpath = getLinuxExecPath();
+            else if (osName.contains("windows"))
+                execpath = getWindowsExecPath();
 
-        return Files.exists(execpath);
+            installed = Files.exists(execpath);
+        }
+        return installed;
     }
 
     public void install_on_mac() {
@@ -115,7 +121,7 @@ public class InstallerPlugin implements Plugin {
             Path temp = Files.createTempFile("fsinstall", ".vbs");
             URL iconUrl = this.getClass().getClassLoader().getResource("icon.ico");
             FileUtils.copyURLToFile(iconUrl, iconpath.toFile());
-            
+
             URL ps1Url = this.getClass().getClassLoader().getResource("install_windows.vbs");
             FileUtils.copyURLToFile(ps1Url, temp.toFile());
 

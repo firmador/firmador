@@ -4,3 +4,7 @@
 /.project
 /.settings/
 /docs/build/
+build-dir/
+.flatpak-builder/
+*.flatpak
+repository/

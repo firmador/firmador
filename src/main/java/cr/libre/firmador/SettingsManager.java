@@ -101,9 +101,17 @@ public class SettingsManager {
     }
 
     private String getConfigFile() throws IOException {
+        String configFile = "";
         // Returns the configuration file
-        if (this.path == null) return this.getConfigFile("config.properties");
-        else return this.path.toString();
+        if (this.path == null){
+            if(Boolean.parseBoolean(System.getenv("FIRMADORINFLATPAK"))){
+                configFile =  this.getConfigFile("config-flatpak-properties");
+            }else {
+                configFile = this.getConfigFile("config.properties");
+            }
+        }
+        else configFile = this.path.toString();
+        return configFile;
     }
 
     public boolean loadConfig() {

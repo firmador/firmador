@@ -121,6 +121,8 @@ public class CRSigner {
     public static String getPkcs11Lib() {
         String osName = System.getProperty("os.name").toLowerCase();
         Settings settings = SettingsManager.getInstance().getAndCreateSettings();
+        String envLibValue = System.getenv("LIBASEP11");
+        if (envLibValue != null && !envLibValue.isEmpty()) return envLibValue;
         if (settings.extraPKCS11Lib != null && !settings.extraPKCS11Lib.isEmpty()) return settings.extraPKCS11Lib;
         if (osName.contains("mac")) return "/Library/Application Support/Athena/libASEP11.dylib";
         else if (osName.contains("linux")) return "/usr/lib/x64-athena/libASEP11.so";
@@ -185,7 +187,7 @@ public class CRSigner {
         cv.setAIASource(new DefaultAIASource());
         return cv;
     }
-    
+
 
 
 }

@@ -1,0 +1,88 @@
+id: cr.libre.firmador
+runtime: org.gnome.Platform
+runtime-version: '45'
+sdk: org.gnome.Sdk
+command: cr.libre.firmador.sh
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.openjdk21
+finish-args:
+  - --env=PATH=/app/jre/bin:/usr/bin:/app/bin
+  - --filesystem=home
+  - --share=network
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --socket=pulseaudio
+  - --device=dri
+  - --socket=pcsc
+modules:
+  - name: openjdk
+    buildsystem: simple
+    build-commands:
+      - /usr/lib/sdk/openjdk21/install.sh
+
+  - name: pcsc-lite
+    config-opts:
+      - --disable-libudev
+      - --disable-libsystemd
+      - --without-systemdsystemunitdir
+      - --disable-serial
+      - --disable-usb
+      - --disable-documentation
+    cleanup:
+      - /include
+      - /bin/pcsc-spy
+      - /lib/libpcscspy*
+      - /lib/pkg-config
+      - /share/doc
+      - /share/man
+    post-install:
+      - rm /app/sbin/pcscd
+      - rmdir /app/sbin || true
+    sources:
+      - type: archive
+        url: https://pcsclite.apdu.fr/files/pcsc-lite-1.9.5.tar.bz2
+        sha256: 9ee3f9b333537562177893559ad4f7b8d5c23ebe828eef53056c02db14049d08        
+
+  - name: libreoffice
+    buildsystem: simple
+    cleanup:
+      - /libreoffice/usr*
+      - /libreoffice/AppRun
+      - /libreoffice/libreoffice7.5-startcenter.png
+      - /libreoffice/startcenter.desktop
+      - /libreoffice/.DirIcon
+      - /libreoffice/opt/libreoffice7.5/help*
+      - /libreoffice/opt/libreoffice7.5/presets*
+      - /libreoffice/opt/libreoffice7.5/readmes*
+      - /libreoffice/opt/libreoffice7.5/CREDITS.fodt
+      - /libreoffice/opt/libreoffice7.5/LICENSE
+      - /libreoffice/opt/libreoffice7.5/LICENSE.html
+      - /libreoffice/opt/libreoffice7.5/NOTICE
+    build-commands:
+      - chmod +x LibreOffice-7.5.basic-x86_64.AppImage && ./LibreOffice-7.5.basic-x86_64.AppImage --appimage-extract && cp -r squashfs-root/ ${FLATPAK_DEST}/libreoffice
+    sources:
+      - type: file
+        path: LibreOffice-7.5.basic-x86_64.AppImage
+        url: https://appimages.libreitalia.org/LibreOffice-7.5.basic-x86_64.AppImage
+        md5: 2d3d354d97b9e5b4a5ffd6fd45a0ec87
+
+  - name: firmador
+    buildsystem: simple
+    build-commands:
+      - install -D firmador.jar ${FLATPAK_DEST}/bin/firmador.jar
+      - install -D ${FLATPAK_ID}.sh ${FLATPAK_DEST}/bin/${FLATPAK_ID}.sh
+      - install -D libASEP11.so ${FLATPAK_DEST}/lib/libASEP11.so
+      - install -D ${FLATPAK_ID}.desktop ${FLATPAK_DEST}/share/applications/${FLATPAK_ID}.desktop
+      - install -D ${FLATPAK_ID}.png ${FLATPAK_DEST}/share/icons/hicolor/128x128/apps/${FLATPAK_ID}.png
+    sources:
+      - type: file
+        path: cr.libre.firmador.sh
+      - type: file
+        path: ../target/firmador.jar
+      - type: file
+        path: /usr/lib/x64-athena/libASEP11.so
+      - type: file
+        path: cr.libre.firmador.desktop
+      - type: file
+        path: cr.libre.firmador.png

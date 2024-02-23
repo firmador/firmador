@@ -38,7 +38,7 @@ public class TestPluginManager {
 
     @Test
     void testRequiredSettingsLoaded(){
-        PluginManager pluginManager = new PluginManager(null);
+        PluginManager pluginManager = new PluginManager();
         Settings settings =  pluginManager.getSettings();
 
         assertNotNull(settings);
@@ -48,7 +48,7 @@ public class TestPluginManager {
 
     @Nested
     class TestCasesWithSpecifiedPlugins {
-        private final PluginManager pluginManager = new PluginManager(null);
+        private final PluginManager pluginManager = new PluginManager();
         private final Settings settings = this.pluginManager.getSettings();
 
         @RegisterExtension
@@ -135,7 +135,7 @@ public class TestPluginManager {
 
     @Nested
     class TestCasesWithExceptions {
-        private final PluginManager pluginManager = new PluginManager(null);
+        private final PluginManager pluginManager = new PluginManager();
         private final Settings settings = this.pluginManager.getSettings();
 
         @RegisterExtension

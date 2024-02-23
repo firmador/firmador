@@ -31,14 +31,15 @@ public class Firmador {
         // PDFBox font cache warmup
         FontMappers.instance().getFontBoxFont(null, null);
         GUISelector guiselector = new GUISelector();
+        PluginManager pluginManager = new PluginManager();
         GUIInterface gui = guiselector.getInterface(args);
         gui.setArgs(args);
-        PluginManager pluginManager = new PluginManager(gui);
+        gui.setPluginManager(pluginManager);
         SwingUtilities.invokeLater(pluginManager);
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 gui.loadGUI();
-                gui.setPluginManager(pluginManager);
+                gui.configurePluginManager();
             }
         });
     }
