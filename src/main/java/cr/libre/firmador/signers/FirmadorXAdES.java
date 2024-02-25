@@ -28,6 +28,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
 
+import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
 import cr.libre.firmador.cards.CardSignInfo;
@@ -76,14 +77,13 @@ public class FirmadorXAdES extends CRSigner implements DocumentSigner {
     }
 
     public DSSDocument sign(DSSDocument toSignDocument, CardSignInfo card, Settings settings) {
-
         XAdESService service = null;
         //parameters = new XAdESCounterSignatureParameters(); // Electronic receipts v4.4 proposal
         parameters = new XAdESSignatureParameters();
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
-        gui.nextStep("Obteniendo servicios de verificación de certificados");
+        gui.nextStep(MessageUtils.t("signers_getting_verification_services"));
 
         try {
             token = getSignatureConnection(card);
@@ -95,17 +95,16 @@ public class FirmadorXAdES extends CRSigner implements DocumentSigner {
         DSSPrivateKeyEntry privateKey = null;
         try {
             privateKey = getPrivateKey(token);
-            gui.nextStep("Obteniendo manejador de llaves privadas");
+            gui.nextStep(MessageUtils.t("signers_getting_key_handler"));
         } catch (Exception e) {
             LOG.error("Error al acceder al objeto de llave del dispositivo", e);
             gui.showError(FirmadorUtils.getRootCause(e));
             return null;
         }
         try {
-            gui.nextStep("Obteniendo certificados de la tarjeta");
+            gui.nextStep(MessageUtils.t("signers_getting_card_certificates"));
             CertificateToken certificate = privateKey.getCertificate();
             parameters.setSignatureLevel(settings.getXAdESLevel());
-
 
             parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
             parameters.setSigningCertificate(certificate);
@@ -113,7 +112,7 @@ public class FirmadorXAdES extends CRSigner implements DocumentSigner {
             parameters.setPrettyPrint(true);
 
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
-            gui.nextStep("Obteniendo servicios TSP");
+            gui.nextStep(MessageUtils.t("signers_getting_tsp_services"));
 
             service = new XAdESService(this.getCertificateVerifier(certificate));
             service.setTspSource(onlineTSPSource);
@@ -149,7 +148,7 @@ public class FirmadorXAdES extends CRSigner implements DocumentSigner {
 
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
             //ToBeSigned dataToSign = service.getDataToBeCounterSigned(toSignDocument, parameters); // Electronic receipts v4.4 proposal
-            gui.nextStep("Obteniendo estructura de datos a firmar");
+            gui.nextStep(MessageUtils.t("signers_getting_data_structure"));
             signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
         } catch (DSSException|Error e) {
             LOG.error("Error al solicitar firma al dispositivo", e);
@@ -157,19 +156,14 @@ public class FirmadorXAdES extends CRSigner implements DocumentSigner {
         }
 
         try {
-            gui.nextStep("Firmando estructura de datos");
+            gui.nextStep(MessageUtils.t("signers_signing_data_structure"));
             signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
             //signedDocument = service.counterSignSignature(toSignDocument, parameters, signatureValue); // Electronic receipts v4.4 proposal
-            gui.nextStep("Firmado del documento completo");
+            gui.nextStep(MessageUtils.t("signers_document_sign_complete"));
         } catch (Exception e) {
             LOG.error("Error al procesar información de firma avanzada", e);
             e.printStackTrace();
-            gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
-                "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
-                "Detalle del error: " + FirmadorUtils.getRootCause(e) + "<br><br>" +
-                "Se ha agregado una firma básica solamente. No obstante, si el sello de tiempo resultara importante<br>" +
-                "para este documento, debería agregarse lo antes posible antes de enviarlo al destinatario.<br><br>" +
-                "Si lo prefiere, puede cancelar el guardado del documento firmado e intentar firmarlo más tarde.<br>");
+            gui.showMessage(String.format(MessageUtils.t("signers_not_possible_to_add_timestamp_sign"), FirmadorUtils.getRootCause(e)));
             parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
             try {
                 signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
@@ -197,11 +191,7 @@ public class FirmadorXAdES extends CRSigner implements DocumentSigner {
         } catch (Exception e) {
             LOG.error("Error al procesar información para al ampliar el nivel de firma avanzada a LTA (sello adicional)", e);
             e.printStackTrace();
-            gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
-                "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
-                "Detalle del error: " + FirmadorUtils.getRootCause(e) + "<br><br>" +
-                "Inténtelo de nuevo más tarde. Si el problema persiste, compruebe su conexión o verifique<br>" +
-                "que no se trata de un problema de los servidores de Firma Digital o de un error de este programa.<br>");
+            gui.showMessage(String.format(MessageUtils.t("signers_not_possible_to_add_timestamp_extend"), FirmadorUtils.getRootCause(e)));
         }
         return extendedDocument;
     }
@@ -214,7 +204,7 @@ public class FirmadorXAdES extends CRSigner implements DocumentSigner {
     @Override
     public void setDetached(List<DSSDocument> detacheddocs) {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

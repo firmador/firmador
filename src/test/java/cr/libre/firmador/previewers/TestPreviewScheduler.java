@@ -75,13 +75,14 @@ public class TestPreviewScheduler {
         assertFalse(this.previewScheduler.getFiles().isEmpty());
 
         this.previewScheduler.start();
-        Thread.sleep(100);   // let it run for 100ms before it is interrupted, so it can run the code as expected
+        Thread.sleep(300);   // let it run for 300ms before it is interrupted, so it can run the code as expected
 
         assertFalse(this.previewScheduler.getStop());  // the scheduler was not interrupted
         verify(this.waitforfiles, atLeastOnce()).acquire();  // method acquire was called at least one time
         verify(this.maxoffilesperprocess, times(1)).acquire();  // method acquire was called once since the list had one document
         assertTrue(this.previewScheduler.getFiles().isEmpty());  // list is empty after the document is processed
     }
+
 
     /**
      * @Test void testRunCheckSemaphoresUse() throws InterruptedException{
@@ -116,6 +117,7 @@ public class TestPreviewScheduler {
      *       assertTrue(this.waitforfiles.hasQueuedThreads()); // it is waiting for
      *       new file }
      **/
+
     @Test
     void testRunWithInterruptedException() throws InterruptedException {
         assertFalse(this.previewScheduler.getStop());
