@@ -244,5 +244,11 @@ public class GUIShell implements GUIInterface, DocumentChangeListener {
     public void previewAllDone() {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public Document loadDocument(Document document, boolean preview) {
+        // TODO Auto-generated method stub
+        return null;
     };
 }

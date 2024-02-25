@@ -400,16 +400,24 @@ public class SignPanel extends JPanel implements ConfigListener{
             public void actionPerformed(ActionEvent event) {
                 Settings settings = gui.getCurrentSettings();
                 currentDocument.setSettings(settings);
+                String savefile = null;
                 String suffix = "";
                 if(!settings.overwriteSourceFile){
                     suffix = "-firmado";
                 }
-                String savefile = ((GUISwing) gui).showSaveDialog(currentDocument.getPathName(), suffix,
-                        currentDocument.getExtension());
-                if (savefile != null) {
-                    currentDocument.setPathToSave(savefile);
+                if (currentDocument.getIsremote()) {
                     gui.signDocument(currentDocument);
+
+                } else {
+                    savefile = ((GUISwing) gui).showSaveDialog(currentDocument.getPathName(), suffix,
+                            currentDocument.getExtension());
+                    if (savefile != null) { // cancel option
+                        currentDocument.setPathToSave(savefile);
+                        gui.signDocument(currentDocument);
+                    }
                 }
+
+
             }
         });
         saveButton.addActionListener(new ActionListener() {

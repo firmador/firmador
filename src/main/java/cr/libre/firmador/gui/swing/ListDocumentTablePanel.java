@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -355,6 +356,26 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         return selectedDocument;
     }
 
+    public HashMap<String, Document> findDocument(String name, boolean filter_remote) {
+        HashMap<String, Document> result = new HashMap<String, Document>();
+        Document doctoadd;
+        String docname;
+        int row=0;
+        while (row < table.getRowCount()) {
+            doctoadd = (Document) ((DocumentTableButton) model.getValueAt(row,
+                    ListDocumentTableModel.DOCUMENT_POSITION)).getDocument();
+
+            docname = (String) model.getValueAt(row, ListDocumentTableModel.NAME_POSITION);
+            if (docname.contentEquals(name)) {
+                if (!filter_remote || (filter_remote && doctoadd.getIsremote())) {
+                    result.put(docname, doctoadd);
+                }
+            }
+            row++;
+        }
+        return result;
+    }
+
     public Document getActiveDocument() {
         Document returnedDocument = null;
         int rowcount = model.getRowCount();
@@ -402,12 +423,15 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
 
     @Override
     public void signDone(Document document) {
-        int position = model.findByDocument(document);
-        if (position >= 0) {
-            if(!document.getSignwithErrors()) {
-                // remove the non-signed document and add the signed one to the list of documents
-                removeDocument(document);
-                ((GUISwing) gui).loadDocument(document.getPathToSave(), false);
+        if (!document.getIsremote()) {
+            int position = model.findByDocument(document);
+            if (position >= 0) {
+                if (!document.getSignwithErrors()) {
+                    // remove the non-signed document and add the signed one to the list of
+                    // documents
+                    removeDocument(document);
+                    ((GUISwing) gui).loadDocument(document.getPathToSave(), false);
+                }
             }
         }
     }

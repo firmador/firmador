@@ -229,5 +229,11 @@ public class GUIArgs implements GUIInterface {
     public void previewAllDone() {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public Document loadDocument(Document document, boolean preview) {
+        // TODO Auto-generated method stub
+        return null;
     };
 }

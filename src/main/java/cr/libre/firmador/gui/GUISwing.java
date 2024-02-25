@@ -271,6 +271,23 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         return document;
     }
 
+    public Document loadDocument(Document document, boolean preview) {
+
+        if (preview)
+            loadDialogWorker.setVisible(true);
+        document.registerListener(this);
+        this.pluginManager.registerDocument(document);
+        listdocumentpanel.addDocument(document);
+        validatescheduler.addDocument(document);
+        previewScheduler.addDocument(document);
+        if (preview) {
+            gui.nextStep(MessageUtils.t("guiswing_nextstep_load_doc"));
+            setActiveDocument();
+        }
+
+        return document;
+    }
+
     public void signMultipleDocuments(File[] files) {
         loadDialogWorker.setVisible(true);
         Document document;
@@ -660,6 +677,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     };
 
     public void signDone(Document document) {
+        if (!document.getIsremote()) {
         signedDocument = document.getSignedDocument();
         fileName = document.getPathToSaveName(); // addSuffixToFilePath(document.getPathName(), "-firmado");
         String pathToSave = document.getPathToSave();
@@ -672,6 +690,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
                 gui.showError(FirmadorUtils.getRootCause(e));
             }
         }
+    }
     };
 
     public void extendsDone(Document document) {

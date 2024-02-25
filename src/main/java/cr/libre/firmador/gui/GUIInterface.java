@@ -47,6 +47,7 @@ public interface GUIInterface {
     public void displayFunctionality(String functionality);
     public void nextStep(String msg);
 
+    Document loadDocument(Document document, boolean preview);
     void previewDone(Document document);
 
     void validateDone(Document document);

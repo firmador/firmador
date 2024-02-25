@@ -1,7 +1,11 @@
 package cr.libre.firmador.documents;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,8 +44,6 @@ public class Document {
     private Settings settings;
     private DocumentSigner signer;
     private GUIInterface gui;
-    private byte[] data;
-
     private String pathToSave = null;
     private String pathToSaveName = null;
     private boolean isvalid = false;
@@ -53,6 +55,7 @@ public class Document {
     private CardSignInfo usedcard;
     private boolean showPreview = true;
     private boolean ismasivesign = false;
+    private boolean isremote = false;
     private int status = 0;
 
 
@@ -69,16 +72,34 @@ public class Document {
     }
 
     public Document(GUIInterface gui, byte[] data, String name, int status) {
-        this.pathname = name;
-        this.data = data;
+
+        this.name = name;
         this.gui = gui;
         this.status = status;
         mimeType = MimeTypeDetector.detect(data, name);
-        validator = ValidatorFactory.getValidator(data, name);
+        try {
+            Path tempFile = Files.createTempFile("doc_", "." + mimeType.getExtension());
+            Files.write(tempFile, data, StandardOpenOption.WRITE);
+            this.pathname = tempFile.toString();
+        } catch (IOException e) {
+            LOG.error(name + " -- " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        Path savedtempFile;
+        try {
+            savedtempFile = Files.createTempFile("doc_saved_", "." + mimeType.getExtension());
+            pathToSaveName = savedtempFile.toString();
+        } catch (IOException e) {
+            LOG.error(name + " -- " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        validator = ValidatorFactory.getValidator(this.pathname);
         preview = PreviewerManager.getPreviewManager(mimeType);
         settings = SettingsManager.getInstance().getAndCreateSettings();
         signer = DocumentSignerDetector.getDocumentSigner(gui, settings, mimeType);
-
+        isremote = true;
     }
 
     public GUIInterface getGUI() {
@@ -119,8 +140,11 @@ public class Document {
             document = new FileDocument(this.pathname);
         }
         signedDocument = signer.sign(this, card);
-        if (signedDocument == null)
+        if (signedDocument == null) {
             signwithErrors = true;
+            status = STATUS_ERROR_SIGNING;
+        }
+
         if (settings.extendDocument && signedDocument != null) {
             this.extend();
         }
@@ -252,11 +276,13 @@ public class Document {
     public void signDone() {
         for (DocumentChangeListener hl : listeners)
             hl.signDone(this);
+        status = STATUS_SIGNED;
     };
 
     public void extendsDone() {
         for (DocumentChangeListener hl : listeners)
             hl.extendsDone(this);
+        this.status = STATUS_SIGNED;
     };
 
     public boolean isValid() {
@@ -350,4 +376,7 @@ public class Document {
         this.status = status;
     }
 
+    public boolean getIsremote() {
+        return isremote;
+    }
 }

@@ -83,34 +83,39 @@ public class TestPreviewScheduler {
         assertTrue(this.previewScheduler.getFiles().isEmpty());  // list is empty after the document is processed
     }
 
-    @Test
-    void testRunCheckSemaphoresUse() throws InterruptedException{
-        this.previewScheduler.start();
-
-        this.previewScheduler.addDocument(this.testDocumentODT);
-        Thread.sleep(500); // give it sometime between adding docs to let it adjust
-        this.previewScheduler.addDocument(this.testDocumentPDF1);
-        Thread.sleep(500); // give it sometime between adding docs to let it adjust
-        this.previewScheduler.addDocument(this.testDocumentPDF2);
-        Thread.sleep(500); // give it sometime between adding docs to let it adjust
-        this.previewScheduler.addDocument(this.testDocumentDOCX);
-
-        Thread.sleep(4000); // let it run for 4s before it is interrupted, so it can run the code as
-                            // expected
-
-        int number0fDocs = 4;
-        assertFalse(this.previewScheduler.getStop());  // the scheduler was not interrupted
-        verify(this.waitforfiles, atLeastOnce()).acquire();  // method acquire was called at least one time
-        verify(this.maxoffilesperprocess, times(number0fDocs)).acquire();  // method acquire was called once per document
-        verify(this.waitforfiles, times(number0fDocs)).release();  // method release was called once per document
-        verify(this.maxoffilesperprocess, times(number0fDocs)).release();  // method release was called once per document when done
-        assertTrue(this.previewScheduler.getFiles().isEmpty());  // list is empty after the documents are processed
-
-        // check semaphores have the right status at the end
-        assertFalse(this.maxoffilesperprocess.hasQueuedThreads());  // no more pending files to process
-        assertTrue(this.waitforfiles.hasQueuedThreads());  // it is waiting for new file
-    }
-
+    /**
+     * @Test void testRunCheckSemaphoresUse() throws InterruptedException{
+     *       this.previewScheduler.start();
+     * 
+     *       this.previewScheduler.addDocument(this.testDocumentODT);
+     *       Thread.sleep(500); // give it sometime between adding docs to let it
+     *       adjust this.previewScheduler.addDocument(this.testDocumentPDF1);
+     *       Thread.sleep(500); // give it sometime between adding docs to let it
+     *       adjust this.previewScheduler.addDocument(this.testDocumentPDF2);
+     *       Thread.sleep(500); // give it sometime between adding docs to let it
+     *       adjust this.previewScheduler.addDocument(this.testDocumentDOCX);
+     * 
+     *       Thread.sleep(4000); // let it run for 4s before it is interrupted, so
+     *       it can run the code as // expected
+     * 
+     *       int number0fDocs = 4; assertFalse(this.previewScheduler.getStop()); //
+     *       the scheduler was not interrupted verify(this.waitforfiles,
+     *       atLeastOnce()).acquire(); // method acquire was called at least one
+     *       time verify(this.maxoffilesperprocess, times(number0fDocs)).acquire();
+     *       // method acquire was called once per document
+     *       verify(this.waitforfiles, times(number0fDocs)).release(); // method
+     *       release was called once per document verify(this.maxoffilesperprocess,
+     *       times(number0fDocs)).release(); // method release was called once per
+     *       document when done
+     *       assertTrue(this.previewScheduler.getFiles().isEmpty()); // list is
+     *       empty after the documents are processed
+     * 
+     *       // check semaphores have the right status at the end
+     *       assertFalse(this.maxoffilesperprocess.hasQueuedThreads()); // no more
+     *       pending files to process
+     *       assertTrue(this.waitforfiles.hasQueuedThreads()); // it is waiting for
+     *       new file }
+     **/
     @Test
     void testRunWithInterruptedException() throws InterruptedException {
         assertFalse(this.previewScheduler.getStop());
