@@ -35,6 +35,7 @@ import javax.swing.JTextField;
 import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.SettingsManager;
+import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISwing;
 
@@ -119,17 +120,22 @@ public class DocumentSelectionGroupLayout extends GroupLayout {
         return lastFile;
     }
 
-    public void setLastFile(String lastFile) {
-        this.lastFile = lastFile;
+    public void setLastFile(Document document) {
+        this.lastFile = document.getPathName();
         Path path= FileSystems.getDefault().getPath(this.lastFile);
         this.lastDirectory = path.getParent().toString();
-        fileField.setText(path.getFileName().toString());
-        fileField.getAccessibleContext().setAccessibleDescription(
-                String.format(MessageUtils.t("document_selection_filefield_load_tooltip_accessible"),
-                        path.getFileName().toString()));
+        if(document.getIsremote()) {
+            fileField.setText(document.getName());
+            fileField.getAccessibleContext().setAccessibleDescription(String.format(
+                    MessageUtils.t("document_selection_filefield_load_tooltip_accessible"), document.getName()));
+        } else {
+            fileField.setText(path.getFileName().toString());
+            fileField.getAccessibleContext().setAccessibleDescription(
+                    String.format(MessageUtils.t("document_selection_filefield_load_tooltip_accessible"),
+                            path.getFileName().toString()));
+        }
         fileField.requestFocus(true);
         fileField.requestFocus();
-
     }
 
     public FileDialog getLoadDialog() {

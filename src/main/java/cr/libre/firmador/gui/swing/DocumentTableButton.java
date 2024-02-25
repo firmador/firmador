@@ -49,16 +49,18 @@ public class DocumentTableButton extends JButton {
 
         @Override
         public void actionPerformed(ActionEvent arg0) {
-            // TODO Auto-generated method stub
             GUISwing gui = (GUISwing) document.getGUI();
-            String savefile = gui.showSaveDialog(document.getPathName(), "-firmado", document.getExtension());
-            if(savefile != null) {  // a path was selected
-                document.setPathToSave(savefile);
-                ListDocumentTablePanel docpanel = gui.getListDocumentTablePanel();
-                docpanel.updateDocument(document);
-
-                gui.getListDocumentTablePanel().getModel().fireTableStructureChanged(); // to refresh the table to not display the buttons
+            if (!document.getIsremote()) {
+                String savefile = gui.showSaveDialog(document.getPathName(), "-firmado", document.getExtension());
+                if (savefile != null) { // a path was selected
+                    document.setPathToSave(savefile);
+                    ListDocumentTablePanel docpanel = gui.getListDocumentTablePanel();
+                    docpanel.updateDocument(document);
+                    gui.getListDocumentTablePanel().getModel().fireTableStructureChanged(); // to refresh the table to
+                                                                                            // not display the buttons
+                }
             }
+
         }
 
     }

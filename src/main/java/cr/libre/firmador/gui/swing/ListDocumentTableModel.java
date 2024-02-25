@@ -75,9 +75,13 @@ public class ListDocumentTableModel extends AbstractTableModel {
     }
 
     public void addData(Document document) {
+        String savedpath = document.getPathToSaveName();
+        if (document.getIsremote()) {
+            savedpath = "";
+        }
         Object[] datadocument = {
                 document.getName(),
-                new DocumentTableButton(document, document.getPathToSaveName(),
+                new DocumentTableButton(document, savedpath,
                         DocumentTableButton.CHOOSE_SAVE_FILENAME),
                 new DocumentTableButton(document, document.getMimeType().getExtension(),
                         DocumentTableButton.CHANGE_FORMAT),

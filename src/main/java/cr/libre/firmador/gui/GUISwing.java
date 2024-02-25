@@ -725,7 +725,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
         signPanel.setDocument(document);
         signPanel.setPreview(document.getPreviewManager());
         signPanel.paintPDFViewer();
-        docSelector.setLastFile(document.getPathName());
+        docSelector.setLastFile(document);
         SupportedMimeTypeEnum mimeType = document.getMimeType();
         signPanel.getSignButton().setEnabled(true);
         try {
@@ -746,7 +746,7 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     }
 
     public void setActiveDocument(Document document) {
-        docSelector.setLastFile(document.getPathName());
+        docSelector.setLastFile(document);
     }
 
     public ListDocumentTablePanel getListDocumentTablePanel() {
