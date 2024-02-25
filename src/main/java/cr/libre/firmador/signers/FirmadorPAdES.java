@@ -20,7 +20,6 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 package cr.libre.firmador.signers;
 
 import java.awt.Font;
-import java.awt.Rectangle;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
@@ -28,6 +27,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+
+import cr.libre.firmador.MessageUtils;
 import cr.libre.firmador.Settings;
 import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.documents.Document;
@@ -79,7 +80,7 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
         SignatureValue signatureValue = null;
         DSSDocument signedDocument = null;
         SignatureTokenConnection token = null;
-        gui.nextStep("Obteniendo servicios de verificación de certificados");
+        gui.nextStep(MessageUtils.t("signers_getting_verification_services"));
         String image = docSettings.getImage();
         try {
             token = getSignatureConnection(card);
@@ -93,15 +94,14 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
         DSSPrivateKeyEntry privateKey = null;
         try {
             privateKey = getPrivateKey(token);
-            gui.nextStep("Obteniendo manejador de llaves privadas");
+            gui.nextStep(MessageUtils.t("signers_getting_key_handler"));
         } catch (Exception e) {
             LOG.error("Error al acceder al objeto de llave del dispositivo", e);
             gui.showError(FirmadorUtils.getRootCause(e));
             return null;
         }
         try {
-
-            gui.nextStep("Obteniendo certificados de la tarjeta");
+            gui.nextStep(MessageUtils.t("signers_getting_card_certificates"));
             CertificateToken certificate = privateKey.getCertificate();
             parameters.setSignatureLevel(docSettings.getPAdESLevel());
             parameters.setAppName("Firmador " + settings.getVersion() + ", https://firmador.libre.cr");
@@ -115,7 +115,7 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
             if (!docSettings.contact.isEmpty())
                 parameters.setContactInfo(docSettings.contact);
             OnlineTSPSource onlineTSPSource = new OnlineTSPSource(TSA_URL);
-            gui.nextStep("Obteniendo servicios TSP");
+            gui.nextStep(MessageUtils.t("signers_getting_tsp_services"));
             verifier = this.getCertificateVerifier(certificate);
             service = new PAdESService(verifier);
             service.setPdfObjFactory(new PdfBoxNativeObjectFactory());
@@ -123,21 +123,18 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
             Date date = new Date();
             if (docSettings.isVisibleSignature)
                 appendVisibleSignature(certificate, date, docSettings);
-            gui.nextStep("Agregando representación gráfica de la firma");
+            gui.nextStep(MessageUtils.t("signers_adding_graphic_representation"));
             parameters.bLevel().setSigningDate(date);
 
             ToBeSigned dataToSign = service.getDataToSign(toSignDocument, parameters);
 
-            gui.nextStep("Obteniendo estructura de datos a firmar");
+            gui.nextStep(MessageUtils.t("signers_getting_data_structure"));
             signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), privateKey);
         } catch (DSSException|AlertException|Error e) {
             if (FirmadorUtils.getRootCause(e).getLocalizedMessage().equals("The new signature field position overlaps with an existing annotation!")) {
                 LOG.error("Error al firmar (traslape de firma)", e);
                 e.printStackTrace();
-                gui.showMessage("No se puede firmar: el campo de firma está solapándose sobre otra firma o anotación existente.<br>" +
-                    "Debe mover la firma para ubicarla en otra posición que no tape las existentes.<br><br>" +
-                    "Si no contiene firmas previas, puede abrir el PDF con un visor de documentos e imprimirlo como fichero PDF.<br>" +
-                    "El PDF resultante quedará 'aplanado' y podrá firmarse sin problemas.");
+                gui.showMessage(MessageUtils.t("signers_signature_overlap"));
                 return null;
             } else {
                 LOG.error("Error al solicitar firma al dispositivo", e);
@@ -145,9 +142,9 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
             }
         } catch (IllegalArgumentException e) {
             if (FirmadorUtils.getRootCause(e).getMessage().contains("is expired")) {
-                LOG.warn("El cetificado seleccionado para firmar ha vencido", e);
+                LOG.warn("El certificado seleccionado para firmar ha vencido", e);
                 e.printStackTrace();
-                gui.showMessage("Certificado vencido, no se puede realizar la firma");
+                gui.showMessage(MessageUtils.t("signers_expired_certificate"));
                 return null;
             } else {
                 LOG.error("Error al solicitar firma al dispositivo", e);
@@ -156,23 +153,17 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
         }
 
         try {
-            gui.nextStep("Firmando estructura de datos");
+            gui.nextStep(MessageUtils.t("signers_signing_data_structure"));
             signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
 
-            gui.nextStep("Firmado del documento completo");
+            gui.nextStep(MessageUtils.t("signers_document_sign_complete"));
         } catch (Exception e) {
             LOG.error("Error al procesar información de firma avanzada", e);
             e.printStackTrace();
-            gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
-                "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
-                "Detalle del error: " + FirmadorUtils.getRootCause(e) + "<br><br>" +
-                "Se ha agregado una firma básica solamente. No obstante, si el sello de tiempo resultara importante<br>" +
-                "para este documento, debería agregarse lo antes posible antes de enviarlo al destinatario.<br><br>" +
-                "Si lo prefiere, puede cancelar el guardado del documento firmado e intentar firmarlo más tarde.<br>");
+            gui.showMessage(String.format(MessageUtils.t("signers_not_possible_to_add_timestamp_sign"), FirmadorUtils.getRootCause(e)));
             parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
             try {
                 signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
-
             } catch (Exception ex) {
                 LOG.error("Error al procesar información de firma avanzada en nivel fallback (sin Internet) a AdES-B", e);
                 gui.showError(FirmadorUtils.getRootCause(e));
@@ -184,7 +175,7 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
     public DSSDocument extend(DSSDocument document) {
         PAdESSignatureParameters parameters = new PAdESSignatureParameters();
         parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
-        gui.nextStep("Extendiendo documento para agregar sello de tiempo e información de revocación");
+        gui.nextStep(MessageUtils.t("signers_extending_document_with_timestamp"));
 
         parameters.setContentSize(3072);
         CertificateVerifier verifier = this.getCertificateVerifier();
@@ -198,15 +189,11 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
         } catch (Exception e) {
             LOG.error("Error al procesar información para al ampliar el nivel de firma avanzada a LTA (sello adicional)", e);
             e.printStackTrace();
-            gui.showMessage("Aviso: no se ha podido agregar el sello de tiempo y la información de revocación porque es posible<br>" +
-                "que haya problemas de conexión a Internet o con los servidores del sistema de Firma Digital.<br>" +
-                "Detalle del error: " + FirmadorUtils.getRootCause(e) + "<br><br>" +
-                "Inténtelo de nuevo más tarde. Si el problema persiste, compruebe su conexión o verifique<br>" +
-                "que no se trata de un problema de los servidores de Firma Digital o de un error de este programa.<br>");
-            gui.nextStep("Sello adicional completado");
+            gui.showMessage(String.format(MessageUtils.t("signers_not_possible_to_add_timestamp_extend"), FirmadorUtils.getRootCause(e)));
+            gui.nextStep(MessageUtils.t("signers_additional_stamp_completed"));
         }
         if (extendedDocument != null)
-            gui.nextStep("Sello adicional completado");
+            gui.nextStep(MessageUtils.t("signers_additional_stamp_completed"));
         return extendedDocument;
     }
 
@@ -232,9 +219,7 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
                 textParameters.setFont(new DSSJavaFont(new Font(settings.getFontName(settings.font, true), settings.getFontStyle(settings.font), settings.fontSize)));
                 SimpleDateFormat date = new SimpleDateFormat(settings.getDateFormat());
                 date.setTimeZone(TimeZone.getTimeZone("America/Costa_Rica"));
-                textParameters.setText("Este documento incluye un sello de tiempo de la\n" +
-                    "Autoridad de Sellado de Tiempo (TSA) del SINPE.\n" +
-                    "Fecha de solicitud a la TSA: " + date.format(new Date()));
+                textParameters.setText(String.format(MessageUtils.t("signers_info_timestamp_included"), date.format(new Date())));
                 textParameters.setTextColor(settings.getFontColor());
                 textParameters.setBackgroundColor(settings.getBackgroundColor());
                 textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
@@ -278,20 +263,20 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
         Boolean hasLocation = false;
         if (docSettings.reason != null && !docSettings.reason.trim().isEmpty()) {
             hasReason = true;
-            additionalText = "Razón: " + docSettings.reason + "\n";
+            additionalText = MessageUtils.t("signers_visible_signature_reason") + " " + docSettings.reason + "\n";
         }
         if (docSettings.place != null && !docSettings.place.trim().isEmpty()) {
             hasLocation = true;
-            if (hasReason) additionalText += "Lugar: " + docSettings.place;
-            else additionalText = "Lugar: " + docSettings.place;
+            if (hasReason) additionalText += MessageUtils.t("signers_visible_signature_place") + " " + docSettings.place;
+            else additionalText = MessageUtils.t("signers_visible_signature_place") + " " + docSettings.place;
         }
         if (docSettings.contact != null && !docSettings.contact.trim().isEmpty()) {
             if (hasReason || hasLocation)
-                additionalText += "  Contacto: " + docSettings.contact;
+                additionalText += "  " + MessageUtils.t("signers_visible_signature_contact") + " " + docSettings.contact;
             else
-                additionalText = "Contacto: " + docSettings.contact;
+                additionalText = MessageUtils.t("signers_visible_signature_contact") + " " + docSettings.contact;
         }
-        textParameters.setText(cn + "\n" + o + ", " + sn + ".\nFecha declarada: " + fecha.format(date) + "\n" + additionalText.replaceAll("\t", " "));
+        textParameters.setText(cn + "\n" + o + ", " + sn + ".\n" + MessageUtils.t("signers_visible_signature_declared_date") + " " + fecha.format(date) + "\n" + additionalText.replaceAll("\t", " "));
         textParameters.setTextColor(settings.getFontColor());
         textParameters.setBackgroundColor(settings.getBackgroundColor());
 
@@ -308,8 +293,8 @@ public class FirmadorPAdES extends CRSigner implements DocumentSigner {
             LOG.error("Error al procesar la imagen para la representación visual de firma)", e);
             e.printStackTrace();
         }
-       // imageParameters.setImageScaling(ImageScaling.STRETCH);
-       imageParameters.getFieldParameters().setPage(docSettings.pageNumber);
+        // imageParameters.setImageScaling(ImageScaling.STRETCH);
+        imageParameters.getFieldParameters().setPage(docSettings.pageNumber);
         parameters.setImageParameters(imageParameters);
     }
 

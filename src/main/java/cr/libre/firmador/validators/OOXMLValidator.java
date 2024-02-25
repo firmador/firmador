@@ -9,6 +9,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import cr.libre.firmador.MessageUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -85,8 +87,8 @@ public class OOXMLValidator implements Validator {
         SignaturePart part;
         while (iter.hasNext()) {
             part = iter.next();
-         
-            list.put(part, part.validate() ? "Válido": "Inválido");
+
+            list.put(part, part.validate() ? MessageUtils.t("ooxmlvalidator_valid") : MessageUtils.t("ooxmlvalidator_invalid"));
         }
         return list;
     }
@@ -109,7 +111,7 @@ public class OOXMLValidator implements Validator {
     private String validaRevocacion(X509Certificate signer, SignatureType signatureType) throws Throwable {
         boolean tspvalido = true;
         XPath xpath = XPathHelper.getFactory().newXPath();
-        return tspvalido ? "Válido" : "Inválido";
+        return tspvalido ? MessageUtils.t("ooxmlvalidator_valid") : MessageUtils.t("ooxmlvalidator_invalid");
     }
 
 
@@ -154,16 +156,12 @@ public class OOXMLValidator implements Validator {
                     if (rdn.getType().equals("CN")) commonName = rdn.getValue().toString();
                     if (rdn.getType().equals("O")) organization = rdn.getValue().toString();
                 }
-            
+
                 String expires = new SimpleDateFormat("yyyy-MM-dd").format(signer.getNotAfter());
                 String name = firstName + " " + lastName;
                 if (firstName.isEmpty() && lastName.isEmpty())
                     name = commonName;
-                report += position + ". Firmante: " + name + " (" + identification + "), "
-                        + organization + "<br>\n&nbsp;&nbsp;&nbsp; Fecha declarada de la firma: " + signdate
-                        + "<br>&nbsp;&nbsp;&nbsp; Garantía de integridad y autenticidad: " + signok
-                        + " (Certificado expira: " + expires + ")"
-                        + "<br>&nbsp;&nbsp;&nbsp; Garantía de validez en el tiempo: " + revocaentiempo;
+                report += String.format(MessageUtils.t("ooxmlvalidator_report"), position, name, identification, organization, signdate, signok, expires, revocaentiempo);
                 report += "<br>";
             }
 
