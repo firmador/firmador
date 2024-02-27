@@ -34,14 +34,8 @@ import cr.libre.firmador.cards.CardSignInfo;
 import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 import cr.libre.firmador.plugins.PluginManager;
-import cr.libre.firmador.signers.FirmadorOpenDocument;
-import cr.libre.firmador.signers.FirmadorPAdES;
 import cr.libre.firmador.signers.FirmadorUtils;
-import cr.libre.firmador.signers.FirmadorXAdES;
-import eu.europa.esig.dss.enumerations.MimeType;
-import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.model.FileDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 public class GUIArgs implements GUIInterface {
@@ -58,30 +52,13 @@ public class GUIArgs implements GUIInterface {
         Settings settings = SettingsManager.getInstance().getAndCreateSettings();
         String fileName = getDocumentToSign();
         if (fileName != null) {
-            DSSDocument toSignDocument = new FileDocument(fileName);
-            DSSDocument signedDocument = null;
-            if (!timestamp && !visibleTimestamp) {
-                CardSignInfo card = getPin();
-                MimeType mimeType = toSignDocument.getMimeType();
-                if (mimeType == MimeTypeEnum.PDF) {
-                    FirmadorPAdES firmador = new FirmadorPAdES(this);
-                    signedDocument = firmador.sign(toSignDocument, card, settings);
-                } else if (mimeType == MimeTypeEnum.ODG || mimeType == MimeTypeEnum.ODP || mimeType == MimeTypeEnum.ODS || mimeType == MimeTypeEnum.ODT) {
-                    FirmadorOpenDocument firmador = new FirmadorOpenDocument(this);
-                    signedDocument = firmador.sign(toSignDocument, card, settings);
-                } else if (mimeType == MimeTypeEnum.XML) {
-                    FirmadorXAdES firmador = new FirmadorXAdES(this);
-                    signedDocument = firmador.sign(toSignDocument, card, settings);
-                } else {
-                    FirmadorXAdES firmador = new FirmadorXAdES(this);
-                    signedDocument = firmador.sign(toSignDocument, card, settings);
-                }
-                card.destroyPin();
-
-            } else {
-                FirmadorPAdES firmador = new FirmadorPAdES(this);
-                signedDocument = firmador.timestamp(toSignDocument, visibleTimestamp);
-            }
+            Document doc = new Document(this, fileName);
+            // settings.withoutVisibleSign = timestamp;
+            doc.setSettings(settings);
+            CardSignInfo card = getPin();
+            doc.sign(card);
+            card.destroyPin();
+            DSSDocument signedDocument = doc.getSignedDocument();
             if (signedDocument != null) {
                 fileName = getPathToSave("");
                 try {
@@ -122,6 +99,7 @@ public class GUIArgs implements GUIInterface {
     }
 
     public CardSignInfo getPin() {
+        System.out.println("Su pin");
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         char[] input = new char[128];
         try {
