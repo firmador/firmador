@@ -58,12 +58,14 @@ public class GUIShell implements GUIInterface, DocumentChangeListener {
         if (fileName != null) {
             // FirmadorCAdES firmador = new FirmadorCAdES(this);
             // FirmadorOpenDocument firmador = new FirmadorOpenDocument(this);
-            FirmadorPAdES firmador = new FirmadorPAdES(this);
+            // FirmadorPAdES firmador = new FirmadorPAdES(this);
             // FirmadorXAdES firmador = new FirmadorXAdES(this);
             CardSignInfo card = getPin();
-            DSSDocument toSignDocument = new FileDocument(fileName);
-            DSSDocument signedDocument = firmador.sign(toSignDocument, card, settings);
+            Document doc = new Document(this, fileName);
+            doc.sign(card);
+
             card.destroyPin();
+            DSSDocument signedDocument = doc.getSignedDocument();
             if (signedDocument != null) {
                 fileName = getPathToSave("");
                 try {
@@ -106,7 +108,8 @@ public class GUIShell implements GUIInterface, DocumentChangeListener {
 
     public String getDocumentToSign() {
         String docpath = readFromInput(MessageUtils.t("guishell_sign_route_document")+" ");
-        return Paths.get(docpath).toAbsolutePath().toString();
+        String result = Paths.get(docpath).toString();
+        return result;
     }
 
     public String getPathToSave(String extension) {
