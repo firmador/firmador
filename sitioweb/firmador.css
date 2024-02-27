@@ -1,0 +1,63 @@
+body {
+	font-family: "Nimbus Sans", Arial, Helvetica, sans-serif;
+	margin: 1em;
+}
+
+h1, h2, h3, #logotipo, #descargar, #contactar {
+	font-weight: normal;
+	text-align: center;
+}
+
+p {
+	line-height: 1.5;
+	margin: 1em auto;
+	max-width: 48em;
+}
+
+#logotipo ~ h1 {
+	margin-top: 0;
+}
+
+#descargar {
+	margin: 3em auto;
+}
+
+#descargar > a {
+	background: #1e824c;
+	border: 1px solid #205e3b;
+	border-radius: 1ex;
+	box-shadow: 0 3px 0 #205e3b;
+	color: white;
+	display: inline-block;
+	font-size: 1.4em;
+	padding: .5em 1em .3em;
+	text-decoration: none;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+#descargar ~ h2 {
+	margin-top: 2em;
+	margin-bottom: 0;
+}
+
+@media (min-width: 48em) {
+	#sistemas {
+		display: grid;
+		grid-gap: 2em;
+		grid-template-columns: auto auto auto;
+		margin: auto;
+		max-width: 72em;
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		background: black;
+		color: white;
+	}
+
+	a:link { color: lightskyblue; }
+	a:hover { color: powderblue; }
+	a:active { color: cornflowerblue; }
+	a:visited { color: skyblue; }
+}
