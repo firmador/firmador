@@ -14,6 +14,7 @@ Bienvenido a la documentación de  Firmador Libre
    arquitectura
    card_docs
    interfaces
+   remoto
    previsualizadores
    firmadores
    validadores
