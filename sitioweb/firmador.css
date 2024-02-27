@@ -40,6 +40,98 @@ p {
 	margin-bottom: 0;
 }
 
+
+#venbeta > a {
+	background: #1e824c;
+
+	border-radius: 1ex;
+	box-shadow: 0 3px 0 #890889;
+	color: white;
+	display: inline-block;
+	font-size: 0.9em;
+	padding: .2em 0.7em .2em;
+	text-decoration: none;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+#vflatpak > a {
+	background: #1e824c;
+
+	border-radius: 1ex;
+	box-shadow: 0 3px 0 #ef4921;
+	color: white;
+	display: inline-block;
+	font-size: 0.9em;
+	padding: .2em 0.7em .2em;
+	text-decoration: none;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+#vestable > a {
+	background: #1e824c;
+
+	border-radius: 1ex;
+	box-shadow: 0 3px 0 #ef4921;
+	color: white;
+	display: inline-block;
+	font-size: 0.9em;
+	padding: .2em 0.7em .2em;
+	text-decoration: none;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+
+.betabtns {
+    display: inline;
+    text-align: center;
+}
+
+.divcenter {
+    text-align: justify;
+}
+ 
+#videoinstalacion {
+    margin-top: 1em;
+    max-width: 500px;
+    max-height: 700px;
+}
+video.center {
+
+    display: block;
+
+    margin-left: auto;
+
+    margin-right: auto;
+} 
+ 
+.strong {
+      font-weight: bold;
+}
+#menubar {
+    display: block;
+    width: 100%;
+    height: 60px;
+}
+
+#menubar a {
+  float: right;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+/* Change the color of links on hover */
+#menubar a:hover {
+
+  color: black;
+}
+
+/* Add a color to the active/current link */
+#menubar a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+
 @media (min-width: 48em) {
 	#sistemas {
 		display: grid;
@@ -48,6 +140,7 @@ p {
 		margin: auto;
 		max-width: 72em;
 	}
+ 
 }
 
 @media (prefers-color-scheme: dark) {
