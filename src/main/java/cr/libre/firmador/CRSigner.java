@@ -118,13 +118,11 @@ public class CRSigner {
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA POLITICA PERSONA FISICA - COSTA RICA v2.crt")));
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA POLITICA PERSONA JURIDICA - COSTA RICA v2.crt")));
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA POLITICA SELLADO DE TIEMPO - COSTA RICA v2.crt")));
-        adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA SINPE - PERSONA FISICA v2.cer")));
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA SINPE - PERSONA FISICA v2(1).crt")));
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA SINPE - PERSONA FISICA v2(2).crt")));
-        adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA SINPE - PERSONA JURIDICA v2.cer")));
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA SINPE - PERSONA JURIDICA v2(1).crt")));
         adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/CA SINPE - PERSONA JURIDICA v2(2).crt")));
-        adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/TSA SINPE v2.cer")));
+        adjunctCertSource.addCertificate(DSSUtils.loadCertificate(this.getClass().getClassLoader().getResourceAsStream("certs/TSA SINPE v3.cer")));
         CommonCertificateVerifier cv = new CommonCertificateVerifier();
         cv.setTrustedCertSources(trustedCertSource);
         cv.setAdjunctCertSources(adjunctCertSource);
