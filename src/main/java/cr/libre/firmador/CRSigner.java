@@ -129,6 +129,7 @@ public class CRSigner {
         cv.setCrlSource(new OnlineCRLSource());
         cv.setOcspSource(new OnlineOCSPSource());
         cv.setAIASource(new DefaultAIASource());
+        cv.setRevocationFallback(true);
         return cv;
     }
 
