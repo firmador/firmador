@@ -124,6 +124,17 @@ Algunas herramientas como `netstat` o `ss` muestran este nombre que identifica
 de forma más intuitiva el tipo de servicio que está funcionando en esa
 conexión, facilitando la auditoría de red.
 
+## ¿Se puede firmar varios documentos PDF en lote?
+
+Sí se puede. La firma debe quedar en exactamente el mismo lugar en la misma página de cada documento.
+
+- cargar un archivo del lote, para poder pre-visualizarlo
+- entrar a la pestaña 'Configuración' y cambiar el campo 'Página inicial' al número de página deseado
+- click en 'Guardar'
+- devolverse a la pestaña 'Firmar'
+- mover la firma al lugar deseado
+- arrastrar todos los documentos que quiere firmar de esta forma a la ventana del Firmador.
+
 
 ## ¿Se puede agregar una imagen personalizada por línea de comandos a la hora de firmar ficheros PDF?
 
