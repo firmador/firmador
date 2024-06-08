@@ -97,7 +97,6 @@
           <showWarnings>true</showWarnings>
           <source>8</source>
           <target>8</target>
-          <forceJavacCompilerUse>true</forceJavacCompilerUse>
           <compilerArgument>-Xlint:all</compilerArgument>
           <compilerArgument>-Xdiags:verbose</compilerArgument>
         </configuration>
