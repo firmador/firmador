@@ -19,6 +19,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.cards;
 
+@SuppressWarnings("serial")
 public class UnsupportedArchitectureException extends Exception {
     public UnsupportedArchitectureException(String errorMessage, Throwable exception) {
         super(errorMessage, exception);

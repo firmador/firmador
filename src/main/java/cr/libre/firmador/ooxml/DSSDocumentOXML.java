@@ -13,6 +13,7 @@ import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.model.DSSDocument;
 
+@SuppressWarnings("serial")
 public class DSSDocumentOXML implements DSSDocument   {
     private OPCPackage opcpkg;
     protected MimeType mimeType;
