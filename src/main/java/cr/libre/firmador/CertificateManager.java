@@ -91,7 +91,7 @@ public class CertificateManager {
         List<CertificateToken> certchain = new ArrayList<CertificateToken>();
         Set<CertificateToken> ct = certSource.getBySubject(subjectCertificate.getIssuer());
         CertificateToken currentCert = subjectCertificate;
-        while (currentCert != null && !ct.isEmpty() && counter < this.MAXDEPTH) {
+        while (currentCert != null && !ct.isEmpty() && counter < CertificateManager.MAXDEPTH) {
             counter += 1; // prevent infinite cycles
             for (CertificateToken c : ct) {
                 if (currentCert.isSignedBy(c)) {
