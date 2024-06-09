@@ -96,7 +96,7 @@
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
           <compilerArgument>-Xlint:all</compilerArgument>
-          <compilerArgument>-Xdiags:verbose</compilerArgument>
+          <!--<compilerArgument>-Xdiags:verbose</compilerArgument>-->
         </configuration>
         <executions>
           <execution>
