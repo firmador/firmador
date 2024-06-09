@@ -138,6 +138,9 @@
                     <exclude>META-INF/MANIFEST.MF</exclude>
                     <exclude>META-INF/sun-jaxb.episode</exclude>
                     <exclude>META-INF/services/eu.europa.esig.dss.validation.policy.SignaturePolicyValidator</exclude>
+                    <exclude>META-INF/services/org.apache.poi.extractor.ExtractorProvider</exclude>
+                    <exclude>META-INF/services/org.apache.poi.sl.draw.ImageRenderer</exclude>
+                    <exclude>META-INF/services/org.apache.poi.ss.usermodel.WorkbookProvider</exclude>
                     <exclude>xsd/binding.xml</exclude>
                     <exclude>xsd/bindings.xml</exclude>
                     <exclude>xsd/catalog.cat</exclude>
@@ -193,8 +196,8 @@
       <artifactId>dss-asic-xades</artifactId>
       <exclusions>
         <exclusion>
-          <artifactId>jakarta.activation-api</artifactId>
-          <groupId>jakarta.activation</groupId>
+          <artifactId>jakarta.activation</artifactId>
+          <groupId>com.sun.activation</groupId>
         </exclusion>
       </exclusions>
     </dependency>
