@@ -9,18 +9,11 @@ Está diseñado para funcionar con Java y funciona en GNU/Linux, macOS y Windows
 En el caso de macOS y Windows requiere instalar [Java](https://java.com/) y los
 controladores de lector y tarjeta del sitio web de [descargas de Soporte Firma
 Digital](https://soportefirmadigital.com/sfdj/dl.aspx).
-En el caso de GNU/Linux, la forma sugerida para instalarlos está explicada en
-los siguientes artículos para instalar firma digital de Costa Rica en
-[Fedora/RHEL/CentOS](https://fran.cr/instalar-firma-digital-costa-rica-linux-fedora/), en
-[Debian/Ubuntu](https://fran.cr/instalar-firma-digital-costa-rica-gnu-linux-ubuntu/), en
-[openSUSE/SLE/SLES](https://fran.cr/instalar-firma-digital-costa-rica-gnu-linux-opensuse-leap-sles-sle/) y en
-[Arch Linux](https://fran.cr/instalar-firma-digital-costa-rica-manjaro-arch-linux/).
 
 
 ## Descarga
 
-- [Descargar firmador](https://firmador.libre.cr/firmador.jar) para Windows,
-  GNU/Linux y macOS.
+Se puede descargar el firmador en el sitio web https://firmador.libre.cr.
 
 
 ## Capturas de pantalla
