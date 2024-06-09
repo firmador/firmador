@@ -283,7 +283,8 @@ public class ConfigPanel extends ScrollableJPanel {
         btImage = new JButton(MessageUtils.t("configpanel_choose"));
         btImage.setToolTipText(MessageUtils.t("configpanel_choose"));
         btImage.getAccessibleContext().setAccessibleDescription(MessageUtils.t("configpanel_choose"));
-        if (this.settings.image != null) {
+        btImage.setIcon(createImageIcon(new Color(255, 255, 255, 0)));
+        if (this.settings.image != null && !settings.image.trim().isEmpty()) {
             imageText.setText(this.settings.image);
             btImage.setIcon(this.getIcon(this.settings.image));
         }
@@ -559,7 +560,7 @@ public class ConfigPanel extends ScrollableJPanel {
         sofficePath.setText(settings.getSofficePath());
         language.setSelectedItem(settings.language);
         pDFImgScaleFactor.setText(String.format("%.2f", settings.pDFImgScaleFactor));
-        if (settings.image != null) {
+        if (settings.image != null && !settings.image.trim().isEmpty()) {
             imageText.setText(settings.image);
             btImage.setIcon(this.getIcon(settings.image));
         } else {
