@@ -32,7 +32,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
@@ -117,7 +117,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
 
             public void processSign(Document doc, boolean preview) {
                 gui.loadDocument(doc, preview);
-                
+
             }
 
             private void retrieveDocument(String name, final ClassicHttpResponse response) throws Throwable {
@@ -134,7 +134,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                 }
                 response.setCode(HttpStatus.SC_NO_CONTENT);
             }
-            
+
             private boolean deleteDocument(String name){
                 GUISwing gui = (GUISwing) this.gui;
                 boolean dev = false;
@@ -146,7 +146,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                 }
                 return dev;
             }
-            
+
             private Document findDocument(String name) {
                 GUISwing gui = (GUISwing) this.gui;
                 HashMap<String, Document> result = gui.getListDocumentTablePanel().findDocument(name, true);
@@ -193,7 +193,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                 });
                 return true;
             }
-            
+
             private String getrequestFileName(final ClassicHttpRequest request, int action) throws URISyntaxException {
                 String filename = null;
                 switch (action) {
@@ -250,13 +250,13 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                 response.setHeader("Vary", "Origin");
                 try {
                     switch (determineAPIAction(request)) {
-                    case API_ACTION_CLOSE: 
+                    case API_ACTION_CLOSE:
                             response.setCode(HttpStatus.SC_OK);
                             closeWidget();
                             LOG.trace("Closing...");
                             response.close();
                             break;
-                    case API_ACTION_DELETE: 
+                    case API_ACTION_DELETE:
                         requestFileName = getrequestFileName(request, API_ACTION_DELETE);
                         boolean result = deleteDocument(requestFileName);
                         if (result) {
@@ -279,7 +279,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                     default:
                         response.setCode(HttpStatus.SC_NO_CONTENT);
                     }
-                    
+
 
                 } catch (URISyntaxException e) {
                     LOG.error("Error URISyntaxException", e);
@@ -295,7 +295,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
                     gui.showError(FirmadorUtils.getRootCause(e));
                     response.setCode(HttpStatus.SC_NO_CONTENT);
                 }
-                
+
             }
         };
         Settings settings = SettingsManager.getInstance().getAndCreateSettings();
