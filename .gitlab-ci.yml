@@ -50,23 +50,22 @@ linux-java-21:
   when: always
 
 # ------ Windows ------
+#.shared_windows_runners:
+# tags:
+#    - shared-windows
+#    - windows-1809
 
-.shared_windows_runners:
-  tags:
-    - shared-windows
-    - windows-1809
-
-windows-java-12:
-  extends:
-    - .shared_windows_runners
-  stage: test-windows
-  before_script:
-    - choco install maven -y  # install maven to be able to run the tests
-    - Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
-    - refreshenv
-  script:
-    - mvn --batch-mode --errors --fail-at-end --show-version test
-  when: always
+#windows-java-12:
+#  extends:
+#    - .shared_windows_runners
+#  stage: test-windows
+#  before_script:
+#    - choco install maven -y  # install maven to be able to run the tests
+#    - Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
+#    - refreshenv
+#  script:
+#    - mvn --batch-mode --errors --fail-at-end --show-version test
+#  when: always
 
 
 # ------ Mac ------

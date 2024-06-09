@@ -513,6 +513,7 @@ public class TestSettingsManager {
     // ------ getListFromString method tests ------
 
     @Test
+    @SuppressWarnings("unchecked")
     void testGetListFromStringWhenReturnsDefaultData(){
         List<String> defaultData = new ArrayList<>(List.of("Test1", "Test2"));
         AtomicReference<List<String>> resultList = new AtomicReference<>();
@@ -527,6 +528,7 @@ public class TestSettingsManager {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testGetListFromStringWhenReturnsData(){
         String data = "Test1|Test2|Test3";
         AtomicReference<List<String>> resultList = new AtomicReference<>();
@@ -542,6 +544,7 @@ public class TestSettingsManager {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testGetListFromStringWhenBothParamsAreEmpty(){
         String data = "";
         List<String> defaultData = new ArrayList<>();
@@ -657,6 +660,7 @@ public class TestSettingsManager {
     // ------ setSettings method tests ------
 
     @Test
+    @SuppressWarnings("unchecked")
     void testSetSettingsWithoutSaveConfig() {
         HashMap<String, Object> fieldValues = getConfigFieldValuesForTesting();
         Settings newConfig = createNewConfigForTesting(fieldValues);
@@ -676,6 +680,7 @@ public class TestSettingsManager {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testSetSettingsWithSaveConfig(){
         HashMap<String, Object> fieldValues = getConfigFieldValuesForTesting();
         Settings newConfig = createNewConfigForTesting(fieldValues);

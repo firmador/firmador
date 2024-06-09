@@ -105,7 +105,7 @@ public class SmartCardDetector implements  ConfigListener {
                         pkcs11manager.getSlotByCert(certificate)
                 ));
             }
-        	
+
         }
         return cardinfo;
     }

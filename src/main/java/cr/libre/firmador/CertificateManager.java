@@ -30,19 +30,15 @@ public class CertificateManager {
         certSource.addCertificate(DSSUtils.loadCertificate(
                 loaderclass.getResourceAsStream("certs/CA POLITICA SELLADO DE TIEMPO - COSTA RICA v2.crt")));
         certSource.addCertificate(DSSUtils.loadCertificate(
-                loaderclass.getResourceAsStream("certs/CA SINPE - PERSONA FISICA v2.cer")));
-        certSource.addCertificate(DSSUtils.loadCertificate(
                 loaderclass.getResourceAsStream("certs/CA SINPE - PERSONA FISICA v2(1).crt")));
         certSource.addCertificate(DSSUtils.loadCertificate(
                 loaderclass.getResourceAsStream("certs/CA SINPE - PERSONA FISICA v2(2).crt")));
-        certSource.addCertificate(DSSUtils.loadCertificate(
-                loaderclass.getResourceAsStream("certs/CA SINPE - PERSONA JURIDICA v2.cer")));
         certSource.addCertificate(DSSUtils.loadCertificate(
                 loaderclass.getResourceAsStream("certs/CA SINPE - PERSONA JURIDICA v2(1).crt")));
         certSource.addCertificate(DSSUtils.loadCertificate(
                 loaderclass.getResourceAsStream("certs/CA SINPE - PERSONA JURIDICA v2(2).crt")));
         certSource.addCertificate(DSSUtils
-                .loadCertificate(loaderclass.getResourceAsStream("certs/TSA SINPE v2.cer")));
+                .loadCertificate(loaderclass.getResourceAsStream("certs/TSA SINPE v3.cer")));
         certSource.addCertificate(DSSUtils.loadCertificate(
                 loaderclass.getResourceAsStream("certs/CA RAIZ NACIONAL - COSTA RICA v2.crt")));
         certSource.addCertificate(DSSUtils.loadCertificate(
@@ -57,10 +53,10 @@ public class CertificateManager {
     public List<X509Certificate> getCertificateChainTSA() throws CertificateException {
         List<X509Certificate> certlist = new ArrayList<X509Certificate>();
         ClassLoader loaderclass = this.getClass().getClassLoader();
-        
+
         CertificateToken ca_nacional = DSSUtils.loadCertificate(
                 loaderclass.getResourceAsStream("certs/CA RAIZ NACIONAL - COSTA RICA v2.crt"));
-        
+
         CertificateToken ca_politica = DSSUtils.loadCertificate(
                 loaderclass.getResourceAsStream("certs/CA POLITICA SELLADO DE TIEMPO - COSTA RICA v2.crt"));
         CertificateToken tsa_sinpe = DSSUtils
@@ -95,7 +91,7 @@ public class CertificateManager {
         List<CertificateToken> certchain = new ArrayList<CertificateToken>();
         Set<CertificateToken> ct = certSource.getBySubject(subjectCertificate.getIssuer());
         CertificateToken currentCert = subjectCertificate;
-        while (currentCert != null && !ct.isEmpty() && counter < this.MAXDEPTH) {
+        while (currentCert != null && !ct.isEmpty() && counter < CertificateManager.MAXDEPTH) {
             counter += 1; // prevent infinite cycles
             for (CertificateToken c : ct) {
                 if (currentCert.isSignedBy(c)) {

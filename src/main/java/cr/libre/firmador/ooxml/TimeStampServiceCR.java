@@ -23,7 +23,7 @@ import eu.europa.esig.dss.validation.CertificateVerifier;
 
 public class TimeStampServiceCR extends TSPTimeStampService {
     final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-	private List<X509Certificate> certchain;
+    private List<X509Certificate> certchain;
 
     private CertificateVerifier verifier;
     private CertificateManager certManager;
@@ -36,11 +36,11 @@ public class TimeStampServiceCR extends TSPTimeStampService {
             LOG.error("Error obteniendo la cadena de certificados de sello en el tiempo", e);
         }
         this.verifier = verifier;
-	}
-	
+    }
+
     @Override
     public byte[] timeStamp(SignatureInfo signatureInfo, byte[] data, RevocationData revocationData) throws Exception {
-		byte[] datastamped = super.timeStamp(signatureInfo, data,  revocationData);
+        byte[] datastamped = super.timeStamp(signatureInfo, data,  revocationData);
 
         X509Certificate certificate;
 
@@ -82,8 +82,8 @@ public class TimeStampServiceCR extends TSPTimeStampService {
             } catch (Throwable e) {
                 LOG.warn("No se encontró CRL para el certificado " + certificate.toString(), e);
             }
-            
-            
+
+
             try {
                 oscptoken = oscpsource.getRevocationToken(certificate, issuerCertificate);
                 if (oscptoken != null)
@@ -92,7 +92,7 @@ public class TimeStampServiceCR extends TSPTimeStampService {
             } catch (Throwable e) {
                 LOG.warn("No se encontró OSCP para el certificado " + certificate.toString(), e);
             }
-            
+
         }
     }
 

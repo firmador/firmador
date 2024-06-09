@@ -1,10 +1,10 @@
 package cr.libre.firmador.remote;
 
-import javax.mail.BodyPart;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
+import jakarta.mail.BodyPart;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
 
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
@@ -12,9 +12,9 @@ import org.apache.hc.core5.http.HttpEntity;
 import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.gui.GUIInterface;
 
-import javax.activation.DataSource;
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
+import jakarta.activation.DataSource;
+import jakarta.activation.DataHandler;
+import jakarta.activation.FileDataSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -174,13 +174,13 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         previewallbtn.setToolTipText(MessageUtils.t("list_document_previewall_tooltip"));
         previewallbtn.getAccessibleContext()
                 .setAccessibleDescription(MessageUtils.t("list_document_previewall_tooltip_accesible"));
-        
-        
+
+
         JButton changefolderbtn = new JButton(MessageUtils.t("list_document_changefolder"));
         changefolderbtn.setToolTipText(MessageUtils.t("list_document_changefolder_tooltip"));
         changefolderbtn.getAccessibleContext()
                 .setAccessibleDescription(MessageUtils.t("list_document_changefolder_tooltip_accesible"));
-        
+
         JButton setconfigureallbtn = new JButton(MessageUtils.t("list_document_setconfigureall"));
         setconfigureallbtn.setToolTipText(MessageUtils.t("list_document_setconfigureall_tooltip"));
         setconfigureallbtn.getAccessibleContext()
@@ -349,7 +349,7 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         Document doctoadd;
         List<Document> selectedDocument = new ArrayList<Document>();
         for (int row : table.getSelectedRows()) {
-            doctoadd = (Document) ((DocumentTableButton) model.getValueAt(row,
+            doctoadd = ((DocumentTableButton) model.getValueAt(row,
                     ListDocumentTableModel.DOCUMENT_POSITION)).getDocument();
             selectedDocument.add(doctoadd);
         }
@@ -362,7 +362,7 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         String docname;
         int row=0;
         while (row < table.getRowCount()) {
-            doctoadd = (Document) ((DocumentTableButton) model.getValueAt(row,
+            doctoadd = ((DocumentTableButton) model.getValueAt(row,
                     ListDocumentTableModel.DOCUMENT_POSITION)).getDocument();
 
             docname = (String) model.getValueAt(row, ListDocumentTableModel.NAME_POSITION);
@@ -391,7 +391,7 @@ public class ListDocumentTablePanel extends ScrollableJPanel implements Document
         List<Document> selectedDocument = new ArrayList<Document>();
 
         while (position < rowcount) {
-            selectedDocument.add((Document) ((DocumentTableButton) model.getValueAt(position,
+            selectedDocument.add(((DocumentTableButton) model.getValueAt(position,
                     ListDocumentTableModel.DOCUMENT_POSITION)).getDocument());
             position += 1;
         }

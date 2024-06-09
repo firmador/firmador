@@ -42,7 +42,7 @@ public class PKCS12Manager implements CardManagerInterface {
 
     @Override
     public Key getPrivateKey(String token, Long slotID, PasswordProtection password) throws Throwable {
-        KeyStore keystore = this.getKeyStore(new Long(0), password);
+        KeyStore keystore = this.getKeyStore(Long.valueOf(0), password);
         Key key = null;
         String alias = keystore.aliases().nextElement();
         key = keystore.getKey(alias, password.getPassword());
@@ -51,7 +51,7 @@ public class PKCS12Manager implements CardManagerInterface {
 
     @Override
     public X509Certificate getCertificate(String token, Long slotID, PasswordProtection password) throws Throwable {
-        KeyStore keystore = this.getKeyStore(new Long(0), password);
+        KeyStore keystore = this.getKeyStore(Long.valueOf(0), password);
         X509Certificate certificate = null;
         String alias = keystore.aliases().nextElement();
         certificate = (X509Certificate) keystore.getCertificate(alias);

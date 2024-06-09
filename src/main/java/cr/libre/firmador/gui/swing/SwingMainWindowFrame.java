@@ -52,7 +52,7 @@ public class SwingMainWindowFrame extends JFrame {
     protected Settings settings;
 
     @SuppressWarnings("serial")
-	public void setGUIInterface(GUIInterface gui) {
+    public void setGUIInterface(GUIInterface gui) {
         this.gui = gui;
         this.setDropTarget(new DropTarget() {
             public synchronized void drop(DropTargetDropEvent e) {

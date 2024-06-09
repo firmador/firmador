@@ -59,6 +59,7 @@ public class TestUtils {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static Map<String, String> getModifiableEnvironment()
     {
         try {
