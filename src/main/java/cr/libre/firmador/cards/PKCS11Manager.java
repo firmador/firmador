@@ -226,7 +226,7 @@ public class PKCS11Manager implements CardManagerInterface {
     private Provider getProviderByIntrospection(String configFile) {
         Provider prov = null;
         try {
-            int javaVersion = this.getVersion();
+            int javaVersion = PKCS11Manager.getVersion();
             if (javaVersion >= 9) {
                 prov = Security.getProvider(PKCS11_PROVIDER_NAME);
                 prov = prov.configure(configFile);
