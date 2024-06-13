@@ -27,6 +27,7 @@ import org.apache.pdfbox.pdmodel.font.FontMappers;
 import cr.libre.firmador.gui.GUIInterface;
 import cr.libre.firmador.gui.GUISelector;
 import cr.libre.firmador.plugins.PluginManager;
+import java.util.Arrays;
 
 public class Firmador {
 
@@ -49,6 +50,8 @@ public class Firmador {
         command.add("jdk.crypto.cryptoki/sun.security.pkcs11.wrapper=ALL-UNNAMED");
         for (String argument : arguments) command.add(argument);
         command.add("run");
+        System.out.println(command.toString());
+
         new ProcessBuilder().inheritIO().command(command).start().waitFor();
     }
 

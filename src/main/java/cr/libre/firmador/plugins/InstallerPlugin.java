@@ -23,11 +23,11 @@ public class InstallerPlugin implements Plugin {
     private String linuxExecPath = "%configpath%/firmador.jar";
     private String linuxIconPath = "%configpath%/firmador.png";
     private String linuxDesktop = "[Desktop Entry]\n" + "Encoding=UTF-8\n" + "Version=1.0\n" + "Type=Application\n"
-            + "Terminal=false\n" + "Exec=java -jar %path%\n" + "Name=Firmador Libre\n" + "Icon=%iconpath%\n"
+            + "Terminal=false\n" + "Exec=java -jar %path% %u\n" + "Name=Firmador Libre\n" + "Icon=%iconpath%\n"
             + "Categories=GTK;Office;Viewer;\n"
             + "GenericName=Firmador Libre\n"
             + "Comment=Firmador de documentos con firma digital avanzada de Costa Rica\n"
-            + "MimeType=application/pdf;application/vnd.oasis.opendocument.text;application/vnd.oasis.opendocument.spreadsheet;application/vnd.oasis.opendocument.presentation;application/vnd.oasis.opendocument.graphics;application/vnd.openxmlformats-officedocument.wordprocessingml.document;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.openxmlformats-officedocument.presentationml.presentation;";
+            + "MimeType=MimeType=x-scheme-handler/flsign;x-scheme-handler/flauth;application/pdf;application/vnd.oasis.opendocument.text;application/vnd.oasis.opendocument.spreadsheet;application/vnd.oasis.opendocument.presentation;application/vnd.oasis.opendocument.graphics;application/vnd.openxmlformats-officedocument.wordprocessingml.document;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.openxmlformats-officedocument.presentationml.presentation;";
 
     private String powershellInstallWindows = "";
 
@@ -101,6 +101,15 @@ public class InstallerPlugin implements Plugin {
         Path iconpath = getlinuxIconPath();
         File outputfile = iconpath.toFile();
         ImageIO.write(ImageIO.read(this.getClass().getClassLoader().getResource("firmador.png")), "png", outputfile);
+        try {
+
+            Runtime.getRuntime().exec("xdg-mime default firmadorlibre.desktop x-scheme-handler/flsign");
+            Runtime.getRuntime().exec("xdg-mime default firmadorlibre.desktop x-scheme-handler/flauth");
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
 
     public Path getWindowsExecPath() {
