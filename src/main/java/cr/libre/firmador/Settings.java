@@ -165,8 +165,7 @@ public class Settings {
     }
 
     public String getTranslatedDefaultSignMessage(){
-        Locale locale = new Locale(this.language, this.country);
-        ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+        ResourceBundle bundle = ResourceBundle.getBundle("messages", Locale.of(this.language, this.country));
         return bundle.getString("configpanel_default_sign_message");
     }
 

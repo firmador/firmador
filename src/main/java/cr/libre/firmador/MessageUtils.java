@@ -8,8 +8,7 @@ import java.util.ResourceBundle;
 public class MessageUtils {
     public static String t(String msgkey) {
         Settings settings = SettingsManager.getInstance().getAndCreateSettings();
-        Locale locale = new Locale(settings.language, settings.country);
-        ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+        ResourceBundle bundle = ResourceBundle.getBundle("messages", Locale.of(settings.language, settings.country));
         return bundle.getString(msgkey);
     }
 
