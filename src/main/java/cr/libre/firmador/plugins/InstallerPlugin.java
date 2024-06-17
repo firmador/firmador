@@ -103,8 +103,8 @@ public class InstallerPlugin implements Plugin {
         ImageIO.write(ImageIO.read(this.getClass().getClassLoader().getResource("firmador.png")), "png", outputfile);
         try {
 
-            Runtime.getRuntime().exec("xdg-mime default firmadorlibre.desktop x-scheme-handler/flsign");
-            Runtime.getRuntime().exec("xdg-mime default firmadorlibre.desktop x-scheme-handler/flauth");
+            Runtime.getRuntime().exec(new String[]{"xdg-mime", "default", "firmadorlibre.desktop", "x-scheme-handler/flsign"});
+            Runtime.getRuntime().exec(new String[]{"xdg-mime", "default", "firmadorlibre.desktop", "x-scheme-handler/flauth"});
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -142,8 +142,8 @@ public class InstallerPlugin implements Plugin {
             try {
 
                 Runtime.getRuntime()
-                        .exec("powershell -Command \"Start-Process 'cmd' -Verb RunAs -ArgumentList '/c \" wscript "
-                                + temp.toAbsolutePath().toString() + "\"'\"");
+                        .exec(new String[]{"powershell -Command \"Start-Process 'cmd' -Verb RunAs -ArgumentList '/c \" wscript "
+                                + temp.toAbsolutePath().toString() + "\"'\""});
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

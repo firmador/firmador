@@ -16,7 +16,7 @@ public class TestUtils {
             if(dir.exists()) {
                 if (System.getProperty("os.name").toLowerCase().contains("windows")) {
                     // make sure the file has the right permissions for deletion
-                    final Process p = Runtime.getRuntime().exec("icacls " + path + " /grant \"" + System.getProperty("user.name") + ":F\" /t /inheritance:r");
+                    final Process p = Runtime.getRuntime().exec(new String[]{"icacls " + path + " /grant \"" + System.getProperty("user.name") + ":F\" /t /inheritance:r"});
                     p.waitFor();  // wait for it to end before continue with the next line
                 }
                 FileUtils.forceDelete(dir);

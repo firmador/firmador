@@ -52,8 +52,8 @@ public class SofficePreviewer implements PreviewerInterface {
         String separator = FileSystems.getDefault().getSeparator();
         String guestFilename = FilenameUtils.removeExtension(importfile.getName()) + ".pdf";
         String tmpdir = Files.createTempDirectory("firmadorlibre").toFile().getAbsolutePath();
-        String command = String.format("%s --headless  --convert-to %s --outdir %s %s", settings.getSofficePath(),
-                conversorsource, tmpdir, importfile.toURI().normalize());
+        String[] command = new String[]{String.format("%s --headless  --convert-to %s --outdir %s %s", settings.getSofficePath(),
+                conversorsource, tmpdir, importfile.toURI().normalize())};
         Process theProcess = Runtime.getRuntime().exec(command);
 
         InputStream inputStream = theProcess.getErrorStream();
