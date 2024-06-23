@@ -31,6 +31,7 @@ import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.GroupLayout;
@@ -40,6 +41,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -48,6 +50,8 @@ import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
+
+import org.apache.hc.core5.http.impl.bootstrap.HttpServer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.Logger;
@@ -794,5 +798,67 @@ public class GUISwing implements GUIInterface, ConfigListener, DocumentChangeLis
     public void previewAllDone() {
         loadDialogWorker.setVisible(false);
 
+    }
+
+    @Override
+    public void registerHttpServer(HttpServer server) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void registerCloseEvent(HttpServer server) {
+        this.getMainFrame().addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent arg0) {
+                server.stop();
+            }
+        });
+
+    }
+
+    @Override
+    public void requestCloseEvent() {
+        GUISwing gui = this;
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    LOG.error("Interrupción al correr servidor", e);
+                    e.printStackTrace();
+                }
+                gui.close();
+
+            }
+        });
+
+    }
+
+    @Override
+    public void cleanDocuments() {
+        this.getListDocumentTablePanel().cleanDocuments();
+    }
+
+    @Override
+    public Document findDocument(String name) {
+
+        HashMap<String, Document> result = this.getListDocumentTablePanel().findDocument(name, true);
+        if (!result.isEmpty()) {
+            return result.get(name);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean deleteDocument(String name) {
+        boolean dev = false;
+        HashMap<String, Document> result = this.getListDocumentTablePanel().findDocument(name, true);
+        if (!result.isEmpty()) {
+            Document doc = result.get(name);
+            this.getListDocumentTablePanel().removeDocument(doc);
+            dev = true;
+        }
+        return dev;
     }
 }

@@ -19,6 +19,7 @@ along with Firmador.  If not, see <http://www.gnu.org/licenses/>.  */
 
 package cr.libre.firmador.gui;
 
+import org.apache.hc.core5.http.impl.bootstrap.HttpServer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import cr.libre.firmador.Settings;
@@ -53,9 +54,11 @@ public interface GUIInterface {
     void validateDone(Document document);
 
     void signDone(Document document);
-
     void extendsDone(Document document);
 
+    Document findDocument(String name);
+
+    boolean deleteDocument(String name);
     void doPreview(Document document);
     void validateAllDone();
 
@@ -67,4 +70,10 @@ public interface GUIInterface {
     void signDocument(Document document);
 
     void clearDone();
+
+    void cleanDocuments();
+    void registerHttpServer(HttpServer server);
+    void registerCloseEvent(HttpServer server);
+
+    void requestCloseEvent();
 }

@@ -30,6 +30,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import cr.libre.firmador.MessageUtils;
+
+import org.apache.hc.core5.http.impl.bootstrap.HttpServer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import cr.libre.firmador.Settings;
@@ -253,5 +255,41 @@ public class GUIShell implements GUIInterface, DocumentChangeListener {
     public Document loadDocument(Document document, boolean preview) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void registerHttpServer(HttpServer server) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void registerCloseEvent(HttpServer server) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void requestCloseEvent() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public Document findDocument(String name) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean deleteDocument(String name) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void cleanDocuments() {
+        // TODO Auto-generated method stub
+
     };
 }

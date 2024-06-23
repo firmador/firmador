@@ -36,6 +36,8 @@ import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 import cr.libre.firmador.plugins.PluginManager;
 import cr.libre.firmador.signers.FirmadorUtils;
 import eu.europa.esig.dss.model.DSSDocument;
+
+import org.apache.hc.core5.http.impl.bootstrap.HttpServer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 public class GUIArgs implements GUIInterface {
@@ -213,5 +215,41 @@ public class GUIArgs implements GUIInterface {
     public Document loadDocument(Document document, boolean preview) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void registerHttpServer(HttpServer server) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void registerCloseEvent(HttpServer server) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void requestCloseEvent() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public Document findDocument(String name) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean deleteDocument(String name) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void cleanDocuments() {
+        // TODO Auto-generated method stub
+
     };
 }
