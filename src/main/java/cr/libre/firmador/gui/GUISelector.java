@@ -43,8 +43,6 @@ public class GUISelector {
         else if (name.equals("shell")) gui = new GUIShell();
         else if (name.equals("server"))
             gui = new GUIServer();
-        else if (name.equals("py4j"))
-            gui = new GUIPy4j();
         else gui = new GUISwing();
         return gui;
     }

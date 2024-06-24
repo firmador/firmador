@@ -203,6 +203,18 @@
     </dependency>
     <dependency>
       <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+      <artifactId>dss-common-remote-dto</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+      <artifactId>dss-signature-rest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+      <artifactId>dss-validation-rest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>eu.europa.ec.joinup.sd-dss</groupId>
       <artifactId>dss-token</artifactId>
     </dependency>
     <dependency>
