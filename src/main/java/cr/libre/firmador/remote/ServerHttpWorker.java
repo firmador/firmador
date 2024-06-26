@@ -61,13 +61,13 @@ import cr.libre.firmador.gui.GUISwing;
 import cr.libre.firmador.signers.FirmadorUtils;
 import eu.europa.esig.dss.model.DSSDocument;
 
-public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
+public class ServerHttpWorker<T, V> extends SwingWorker<T, V> {
 
     protected GUIInterface gui;
     private HttpServer server;
     private String requestFileName;
 
-    public RemoteHttpWorker(GUIInterface gui) {
+    public ServerHttpWorker(GUIInterface gui) {
         super();
         this.gui=gui;
 
@@ -76,8 +76,7 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
     protected T doInBackground() throws IOException, InterruptedException {
 
         Settings settings = SettingsManager.getInstance().getAndCreateSettings();
-        server = ServerBootstrap.bootstrap().setListenerPort(settings.portNumber)
-                .setLocalAddress(InetAddress.getLocalHost()).register("*",
+        server = ServerBootstrap.bootstrap().setListenerPort(settings.portNumber).setLocalAddress(InetAddress.getLoopbackAddress()).register("*",
                 new RequestHandler(gui, settings)).create();
         server.start();
         server.awaitTermination(TimeValue.MAX_VALUE);

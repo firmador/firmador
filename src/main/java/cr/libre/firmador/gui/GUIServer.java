@@ -17,6 +17,7 @@ import cr.libre.firmador.documents.Document;
 import cr.libre.firmador.documents.DocumentChangeListener;
 import cr.libre.firmador.documents.SupportedMimeTypeEnum;
 import cr.libre.firmador.plugins.PluginManager;
+import cr.libre.firmador.remote.GUIServerRequestHandler;
 import cr.libre.firmador.remote.RequestHandler;
 public class GUIServer implements GUIInterface, DocumentChangeListener {
     private Document document;
@@ -27,7 +28,8 @@ public class GUIServer implements GUIInterface, DocumentChangeListener {
         Settings settings = SettingsManager.getInstance().getAndCreateSettings();
         try {
             server = ServerBootstrap.bootstrap().setListenerPort(settings.portNumber)
-                    .setLocalAddress(InetAddress.getLocalHost()).register("*", new RequestHandler(this, settings))
+                    .setLocalAddress(InetAddress.getLocalHost())
+                    .register("*", new GUIServerRequestHandler(this, settings))
                     .create();
 
             server.start();

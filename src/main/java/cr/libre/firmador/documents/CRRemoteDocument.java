@@ -51,7 +51,7 @@ public class CRRemoteDocument {
         return previewDocument;
     }
 
-    List<byte[]> getPreviewImages() {
+    public List<byte[]> getPreviewImages() {
         return previewImages;
     }
 
