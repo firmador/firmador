@@ -77,7 +77,8 @@ public class RemoteHttpWorker<T, V> extends SwingWorker<T, V> {
 
         Settings settings = SettingsManager.getInstance().getAndCreateSettings();
         server = ServerBootstrap.bootstrap().setListenerPort(settings.portNumber)
-                .setLocalAddress(InetAddress.getLocalHost()).register("*",
+                .setLocalAddress(InetAddress.getLoopbackAddress())
+                .register("*",
                 new RequestHandler(gui, settings)).create();
         server.start();
         server.awaitTermination(TimeValue.MAX_VALUE);
